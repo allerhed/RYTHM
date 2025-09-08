@@ -86,9 +86,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [])
 
   const login = async (email: string, password: string): Promise<void> => {
+    console.log('🔑 AuthContext.login called with email:', email)
     setIsLoading(true)
     
     try {
+      console.log('📡 Making fetch request to API...')
       const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
         headers: {
@@ -97,24 +99,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
         body: JSON.stringify({ email, password }),
       })
 
+      console.log('📡 API response status:', response.status, response.statusText)
+
       if (!response.ok) {
         const error = await response.json()
+        console.error('❌ API error response:', error)
         throw new Error(error.error || 'Login failed')
       }
 
       const data = await response.json()
+      console.log('✅ API success response:', data)
       const { token: authToken, user: userData } = data
 
       // Store in state and localStorage
+      console.log('💾 Storing auth data in state and localStorage...')
       setToken(authToken)
       setUser(userData as User)
       localStorage.setItem('auth-token', authToken)
       localStorage.setItem('auth-user', JSON.stringify(userData))
+      console.log('✅ Auth data stored successfully')
 
     } catch (error: any) {
-      console.error('Login error:', error)
+      console.error('❌ Login error:', error)
       throw new Error(error.message || 'Login failed')
     } finally {
+      console.log('🏁 AuthContext.login finished')
       setIsLoading(false)
     }
   }

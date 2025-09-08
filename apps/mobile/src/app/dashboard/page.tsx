@@ -355,7 +355,12 @@ function DashboardPage() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-white">Load {Math.min(workout.total_sets * 2 + workout.exercise_count * 3, 30)}</div>
+                            <div className="text-2xl font-bold text-white">
+                              {workout.training_load ? `Load ${workout.training_load}` : `Load ${Math.min(workout.total_sets * 2 + workout.exercise_count * 3, 30)}`}
+                            </div>
+                            {workout.perceived_exertion && (
+                              <div className="text-white/80 text-sm">RPE {workout.perceived_exertion}/10</div>
+                            )}
                           </div>
                         </div>
                         
@@ -380,23 +385,25 @@ function DashboardPage() {
                         </div>
 
                         {/* Stats Row */}
-                        <div className="grid grid-cols-3 gap-4 text-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                        <div className="grid grid-cols-4 gap-3 text-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
                           <div>
                             <div className="text-xs font-medium text-white/80 mb-1">EXERCISES</div>
                             <div className="text-lg font-bold text-white">{workout.exercise_count}</div>
                           </div>
                           <div>
-                            <div className="text-xs font-medium text-white/80 mb-1">TOTAL SETS</div>
+                            <div className="text-xs font-medium text-white/80 mb-1">SETS</div>
                             <div className="text-lg font-bold text-white">{workout.total_sets}</div>
                           </div>
                           <div>
-                            <div className="text-xs font-medium text-white/80 mb-1">TIME</div>
+                            <div className="text-xs font-medium text-white/80 mb-1">LOAD</div>
                             <div className="text-lg font-bold text-white">
-                              {new Date(workout.started_at).toLocaleTimeString('en-US', { 
-                                hour: '2-digit', 
-                                minute: '2-digit',
-                                hour12: false 
-                              })}
+                              {workout.training_load || Math.min(workout.total_sets * 2 + workout.exercise_count * 3, 30)}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs font-medium text-white/80 mb-1">RPE</div>
+                            <div className="text-lg font-bold text-white">
+                              {workout.perceived_exertion ? `${workout.perceived_exertion}/10` : 'N/A'}
                             </div>
                           </div>
                         </div>

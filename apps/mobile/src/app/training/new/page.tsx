@@ -43,11 +43,24 @@ interface WorkoutSet {
 }
 
 const VALUE_TYPES = [
-  { value: 'weight_kg', label: 'KGS', unit: 'kg' },
-  { value: 'duration_s', label: 'DURATION', unit: 's' },
-  { value: 'distance_m', label: 'DISTANCE', unit: 'm' },
-  { value: 'calories', label: 'CALORIES', unit: 'cal' },
-  { value: 'reps', label: 'REPS', unit: 'reps' }
+  { value: 'weight_kg', label: 'KGS', unit: 'KGS' },
+  { value: 'duration_s', label: 'DURATION', unit: 'DURATION' },
+  { value: 'distance_m', label: 'DISTANCE', unit: 'DISTANCE' },
+  { value: 'calories', label: 'CALORIES', unit: 'CALORIES' },
+  { value: 'reps', label: 'REPS', unit: 'REPS' }
+]
+
+const PERCEIVED_EXERTION_LABELS = [
+  { value: 1, label: 'Very, Very Easy' },
+  { value: 2, label: 'Easy' },
+  { value: 3, label: 'Moderate' },
+  { value: 4, label: 'Somewhat Hard' },
+  { value: 5, label: 'Hard' },
+  { value: 6, label: 'Harder' },
+  { value: 7, label: 'Very Hard' },
+  { value: 8, label: 'Extremely Hard' },
+  { value: 9, label: 'Close to Max Effort' },
+  { value: 10, label: 'Max Effort' }
 ]
 
 export default function NewWorkoutPage() {
@@ -56,8 +69,10 @@ export default function NewWorkoutPage() {
   const [workoutName, setWorkoutName] = useState('Hybrid')
   const [activityType, setActivityType] = useState<'strength' | 'cardio' | 'hybrid'>('strength')
   const [workoutDate, setWorkoutDate] = useState(new Date())
-  const [duration, setDuration] = useState('1:42:40')
+  const [duration, setDuration] = useState('1:00:00')
   const [notes, setNotes] = useState('')
+  const [trainingLoad, setTrainingLoad] = useState<number | null>(null)
+  const [perceivedExertion, setPerceivedExertion] = useState<number>(4)
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [exerciseTemplates, setExerciseTemplates] = useState<ExerciseTemplate[]>([])
   const [showExerciseModal, setShowExerciseModal] = useState(false)
@@ -66,6 +81,7 @@ export default function NewWorkoutPage() {
   const [isEditing, setIsEditing] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<{exerciseId: string, setId: string, field: 'value1' | 'value2'} | null>(null)
 
+
   // Fetch exercise templates on component mount
   useEffect(() => {
     fetchExerciseTemplates()
@@ -73,11 +89,7 @@ export default function NewWorkoutPage() {
 
   const fetchExerciseTemplates = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/exercises/templates', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
-        }
-      })
+      const response = await fetch('http://localhost:3001/api/exercises/templates')
       if (response.ok) {
         const templates = await response.json()
         setExerciseTemplates(templates)
@@ -91,7 +103,11 @@ export default function NewWorkoutPage() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (activeDropdown) {
-        setActiveDropdown(null)
+        const target = event.target as Element
+        // Don't close if clicking inside a dropdown menu
+        if (!target.closest('.dropdown-menu') && !target.closest('.dropdown-trigger')) {
+          setActiveDropdown(null)
+        }
       }
     }
     
@@ -255,21 +271,67 @@ export default function NewWorkoutPage() {
   }
 
   const onValueTypeChange = (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => {
-    setExercises(exercises.map(ex => {
-      if (ex.id === exerciseId) {
-        return {
-          ...ex,
-          sets: ex.sets.map(set => {
-            if (set.id === setId) {
-              return { ...set, [field]: type }
-            }
-            return set
-          })
-        }
-      }
-      return ex
-    }))
+    console.log('🔄 onValueTypeChange called:', { exerciseId, setId, field, type })
+    
+    // Close dropdown first
     setActiveDropdown(null)
+    
+    // Update exercises state
+    setExercises(prevExercises => {
+      console.log('📥 Previous exercises state:', prevExercises)
+      
+      // Create completely new array and objects
+      const newExercises = [...prevExercises]
+      
+      const exerciseIndex = newExercises.findIndex(ex => ex.id === exerciseId)
+      if (exerciseIndex === -1) {
+        console.log('❌ Exercise not found:', exerciseId)
+        return prevExercises
+      }
+      
+      console.log('🎯 Found exercise at index:', exerciseIndex, newExercises[exerciseIndex].name)
+      
+      const exercise = newExercises[exerciseIndex]
+      const setIndex = exercise.sets.findIndex(set => set.id === setId)
+      
+      if (setIndex === -1) {
+        console.log('❌ Set not found:', setId)
+        return prevExercises
+      }
+      
+      console.log('🎯 Found set at index:', setIndex, 'setNumber:', exercise.sets[setIndex].setNumber)
+      
+      // Create new exercise object with updated sets
+      const newSets = [...exercise.sets]
+      const oldSet = newSets[setIndex]
+      
+      console.log('✅ Updating set:', { 
+        setId: oldSet.id, 
+        setNumber: oldSet.setNumber,
+        field,
+        oldValue: oldSet[field], 
+        newValue: type 
+      })
+      
+      // Create completely new set object
+      newSets[setIndex] = {
+        ...oldSet,
+        [field]: type as any
+      }
+      
+      console.log('🔄 New set object:', newSets[setIndex])
+      
+      // Create new exercise object
+      newExercises[exerciseIndex] = {
+        ...exercise,
+        sets: newSets
+      }
+      
+      console.log('📊 Final updated exercises state:', newExercises)
+      return newExercises
+    })
+    
+    console.log('✅ onValueTypeChange completed')
   }
 
   const handleSaveWorkout = async () => {
@@ -287,6 +349,8 @@ export default function NewWorkoutPage() {
       const workoutData = {
         category: activityType,
         notes: notes,
+        training_load: trainingLoad,
+        perceived_exertion: perceivedExertion,
         exercises: exercises.map(exercise => ({
           name: exercise.name,
           notes: exercise.notes,
@@ -353,6 +417,19 @@ export default function NewWorkoutPage() {
       </div>
 
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+        {/* Debug Section */}
+        {/* Debug Section - Remove in production */}
+        <div className="bg-red-100 dark:bg-red-900 p-2 rounded text-xs">
+          <div><strong>Exercises Count:</strong> {exercises.length}</div>
+          {exercises.map(ex => (
+            <div key={ex.id}>
+              <strong>{ex.name}:</strong> {ex.sets.map(set => 
+                `Set${set.setNumber}(${set.value1Type}|${set.value2Type})`
+              ).join(', ')}
+            </div>
+          ))}
+        </div>
+        
         {/* Workout Info */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="space-y-4">
@@ -419,6 +496,60 @@ export default function NewWorkoutPage() {
           </div>
         </div>
 
+        {/* Training Load */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Training Load
+          </label>
+          <input
+            type="number"
+            value={trainingLoad || ''}
+            onChange={(e) => setTrainingLoad(e.target.value ? parseInt(e.target.value) : null)}
+            placeholder="Enter training load (optional)"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            Subjective measure of workout intensity (e.g., 1-100)
+          </p>
+        </div>
+
+        {/* How was your workout - Perceived Exertion */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600 dark:text-gray-300 text-lg">How was your workout?</span>
+              <div className="w-5 h-5 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                <span className="text-xs text-gray-600 dark:text-gray-300">i</span>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-lime-400 text-xl font-bold">
+                {PERCEIVED_EXERTION_LABELS[perceivedExertion - 1]?.label}
+              </div>
+              <div className="text-lime-400 text-lg font-bold">{perceivedExertion}/10</div>
+            </div>
+          </div>
+
+          {/* Slider */}
+          <div className="relative">
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={perceivedExertion}
+              onChange={(e) => setPerceivedExertion(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider-lime"
+              style={{
+                backgroundImage: `linear-gradient(to right, #84cc16 0%, #84cc16 ${(perceivedExertion - 1) * 11.11}%, #d1d5db ${(perceivedExertion - 1) * 11.11}%, #d1d5db 100%)`
+              }}
+            />
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+              <span>Resting</span>
+              <span>Max Effort</span>
+            </div>
+          </div>
+        </div>
+
         {/* Exercises */}
         <div className="space-y-4">
           {exercises.map((exercise) => (
@@ -429,7 +560,7 @@ export default function NewWorkoutPage() {
               onRemoveSet={(setId) => removeSetFromExercise(exercise.id, setId)}
               onRemoveExercise={() => removeExercise(exercise.id)}
               onValueChange={(setId, field, value) => onValueChange(exercise.id, setId, field, value)}
-              onValueTypeChange={(setId, field, type) => onValueTypeChange(exercise.id, setId, field, type)}
+              onValueTypeChange={(exerciseId, setId, field, type) => onValueTypeChange(exerciseId, setId, field, type)}
               activeDropdown={activeDropdown}
               setActiveDropdown={setActiveDropdown}
             />
@@ -442,6 +573,8 @@ export default function NewWorkoutPage() {
           >
             + Add Exercise
           </button>
+
+
         </div>
 
         {/* Notes */}
@@ -467,6 +600,30 @@ export default function NewWorkoutPage() {
           templates={exerciseTemplates}
         />
       )}
+
+      {/* Date Picker Modal */}
+      {showDatePicker && (
+        <DatePickerModal
+          selectedDate={workoutDate}
+          onClose={() => setShowDatePicker(false)}
+          onDateSelect={(date: Date) => {
+            setWorkoutDate(date)
+            setShowDatePicker(false)
+          }}
+        />
+      )}
+
+      {/* Time Picker Modal */}
+      {showTimePicker && (
+        <TimePickerModal
+          duration={duration}
+          onClose={() => setShowTimePicker(false)}
+          onDurationSelect={(newDuration: string) => {
+            setDuration(newDuration)
+            setShowTimePicker(false)
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -486,7 +643,7 @@ function ExerciseCard({
   onRemoveSet: (setId: string) => void
   onRemoveExercise: () => void
   onValueChange: (setId: string, field: 'value1' | 'value2', value: number) => void
-  onValueTypeChange: (setId: string, field: 'value1Type' | 'value2Type', type: string) => void
+  onValueTypeChange: (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => void
   activeDropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null
   setActiveDropdown: (dropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null) => void
 }) {
@@ -513,13 +670,13 @@ function ExerciseCard({
       </div>
 
       <div className="space-y-3">
-        {exercise.sets.map((set) => (
+        {exercise.sets.map((set, index) => (
           <SetRow
-            key={set.id}
+            key={`${exercise.id}-${set.id}-${set.value1Type}-${set.value2Type}-${index}`}
             set={set}
             exerciseId={exercise.id}
             onValueChange={onValueChange}
-            onValueTypeChange={onValueTypeChange}
+            onValueTypeChange={(exerciseId, setId, field, type) => onValueTypeChange(exerciseId, setId, field, type)}
             onRemoveSet={onRemoveSet}
             isOnlySet={exercise.sets.length === 1}
             activeDropdown={activeDropdown}
@@ -551,7 +708,7 @@ function SetRow({
   set: WorkoutSet
   exerciseId: string
   onValueChange: (setId: string, field: 'value1' | 'value2', value: number) => void
-  onValueTypeChange: (setId: string, field: 'value1Type' | 'value2Type', type: string) => void
+  onValueTypeChange: (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => void
   onRemoveSet: (setId: string) => void
   isOnlySet: boolean
   activeDropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null
@@ -569,31 +726,38 @@ function SetRow({
       {/* Value 1 */}
       <div className="relative">
         <button
-          onClick={() => setActiveDropdown({exerciseId, setId: set.id, field: 'value1'})}
-          className="w-full text-xs text-gray-500 dark:text-gray-400 mb-1 text-center hover:text-gray-700 dark:hover:text-gray-300"
+          onClick={() => {
+            console.log('🔽 Value1 dropdown clicked:', { exerciseId, setId: set.id, currentType: set.value1Type })
+            setActiveDropdown({exerciseId, setId: set.id, field: 'value1'})
+          }}
+          className="dropdown-trigger w-full text-xs text-gray-500 dark:text-gray-400 mb-1 text-center hover:text-gray-700 dark:hover:text-gray-300 font-medium"
         >
-          {VALUE_TYPES.find(t => t.value === set.value1Type)?.label || 'TYPE'} ▼
+          {VALUE_TYPES.find(t => t.value === set.value1Type)?.unit || 'KGS'} ▼
         </button>
         <input
           type="number"
           value={set.value1 || ''}
           onChange={(e) => onValueChange(set.id, 'value1', Number(e.target.value))}
-          className="w-full text-center py-1 border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-lime-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          className="w-full text-center py-2 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-medium focus:ring-1 focus:ring-lime-500 focus:border-lime-500"
           placeholder="0"
         />
         
         {activeDropdown?.exerciseId === exerciseId && activeDropdown?.setId === set.id && activeDropdown?.field === 'value1' && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-10">
+          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
             {VALUE_TYPES.map((type) => (
-              <button
+              <div
                 key={type.value}
-                onClick={() => onValueTypeChange(set.id, 'value1Type', type.value)}
-                className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onValueTypeChange(exerciseId, set.id, 'value1Type', type.value)
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
                   set.value1Type === type.value ? 'bg-gray-100 dark:bg-gray-700 text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 {type.label}
-              </button>
+              </div>
             ))}
           </div>
         )}
@@ -602,31 +766,38 @@ function SetRow({
       {/* Value 2 */}
       <div className="relative">
         <button
-          onClick={() => setActiveDropdown({exerciseId, setId: set.id, field: 'value2'})}
-          className="w-full text-xs text-gray-500 dark:text-gray-400 mb-1 text-center hover:text-gray-700 dark:hover:text-gray-300"
+          onClick={() => {
+            console.log('🔽 Value2 dropdown clicked:', { exerciseId, setId: set.id, currentType: set.value2Type })
+            setActiveDropdown({exerciseId, setId: set.id, field: 'value2'})
+          }}
+          className="dropdown-trigger w-full text-xs text-gray-500 dark:text-gray-400 mb-1 text-center hover:text-gray-700 dark:hover:text-gray-300 font-medium"
         >
-          {VALUE_TYPES.find(t => t.value === set.value2Type)?.label || 'TYPE'} ▼
+          {VALUE_TYPES.find(t => t.value === set.value2Type)?.unit || 'REPS'} ▼
         </button>
         <input
           type="number"
           value={set.value2 || ''}
           onChange={(e) => onValueChange(set.id, 'value2', Number(e.target.value))}
-          className="w-full text-center py-1 border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-lime-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          className="w-full text-center py-2 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-medium focus:ring-1 focus:ring-lime-500 focus:border-lime-500"
           placeholder="0"
         />
         
         {activeDropdown?.exerciseId === exerciseId && activeDropdown?.setId === set.id && activeDropdown?.field === 'value2' && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-10">
+          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
             {VALUE_TYPES.map((type) => (
-              <button
+              <div
                 key={type.value}
-                onClick={() => onValueTypeChange(set.id, 'value2Type', type.value)}
-                className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onValueTypeChange(exerciseId, set.id, 'value2Type', type.value)
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
                   set.value2Type === type.value ? 'bg-gray-100 dark:bg-gray-700 text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 {type.label}
-              </button>
+              </div>
             ))}
           </div>
         )}
@@ -644,6 +815,186 @@ function SetRow({
             </svg>
           </button>
         )}
+      </div>
+    </div>
+  )
+}
+
+function DatePickerModal({
+  selectedDate,
+  onClose,
+  onDateSelect
+}: {
+  selectedDate: Date
+  onClose: () => void
+  onDateSelect: (date: Date) => void
+}) {
+  const [currentDate, setCurrentDate] = useState(selectedDate)
+
+  const formatDateForInput = (date: Date) => {
+    return date.toISOString().split('T')[0]
+  }
+
+  const handleDateChange = (dateString: string) => {
+    const newDate = new Date(dateString)
+    setCurrentDate(newDate)
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Select Date</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Date Input */}
+        <div className="p-4">
+          <input
+            type="date"
+            value={formatDateForInput(currentDate)}
+            onChange={(e) => handleDateChange(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onDateSelect(currentDate)}
+            className="flex-1 px-4 py-2 bg-lime-400 text-black rounded-lg hover:bg-lime-500 font-medium"
+          >
+            Select
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TimePickerModal({
+  duration,
+  onClose,
+  onDurationSelect
+}: {
+  duration: string
+  onClose: () => void
+  onDurationSelect: (duration: string) => void
+}) {
+  const [hours, setHours] = useState('1')
+  const [minutes, setMinutes] = useState('42')
+  const [seconds, setSeconds] = useState('40')
+
+  // Parse initial duration
+  React.useEffect(() => {
+    const parts = duration.split(':')
+    if (parts.length === 3) {
+      setHours(parts[0])
+      setMinutes(parts[1])
+      setSeconds(parts[2])
+    }
+  }, [duration])
+
+  const handleSelect = () => {
+    const formattedDuration = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`
+    onDurationSelect(formattedDuration)
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Set Duration</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Time Inputs */}
+        <div className="p-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Hours
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="23"
+                value={hours}
+                onChange={(e) => setHours(e.target.value)}
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              />
+            </div>
+            <div className="text-center">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Minutes
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                value={minutes}
+                onChange={(e) => setMinutes(e.target.value)}
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              />
+            </div>
+            <div className="text-center">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Seconds
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                value={seconds}
+                onChange={(e) => setSeconds(e.target.value)}
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              />
+            </div>
+          </div>
+          <div className="mt-4 text-center">
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {hours.padStart(2, '0')}:{minutes.padStart(2, '0')}:{seconds.padStart(2, '0')}
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSelect}
+            className="flex-1 px-4 py-2 bg-lime-400 text-black rounded-lg hover:bg-lime-500 font-medium"
+          >
+            Set Duration
+          </button>
+        </div>
       </div>
     </div>
   )
