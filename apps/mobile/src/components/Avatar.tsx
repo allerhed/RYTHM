@@ -66,7 +66,11 @@ export function Avatar({ user, size = 'md', className = '', showBorder = true }:
         return user.avatarUrl
       }
       // Otherwise, construct the full URL with the API server
-      return `http://localhost:3001${user.avatarUrl}`
+      // Ensure the path starts with / for proper URL construction
+      const avatarPath = user.avatarUrl.startsWith('/') ? user.avatarUrl : `/${user.avatarUrl}`
+      const fullUrl = `http://localhost:3001${avatarPath}`
+      console.log('Avatar URL constructed:', fullUrl) // Debug log
+      return fullUrl
     }
     return null
   }
@@ -79,6 +83,14 @@ export function Avatar({ user, size = 'md', className = '', showBorder = true }:
         src={avatarUrl}
         alt={getAltText()}
         className={`${sizeClass} rounded-full object-cover ${borderClass} ${className}`}
+        onError={(e) => {
+          console.error('Avatar image failed to load:', avatarUrl)
+          // Hide the image element if it fails to load
+          e.currentTarget.style.display = 'none'
+        }}
+        onLoad={() => {
+          console.log('Avatar image loaded successfully:', avatarUrl)
+        }}
       />
     )
   }

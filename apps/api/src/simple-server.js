@@ -380,6 +380,42 @@ app.put('/api/auth/password', authenticateToken, async (req, res) => {
   }
 });
 
+// Get profile endpoint
+app.get('/api/auth/profile', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    
+    const result = await pool.query(
+      `SELECT user_id, tenant_id, email, role, first_name, last_name, about, avatar_url 
+       FROM users WHERE user_id = $1`,
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = result.rows[0];
+    
+    res.json({
+      user: {
+        id: user.user_id,
+        email: user.email,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        tenantId: user.tenant_id,
+        about: user.about,
+        avatarUrl: user.avatar_url,
+      },
+    });
+
+  } catch (error) {
+    console.error('Profile fetch error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Avatar upload endpoint
 app.put('/api/auth/avatar', authenticateToken, upload.single('avatar'), async (req, res) => {
   console.log('Avatar upload request received');
@@ -443,6 +479,200 @@ app.put('/api/auth/avatar', authenticateToken, upload.single('avatar'), async (r
     }
     
     res.status(500).json({ error: 'Avatar upload failed', details: error.message });
+  }
+});
+
+// Session endpoints
+app.post('/api/sessions', authenticateToken, async (req, res) => {
+  console.log('Session creation request received:', req.body);
+  
+  try {
+    const { name, category, planned_date, duration_seconds, notes, exercises } = req.body;
+    const userId = req.user.userId;
+
+    if (!name || !category) {
+      return res.status(400).json({ error: 'Name and category are required' });
+    }
+
+    console.log('Creating session for user:', userId);
+
+    // Start transaction
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Create session
+      const sessionResult = await client.query(
+        `INSERT INTO sessions (user_id, name, category, planned_date, duration_seconds, notes) 
+         VALUES ($1, $2, $3, $4, $5, $6) 
+         RETURNING session_id, name, category, planned_date, duration_seconds, notes, created_at`,
+        [userId, name, category, planned_date, duration_seconds, notes]
+      );
+
+      const session = sessionResult.rows[0];
+      console.log('Session created:', session.session_id);
+
+      // If exercises are provided, create session_exercises and sets
+      if (exercises && exercises.length > 0) {
+        console.log('Processing exercises:', exercises.length);
+        
+        for (const exercise of exercises) {
+          // Create or get exercise
+          let exerciseResult = await client.query(
+            'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
+            [exercise.name]
+          );
+
+          let exerciseId;
+          if (exerciseResult.rows.length === 0) {
+            // Create new exercise
+            console.log('Creating new exercise:', exercise.name);
+            exerciseResult = await client.query(
+              'INSERT INTO exercises (name, muscle_groups, equipment) VALUES ($1, $2, $3) RETURNING exercise_id',
+              [exercise.name, [], '']
+            );
+            exerciseId = exerciseResult.rows[0].exercise_id;
+          } else {
+            exerciseId = exerciseResult.rows[0].exercise_id;
+          }
+
+          // Create session_exercise
+          const sessionExerciseResult = await client.query(
+            'INSERT INTO session_exercises (session_id, exercise_id, notes, sort_order) VALUES ($1, $2, $3, $4) RETURNING session_exercise_id',
+            [session.session_id, exerciseId, exercise.notes || '', exercises.indexOf(exercise)]
+          );
+
+          const sessionExerciseId = sessionExerciseResult.rows[0].session_exercise_id;
+
+          // Create sets for this exercise
+          if (exercise.sets && exercise.sets.length > 0) {
+            console.log('Creating sets for exercise:', exercise.name, exercise.sets.length);
+            
+            for (const set of exercise.sets) {
+              await client.query(
+                `INSERT INTO sets (session_exercise_id, set_number, value_1_type, value_1, value_2_type, value_2, reps, notes) 
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                [
+                  sessionExerciseId,
+                  set.setNumber,
+                  set.value1Type,
+                  set.value1,
+                  set.value2Type,
+                  set.value2,
+                  set.reps,
+                  set.notes || ''
+                ]
+              );
+            }
+          }
+        }
+      }
+
+      await client.query('COMMIT');
+      console.log('Session creation completed successfully');
+
+      res.json({
+        message: 'Session created successfully',
+        session: {
+          id: session.session_id,
+          name: session.name,
+          category: session.category,
+          planned_date: session.planned_date,
+          duration_seconds: session.duration_seconds,
+          notes: session.notes,
+          created_at: session.created_at
+        }
+      });
+
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+
+  } catch (error) {
+    console.error('Session creation error:', error);
+    res.status(500).json({ error: 'Failed to create session', details: error.message });
+  }
+});
+
+// Get user sessions
+app.get('/api/sessions', authenticateToken, async (req, res) => {
+  console.log('Sessions fetch request for user:', req.user.userId);
+  
+  try {
+    const userId = req.user.userId;
+
+    const sessionsResult = await pool.query(
+      `SELECT s.session_id, s.name, s.category, s.planned_date, s.duration_seconds, s.notes, s.created_at,
+        COALESCE(
+          JSON_AGG(
+            CASE WHEN se.session_exercise_id IS NOT NULL THEN
+              JSON_BUILD_OBJECT(
+                'id', se.session_exercise_id,
+                'exercise_name', e.name,
+                'notes', se.notes,
+                'sort_order', se.sort_order,
+                'sets', se.sets_data
+              )
+            END ORDER BY se.sort_order
+          ) FILTER (WHERE se.session_exercise_id IS NOT NULL), 
+          '[]'::json
+        ) as exercises
+      FROM sessions s
+      LEFT JOIN (
+        SELECT se.*, e.name as exercise_name,
+          COALESCE(
+            JSON_AGG(
+              JSON_BUILD_OBJECT(
+                'id', sets.set_id,
+                'set_number', sets.set_number,
+                'value_1_type', sets.value_1_type,
+                'value_1', sets.value_1,
+                'value_2_type', sets.value_2_type,
+                'value_2', sets.value_2,
+                'reps', sets.reps,
+                'notes', sets.notes
+              ) ORDER BY sets.set_number
+            ) FILTER (WHERE sets.set_id IS NOT NULL),
+            '[]'::json
+          ) as sets_data
+        FROM session_exercises se
+        LEFT JOIN sets ON se.session_exercise_id = sets.session_exercise_id
+        GROUP BY se.session_exercise_id, se.session_id, se.exercise_id, se.notes, se.sort_order
+      ) se ON s.session_id = se.session_id
+      LEFT JOIN exercises e ON se.exercise_id = e.exercise_id
+      WHERE s.user_id = $1
+      GROUP BY s.session_id, s.name, s.category, s.planned_date, s.duration_seconds, s.notes, s.created_at
+      ORDER BY s.created_at DESC`,
+      [userId]
+    );
+
+    console.log('Sessions found:', sessionsResult.rows.length);
+    res.json(sessionsResult.rows);
+
+  } catch (error) {
+    console.error('Sessions fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch sessions', details: error.message });
+  }
+});
+
+// Get available exercises
+app.get('/api/exercises', authenticateToken, async (req, res) => {
+  console.log('Exercises fetch request');
+  
+  try {
+    const exercisesResult = await pool.query(
+      'SELECT exercise_id, name, muscle_groups, equipment FROM exercises ORDER BY name'
+    );
+
+    console.log('Exercises found:', exercisesResult.rows.length);
+    res.json(exercisesResult.rows);
+
+  } catch (error) {
+    console.error('Exercises fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch exercises', details: error.message });
   }
 });
 

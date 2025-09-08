@@ -22,6 +22,7 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<void>
   logout: () => void
   refreshToken: () => Promise<void>
+  fetchProfile: () => Promise<void>
   updateProfile: (data: ProfileUpdateData) => Promise<void>
   updatePassword: (currentPassword: string, newPassword: string) => Promise<void>
   updateAvatar: (file: File) => Promise<void>
@@ -199,6 +200,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const fetchProfile = async (): Promise<void> => {
+    if (!token) {
+      throw new Error('No authentication token')
+    }
+
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/profile', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Profile fetch failed')
+      }
+
+      const responseData = await response.json()
+      const userData = responseData.user
+
+      // Update state and localStorage
+      setUser(userData as User)
+      localStorage.setItem('auth-user', JSON.stringify(userData))
+
+    } catch (error: any) {
+      console.error('Profile fetch error:', error)
+      throw new Error(error.message || 'Profile fetch failed')
+    }
+  }
+
   const updateProfile = async (data: ProfileUpdateData): Promise<void> => {
     if (!token) {
       throw new Error('No authentication token')
@@ -315,6 +348,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     register,
     logout,
     refreshToken,
+    fetchProfile,
     updateProfile,
     updatePassword,
     updateAvatar,

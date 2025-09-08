@@ -1,111 +1,84 @@
 'use client'
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { Avatar } from '@/components/Avatar'
+import { Button } from '@/components/Form'
 
 export default function TestAuthPage() {
-  const [response, setResponse] = useState<string>('')
-  const [loading, setLoading] = useState(false)
+  const { user, isAuthenticated, fetchProfile } = useAuth()
+  const [debugInfo, setDebugInfo] = useState('')
 
-  const testRegistration = async () => {
-    setLoading(true)
-    setResponse('')
-    
-    const testData = {
-      email: 'test@example.com',
-      password: 'Test123!',
-      firstName: 'Test',
-      lastName: 'User',
-      tenantName: 'Test Org'
-    }
-
+  const handleFetchProfile = async () => {
     try {
-      console.log('Testing registration with data:', testData)
-      
-      const response = await fetch('http://localhost:3001/api/trpc/auth.register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          json: testData
-        }),
-      })
-
-      const result = await response.text()
-      console.log('Response:', result)
-      setResponse(`Status: ${response.status}\nResponse: ${result}`)
-
+      await fetchProfile()
+      setDebugInfo('Profile fetched successfully')
     } catch (error: any) {
-      console.error('Test error:', error)
-      setResponse(`Error: ${error.message}`)
-    } finally {
-      setLoading(false)
+      setDebugInfo(`Profile fetch error: ${error.message}`)
     }
   }
 
-  const testLogin = async () => {
-    setLoading(true)
-    setResponse('')
-    
-    const testData = {
-      email: 'test@example.com',
-      password: 'wrongpassword'
-    }
-
-    try {
-      console.log('Testing login with data:', testData)
+  const testAvatarUrl = () => {
+    if (user?.avatarUrl) {
+      const constructedUrl = user.avatarUrl.startsWith('http') 
+        ? user.avatarUrl 
+        : `http://localhost:3001${user.avatarUrl.startsWith('/') ? user.avatarUrl : '/' + user.avatarUrl}`
       
-      const response = await fetch('http://localhost:3001/api/trpc/auth.login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          json: testData
-        }),
-      })
-
-      const result = await response.text()
-      console.log('Response:', result)
-      setResponse(`Status: ${response.status}\nResponse: ${result}`)
-
-    } catch (error: any) {
-      console.error('Test error:', error)
-      setResponse(`Error: ${error.message}`)
-    } finally {
-      setLoading(false)
+      setDebugInfo(`
+        User object: ${JSON.stringify(user, null, 2)}
+        Avatar URL from user: ${user.avatarUrl}
+        Constructed URL: ${constructedUrl}
+      `)
+    } else {
+      setDebugInfo('No avatar URL found in user object')
     }
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Not Authenticated</h1>
+          <p>Please log in to test avatar functionality</p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Test Auth API</h1>
-      
-      <div className="space-y-4">
-        <button 
-          onClick={testRegistration}
-          disabled={loading}
-          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-        >
-          {loading ? 'Testing...' : 'Test Registration'}
-        </button>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Avatar Debug Page</h1>
         
-        <button 
-          onClick={testLogin}
-          disabled={loading}
-          className="bg-green-500 text-white px-4 py-2 rounded disabled:opacity-50 ml-4"
-        >
-          {loading ? 'Testing...' : 'Test Login'}
-        </button>
-      </div>
-      
-      {response && (
-        <div className="mt-4">
-          <h2 className="text-lg font-semibold">Response:</h2>
-          <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto">
-            {response}
-          </pre>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
+          <h2 className="text-lg font-semibold mb-4">Current Avatar</h2>
+          <div className="flex items-center space-x-4 mb-4">
+            <Avatar user={user || undefined} size="xl" />
+            <div>
+              <p className="font-medium">{user?.firstName} {user?.lastName}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{user?.email}</p>
+            </div>
+          </div>
         </div>
-      )}
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
+          <h2 className="text-lg font-semibold mb-4">Actions</h2>
+          <div className="space-y-2">
+            <Button onClick={handleFetchProfile} variant="primary" size="sm">
+              Fetch Fresh Profile
+            </Button>
+            <Button onClick={testAvatarUrl} variant="outline" size="sm">
+              Debug Avatar URL
+            </Button>
+          </div>
+        </div>
+
+        {debugInfo && (
+          <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+            <h3 className="font-semibold mb-2">Debug Info:</h3>
+            <pre className="text-sm whitespace-pre-wrap">{debugInfo}</pre>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

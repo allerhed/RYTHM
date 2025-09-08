@@ -25,7 +25,7 @@ interface Toast {
 
 function ProfilePage() {
   const router = useRouter()
-  const { user, updateProfile, updatePassword, updateAvatar } = useAuth()
+  const { user, updateProfile, updatePassword, updateAvatar, fetchProfile } = useAuth()
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile')
@@ -47,6 +47,33 @@ function ProfilePage() {
   })
   
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Fetch fresh profile data when component mounts
+  React.useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        await fetchProfile()
+      } catch (error) {
+        console.error('Failed to fetch profile:', error)
+      }
+    }
+    
+    if (user) {
+      loadProfile()
+    }
+  }, [])
+
+  // Update profile data when user changes
+  React.useEffect(() => {
+    if (user) {
+      setProfileData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        about: user.about || ''
+      })
+    }
+  }, [user])
 
   // Clear toast after 5 seconds
   React.useEffect(() => {
