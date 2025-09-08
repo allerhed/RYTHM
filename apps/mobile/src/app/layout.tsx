@@ -18,11 +18,14 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#2563eb',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#2563eb' },
+    { media: '(prefers-color-scheme: dark)', color: '#3b82f6' }
+  ],
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5, // Allow zooming for accessibility
+  userScalable: true, // Allow user scaling for accessibility
   viewportFit: 'cover',
 }
 
@@ -32,14 +35,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
+        <meta name="color-scheme" content="light dark" />
       </head>
-      <body className="min-h-screen bg-gray-50">
+      <body className="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <Providers>
-          <main className="min-h-screen">
+          <main className="h-full min-h-screen">
             {children}
           </main>
         </Providers>
