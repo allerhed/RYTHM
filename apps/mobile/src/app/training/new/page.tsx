@@ -438,19 +438,6 @@ export default function NewWorkoutPage() {
       </div>
 
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
-        {/* Debug Section */}
-        {/* Debug Section - Remove in production */}
-        <div className="bg-red-100 dark:bg-red-900 p-2 rounded text-xs">
-          <div><strong>Exercises Count:</strong> {exercises.length}</div>
-          {exercises.map(ex => (
-            <div key={ex.id}>
-              <strong>{ex.name}:</strong> {ex.sets.map(set => 
-                `Set${set.setNumber}(${set.value1Type}|${set.value2Type})`
-              ).join(', ')}
-            </div>
-          ))}
-        </div>
-        
         {/* Workout Info */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="space-y-4">
@@ -544,10 +531,10 @@ export default function NewWorkoutPage() {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lime-400 text-xl font-bold">
+              <div className="text-lime-400 text-xs">
                 {PERCEIVED_EXERTION_LABELS[perceivedExertion - 1]?.label}
               </div>
-              <div className="text-lime-400 text-lg font-bold">{perceivedExertion}/10</div>
+              <div className="text-lime-400 text-xs">{perceivedExertion}/10</div>
             </div>
           </div>
 
