@@ -5,6 +5,7 @@ import { Header } from '../../components/Navigation'
 import { Button } from '../../components/Form'
 import { Avatar } from '../../components/Avatar'
 import { useAuth, withAuth } from '../../contexts/AuthContext'
+import { PencilIcon, EyeIcon } from '@heroicons/react/24/outline'
 
 // Simple Card component for the dashboard
 interface CardProps {
@@ -23,6 +24,8 @@ function Card({ children, className = '' }: CardProps) {
 function DashboardPage() {
   const router = useRouter()
   const { user, logout, fetchProfile } = useAuth()
+  const [todaysWorkouts, setTodaysWorkouts] = React.useState([])
+  const [loading, setLoading] = React.useState(false)
 
   // Fetch fresh profile data when component mounts
   React.useEffect(() => {
@@ -38,6 +41,39 @@ function DashboardPage() {
       loadProfile()
     }
   }, [])
+
+  // Fetch today's workouts
+  const fetchTodaysWorkouts = React.useCallback(async () => {
+    if (!user) return
+    
+    setLoading(true)
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      const response = await fetch(`http://localhost:3001/api/sessions?date=${today}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log('Today\'s workouts:', data)
+        setTodaysWorkouts(data.sessions || [])
+      } else {
+        console.error('Failed to fetch workouts:', response.status, response.statusText)
+        setTodaysWorkouts([])
+      }
+    } catch (error) {
+      console.error('Error fetching workouts:', error)
+      setTodaysWorkouts([])
+    } finally {
+      setLoading(false)
+    }
+  }, [user])
+
+  React.useEffect(() => {
+    fetchTodaysWorkouts()
+  }, [fetchTodaysWorkouts])
 
   const handleLogout = async () => {
     await logout()
@@ -277,49 +313,141 @@ function DashboardPage() {
                 </div>
               </div>
 
-              {/* Today's Date */}
+              {/* Today's Workouts Section */}
               <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 text-center">
-                  Monday, Sep 8
+                  {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                 </h3>
                 
-                {/* Recent Workout */}
-                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-teal-500 rounded-full flex items-center justify-center">
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
+                {loading ? (
+                  <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+                    <div className="text-center text-gray-500 dark:text-gray-400">Loading workouts...</div>
+                  </div>
+                ) : todaysWorkouts.length > 0 ? (
+                  <div className="space-y-3">
+                    {todaysWorkouts.map((workout: any) => (
+                      <div key={workout.id} className="bg-gradient-to-r from-teal-500 to-cyan-600 rounded-xl p-4 text-white shadow-lg">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                              {workout.category === 'strength' ? (
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                </svg>
+                              ) : workout.category === 'cardio' ? (
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                              ) : (
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                              )}
+                            </div>
+                            <div>
+                              <h4 className="text-lg font-semibold text-white">
+                                {workout.category === 'strength' ? 'Strength Training' : 
+                                 workout.category === 'cardio' ? 'Cardio Workout' : 'Training Session'}
+                              </h4>
+                              <p className="text-white/80 text-sm capitalize">
+                                {workout.category} • {workout.exercises?.length || 0} exercises
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-white">Load {Math.min(workout.total_sets * 2 + workout.exercise_count * 3, 30)}</div>
+                          </div>
+                        </div>
+                        
+                        {/* Exercise List */}
+                        <div className="space-y-2 mb-4">
+                          {workout.exercises?.slice(0, 3).map((exercise: any, idx: number) => (
+                            <div key={exercise.exercise_id} className="flex items-center justify-between bg-white/10 rounded-lg p-2 backdrop-blur-sm">
+                              <div className="flex items-center space-x-2">
+                                <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                                  <span className="text-xs font-bold text-white">{idx + 1}</span>
+                                </div>
+                                <span className="text-white font-medium">{exercise.name}</span>
+                              </div>
+                              <span className="text-white/80 text-sm">{exercise.set_count} sets</span>
+                            </div>
+                          ))}
+                          {workout.exercises?.length > 3 && (
+                            <div className="text-center text-white/60 text-sm">
+                              +{workout.exercises.length - 3} more exercises
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Stats Row */}
+                        <div className="grid grid-cols-3 gap-4 text-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                          <div>
+                            <div className="text-xs font-medium text-white/80 mb-1">EXERCISES</div>
+                            <div className="text-lg font-bold text-white">{workout.exercise_count}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs font-medium text-white/80 mb-1">TOTAL SETS</div>
+                            <div className="text-lg font-bold text-white">{workout.total_sets}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs font-medium text-white/80 mb-1">TIME</div>
+                            <div className="text-lg font-bold text-white">
+                              {new Date(workout.started_at).toLocaleTimeString('en-US', { 
+                                hour: '2-digit', 
+                                minute: '2-digit',
+                                hour12: false 
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {workout.notes && (
+                          <div className="mt-3 text-sm text-white/90 italic bg-white/10 rounded-lg p-2 backdrop-blur-sm">
+                            "{workout.notes}"
+                          </div>
+                        )}
+                        
+                        {/* Action Buttons */}
+                        <div className="flex items-center justify-end space-x-2 mt-3">
+                          <button 
+                            onClick={() => router.push(`/training/view/${workout.id}`)}
+                            className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                            title="View workout"
+                          >
+                            <EyeIcon className="w-5 h-5" />
+                          </button>
+                          <button 
+                            onClick={() => router.push(`/training/edit/${workout.id}`)}
+                            className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                            title="Edit workout"
+                          >
+                            <PencilIcon className="w-5 h-5" />
+                          </button>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Vasteras Walking</h4>
-                      </div>
-                    </div>
-                    <div className="bg-teal-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      Load 18
-                    </div>
+                    ))}
                   </div>
-                  
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">DISTANCE</div>
-                      <div className="text-lg font-bold text-gray-900 dark:text-gray-100">2.19 km</div>
+                ) : (
+                  <div className="bg-gray-50 dark:bg-gray-700 p-8 rounded-xl text-center border-2 border-dashed border-gray-300 dark:border-gray-600">
+                    <div className="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
                     </div>
-                    <div>
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">CALORIES</div>
-                      <div className="text-lg font-bold text-gray-900 dark:text-gray-100">151 cal</div>
-                    </div>
-                    <div>
-                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">MOVING TIME</div>
-                      <div className="text-lg font-bold text-gray-900 dark:text-gray-100">26m</div>
-                    </div>
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                      No workouts planned for today
+                    </h4>
+                    <p className="text-gray-500 dark:text-gray-400 mb-4">
+                      Start your training journey by creating your first workout
+                    </p>
+                    <Button 
+                      onClick={() => router.push('/training/new')}
+                      className="bg-teal-500 hover:bg-teal-600 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+                    >
+                      Create New Workout
+                    </Button>
                   </div>
-                  
-                  <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-                    Sep 8, 2025
-                  </div>
-                </div>
+                )}
               </div>
             </Card>
           </div>

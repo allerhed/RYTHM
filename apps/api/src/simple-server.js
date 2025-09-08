@@ -490,8 +490,8 @@ app.post('/api/sessions', authenticateToken, async (req, res) => {
     const { name, category, planned_date, duration_seconds, notes, exercises } = req.body;
     const userId = req.user.userId;
 
-    if (!name || !category) {
-      return res.status(400).json({ error: 'Name and category are required' });
+    if (!category) {
+      return res.status(400).json({ error: 'Category is required' });
     }
 
     console.log('Creating session for user:', userId);
@@ -501,66 +501,57 @@ app.post('/api/sessions', authenticateToken, async (req, res) => {
     try {
       await client.query('BEGIN');
 
-      // Create session
+      // Create session - using actual database schema
       const sessionResult = await client.query(
-        `INSERT INTO sessions (user_id, name, category, planned_date, duration_seconds, notes) 
-         VALUES ($1, $2, $3, $4, $5, $6) 
-         RETURNING session_id, name, category, planned_date, duration_seconds, notes, created_at`,
-        [userId, name, category, planned_date, duration_seconds, notes]
+        `INSERT INTO sessions (tenant_id, user_id, category, notes, started_at) 
+         VALUES ($1, $2, $3, $4, $5) 
+         RETURNING session_id, category, notes, started_at, created_at`,
+        [req.user.tenantId, userId, category, notes, planned_date ? new Date(planned_date) : new Date()]
       );
 
       const session = sessionResult.rows[0];
       console.log('Session created:', session.session_id);
 
-      // If exercises are provided, create session_exercises and sets
+      // If exercises are provided, create exercises and sets
       if (exercises && exercises.length > 0) {
         console.log('Processing exercises:', exercises.length);
         
         for (const exercise of exercises) {
-          // Create or get exercise
+          // Find or create exercise in the exercises library
+          console.log('Creating/finding exercise:', exercise.name);
           let exerciseResult = await client.query(
-            'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
-            [exercise.name]
+            'SELECT exercise_id FROM exercises WHERE tenant_id = $1 AND LOWER(name) = LOWER($2)',
+            [req.user.tenantId, exercise.name]
           );
 
           let exerciseId;
           if (exerciseResult.rows.length === 0) {
-            // Create new exercise
-            console.log('Creating new exercise:', exercise.name);
+            // Create new exercise in the library
             exerciseResult = await client.query(
-              'INSERT INTO exercises (name, muscle_groups, equipment) VALUES ($1, $2, $3) RETURNING exercise_id',
-              [exercise.name, [], '']
+              'INSERT INTO exercises (tenant_id, name, muscle_groups, equipment, notes) VALUES ($1, $2, $3, $4, $5) RETURNING exercise_id',
+              [req.user.tenantId, exercise.name, [], '', exercise.notes || '']
             );
             exerciseId = exerciseResult.rows[0].exercise_id;
           } else {
             exerciseId = exerciseResult.rows[0].exercise_id;
           }
 
-          // Create session_exercise
-          const sessionExerciseResult = await client.query(
-            'INSERT INTO session_exercises (session_id, exercise_id, notes, sort_order) VALUES ($1, $2, $3, $4) RETURNING session_exercise_id',
-            [session.session_id, exerciseId, exercise.notes || '', exercises.indexOf(exercise)]
-          );
-
-          const sessionExerciseId = sessionExerciseResult.rows[0].session_exercise_id;
-
-          // Create sets for this exercise
+          // Create sets for this exercise (using actual database schema)
           if (exercise.sets && exercise.sets.length > 0) {
             console.log('Creating sets for exercise:', exercise.name, exercise.sets.length);
             
-            for (const set of exercise.sets) {
+            for (let i = 0; i < exercise.sets.length; i++) {
+              const set = exercise.sets[i];
               await client.query(
-                `INSERT INTO sets (session_exercise_id, set_number, value_1_type, value_1, value_2_type, value_2, reps, notes) 
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                `INSERT INTO sets (tenant_id, session_id, exercise_id, set_index, value_1_numeric, value_2_numeric) 
+                 VALUES ($1, $2, $3, $4, $5, $6)`,
                 [
-                  sessionExerciseId,
-                  set.setNumber,
-                  set.value1Type,
-                  set.value1,
-                  set.value2Type,
-                  set.value2,
-                  set.reps,
-                  set.notes || ''
+                  req.user.tenantId,
+                  session.session_id,
+                  exerciseId,
+                  i + 1, // set_index starts from 1 (check constraint: set_index > 0)
+                  parseFloat(set.value1) || 0,
+                  parseFloat(set.value2) || 0
                 ]
               );
             }
@@ -575,12 +566,9 @@ app.post('/api/sessions', authenticateToken, async (req, res) => {
         message: 'Session created successfully',
         session: {
           id: session.session_id,
-          name: session.name,
           category: session.category,
-          planned_date: session.planned_date,
-          duration_seconds: session.duration_seconds,
           notes: session.notes,
-          created_at: session.created_at
+          started_at: session.started_at
         }
       });
 
@@ -603,54 +591,57 @@ app.get('/api/sessions', authenticateToken, async (req, res) => {
   
   try {
     const userId = req.user.userId;
+    const tenantId = req.user.tenantId;
+    const { date } = req.query; // Optional date filter (YYYY-MM-DD format)
+    
+    // Build the query with optional date filter
+    let dateFilter = '';
+    const queryParams = [userId, tenantId];
+    
+    if (date) {
+      dateFilter = 'AND s.started_at::date = $3';
+      queryParams.push(date);
+    }
 
     const sessionsResult = await pool.query(
-      `SELECT s.session_id, s.name, s.category, s.planned_date, s.duration_seconds, s.notes, s.created_at,
-        COALESCE(
-          JSON_AGG(
-            CASE WHEN se.session_exercise_id IS NOT NULL THEN
-              JSON_BUILD_OBJECT(
-                'id', se.session_exercise_id,
-                'exercise_name', e.name,
-                'notes', se.notes,
-                'sort_order', se.sort_order,
-                'sets', se.sets_data
-              )
-            END ORDER BY se.sort_order
-          ) FILTER (WHERE se.session_exercise_id IS NOT NULL), 
-          '[]'::json
-        ) as exercises
+      `SELECT 
+        s.session_id as id,
+        s.session_id,
+        s.category,
+        s.notes,
+        s.started_at,
+        s.completed_at,
+        s.created_at,
+        COUNT(DISTINCT e.exercise_id) as exercise_count,
+        COUNT(st.set_id) as total_sets
       FROM sessions s
-      LEFT JOIN (
-        SELECT se.*, e.name as exercise_name,
-          COALESCE(
-            JSON_AGG(
-              JSON_BUILD_OBJECT(
-                'id', sets.set_id,
-                'set_number', sets.set_number,
-                'value_1_type', sets.value_1_type,
-                'value_1', sets.value_1,
-                'value_2_type', sets.value_2_type,
-                'value_2', sets.value_2,
-                'reps', sets.reps,
-                'notes', sets.notes
-              ) ORDER BY sets.set_number
-            ) FILTER (WHERE sets.set_id IS NOT NULL),
-            '[]'::json
-          ) as sets_data
-        FROM session_exercises se
-        LEFT JOIN sets ON se.session_exercise_id = sets.session_exercise_id
-        GROUP BY se.session_exercise_id, se.session_id, se.exercise_id, se.notes, se.sort_order
-      ) se ON s.session_id = se.session_id
-      LEFT JOIN exercises e ON se.exercise_id = e.exercise_id
-      WHERE s.user_id = $1
-      GROUP BY s.session_id, s.name, s.category, s.planned_date, s.duration_seconds, s.notes, s.created_at
-      ORDER BY s.created_at DESC`,
-      [userId]
+      LEFT JOIN sets st ON st.session_id = s.session_id
+      LEFT JOIN exercises e ON e.exercise_id = st.exercise_id AND e.tenant_id = s.tenant_id
+      WHERE s.user_id = $1 AND s.tenant_id = $2 ${dateFilter}
+      GROUP BY s.session_id, s.category, s.notes, s.started_at, s.completed_at, s.created_at
+      ORDER BY s.started_at DESC`,
+      queryParams
     );
 
+    // Get exercises for each session separately to avoid the JSON aggregation issues
+    for (let session of sessionsResult.rows) {
+      const exercisesResult = await pool.query(
+        `SELECT DISTINCT
+          e.exercise_id,
+          e.name,
+          COUNT(st.set_id) as set_count
+        FROM exercises e
+        JOIN sets st ON st.exercise_id = e.exercise_id
+        WHERE st.session_id = $1 AND e.tenant_id = $2
+        GROUP BY e.exercise_id, e.name
+        ORDER BY e.name`,
+        [session.session_id, tenantId]
+      );
+      session.exercises = exercisesResult.rows;
+    }
+
     console.log('Sessions found:', sessionsResult.rows.length);
-    res.json(sessionsResult.rows);
+    res.json({ sessions: sessionsResult.rows });
 
   } catch (error) {
     console.error('Sessions fetch error:', error);
