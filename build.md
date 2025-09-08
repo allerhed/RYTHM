@@ -68,6 +68,8 @@ RYTHM/
   - `password_hash` (VARCHAR, bcrypt hashed)
   - `role` (ENUM: 'athlete', 'coach', 'tenant_admin', 'org_admin')
   - `first_name`, `last_name` (VARCHAR)
+  - `about` (TEXT, User bio/description)
+  - `avatar_url` (TEXT, Profile picture path)
   - `created_at`, `updated_at` (Timestamps)
 
 #### Security Features
@@ -105,11 +107,33 @@ POST /api/auth/login
 - Compares hashed passwords
 - Returns JWT token and user data
 
+PUT /api/auth/profile (authenticated)
+- Updates user profile information
+- Validates email uniqueness
+- Updates first name, last name, email, about field
+- Returns updated user data
+
+PUT /api/auth/password (authenticated) 
+- Changes user password
+- Verifies current password
+- Validates new password requirements
+- Hashes and stores new password
+
+PUT /api/auth/avatar (authenticated)
+- Uploads user avatar image
+- Validates file type and size (5MB limit)
+- Stores file and updates user avatar URL
+- Deletes previous avatar file
+
 GET /health
 - Server health check endpoint
 
 GET /test
 - Simple test endpoint for verification
+
+GET /uploads/avatars/:filename
+- Serves uploaded avatar images
+- Static file serving endpoint
 ```
 
 #### Database Integration
@@ -133,6 +157,20 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<void>
   logout: () => void
   refreshToken: () => Promise<void>
+  updateProfile: (data: ProfileUpdateData) => Promise<void>
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<void>
+  updateAvatar: (file: File) => Promise<void>
+}
+
+interface User {
+  id: string
+  email: string
+  role: 'athlete' | 'coach' | 'tenant_admin' | 'org_admin'
+  firstName?: string
+  lastName?: string
+  tenantId: string
+  about?: string
+  avatarUrl?: string
 }
 ```
 
@@ -142,6 +180,8 @@ interface AuthContextType {
 - Automatic authentication state restoration
 - Error handling for API calls
 - Higher-order component for route protection (`withAuth`)
+- Profile management functions (update profile, password, avatar)
+- File upload support for avatar images
 
 #### Pages and Components
 
@@ -169,6 +209,16 @@ interface AuthContextType {
 - **Quick action buttons** for navigation
 - **Recent activity feed**
 - **Development mode notice**
+
+##### Profile Page (`src/app/profile/page.tsx`)
+- **Comprehensive profile editing** with tabbed interface
+- **Avatar upload section** with file validation and preview
+- **Profile information form** for name, email, and about fields
+- **Password change form** with current password verification
+- **Real-time validation** with error messages and success notifications
+- **Form state management** with loading states
+- **Character counting** for about field (500 character limit)
+- **Responsive design** with mobile-first approach
 
 ##### Navigation Components (`src/components/Navigation.tsx`)
 - **Header component** with title and actions
@@ -318,6 +368,13 @@ npm run build:mobile # Build frontend only
   - Logout functionality with cleanup
   - Persistent authentication state
 
+- [x] **Profile Management**
+  - Complete profile editing interface
+  - Avatar upload with file validation
+  - Update personal information (name, email, about)
+  - Password change with current password verification
+  - Real-time form validation and error handling
+
 ### User Interface
 - [x] **Responsive Design**
   - Mobile-first approach
@@ -448,7 +505,7 @@ apps/mobile/src/
 - **Lines of Code Added**: 2,118
 - **Languages**: TypeScript (70%), JavaScript (20%), CSS (10%)
 - **Components Created**: 8 React components
-- **API Endpoints**: 3 authentication endpoints
+- **API Endpoints**: 6 authentication and profile endpoints
 - **Database Tables**: 2 tables with RLS policies
 
 ### Git History

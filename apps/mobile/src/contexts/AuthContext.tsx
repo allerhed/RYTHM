@@ -9,6 +9,8 @@ export interface User {
   firstName?: string
   lastName?: string
   tenantId: string
+  about?: string
+  avatarUrl?: string
 }
 
 interface AuthContextType {
@@ -20,6 +22,16 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<void>
   logout: () => void
   refreshToken: () => Promise<void>
+  updateProfile: (data: ProfileUpdateData) => Promise<void>
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<void>
+  updateAvatar: (file: File) => Promise<void>
+}
+
+interface ProfileUpdateData {
+  firstName: string
+  lastName: string
+  email: string
+  about: string
 }
 
 interface RegisterData {
@@ -187,6 +199,100 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const updateProfile = async (data: ProfileUpdateData): Promise<void> => {
+    if (!token) {
+      throw new Error('No authentication token')
+    }
+
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Profile update failed')
+      }
+
+      const responseData = await response.json()
+      const updatedUser = responseData.user
+
+      // Update state and localStorage
+      setUser(updatedUser as User)
+      localStorage.setItem('auth-user', JSON.stringify(updatedUser))
+
+    } catch (error: any) {
+      console.error('Profile update error:', error)
+      throw new Error(error.message || 'Profile update failed')
+    }
+  }
+
+  const updatePassword = async (currentPassword: string, newPassword: string): Promise<void> => {
+    if (!token) {
+      throw new Error('No authentication token')
+    }
+
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Password update failed')
+      }
+
+    } catch (error: any) {
+      console.error('Password update error:', error)
+      throw new Error(error.message || 'Password update failed')
+    }
+  }
+
+  const updateAvatar = async (file: File): Promise<void> => {
+    if (!token) {
+      throw new Error('No authentication token')
+    }
+
+    try {
+      const formData = new FormData()
+      formData.append('avatar', file)
+
+      const response = await fetch('http://localhost:3001/api/auth/avatar', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Avatar upload failed')
+      }
+
+      const responseData = await response.json()
+      const updatedUser = responseData.user
+
+      // Update state and localStorage
+      setUser(updatedUser as User)
+      localStorage.setItem('auth-user', JSON.stringify(updatedUser))
+
+    } catch (error: any) {
+      console.error('Avatar update error:', error)
+      throw new Error(error.message || 'Avatar upload failed')
+    }
+  }
+
   // Auto-refresh token before expiry
   useEffect(() => {
     if (!token) return
@@ -209,6 +315,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     register,
     logout,
     refreshToken,
+    updateProfile,
+    updatePassword,
+    updateAvatar,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

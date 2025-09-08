@@ -2,6 +2,43 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '..', 'public', 'uploads', 'avatars');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, `avatar-${uniqueSuffix}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Check if file is an image
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
 
 // Database connection
 const pool = new Pool({
@@ -19,6 +56,27 @@ const app = express();
 const port = 3001;
 
 app.use(express.json());
+
+// Serve static files from public directory
+app.use('/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
+
+// JWT middleware
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token required' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid or expired token' });
+    }
+    req.user = user;
+    next();
+  });
+};
 
 // Enable CORS
 app.use((req, res, next) => {
@@ -126,6 +184,8 @@ app.post('/api/auth/register', async (req, res) => {
           firstName: user.first_name,
           lastName: user.last_name,
           tenantId: user.tenant_id,
+          about: user.about,
+          avatarUrl: user.avatar_url,
         },
       });
 
@@ -158,7 +218,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     // Find user
     const result = await pool.query(
-      `SELECT user_id, tenant_id, email, password_hash, role, first_name, last_name 
+      `SELECT user_id, tenant_id, email, password_hash, role, first_name, last_name, about, avatar_url 
        FROM users WHERE email = $1`,
       [email]
     );
@@ -196,12 +256,193 @@ app.post('/api/auth/login', async (req, res) => {
         firstName: user.first_name,
         lastName: user.last_name,
         tenantId: user.tenant_id,
+        about: user.about,
+        avatarUrl: user.avatar_url,
       },
     });
 
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Login failed', details: error.message });
+  }
+});
+
+// Profile update endpoint
+app.put('/api/auth/profile', authenticateToken, async (req, res) => {
+  console.log('Profile update request received:', req.body);
+  
+  try {
+    const { firstName, lastName, email, about } = req.body;
+    const userId = req.user.userId;
+    
+    if (!firstName || !lastName || !email) {
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        required: ['firstName', 'lastName', 'email']
+      });
+    }
+
+    // Check if email is already taken by another user
+    const existingUser = await pool.query(
+      'SELECT user_id FROM users WHERE email = $1 AND user_id != $2',
+      [email, userId]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(409).json({ error: 'Email already in use' });
+    }
+
+    // Update user profile
+    const result = await pool.query(
+      `UPDATE users 
+       SET first_name = $1, last_name = $2, email = $3, about = $4, updated_at = CURRENT_TIMESTAMP
+       WHERE user_id = $5 
+       RETURNING user_id, tenant_id, email, role, first_name, last_name, about, avatar_url`,
+      [firstName, lastName, email, about || null, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = result.rows[0];
+    
+    res.json({
+      user: {
+        id: user.user_id,
+        email: user.email,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        tenantId: user.tenant_id,
+        about: user.about,
+        avatarUrl: user.avatar_url,
+      },
+    });
+
+  } catch (error) {
+    console.error('Profile update error:', error);
+    res.status(500).json({ error: 'Profile update failed', details: error.message });
+  }
+});
+
+// Password update endpoint
+app.put('/api/auth/password', authenticateToken, async (req, res) => {
+  console.log('Password update request received');
+  
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.userId;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        required: ['currentPassword', 'newPassword']
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters long' });
+    }
+
+    // Get current user data
+    const userResult = await pool.query(
+      'SELECT password_hash FROM users WHERE user_id = $1',
+      [userId]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = userResult.rows[0];
+
+    // Verify current password
+    const isValidPassword = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+    // Update password
+    await pool.query(
+      'UPDATE users SET password_hash = $1, updated_at = CURRENT_TIMESTAMP WHERE user_id = $2',
+      [newPasswordHash, userId]
+    );
+
+    res.json({ message: 'Password updated successfully' });
+
+  } catch (error) {
+    console.error('Password update error:', error);
+    res.status(500).json({ error: 'Password update failed', details: error.message });
+  }
+});
+
+// Avatar upload endpoint
+app.put('/api/auth/avatar', authenticateToken, upload.single('avatar'), async (req, res) => {
+  console.log('Avatar upload request received');
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const userId = req.user.userId;
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+
+    // Get current avatar URL to delete old file
+    const currentUser = await pool.query(
+      'SELECT avatar_url FROM users WHERE user_id = $1',
+      [userId]
+    );
+
+    // Update user avatar URL
+    const result = await pool.query(
+      `UPDATE users 
+       SET avatar_url = $1, updated_at = CURRENT_TIMESTAMP
+       WHERE user_id = $2 
+       RETURNING user_id, tenant_id, email, role, first_name, last_name, about, avatar_url`,
+      [avatarUrl, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Delete old avatar file if it exists
+    if (currentUser.rows[0]?.avatar_url) {
+      const oldFilePath = path.join(__dirname, '..', 'public', currentUser.rows[0].avatar_url);
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlinkSync(oldFilePath);
+      }
+    }
+
+    const user = result.rows[0];
+    
+    res.json({
+      user: {
+        id: user.user_id,
+        email: user.email,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        tenantId: user.tenant_id,
+        about: user.about,
+        avatarUrl: user.avatar_url,
+      },
+    });
+
+  } catch (error) {
+    console.error('Avatar upload error:', error);
+    
+    // Clean up uploaded file on error
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    
+    res.status(500).json({ error: 'Avatar upload failed', details: error.message });
   }
 });
 
