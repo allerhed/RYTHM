@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { Avatar } from './Avatar'
 
 interface BottomNavProps {
   currentPath?: string
@@ -52,9 +53,16 @@ interface HeaderProps {
   showBack?: boolean
   onBack?: () => void
   actions?: React.ReactNode
+  showUserAvatar?: boolean
+  user?: {
+    firstName?: string
+    lastName?: string
+    email?: string
+    avatarUrl?: string
+  }
 }
 
-export function Header({ title, showBack = false, onBack, actions }: HeaderProps) {
+export function Header({ title, showBack = false, onBack, actions, showUserAvatar = false, user }: HeaderProps) {
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 safe-area-top">
       <div className="flex items-center justify-between px-4 py-3">
@@ -72,11 +80,19 @@ export function Header({ title, showBack = false, onBack, actions }: HeaderProps
             {title}
           </h1>
         </div>
-        {actions && (
-          <div className="flex items-center space-x-2">
-            {actions}
-          </div>
-        )}
+        
+        <div className="flex items-center space-x-3">
+          {showUserAvatar && user && (
+            <div className="flex items-center space-x-2">
+              <Avatar user={user} size="sm" />
+            </div>
+          )}
+          {actions && (
+            <div className="flex items-center space-x-2">
+              {actions}
+            </div>
+          )}
+        </div>
       </div>
     </header>
   )

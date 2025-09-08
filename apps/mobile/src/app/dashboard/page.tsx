@@ -3,6 +3,7 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '../../components/Navigation'
 import { Button } from '../../components/Form'
+import { Avatar } from '../../components/Avatar'
 import { useAuth, withAuth } from '../../contexts/AuthContext'
 
 // Simple Card component for the dashboard
@@ -33,6 +34,8 @@ function DashboardPage() {
       {/* Header */}
       <Header 
         title="Dashboard"
+        showUserAvatar={true}
+        user={user || undefined}
         actions={
           <Button
             variant="outline"
@@ -49,12 +52,17 @@ function DashboardPage() {
         <div className="max-w-4xl mx-auto">
           {/* Welcome section */}
           <div className="mb-8">
-            <h1 className="text-display font-bold text-gray-900 dark:text-gray-100 mb-2">
-              Welcome back, {user?.firstName || user?.email}!
-            </h1>
-            <p className="text-body text-gray-600 dark:text-gray-400">
-              Ready to continue your training journey?
-            </p>
+            <div className="flex items-center space-x-4 mb-4">
+              <Avatar user={user || undefined} size="md" />
+              <div>
+                <h1 className="text-display font-bold text-gray-900 dark:text-gray-100">
+                  Welcome back, {user?.firstName || user?.email}!
+                </h1>
+                <p className="text-body text-gray-600 dark:text-gray-400">
+                  Ready to continue your training journey?
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* User info card */}
@@ -63,23 +71,31 @@ function DashboardPage() {
               <h2 className="text-subtitle font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Profile Information
               </h2>
-              <div className="space-y-3">
-                <div>
-                  <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
-                    Name
-                  </span>
-                  <p className="text-body text-gray-900 dark:text-gray-100">
+              
+              {/* Profile Picture and Basic Info */}
+              <div className="flex items-center space-x-4 mb-6">
+                <Avatar user={user || undefined} size="lg" />
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {user?.firstName} {user?.lastName}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
-                    Email
-                  </span>
-                  <p className="text-body text-gray-900 dark:text-gray-100">
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     {user?.email}
                   </p>
                 </div>
+              </div>
+
+              <div className="space-y-3">
+                {user?.about && (
+                  <div>
+                    <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
+                      About
+                    </span>
+                    <p className="text-body text-gray-900 dark:text-gray-100">
+                      {user.about}
+                    </p>
+                  </div>
+                )}
                 <div>
                   <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
                     Role
