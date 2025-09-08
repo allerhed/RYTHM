@@ -7,8 +7,8 @@ import { TRPCError } from '@trpc/server';
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
   tenantName: z.string().min(1).max(255),
 });
 

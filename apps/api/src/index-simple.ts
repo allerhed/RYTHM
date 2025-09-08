@@ -1,74 +1,56 @@
 import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
+import { db } from '@rythm/db';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { createExpressMiddleware } from '@trpc/server/adapters/express';
-import { appRouter } from './router';
-import { createContext } from './trpc';
-import { db } from '@rythm/db';
 
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: false, // Disable for development
-}));
+// Basic middleware
+app.use(express.json());
 
-// CORS configuration
-app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000', 'http://localhost:3002'],
-  credentials: true,
-}));
-
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  try {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-  } catch (error) {
-    console.error('Health check error:', error);
-    res.status(500).json({ error: 'Health check failed' });
+// Enable CORS for development
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
   }
 });
 
-// Direct auth endpoints (bypass tRPC for now)
+// Health check endpoint
+app.get('/health', (req, res) => {
+  console.log('Health check requested');
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Registration endpoint
 app.post('/api/auth/register', async (req, res) => {
+  console.log('Registration request received:', req.body);
+  
   try {
-    console.log('Registration request received:', req.body);
-    
     const { email, password, firstName, lastName, tenantName } = req.body;
     
     if (!email || !password || !firstName || !lastName || !tenantName) {
+      console.log('Missing required fields');
       return res.status(400).json({ 
         error: 'Missing required fields',
         required: ['email', 'password', 'firstName', 'lastName', 'tenantName']
       });
     }
 
-    console.log('Testing database connection...');
-    
-    // Test database connection first
-    try {
-      await db.query('SELECT 1 as test');
-      console.log('Database connection successful');
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      return res.status(500).json({ error: 'Database connection failed' });
-    }
-    
-    // Check if user already exists
     console.log('Checking if user exists...');
+    // Check if user already exists
     const existingUser = await db.query(
       'SELECT user_id FROM users WHERE email = $1',
       [email]
     );
 
     if (existingUser.rows.length > 0) {
+      console.log('User already exists');
       return res.status(409).json({ error: 'User already exists' });
     }
 
@@ -76,7 +58,7 @@ app.post('/api/auth/register', async (req, res) => {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
-    console.log('Creating tenant and user...');
+    console.log('Creating tenant and user in transaction...');
     // Create tenant and user in transaction
     const result = await db.transaction(async (client: any) => {
       console.log('Creating tenant...');
@@ -133,7 +115,10 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
+// Login endpoint
 app.post('/api/auth/login', async (req, res) => {
+  console.log('Login request received:', req.body);
+  
   try {
     const { email, password } = req.body;
     
@@ -193,37 +178,17 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// tRPC API routes
-app.use('/api/trpc', createExpressMiddleware({
-  router: appRouter,
-  createContext,
-  onError: ({ error, path }) => {
-    console.error(`❌ tRPC failed on ${path}:`, error);
-  },
-}));
-
-// Catch-all route for API versioning
-app.all('/api/*', (req, res) => {
-  res.status(404).json({ 
-    error: 'API route not found',
-    availableRoutes: ['/api/trpc']
-  });
-});
-
 // Error handling middleware
 app.use((err: any, req: any, res: any, next: any) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ 
     error: 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { details: err.message })
+    details: err.message
   });
 });
 
 // Start server
 app.listen(port, () => {
-  console.log(`🚀 RYTHM API server running on port ${port}`);
+  console.log(`🚀 Simple RYTHM API server running on port ${port}`);
   console.log(`📊 Health check: http://localhost:${port}/health`);
-  console.log(`🔌 tRPC endpoint: http://localhost:${port}/api/trpc`);
 });
-
-export default app;

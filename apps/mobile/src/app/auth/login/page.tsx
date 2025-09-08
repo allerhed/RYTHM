@@ -1,11 +1,15 @@
 'use client'
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Input, Button } from '../../../components/Form'
 import { Header } from '../../../components/Navigation'
 import { Toast } from '../../../components/Feedback'
+import { useAuth } from '../../../contexts/AuthContext'
 
 export default function LoginPage() {
+  const router = useRouter()
+  const { login, isLoading: authLoading } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -41,12 +45,23 @@ export default function LoginPage() {
     
     setLoading(true)
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await login(email, password)
+      setToast({ type: 'success', message: 'Login successful!' })
+      
+      // Redirect to dashboard after successful login
+      setTimeout(() => router.push('/dashboard'), 1000)
+    } catch (error: any) {
+      setToast({ 
+        type: 'error', 
+        message: error.message || 'Login failed. Please check your credentials.' 
+      })
+    } finally {
       setLoading(false)
-      setToast({ type: 'success', message: 'Login successful! (Demo mode)' })
-    }, 2000)
+    }
   }
+
+  const isFormLoading = loading || authLoading
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -54,7 +69,7 @@ export default function LoginPage() {
       <Header 
         title="Sign In" 
         showBack 
-        onBack={() => window.history.back()} 
+        onBack={() => router.back()} 
       />
       
       {/* Toast notifications */}
@@ -85,7 +100,10 @@ export default function LoginPage() {
               label="Email address"
               type="email"
               value={email}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setEmail(e.target.value)
+                if (errors.email) setErrors(prev => ({ ...prev, email: undefined }))
+              }}
               error={errors.email}
               placeholder="Enter your email"
               autoComplete="email"
@@ -97,7 +115,10 @@ export default function LoginPage() {
               label="Password"
               type="password"
               value={password}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setPassword(e.target.value)
+                if (errors.password) setErrors(prev => ({ ...prev, password: undefined }))
+              }}
               error={errors.password}
               placeholder="Enter your password"
               autoComplete="current-password"
@@ -127,7 +148,7 @@ export default function LoginPage() {
               type="submit"
               variant="primary"
               size="lg"
-              loading={loading}
+              loading={isFormLoading}
               className="w-full"
             >
               Sign In
@@ -153,6 +174,7 @@ export default function LoginPage() {
               size="lg"
               className="w-full"
               onClick={() => setToast({ type: 'info', message: 'Social login coming soon!' })}
+              disabled={isFormLoading}
             >
               <span className="mr-2">🍎</span>
               Continue with Apple
@@ -163,6 +185,7 @@ export default function LoginPage() {
               size="lg"
               className="w-full"
               onClick={() => setToast({ type: 'info', message: 'Social login coming soon!' })}
+              disabled={isFormLoading}
             >
               <span className="mr-2">🔷</span>
               Continue with Google
