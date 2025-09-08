@@ -115,6 +115,10 @@ export default function EditWorkoutPage() {
   const [perceivedExertion, setPerceivedExertion] = useState<number>(4)
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [activityType, setActivityType] = useState<'strength' | 'cardio' | 'hybrid'>('strength')
+  const [workoutDate, setWorkoutDate] = useState(new Date())
+  const [duration, setDuration] = useState('1:00:00')
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [showTimePicker, setShowTimePicker] = useState(false)
 
   // Exercise library states
   const [templates, setTemplates] = useState<ExerciseTemplate[]>([])
@@ -496,13 +500,7 @@ export default function EditWorkoutPage() {
               </svg>
             </button>
             <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Workout</h1>
-            <button
-              onClick={handleUpdateWorkout}
-              disabled={loading}
-              className="bg-lime-400 text-black px-4 py-2 rounded-lg hover:bg-lime-500 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Updating...' : 'Save'}
-            </button>
+            <div className="w-6"></div>
           </div>
         </div>
       </div>
@@ -553,17 +551,23 @@ export default function EditWorkoutPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Date
                 </label>
-                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                  {new Date().toLocaleDateString()}
-                </div>
+                <button
+                  onClick={() => setShowDatePicker(true)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-left bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-600"
+                >
+                  {workoutDate.toLocaleDateString()}
+                </button>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Duration
                 </label>
-                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                  1:00:00
-                </div>
+                <button
+                  onClick={() => setShowTimePicker(true)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-left bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-600"
+                >
+                  {duration}
+                </button>
               </div>
             </div>
           </div>
@@ -643,7 +647,7 @@ export default function EditWorkoutPage() {
         {/* Add Exercise Button */}
         <button
           onClick={() => setShowExerciseModal(true)}
-          className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 transition-colors"
+          className="w-full py-3 border-2 border-dashed border-gray-600 rounded-lg text-gray-400 hover:border-lime-400 hover:text-lime-400 transition-colors"
         >
           + Add Exercise
         </button>
@@ -652,14 +656,14 @@ export default function EditWorkoutPage() {
         <div className="flex gap-3 pt-4">
           <button
             onClick={() => router.push(`/training/view/${sessionId}`)}
-            className="flex-1 py-3 px-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="flex-1 py-3 px-4 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleUpdateWorkout}
             disabled={exercises.length === 0}
-            className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 py-3 px-4 bg-lime-400 text-black rounded-lg hover:bg-lime-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Update Workout
           </button>
@@ -681,6 +685,210 @@ export default function EditWorkoutPage() {
           loading={loading}
         />
       )}
+
+      {/* Date Picker Modal */}
+      {showDatePicker && (
+        <DatePickerModal
+          selectedDate={workoutDate}
+          onClose={() => setShowDatePicker(false)}
+          onDateSelect={(date: Date) => {
+            setWorkoutDate(date)
+            setShowDatePicker(false)
+          }}
+        />
+      )}
+
+      {/* Time Picker Modal */}
+      {showTimePicker && (
+        <TimePickerModal
+          duration={duration}
+          onClose={() => setShowTimePicker(false)}
+          onDurationSelect={(newDuration: string) => {
+            setDuration(newDuration)
+            setShowTimePicker(false)
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
+function DatePickerModal({
+  selectedDate,
+  onClose,
+  onDateSelect
+}: {
+  selectedDate: Date
+  onClose: () => void
+  onDateSelect: (date: Date) => void
+}) {
+  const [currentDate, setCurrentDate] = useState(selectedDate)
+
+  const formatDateForInput = (date: Date) => {
+    return date.toISOString().split('T')[0]
+  }
+
+  const handleDateChange = (dateString: string) => {
+    const newDate = new Date(dateString)
+    setCurrentDate(newDate)
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Select Date</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Date Input */}
+        <div className="p-4">
+          <input
+            type="date"
+            value={formatDateForInput(currentDate)}
+            onChange={(e) => handleDateChange(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onDateSelect(currentDate)}
+            className="flex-1 px-4 py-2 bg-lime-400 text-black rounded-lg hover:bg-lime-500 font-medium"
+          >
+            Select
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TimePickerModal({
+  duration,
+  onClose,
+  onDurationSelect
+}: {
+  duration: string
+  onClose: () => void
+  onDurationSelect: (duration: string) => void
+}) {
+  const [hours, setHours] = useState('1')
+  const [minutes, setMinutes] = useState('42')
+  const [seconds, setSeconds] = useState('40')
+
+  // Parse initial duration
+  React.useEffect(() => {
+    const parts = duration.split(':')
+    if (parts.length === 3) {
+      setHours(parts[0])
+      setMinutes(parts[1])
+      setSeconds(parts[2])
+    }
+  }, [duration])
+
+  const handleSelect = () => {
+    const formattedDuration = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`
+    onDurationSelect(formattedDuration)
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Set Duration</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Time Inputs */}
+        <div className="p-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Hours
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="23"
+                value={hours}
+                onChange={(e) => setHours(e.target.value)}
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              />
+            </div>
+            <div className="text-center">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Minutes
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                value={minutes}
+                onChange={(e) => setMinutes(e.target.value)}
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              />
+            </div>
+            <div className="text-center">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Seconds
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                value={seconds}
+                onChange={(e) => setSeconds(e.target.value)}
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              />
+            </div>
+          </div>
+          <div className="mt-4 text-center">
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {hours.padStart(2, '0')}:{minutes.padStart(2, '0')}:{seconds.padStart(2, '0')}
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSelect}
+            className="flex-1 px-4 py-2 bg-lime-400 text-black rounded-lg hover:bg-lime-500 font-medium"
+          >
+            Set Duration
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
@@ -706,14 +914,15 @@ function ExerciseCard({
   setActiveDropdown: (dropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null) => void
 }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+    <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
       {/* Exercise Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{exercise.name}</h3>
-          {exercise.muscle_groups && exercise.muscle_groups.length > 0 && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+          <h3 className="font-semibold text-white">{exercise.name}</h3>
+          {exercise.muscle_groups && (
+            <p className="text-sm text-gray-400">
               {exercise.muscle_groups.join(', ')}
+              {exercise.equipment && ` • ${exercise.equipment}`}
             </p>
           )}
         </div>
@@ -727,8 +936,7 @@ function ExerciseCard({
         </button>
       </div>
 
-      {/* Sets */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         {exercise.sets.map((set, index) => (
           <SetRow
             key={set.id}
@@ -742,15 +950,14 @@ function ExerciseCard({
             setActiveDropdown={setActiveDropdown}
           />
         ))}
+        
+        <button
+          onClick={onAddSet}
+          className="w-full py-2 text-lime-400 hover:text-lime-300 font-medium"
+        >
+          + Add Set
+        </button>
       </div>
-
-      {/* Add Set Button */}
-      <button
-        onClick={onAddSet}
-        className="w-full mt-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-      >
-        + Add Set
-      </button>
     </div>
   )
 }
@@ -778,8 +985,8 @@ function SetRow({
   return (
     <div className="grid grid-cols-4 gap-4 items-center relative px-2">
       <div className="text-center min-w-[40px]">
-        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">SET</div>
-        <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+        <div className="text-xs text-gray-400 mb-1 font-medium">SET</div>
+        <div className="text-lg font-bold text-white">
           {set.setNumber}
         </div>
       </div>
@@ -796,15 +1003,15 @@ function SetRow({
                 : {exerciseId, setId: set.id, field: 'value1'}
             )
           }}
-          className="dropdown-trigger w-full text-xs text-gray-500 dark:text-gray-400 mb-1 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+          className="dropdown-trigger w-full text-xs text-gray-400 mb-1 hover:text-gray-200 transition-colors"
         >
-          {VALUE_TYPES.find(t => t.value === set.value1Type)?.unit || 'KGS'} ▼
+          {VALUE_TYPES.find(t => t.value === set.value1Type)?.unit || 'DISTANCE'} ▼
         </button>
         <input
           type="number"
           value={set.value1 || ''}
           onChange={(e) => onUpdateSet(set.id, 'value1', parseFloat(e.target.value) || 0)}
-          className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full px-3 py-2 text-center text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-transparent"
           placeholder="0"
         />
 
@@ -812,7 +1019,7 @@ function SetRow({
         {activeDropdown?.exerciseId === exerciseId && 
          activeDropdown?.setId === set.id && 
          activeDropdown?.field === 'value1' && (
-          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
             {VALUE_TYPES.map((type) => (
               <div
                 key={type.value}
@@ -821,8 +1028,8 @@ function SetRow({
                   e.stopPropagation()
                   onValueTypeChange(exerciseId, set.id, 'value1Type', type.value)
                 }}
-                className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
-                  set.value1Type === type.value ? 'bg-gray-100 dark:bg-gray-700 text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
+                className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-700 transition-colors cursor-pointer ${
+                  set.value1Type === type.value ? 'bg-gray-700 text-lime-400' : 'text-gray-300'
                 }`}
               >
                 {type.label}
@@ -844,15 +1051,15 @@ function SetRow({
                 : {exerciseId, setId: set.id, field: 'value2'}
             )
           }}
-          className="dropdown-trigger w-full text-xs text-gray-500 dark:text-gray-400 mb-1 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+          className="dropdown-trigger w-full text-xs text-gray-400 mb-1 hover:text-gray-200 transition-colors"
         >
-          {VALUE_TYPES.find(t => t.value === set.value2Type)?.unit || 'REPS'} ▼
+          {VALUE_TYPES.find(t => t.value === set.value2Type)?.unit || 'CALORIES'} ▼
         </button>
         <input
           type="number"
           value={set.value2 || ''}
           onChange={(e) => onUpdateSet(set.id, 'value2', parseFloat(e.target.value) || 0)}
-          className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full px-3 py-2 text-center text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-transparent"
           placeholder="0"
         />
 
@@ -860,7 +1067,7 @@ function SetRow({
         {activeDropdown?.exerciseId === exerciseId && 
          activeDropdown?.setId === set.id && 
          activeDropdown?.field === 'value2' && (
-          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
             {VALUE_TYPES.map((type) => (
               <div
                 key={type.value}
@@ -869,8 +1076,8 @@ function SetRow({
                   e.stopPropagation()
                   onValueTypeChange(exerciseId, set.id, 'value2Type', type.value)
                 }}
-                className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
-                  set.value2Type === type.value ? 'bg-gray-100 dark:bg-gray-700 text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
+                className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-700 transition-colors cursor-pointer ${
+                  set.value2Type === type.value ? 'bg-gray-700 text-lime-400' : 'text-gray-300'
                 }`}
               >
                 {type.label}
