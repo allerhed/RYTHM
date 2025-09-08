@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: rythm
+metadata:
+  template: rythm@0.0.1
+  description: RYTHM - Hybrid Training Mobile Web App
+
+# Define the services to deploy
+services:
+  api:
+    project: ./apps/api
+    language: ts
+    host: containerapp
+    docker:
+      context: .
+      path: ./apps/api/Dockerfile
+  mobile:
+    project: ./apps/mobile
+    language: ts
+    host: containerapp
+    docker:
+      context: .
+      path: ./apps/mobile/Dockerfile
+
+# Define infrastructure
+infra:
+  provider: bicep
+  path: infra
+  module: main
+
+# Hooks for lifecycle events
+hooks:
+  prepackage:
+    windows:
+      shell: pwsh
+      run: |
+        echo "Building packages..."
+        npm install
+        npm run build
+        echo "Build completed"
+    posix:
+      shell: sh
+      run: |
+        echo "Building packages..."
+        npm install
+        npm run build
+        echo "Build completed"
+  postprovision:
+    windows:
+      shell: pwsh
+      run: |
+        echo "Running database migrations..."
+        pwsh -File ./scripts/run-migrations.ps1
+    posix:
+      shell: sh
+      run: |
+        echo "Running database migrations..."
+        ./scripts/run-migrations.sh

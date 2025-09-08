@@ -1,0 +1,26 @@
+{
+  "name": "@rythm/db",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "db:migrate": "node dist/migrate.js",
+    "db:seed": "node dist/seed.js",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "pg": "^8.11.3",
+    "uuid": "^9.0.1",
+    "bcrypt": "^5.1.1",
+    "@rythm/shared": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.10.9",
+    "@types/uuid": "^9.0.7",
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  }
+}
