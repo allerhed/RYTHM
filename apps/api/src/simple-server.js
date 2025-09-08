@@ -658,21 +658,247 @@ app.get('/api/sessions', authenticateToken, async (req, res) => {
   }
 });
 
-// Get available exercises
-app.get('/api/exercises', authenticateToken, async (req, res) => {
-  console.log('Exercises fetch request');
+// Get exercise templates (available to all tenants)
+app.get('/api/exercises/templates', async (req, res) => {
+  console.log('Exercise templates fetch request');
   
   try {
-    const exercisesResult = await pool.query(
-      'SELECT exercise_id, name, muscle_groups, equipment FROM exercises ORDER BY name'
-    );
+    const { category, search } = req.query;
+    
+    let query = `
+      SELECT 
+        template_id,
+        name,
+        muscle_groups,
+        equipment,
+        exercise_category,
+        default_value_1_type,
+        default_value_2_type,
+        description,
+        instructions
+      FROM exercise_templates 
+      WHERE 1=1
+    `;
+    const params = [];
+    
+    if (category) {
+      params.push(category);
+      query += ` AND exercise_category = $${params.length}`;
+    }
+    
+    if (search) {
+      params.push(`%${search}%`);
+      query += ` AND name ILIKE $${params.length}`;
+    }
+    
+    query += ` ORDER BY name ASC`;
+    
+    const result = await pool.query(query, params);
+    console.log('Exercise templates found:', result.rows.length);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Exercise templates fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch exercise templates', details: error.message });
+  }
+});
 
-    console.log('Exercises found:', exercisesResult.rows.length);
-    res.json(exercisesResult.rows);
-
+// Get tenant-specific exercises
+app.get('/api/exercises', authenticateToken, async (req, res) => {
+  console.log('Exercises fetch request for tenant:', req.user?.tenant_id);
+  
+  const tenantId = req.user?.tenant_id;
+  if (!tenantId) {
+    return res.status(401).json({ error: 'Tenant ID required' });
+  }
+  
+  try {
+    const { category, search } = req.query;
+    
+    let query = `
+      SELECT 
+        exercise_id,
+        name,
+        muscle_groups,
+        equipment,
+        exercise_category,
+        default_value_1_type,
+        default_value_2_type,
+        notes,
+        is_active,
+        created_at
+      FROM exercises 
+      WHERE tenant_id = $1 AND is_active = true
+    `;
+    const params = [tenantId];
+    
+    if (category) {
+      params.push(category);
+      query += ` AND exercise_category = $${params.length}`;
+    }
+    
+    if (search) {
+      params.push(`%${search}%`);
+      query += ` AND name ILIKE $${params.length}`;
+    }
+    
+    query += ` ORDER BY name ASC`;
+    
+    const result = await pool.query(query, params);
+    console.log('Exercises found:', result.rows.length);
+    res.json(result.rows);
   } catch (error) {
     console.error('Exercises fetch error:', error);
     res.status(500).json({ error: 'Failed to fetch exercises', details: error.message });
+  }
+});
+
+// Create exercise from template
+app.post('/api/exercises/from-template/:templateId', authenticateToken, async (req, res) => {
+  console.log('Creating exercise from template:', req.params.templateId);
+  
+  const tenantId = req.user?.tenant_id;
+  const { templateId } = req.params;
+  const { customizations } = req.body;
+  
+  if (!tenantId) {
+    return res.status(401).json({ error: 'Tenant ID required' });
+  }
+  
+  try {
+    // Get template
+    const templateResult = await pool.query(
+      'SELECT * FROM exercise_templates WHERE template_id = $1',
+      [templateId]
+    );
+    
+    if (templateResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Exercise template not found' });
+    }
+    
+    const template = templateResult.rows[0];
+    
+    // Create exercise with template defaults and customizations
+    const exerciseData = {
+      name: customizations?.name || template.name,
+      muscle_groups: customizations?.muscle_groups || template.muscle_groups,
+      equipment: customizations?.equipment || template.equipment,
+      exercise_category: customizations?.exercise_category || template.exercise_category,
+      default_value_1_type: customizations?.default_value_1_type || template.default_value_1_type,
+      default_value_2_type: customizations?.default_value_2_type || template.default_value_2_type,
+      notes: customizations?.notes || template.description
+    };
+    
+    const result = await pool.query(`
+      INSERT INTO exercises (
+        tenant_id, name, muscle_groups, equipment, exercise_category,
+        default_value_1_type, default_value_2_type, notes
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `, [
+      tenantId,
+      exerciseData.name,
+      exerciseData.muscle_groups,
+      exerciseData.equipment,
+      exerciseData.exercise_category,
+      exerciseData.default_value_1_type,
+      exerciseData.default_value_2_type,
+      exerciseData.notes
+    ]);
+    
+    console.log('Exercise created from template:', result.rows[0].exercise_id);
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating exercise from template:', error);
+    res.status(500).json({ error: 'Failed to create exercise from template', details: error.message });
+  }
+});
+
+// Create custom exercise
+app.post('/api/exercises', authenticateToken, async (req, res) => {
+  console.log('Creating custom exercise');
+  
+  const tenantId = req.user?.tenant_id;
+  if (!tenantId) {
+    return res.status(401).json({ error: 'Tenant ID required' });
+  }
+  
+  try {
+    const {
+      name,
+      muscle_groups = [],
+      equipment,
+      exercise_category = 'strength',
+      default_value_1_type = 'weight_kg',
+      default_value_2_type = 'reps',
+      notes
+    } = req.body;
+    
+    if (!name) {
+      return res.status(400).json({ error: 'Exercise name is required' });
+    }
+    
+    const result = await pool.query(`
+      INSERT INTO exercises (
+        tenant_id, name, muscle_groups, equipment, exercise_category,
+        default_value_1_type, default_value_2_type, notes
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `, [
+      tenantId,
+      name,
+      muscle_groups,
+      equipment,
+      exercise_category,
+      default_value_1_type,
+      default_value_2_type,
+      notes
+    ]);
+    
+    console.log('Custom exercise created:', result.rows[0].exercise_id);
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating exercise:', error);
+    res.status(500).json({ error: 'Failed to create exercise', details: error.message });
+  }
+});
+
+// Get exercise by ID with default metrics
+app.get('/api/exercises/:exerciseId', authenticateToken, async (req, res) => {
+  console.log('Fetching exercise:', req.params.exerciseId);
+  
+  const tenantId = req.user?.tenant_id;
+  const { exerciseId } = req.params;
+  
+  if (!tenantId) {
+    return res.status(401).json({ error: 'Tenant ID required' });
+  }
+  
+  try {
+    const result = await pool.query(`
+      SELECT 
+        exercise_id,
+        name,
+        muscle_groups,
+        equipment,
+        exercise_category,
+        default_value_1_type,
+        default_value_2_type,
+        notes,
+        is_active,
+        created_at
+      FROM exercises 
+      WHERE exercise_id = $1 AND tenant_id = $2
+    `, [exerciseId, tenantId]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Exercise not found' });
+    }
+    
+    console.log('Exercise found:', result.rows[0].name);
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching exercise:', error);
+    res.status(500).json({ error: 'Failed to fetch exercise', details: error.message });
   }
 });
 

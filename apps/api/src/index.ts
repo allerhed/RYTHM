@@ -7,6 +7,7 @@ import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import { appRouter } from './router';
 import { createContext } from './trpc';
 import { db } from '@rythm/db';
+import exerciseRoutes from './routes/exercises';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -25,6 +26,9 @@ app.use(cors({
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Store database pool in app.locals for route access
+app.locals.pool = db;
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -192,6 +196,9 @@ app.post('/api/auth/login', async (req, res) => {
     res.status(500).json({ error: 'Login failed', details: error.message });
   }
 });
+
+// Exercise API routes
+app.use('/api/exercises', exerciseRoutes);
 
 // tRPC API routes
 app.use('/api/trpc', createExpressMiddleware({

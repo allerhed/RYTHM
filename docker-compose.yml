@@ -61,19 +61,19 @@ services:
         condition: service_healthy
 
   # Web Admin (Future)
-  admin:
-    build:
-      context: .
-      dockerfile: ./apps/admin/Dockerfile
-    environment:
-      - NODE_ENV=development
-      - API_URL=http://api:3001
-      - NEXT_PUBLIC_API_URL=http://localhost:3001
-    ports:
-      - "3002:3002"
-    depends_on:
-      api:
-        condition: service_healthy
+  # admin:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/admin/Dockerfile
+  #   environment:
+  #     - NODE_ENV=development
+  #     - API_URL=http://api:3001
+  #     - NEXT_PUBLIC_API_URL=http://localhost:3001
+  #   ports:
+  #     - "3002:3002"
+  #   depends_on:
+  #     api:
+  #       condition: service_healthy
 
 volumes:
   postgres_data:

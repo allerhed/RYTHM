@@ -5,7 +5,9 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
+    "dev:simple": "tsx watch src/simple-server.js",
     "start": "node dist/index.js",
+    "start:simple": "node src/simple-server.js",
     "lint": "eslint src/**/*.ts",
     "type-check": "tsc --noEmit"
   },
