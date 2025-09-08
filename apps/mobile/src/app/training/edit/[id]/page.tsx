@@ -114,7 +114,7 @@ export default function EditWorkoutPage() {
   const [trainingLoad, setTrainingLoad] = useState<number | null>(null)
   const [perceivedExertion, setPerceivedExertion] = useState<number>(4)
   const [exercises, setExercises] = useState<Exercise[]>([])
-  const [activityType, setActivityType] = useState<'strength' | 'cardio'>('strength')
+  const [activityType, setActivityType] = useState<'strength' | 'cardio' | 'hybrid'>('strength')
 
   // Exercise library states
   const [templates, setTemplates] = useState<ExerciseTemplate[]>([])
@@ -531,17 +531,17 @@ export default function EditWorkoutPage() {
                 Activity Type
               </label>
               <div className="flex gap-2">
-                {['Strength', 'Cardio'].map((type) => (
+                {['Strength', 'Cardio', 'Hybrid'].map((type) => (
                   <button
                     key={type}
-                    onClick={() => setActivityType(type.toLowerCase() as 'strength' | 'cardio')}
+                    onClick={() => setActivityType(type.toLowerCase() as 'strength' | 'cardio' | 'hybrid')}
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                       activityType === type.toLowerCase()
                         ? 'bg-lime-400 text-black'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
-                    {type === 'Strength' ? '💪 Strength' : '🏃 Cardio'}
+                    {type}
                   </button>
                 ))}
               </div>
