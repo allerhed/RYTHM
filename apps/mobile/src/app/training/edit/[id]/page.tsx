@@ -111,7 +111,7 @@ export default function EditWorkoutPage() {
   // Form states
   const [workoutName, setWorkoutName] = useState('')
   const [notes, setNotes] = useState('')
-  const [trainingLoad, setTrainingLoad] = useState<number>(5)
+  const [trainingLoad, setTrainingLoad] = useState<number | null>(null)
   const [perceivedExertion, setPerceivedExertion] = useState<number>(4)
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [activityType, setActivityType] = useState<'strength' | 'cardio'>('strength')
@@ -547,54 +547,43 @@ export default function EditWorkoutPage() {
               </div>
             </div>
 
-            {/* Notes */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Notes
-              </label>
-              <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none"
-                placeholder="Add workout notes..."
-              />
+            {/* Date and Duration */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Date
+                </label>
+                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                  {new Date().toLocaleDateString()}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Duration
+                </label>
+                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                  1:00:00
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Training Load */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-gray-600 dark:text-gray-300 text-lg">Training Load</span>
-              <div className="w-5 h-5 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                <span className="text-xs text-gray-600 dark:text-gray-300">i</span>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-lime-400 text-xs">{trainingLoad}/10</div>
-            </div>
-          </div>
-
-          {/* Slider */}
-          <div className="relative">
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value={trainingLoad}
-              onChange={(e) => setTrainingLoad(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider-blue"
-              style={{
-                backgroundImage: `linear-gradient(to right, #84cc16 0%, #84cc16 ${(trainingLoad - 1) * 11.11}%, #d1d5db ${(trainingLoad - 1) * 11.11}%, #d1d5db 100%)`
-              }}
-            />
-            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
-              <span>Low</span>
-              <span>High</span>
-            </div>
-          </div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Training Load
+          </label>
+          <input
+            type="number"
+            value={trainingLoad || ''}
+            onChange={(e) => setTrainingLoad(e.target.value ? parseInt(e.target.value) : null)}
+            placeholder="Enter training load (optional)"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            Subjective measure of workout intensity (e.g., 1-100)
+          </p>
         </div>
 
         {/* How was your workout - Perceived Exertion */}
