@@ -214,13 +214,34 @@ export default function NewWorkoutPage() {
     setExercises(exercises.map(ex => {
       if (ex.id === exerciseId) {
         const newSetNumber = ex.sets.length + 1
-        const newSet = ex.default_value_1_type && ex.default_value_2_type
-          ? createNewSetWithDefaults(newSetNumber, ex.default_value_1_type, ex.default_value_2_type)
-          : createNewSet(newSetNumber)
         
-        return {
-          ...ex,
-          sets: [...ex.sets, newSet]
+        // If there are existing sets, copy values and types from the last set
+        if (ex.sets.length > 0) {
+          const lastSet = ex.sets[ex.sets.length - 1]
+          const newSet: WorkoutSet = {
+            id: Date.now().toString() + newSetNumber,
+            setNumber: newSetNumber,
+            value1Type: lastSet.value1Type,
+            value1: lastSet.value1,
+            value2Type: lastSet.value2Type,
+            value2: lastSet.value2,
+            notes: ''
+          }
+          
+          return {
+            ...ex,
+            sets: [...ex.sets, newSet]
+          }
+        } else {
+          // If no existing sets, use defaults
+          const newSet = ex.default_value_1_type && ex.default_value_2_type
+            ? createNewSetWithDefaults(newSetNumber, ex.default_value_1_type, ex.default_value_2_type)
+            : createNewSet(newSetNumber)
+          
+          return {
+            ...ex,
+            sets: [...ex.sets, newSet]
+          }
         }
       }
       return ex
