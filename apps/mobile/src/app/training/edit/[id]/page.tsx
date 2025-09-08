@@ -208,29 +208,20 @@ export default function EditWorkoutPage() {
 
   // Load exercise templates
   useEffect(() => {
-    if (!user || !token) return
+    fetchExerciseTemplates()
+  }, [])
 
-    const fetchTemplates = async () => {
-      try {
-        const response = await fetch('/api/exercises/templates', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        })
-        
-        if (response.ok) {
-          const data = await response.json()
-          setTemplates(data.templates || [])
-        }
-      } catch (error) {
-        console.error('Error fetching templates:', error)
-      } finally {
-        setLoading(false)
+  const fetchExerciseTemplates = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/exercises/templates')
+      if (response.ok) {
+        const templates = await response.json()
+        setTemplates(templates)
       }
+    } catch (error) {
+      console.error('Error fetching exercise templates:', error)
     }
-
-    fetchTemplates()
-  }, [user, token])
+  }
 
   // Click outside handler for dropdowns
   useEffect(() => {
@@ -674,12 +665,6 @@ export default function EditWorkoutPage() {
       {showExerciseModal && (
         <ExerciseModal
           templates={templates}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          selectedType={selectedType}
-          setSelectedType={setSelectedType}
           onAddExercise={addExerciseFromTemplate}
           onClose={() => setShowExerciseModal(false)}
           loading={loading}
@@ -1107,27 +1092,19 @@ function SetRow({
 // Exercise Modal Component
 function ExerciseModal({
   templates,
-  searchQuery,
-  setSearchQuery,
-  selectedCategory,
-  setSelectedCategory,
-  selectedType,
-  setSelectedType,
   onAddExercise,
   onClose,
   loading
 }: {
   templates: ExerciseTemplate[]
-  searchQuery: string
-  setSearchQuery: (query: string) => void
-  selectedCategory: string
-  setSelectedCategory: (category: string) => void
-  selectedType: string
-  setSelectedType: (type: string) => void
   onAddExercise: (template: ExerciseTemplate) => void
   onClose: () => void
   loading: boolean
 }) {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedType, setSelectedType] = useState<string>('all')
+
   // Filter templates based on search, category, and type
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -1142,6 +1119,30 @@ function ExerciseModal({
   // Get counts for each type
   const strengthCount = templates.filter(t => t.exercise_type === 'STRENGTH').length
   const cardioCount = templates.filter(t => t.exercise_type === 'CARDIO').length
+
+  const handleAddExercise = (exerciseName: string) => {
+    // Find the template by name
+    const template = templates.find(t => t.name === exerciseName)
+    if (template) {
+      onAddExercise(template)
+    } else {
+      // Create a basic template for custom exercises
+      const customTemplate: ExerciseTemplate = {
+        template_id: Date.now().toString(),
+        name: exerciseName,
+        muscle_groups: [],
+        equipment: '',
+        exercise_category: 'custom',
+        exercise_type: 'STRENGTH',
+        default_value_1_type: 'weight_kg',
+        default_value_2_type: 'reps',
+        description: '',
+        instructions: ''
+      }
+      onAddExercise(customTemplate)
+    }
+    onClose()
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -1254,11 +1255,18 @@ function ExerciseModal({
             <div className="p-4 text-center text-gray-500 dark:text-gray-400">
               <p>No exercises found for "{searchQuery}"</p>
               <button
-                onClick={() => onAddExercise({ name: searchQuery } as ExerciseTemplate)}
-                className="mt-2 text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300"
+                onClick={() => handleAddExercise(searchQuery)}
+                className="mt-2 text-lime-500 hover:text-lime-600 dark:text-lime-400 dark:hover:text-lime-300"
               >
                 Create "{searchQuery}" as custom exercise
               </button>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {loading && (
+            <div className="p-4 text-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-lime-500 mx-auto"></div>
             </div>
           )}
         </div>
