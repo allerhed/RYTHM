@@ -4,12 +4,17 @@ import { authenticateToken } from '../middleware/auth'
 
 const router = Router()
 
-// Get exercise templates (available to all tenants)
-router.get('/templates', async (req, res) => {
+// Get exercise templates by type (STRENGTH or CARDIO)
+router.get('/templates/by-type/:type', async (req, res) => {
   const pool: Pool = req.app.locals.pool
+  const { type } = req.params
+  
+  if (!['STRENGTH', 'CARDIO'].includes(type.toUpperCase())) {
+    return res.status(400).json({ error: 'Invalid exercise type. Must be STRENGTH or CARDIO' })
+  }
   
   try {
-    const { category, search } = req.query
+    const { search } = req.query
     
     let query = `
       SELECT 
@@ -18,6 +23,50 @@ router.get('/templates', async (req, res) => {
         muscle_groups,
         equipment,
         exercise_category,
+        exercise_type,
+        default_value_1_type,
+        default_value_2_type,
+        description,
+        instructions
+      FROM exercise_templates 
+      WHERE exercise_type = $1
+    `
+    const params: any[] = [type.toUpperCase()]
+    
+    if (search) {
+      params.push(`%${search}%`)
+      query += ` AND name ILIKE $${params.length}`
+    }
+    
+    query += ` ORDER BY name ASC`
+    
+    const result = await pool.query(query, params)
+    res.json({
+      type: type.toUpperCase(),
+      count: result.rows.length,
+      exercises: result.rows
+    })
+  } catch (error) {
+    console.error('Error fetching exercise templates by type:', error)
+    res.status(500).json({ error: 'Failed to fetch exercise templates by type' })
+  }
+})
+
+// Get exercise templates (available to all tenants)
+router.get('/templates', async (req, res) => {
+  const pool: Pool = req.app.locals.pool
+  
+  try {
+    const { category, type, search } = req.query
+    
+    let query = `
+      SELECT 
+        template_id,
+        name,
+        muscle_groups,
+        equipment,
+        exercise_category,
+        exercise_type,
         default_value_1_type,
         default_value_2_type,
         description,
@@ -32,12 +81,17 @@ router.get('/templates', async (req, res) => {
       query += ` AND exercise_category = $${params.length}`
     }
     
+    if (type) {
+      params.push(type)
+      query += ` AND exercise_type = $${params.length}`
+    }
+    
     if (search) {
       params.push(`%${search}%`)
       query += ` AND name ILIKE $${params.length}`
     }
     
-    query += ` ORDER BY name ASC`
+    query += ` ORDER BY exercise_type, name ASC`
     
     const result = await pool.query(query, params)
     res.json(result.rows)
@@ -57,7 +111,7 @@ router.get('/', authenticateToken, async (req, res) => {
   }
   
   try {
-    const { category, search } = req.query
+    const { category, type, search } = req.query
     
     let query = `
       SELECT 
@@ -66,6 +120,7 @@ router.get('/', authenticateToken, async (req, res) => {
         muscle_groups,
         equipment,
         exercise_category,
+        exercise_type,
         default_value_1_type,
         default_value_2_type,
         notes,
@@ -81,12 +136,17 @@ router.get('/', authenticateToken, async (req, res) => {
       query += ` AND exercise_category = $${params.length}`
     }
     
+    if (type) {
+      params.push(type)
+      query += ` AND exercise_type = $${params.length}`
+    }
+    
     if (search) {
       params.push(`%${search}%`)
       query += ` AND name ILIKE $${params.length}`
     }
     
-    query += ` ORDER BY name ASC`
+    query += ` ORDER BY exercise_type, name ASC`
     
     const result = await pool.query(query, params)
     res.json(result.rows)
@@ -126,6 +186,7 @@ router.post('/from-template/:templateId', authenticateToken, async (req, res) =>
       muscle_groups: customizations?.muscle_groups || template.muscle_groups,
       equipment: customizations?.equipment || template.equipment,
       exercise_category: customizations?.exercise_category || template.exercise_category,
+      exercise_type: customizations?.exercise_type || template.exercise_type,
       default_value_1_type: customizations?.default_value_1_type || template.default_value_1_type,
       default_value_2_type: customizations?.default_value_2_type || template.default_value_2_type,
       notes: customizations?.notes || template.description
@@ -133,9 +194,9 @@ router.post('/from-template/:templateId', authenticateToken, async (req, res) =>
     
     const result = await pool.query(`
       INSERT INTO exercises (
-        tenant_id, name, muscle_groups, equipment, exercise_category,
+        tenant_id, name, muscle_groups, equipment, exercise_category, exercise_type,
         default_value_1_type, default_value_2_type, notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
     `, [
       tenantId,
@@ -143,6 +204,7 @@ router.post('/from-template/:templateId', authenticateToken, async (req, res) =>
       exerciseData.muscle_groups,
       exerciseData.equipment,
       exerciseData.exercise_category,
+      exerciseData.exercise_type,
       exerciseData.default_value_1_type,
       exerciseData.default_value_2_type,
       exerciseData.notes
@@ -170,6 +232,7 @@ router.post('/', authenticateToken, async (req, res) => {
       muscle_groups = [],
       equipment,
       exercise_category = 'strength',
+      exercise_type = 'STRENGTH',
       default_value_1_type = 'weight_kg',
       default_value_2_type = 'reps',
       notes
@@ -181,9 +244,9 @@ router.post('/', authenticateToken, async (req, res) => {
     
     const result = await pool.query(`
       INSERT INTO exercises (
-        tenant_id, name, muscle_groups, equipment, exercise_category,
+        tenant_id, name, muscle_groups, equipment, exercise_category, exercise_type,
         default_value_1_type, default_value_2_type, notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
     `, [
       tenantId,
@@ -191,6 +254,7 @@ router.post('/', authenticateToken, async (req, res) => {
       muscle_groups,
       equipment,
       exercise_category,
+      exercise_type,
       default_value_1_type,
       default_value_2_type,
       notes
@@ -219,6 +283,7 @@ router.put('/:exerciseId', authenticateToken, async (req, res) => {
       muscle_groups,
       equipment,
       exercise_category,
+      exercise_type,
       default_value_1_type,
       default_value_2_type,
       notes,
@@ -232,10 +297,11 @@ router.put('/:exerciseId', authenticateToken, async (req, res) => {
         muscle_groups = COALESCE($4, muscle_groups),
         equipment = COALESCE($5, equipment),
         exercise_category = COALESCE($6, exercise_category),
-        default_value_1_type = COALESCE($7, default_value_1_type),
-        default_value_2_type = COALESCE($8, default_value_2_type),
-        notes = COALESCE($9, notes),
-        is_active = COALESCE($10, is_active),
+        exercise_type = COALESCE($7, exercise_type),
+        default_value_1_type = COALESCE($8, default_value_1_type),
+        default_value_2_type = COALESCE($9, default_value_2_type),
+        notes = COALESCE($10, notes),
+        is_active = COALESCE($11, is_active),
         updated_at = NOW()
       WHERE exercise_id = $1 AND tenant_id = $2
       RETURNING *
@@ -246,6 +312,7 @@ router.put('/:exerciseId', authenticateToken, async (req, res) => {
       muscle_groups,
       equipment,
       exercise_category,
+      exercise_type,
       default_value_1_type,
       default_value_2_type,
       notes,
@@ -281,6 +348,7 @@ router.get('/:exerciseId', authenticateToken, async (req, res) => {
         muscle_groups,
         equipment,
         exercise_category,
+        exercise_type,
         default_value_1_type,
         default_value_2_type,
         notes,

@@ -658,12 +658,17 @@ app.get('/api/sessions', authenticateToken, async (req, res) => {
   }
 });
 
-// Get exercise templates (available to all tenants)
-app.get('/api/exercises/templates', async (req, res) => {
-  console.log('Exercise templates fetch request');
+// Get exercise templates by type (STRENGTH or CARDIO)
+app.get('/api/exercises/templates/by-type/:type', async (req, res) => {
+  const { type } = req.params;
+  console.log('Exercise templates by type fetch request:', type);
+  
+  if (!['STRENGTH', 'CARDIO'].includes(type.toUpperCase())) {
+    return res.status(400).json({ error: 'Invalid exercise type. Must be STRENGTH or CARDIO' });
+  }
   
   try {
-    const { category, search } = req.query;
+    const { search } = req.query;
     
     let query = `
       SELECT 
@@ -672,6 +677,52 @@ app.get('/api/exercises/templates', async (req, res) => {
         muscle_groups,
         equipment,
         exercise_category,
+        exercise_type,
+        default_value_1_type,
+        default_value_2_type,
+        description,
+        instructions
+      FROM exercise_templates 
+      WHERE exercise_type = $1
+    `;
+    const params = [type.toUpperCase()];
+    
+    if (search) {
+      params.push(`%${search}%`);
+      query += ` AND name ILIKE $${params.length}`;
+    }
+    
+    query += ` ORDER BY name ASC`;
+    
+    const result = await pool.query(query, params);
+    console.log(`Exercise templates by type ${type} found:`, result.rows.length);
+    
+    res.json({
+      type: type.toUpperCase(),
+      count: result.rows.length,
+      exercises: result.rows
+    });
+  } catch (error) {
+    console.error('Error fetching exercise templates by type:', error);
+    res.status(500).json({ error: 'Failed to fetch exercise templates by type' });
+  }
+});
+
+// Get exercise templates (available to all tenants)
+app.get('/api/exercises/templates', async (req, res) => {
+  console.log('Exercise templates fetch request');
+  
+  try {
+    const { category, type, search } = req.query;
+    
+    let query = `
+      SELECT 
+        template_id,
+        name,
+        muscle_groups,
+        equipment,
+        exercise_category,
+        exercise_type,
         default_value_1_type,
         default_value_2_type,
         description,
@@ -684,6 +735,11 @@ app.get('/api/exercises/templates', async (req, res) => {
     if (category) {
       params.push(category);
       query += ` AND exercise_category = $${params.length}`;
+    }
+    
+    if (type) {
+      params.push(type);
+      query += ` AND exercise_type = $${params.length}`;
     }
     
     if (search) {

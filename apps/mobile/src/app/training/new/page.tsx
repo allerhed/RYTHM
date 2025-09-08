@@ -14,6 +14,7 @@ interface Exercise {
   muscle_groups?: string[]
   equipment?: string
   exercise_category?: string
+  exercise_type?: 'STRENGTH' | 'CARDIO'
   default_value_1_type?: string
   default_value_2_type?: string
 }
@@ -24,6 +25,7 @@ interface ExerciseTemplate {
   muscle_groups: string[]
   equipment: string
   exercise_category: string
+  exercise_type: 'STRENGTH' | 'CARDIO'
   default_value_1_type: string
   default_value_2_type: string
   description: string
@@ -620,15 +622,22 @@ function AddExerciseModal({
 }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedType, setSelectedType] = useState<string>('all')
 
-  // Filter templates based on search and category
+  // Filter templates based on search, category, and type
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = selectedCategory === 'all' || template.exercise_category === selectedCategory
-    return matchesSearch && matchesCategory
+    const matchesType = selectedType === 'all' || template.exercise_type === selectedType
+    return matchesSearch && matchesCategory && matchesType
   })
 
   const categories = ['all', 'strength', 'cardio', 'flexibility', 'sports']
+  const types = ['all', 'STRENGTH', 'CARDIO']
+
+  // Get counts for each type
+  const strengthCount = templates.filter(t => t.exercise_type === 'STRENGTH').length
+  const cardioCount = templates.filter(t => t.exercise_type === 'CARDIO').length
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -657,8 +666,31 @@ function AddExerciseModal({
           />
         </div>
 
+        {/* Exercise Type Filter */}
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Exercise Type</h4>
+          <div className="flex gap-2">
+            {types.map(type => (
+              <button
+                key={type}
+                onClick={() => setSelectedType(type)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  selectedType === type
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {type === 'all' ? `All (${templates.length})` : 
+                 type === 'STRENGTH' ? `💪 Strength (${strengthCount})` : 
+                 `🏃 Cardio (${cardioCount})`}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Category Filter */}
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</h4>
           <div className="flex gap-2 flex-wrap">
             {categories.map(category => (
               <button
@@ -680,7 +712,9 @@ function AddExerciseModal({
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-              {searchQuery ? 'SEARCH RESULTS' : 'EXERCISE LIBRARY'}
+              {searchQuery ? 'SEARCH RESULTS' : 
+               selectedType !== 'all' ? `${selectedType} EXERCISES` : 
+               'EXERCISE LIBRARY'} ({filteredTemplates.length})
             </h3>
             <div className="space-y-1">
               {filteredTemplates.map((template) => (
@@ -689,10 +723,22 @@ function AddExerciseModal({
                   onClick={() => onAddExercise(template.name)}
                   className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
-                  <div className="text-gray-900 dark:text-gray-100">{template.name}</div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-gray-900 dark:text-gray-100">{template.name}</div>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      template.exercise_type === 'STRENGTH' 
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
+                        : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                    }`}>
+                      {template.exercise_type === 'STRENGTH' ? '💪 STR' : '🏃 CAR'}
+                    </span>
+                  </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {template.muscle_groups.join(', ')} • {template.exercise_category}
                     {template.equipment && ` • ${template.equipment}`}
+                  </div>
+                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    Default: {template.default_value_1_type}{template.default_value_2_type && ` + ${template.default_value_2_type}`}
                   </div>
                 </button>
               ))}
