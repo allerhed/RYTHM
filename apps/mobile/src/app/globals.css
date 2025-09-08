@@ -359,6 +359,63 @@ body {
   }
 }
 
+/* Custom slider styles for perceived exertion */
+.slider-lime {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider-lime::-webkit-slider-track {
+  height: 8px;
+  border-radius: 4px;
+  background: transparent;
+}
+
+.slider-lime::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #84cc16;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  top: -8px;
+}
+
+.slider-lime::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+}
+
+.slider-lime::-moz-range-thumb {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #84cc16;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider-lime:focus {
+  outline: none;
+}
+
+.slider-lime:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.3);
+}
+
+.slider-lime:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.3);
+}
+
 /* Print styles */
 @media print {
   body {

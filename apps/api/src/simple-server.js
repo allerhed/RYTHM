@@ -487,7 +487,7 @@ app.post('/api/sessions', authenticateToken, async (req, res) => {
   console.log('Session creation request received:', req.body);
   
   try {
-    const { name, category, planned_date, duration_seconds, notes, exercises } = req.body;
+    const { name, category, planned_date, duration_seconds, notes, exercises, training_load, perceived_exertion } = req.body;
     const userId = req.user.userId;
 
     if (!category) {
@@ -501,12 +501,13 @@ app.post('/api/sessions', authenticateToken, async (req, res) => {
     try {
       await client.query('BEGIN');
 
-      // Create session - using actual database schema
+      // Create session - using actual database schema with new fields
       const sessionResult = await client.query(
-        `INSERT INTO sessions (tenant_id, user_id, category, notes, started_at) 
-         VALUES ($1, $2, $3, $4, $5) 
-         RETURNING session_id, category, notes, started_at, created_at`,
-        [req.user.tenantId, userId, category, notes, planned_date ? new Date(planned_date) : new Date()]
+        `INSERT INTO sessions (tenant_id, user_id, category, notes, started_at, training_load, perceived_exertion) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7) 
+         RETURNING session_id, category, notes, started_at, training_load, perceived_exertion, created_at`,
+        [req.user.tenantId, userId, category, notes, planned_date ? new Date(planned_date) : new Date(), 
+         training_load || null, perceived_exertion || null]
       );
 
       const session = sessionResult.rows[0];
@@ -543,15 +544,18 @@ app.post('/api/sessions', authenticateToken, async (req, res) => {
             for (let i = 0; i < exercise.sets.length; i++) {
               const set = exercise.sets[i];
               await client.query(
-                `INSERT INTO sets (tenant_id, session_id, exercise_id, set_index, value_1_numeric, value_2_numeric) 
-                 VALUES ($1, $2, $3, $4, $5, $6)`,
+                `INSERT INTO sets (tenant_id, session_id, exercise_id, set_index, value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes) 
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
                 [
                   req.user.tenantId,
                   session.session_id,
                   exerciseId,
                   i + 1, // set_index starts from 1 (check constraint: set_index > 0)
+                  set.value1Type || null,
                   parseFloat(set.value1) || 0,
-                  parseFloat(set.value2) || 0
+                  set.value2Type || null,
+                  parseFloat(set.value2) || 0,
+                  set.notes || null
                 ]
               );
             }
@@ -568,7 +572,9 @@ app.post('/api/sessions', authenticateToken, async (req, res) => {
           id: session.session_id,
           category: session.category,
           notes: session.notes,
-          started_at: session.started_at
+          started_at: session.started_at,
+          training_load: session.training_load,
+          perceived_exertion: session.perceived_exertion
         }
       });
 
@@ -612,13 +618,15 @@ app.get('/api/sessions', authenticateToken, async (req, res) => {
         s.started_at,
         s.completed_at,
         s.created_at,
+        s.training_load,
+        s.perceived_exertion,
         COUNT(DISTINCT e.exercise_id) as exercise_count,
         COUNT(st.set_id) as total_sets
       FROM sessions s
       LEFT JOIN sets st ON st.session_id = s.session_id
       LEFT JOIN exercises e ON e.exercise_id = st.exercise_id AND e.tenant_id = s.tenant_id
       WHERE s.user_id = $1 AND s.tenant_id = $2 ${dateFilter}
-      GROUP BY s.session_id, s.category, s.notes, s.started_at, s.completed_at, s.created_at
+      GROUP BY s.session_id, s.category, s.notes, s.started_at, s.completed_at, s.created_at, s.training_load, s.perceived_exertion
       ORDER BY s.started_at DESC`,
       queryParams
     );
@@ -646,6 +654,85 @@ app.get('/api/sessions', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Sessions fetch error:', error);
     res.status(500).json({ error: 'Failed to fetch sessions', details: error.message });
+  }
+});
+
+// Get single session by ID with full details
+app.get('/api/sessions/:id', authenticateToken, async (req, res) => {
+  console.log('Single session fetch request for session:', req.params.id);
+  
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+    const tenantId = req.user.tenantId;
+    
+    // Get session details
+    const sessionResult = await pool.query(
+      `SELECT 
+        s.session_id as id,
+        s.session_id,
+        s.category,
+        s.notes,
+        s.started_at,
+        s.completed_at,
+        s.created_at,
+        s.training_load,
+        s.perceived_exertion
+      FROM sessions s
+      WHERE s.session_id = $1 AND s.user_id = $2 AND s.tenant_id = $3`,
+      [id, userId, tenantId]
+    );
+
+    if (sessionResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    const session = sessionResult.rows[0];
+
+    // Get exercises with sets for this session
+    const exercisesResult = await pool.query(
+      `SELECT DISTINCT
+        e.exercise_id,
+        e.name,
+        e.muscle_groups,
+        e.equipment,
+        e.exercise_category,
+        e.exercise_type
+      FROM exercises e
+      JOIN sets st ON st.exercise_id = e.exercise_id
+      WHERE st.session_id = $1 AND e.tenant_id = $2
+      ORDER BY e.name`,
+      [id, tenantId]
+    );
+
+    // Get sets for each exercise
+    for (let exercise of exercisesResult.rows) {
+      const setsResult = await pool.query(
+        `SELECT 
+          st.set_id,
+          st.set_index,
+          st.value_1_type,
+          st.value_1_numeric,
+          st.value_2_type,
+          st.value_2_numeric,
+          st.notes,
+          st.created_at
+        FROM sets st
+        WHERE st.session_id = $1 AND st.exercise_id = $2
+        ORDER BY st.set_index`,
+        [id, exercise.exercise_id]
+      );
+      exercise.sets = setsResult.rows;
+    }
+
+    session.exercises = exercisesResult.rows;
+
+    console.log('Session found with exercises:', exercisesResult.rows.length);
+    res.json({ session });
+
+  } catch (error) {
+    console.error('Single session fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch session', details: error.message });
   }
 });
 

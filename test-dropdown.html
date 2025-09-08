@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .dropdown-container { position: relative; display: inline-block; margin: 20px; }
+        .dropdown-button { 
+            padding: 10px 20px; 
+            background: #f0f0f0; 
+            border: 1px solid #ccc; 
+            cursor: pointer; 
+        }
+        .dropdown-menu { 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            background: white; 
+            border: 1px solid #ccc; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            min-width: 150px; 
+            z-index: 10;
+        }
+        .dropdown-item { 
+            padding: 10px; 
+            border-bottom: 1px solid #eee; 
+            cursor: pointer; 
+        }
+        .dropdown-item:hover { background: #f5f5f5; }
+        .dropdown-item:last-child { border-bottom: none; }
+        .debug { 
+            background: #ffe6e6; 
+            padding: 10px; 
+            margin: 20px 0; 
+            border: 1px solid #ffcccc; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Dropdown Functionality Test</h1>
+    
+    <div class="debug">
+        <strong>Current State:</strong>
+        <div id="debug-info">
+            Active dropdown: none<br>
+            Value1 type: weight_kg<br>
+            Value2 type: reps
+        </div>
+    </div>
+
+    <div class="dropdown-container">
+        <div class="dropdown-button" id="value1-button" onclick="toggleDropdown('value1')">
+            <span id="value1-label">KGS</span> ▼
+        </div>
+        <div class="dropdown-menu" id="value1-menu" style="display: none;">
+            <div class="dropdown-item" onclick="selectValueType('value1', 'weight_kg', 'KGS')">KGS</div>
+            <div class="dropdown-item" onclick="selectValueType('value1', 'duration_s', 'DURATION')">DURATION</div>
+            <div class="dropdown-item" onclick="selectValueType('value1', 'distance_m', 'DISTANCE')">DISTANCE</div>
+            <div class="dropdown-item" onclick="selectValueType('value1', 'calories', 'CALORIES')">CALORIES</div>
+            <div class="dropdown-item" onclick="selectValueType('value1', 'reps', 'REPS')">REPS</div>
+        </div>
+    </div>
+
+    <div class="dropdown-container">
+        <div class="dropdown-button" id="value2-button" onclick="toggleDropdown('value2')">
+            <span id="value2-label">REPS</span> ▼
+        </div>
+        <div class="dropdown-menu" id="value2-menu" style="display: none;">
+            <div class="dropdown-item" onclick="selectValueType('value2', 'weight_kg', 'KGS')">KGS</div>
+            <div class="dropdown-item" onclick="selectValueType('value2', 'duration_s', 'DURATION')">DURATION</div>
+            <div class="dropdown-item" onclick="selectValueType('value2', 'distance_m', 'DISTANCE')">DISTANCE</div>
+            <div class="dropdown-item" onclick="selectValueType('value2', 'calories', 'CALORIES')">CALORIES</div>
+            <div class="dropdown-item" onclick="selectValueType('value2', 'reps', 'REPS')">REPS</div>
+        </div>
+    </div>
+
+    <script>
+        let state = {
+            activeDropdown: null,
+            value1Type: 'weight_kg',
+            value2Type: 'reps'
+        };
+
+        function updateDebugInfo() {
+            document.getElementById('debug-info').innerHTML = `
+                Active dropdown: ${state.activeDropdown || 'none'}<br>
+                Value1 type: ${state.value1Type}<br>
+                Value2 type: ${state.value2Type}
+            `;
+        }
+
+        function toggleDropdown(field) {
+            console.log('🔽 Toggle dropdown:', field);
+            
+            // Close other dropdown
+            const otherField = field === 'value1' ? 'value2' : 'value1';
+            document.getElementById(otherField + '-menu').style.display = 'none';
+            
+            // Toggle current dropdown
+            const menu = document.getElementById(field + '-menu');
+            const isOpen = menu.style.display === 'block';
+            
+            if (isOpen) {
+                menu.style.display = 'none';
+                state.activeDropdown = null;
+            } else {
+                menu.style.display = 'block';
+                state.activeDropdown = field;
+            }
+            
+            updateDebugInfo();
+        }
+
+        function selectValueType(field, type, label) {
+            console.log('🎯 Select value type:', { field, type, label });
+            
+            // Update state
+            state[field + 'Type'] = type;
+            state.activeDropdown = null;
+            
+            // Update UI
+            document.getElementById(field + '-label').textContent = label;
+            document.getElementById(field + '-menu').style.display = 'none';
+            
+            updateDebugInfo();
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.dropdown-container')) {
+                document.getElementById('value1-menu').style.display = 'none';
+                document.getElementById('value2-menu').style.display = 'none';
+                state.activeDropdown = null;
+                updateDebugInfo();
+            }
+        });
+
+        // Initialize debug info
+        updateDebugInfo();
+    </script>
+</body>
+</html>

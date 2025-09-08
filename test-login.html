@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Test</title>
+</head>
+<body>
+    <h1>Login Test</h1>
+    <button onclick="testLogin()">Test Login</button>
+    <div id="result"></div>
+
+    <script>
+    async function testLogin() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = 'Testing login...';
+        
+        try {
+            const response = await fetch('http://localhost:3001/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: 'test@example.com',
+                    password: 'password123'
+                })
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                resultDiv.innerHTML = `
+                    <h2>Login Success!</h2>
+                    <p>Token: ${data.token.substring(0, 50)}...</p>
+                    <p>User: ${data.user.firstName} ${data.user.lastName} (${data.user.email})</p>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <h2>Login Failed</h2>
+                    <p>Error: ${data.error || 'Unknown error'}</p>
+                `;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `
+                <h2>Request Failed</h2>
+                <p>Error: ${error.message}</p>
+            `;
+        }
+    }
+    </script>
+</body>
+</html>

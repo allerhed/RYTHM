@@ -1,0 +1,1072 @@
+'use client'
+import React, { useState, useRef, useEffect } from 'react'
+import { useRouter, useParams } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/Form'
+
+interface Exercise {
+  id: string
+  name: string
+  notes: string
+  sets: WorkoutSet[]
+  // Database fields
+  exercise_id?: string
+  muscle_groups?: string[]
+  equipment?: string
+  exercise_category?: string
+  exercise_type?: 'STRENGTH' | 'CARDIO'
+  default_value_1_type?: string
+  default_value_2_type?: string
+}
+
+interface ExerciseTemplate {
+  template_id: string
+  name: string
+  muscle_groups: string[]
+  equipment: string
+  exercise_category: string
+  exercise_type: 'STRENGTH' | 'CARDIO'
+  default_value_1_type: string
+  default_value_2_type: string
+  description: string
+  instructions: string
+}
+
+interface WorkoutSet {
+  id: string
+  setNumber: number
+  value1Type: 'weight_kg' | 'distance_m' | 'duration_s' | 'calories' | 'reps' | null
+  value1: number | null
+  value2Type: 'weight_kg' | 'distance_m' | 'duration_s' | 'calories' | 'reps' | null
+  value2: number | null
+  notes: string
+}
+
+interface WorkoutSession {
+  id: string
+  session_id: string
+  category: string
+  notes: string
+  started_at: string
+  completed_at: string | null
+  created_at: string
+  training_load: number | null
+  perceived_exertion: number | null
+  exercises: DbExercise[]
+}
+
+interface DbExercise {
+  exercise_id: string
+  name: string
+  muscle_groups: string[]
+  equipment: string
+  exercise_category: string
+  exercise_type: 'STRENGTH' | 'CARDIO' | null
+  sets: DbWorkoutSet[]
+}
+
+interface DbWorkoutSet {
+  set_id: string
+  set_index: number
+  value_1_type: string | null
+  value_1_numeric: number | null
+  value_2_type: string | null
+  value_2_numeric: number | null
+  notes: string
+  created_at: string
+}
+
+const VALUE_TYPES = [
+  { value: 'weight_kg', label: 'KGS', unit: 'KGS' },
+  { value: 'duration_s', label: 'DURATION', unit: 'DURATION' },
+  { value: 'distance_m', label: 'DISTANCE', unit: 'DISTANCE' },
+  { value: 'calories', label: 'CALORIES', unit: 'CALORIES' },
+  { value: 'reps', label: 'REPS', unit: 'REPS' }
+]
+
+const PERCEIVED_EXERTION_LABELS = [
+  { value: 1, label: 'Very, Very Easy' },
+  { value: 2, label: 'Very Easy' },
+  { value: 3, label: 'Easy' },
+  { value: 4, label: 'Somewhat Hard' },
+  { value: 5, label: 'Hard' },
+  { value: 6, label: 'Hard+' },
+  { value: 7, label: 'Very Hard' },
+  { value: 8, label: 'Very Hard+' },
+  { value: 9, label: 'Very, Very Hard' },
+  { value: 10, label: 'Max Effort' }
+]
+
+export default function EditWorkoutPage() {
+  const router = useRouter()
+  const params = useParams()
+  const { user, token } = useAuth()
+  const sessionId = params?.id as string
+
+  // Loading states
+  const [loading, setLoading] = useState(true)
+  const [loadingSession, setLoadingSession] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Form states
+  const [workoutName, setWorkoutName] = useState('')
+  const [notes, setNotes] = useState('')
+  const [trainingLoad, setTrainingLoad] = useState<number>(5)
+  const [perceivedExertion, setPerceivedExertion] = useState<number>(4)
+  const [exercises, setExercises] = useState<Exercise[]>([])
+  const [activityType, setActivityType] = useState<'strength' | 'cardio'>('strength')
+
+  // Exercise library states
+  const [templates, setTemplates] = useState<ExerciseTemplate[]>([])
+  const [showExerciseModal, setShowExerciseModal] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedType, setSelectedType] = useState<string>('all')
+  const [activeDropdown, setActiveDropdown] = useState<{exerciseId: string, setId: string, field: 'value1' | 'value2'} | null>(null)
+
+  // Refs
+  const dropdownRefs = useRef<{[key: string]: HTMLDivElement | null}>({})
+
+  // Load existing workout session
+  useEffect(() => {
+    if (!user || !token || !sessionId) return
+
+    const fetchSession = async () => {
+      try {
+        setLoadingSession(true)
+        setError(null)
+
+        const response = await fetch(`/api/sessions/${sessionId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('Workout not found')
+          } else {
+            setError('Failed to load workout')
+          }
+          return
+        }
+
+        const data = await response.json()
+        const session: WorkoutSession = data.session
+
+        // Convert session data to form format
+        setWorkoutName(session.category || 'Workout')
+        setNotes(session.notes || '')
+        setTrainingLoad(session.training_load || 5)
+        setPerceivedExertion(session.perceived_exertion || 4)
+
+        // Convert exercises and sets
+        const convertedExercises: Exercise[] = session.exercises.map(dbEx => ({
+          id: dbEx.exercise_id,
+          name: dbEx.name,
+          notes: '',
+          exercise_id: dbEx.exercise_id,
+          muscle_groups: dbEx.muscle_groups,
+          equipment: dbEx.equipment,
+          exercise_category: dbEx.exercise_category,
+          exercise_type: dbEx.exercise_type || undefined,
+          sets: dbEx.sets.map(dbSet => ({
+            id: dbSet.set_id,
+            setNumber: dbSet.set_index,
+            value1Type: dbSet.value_1_type as any,
+            value1: dbSet.value_1_numeric,
+            value2Type: dbSet.value_2_type as any,
+            value2: dbSet.value_2_numeric,
+            notes: dbSet.notes
+          }))
+        }))
+
+        setExercises(convertedExercises)
+        
+        // Set activity type based on first exercise
+        if (convertedExercises.length > 0) {
+          const firstExerciseType = convertedExercises[0].exercise_type
+          setActivityType(firstExerciseType === 'CARDIO' ? 'cardio' : 'strength')
+        }
+
+      } catch (error) {
+        console.error('Error fetching session:', error)
+        setError('Failed to load workout')
+      } finally {
+        setLoadingSession(false)
+      }
+    }
+
+    fetchSession()
+  }, [user, token, sessionId])
+
+  // Load exercise templates
+  useEffect(() => {
+    if (!user || !token) return
+
+    const fetchTemplates = async () => {
+      try {
+        const response = await fetch('/api/exercises/templates', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          setTemplates(data.templates || [])
+        }
+      } catch (error) {
+        console.error('Error fetching templates:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTemplates()
+  }, [user, token])
+
+  // Click outside handler for dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      
+      // Check if click is outside dropdown elements
+      if (activeDropdown && 
+          !target.closest('.dropdown-menu') && 
+          !target.closest('.dropdown-trigger')) {
+        setActiveDropdown(null)
+      }
+    }
+
+    if (activeDropdown) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [activeDropdown])
+
+  const createNewSetWithDefaults = (setNumber: number, defaultType1?: string, defaultType2?: string): WorkoutSet => ({
+    id: Date.now().toString() + setNumber,
+    setNumber,
+    value1Type: (defaultType1 as any) || (activityType === 'strength' ? 'weight_kg' : 'distance_m'),
+    value1: 0,
+    value2Type: (defaultType2 as any) || (activityType === 'strength' ? 'reps' : 'duration_s'),
+    value2: 0,
+    notes: ''
+  })
+
+  const createNewSet = (setNumber: number): WorkoutSet => ({
+    id: Date.now().toString() + setNumber,
+    setNumber,
+    value1Type: activityType === 'strength' ? 'weight_kg' : 'distance_m',
+    value1: 0,
+    value2Type: activityType === 'strength' ? 'reps' : 'duration_s',
+    value2: 0,
+    notes: ''
+  })
+
+  const addSetToExercise = (exerciseId: string) => {
+    setExercises(exercises.map(ex => {
+      if (ex.id === exerciseId) {
+        const newSetNumber = ex.sets.length + 1
+        
+        // If there are existing sets, copy values and types from the last set
+        if (ex.sets.length > 0) {
+          const lastSet = ex.sets[ex.sets.length - 1]
+          const newSet: WorkoutSet = {
+            id: Date.now().toString() + newSetNumber,
+            setNumber: newSetNumber,
+            value1Type: lastSet.value1Type,
+            value1: lastSet.value1,
+            value2Type: lastSet.value2Type,
+            value2: lastSet.value2,
+            notes: ''
+          }
+          
+          return {
+            ...ex,
+            sets: [...ex.sets, newSet]
+          }
+        } else {
+          // If no existing sets, use defaults
+          const newSet = ex.default_value_1_type && ex.default_value_2_type
+            ? createNewSetWithDefaults(newSetNumber, ex.default_value_1_type, ex.default_value_2_type)
+            : createNewSet(newSetNumber)
+          
+          return {
+            ...ex,
+            sets: [...ex.sets, newSet]
+          }
+        }
+      }
+      return ex
+    }))
+  }
+
+  const removeSetFromExercise = (exerciseId: string, setId: string) => {
+    setExercises(exercises.map(ex => {
+      if (ex.id === exerciseId) {
+        const filteredSets = ex.sets.filter(set => set.id !== setId)
+        // If this would remove the last set, don't allow it
+        if (filteredSets.length === 0) {
+          return ex
+        }
+        // Renumber the remaining sets
+        const renumberedSets = filteredSets.map((set, index) => ({
+          ...set,
+          setNumber: index + 1
+        }))
+        return {
+          ...ex,
+          sets: renumberedSets
+        }
+      }
+      return ex
+    }))
+  }
+
+  const onValueTypeChange = (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => {
+    setExercises(prevExercises => {
+      const newExercises = [...prevExercises]
+      const exerciseIndex = newExercises.findIndex(ex => ex.id === exerciseId)
+      
+      if (exerciseIndex === -1) {
+        return prevExercises
+      }
+
+      const exercise = newExercises[exerciseIndex]
+      const setIndex = exercise.sets.findIndex(set => set.id === setId)
+      
+      if (setIndex === -1) {
+        return prevExercises
+      }
+
+      const newSets = [...exercise.sets]
+      newSets[setIndex] = {
+        ...newSets[setIndex],
+        [field]: type
+      }
+
+      newExercises[exerciseIndex] = {
+        ...exercise,
+        sets: newSets
+      }
+
+      return newExercises
+    })
+
+    // Close the dropdown
+    setActiveDropdown(null)
+  }
+
+  const updateSet = (exerciseId: string, setId: string, field: 'value1' | 'value2' | 'notes', value: number | string) => {
+    setExercises(exercises.map(ex => {
+      if (ex.id === exerciseId) {
+        return {
+          ...ex,
+          sets: ex.sets.map(set => 
+            set.id === setId 
+              ? { ...set, [field]: value }
+              : set
+          )
+        }
+      }
+      return ex
+    }))
+  }
+
+  const removeExercise = (exerciseId: string) => {
+    setExercises(exercises.filter(ex => ex.id !== exerciseId))
+  }
+
+  const handleUpdateWorkout = async () => {
+    if (!user || !token) return
+
+    try {
+      const workoutData = {
+        name: workoutName,
+        category: workoutName,
+        notes,
+        exercises: exercises.map(ex => ({
+          exercise_id: ex.exercise_id || ex.id,
+          notes: ex.notes,
+          sets: ex.sets.map(set => ({
+            set_id: set.id,
+            set_index: set.setNumber,
+            value_1_type: set.value1Type,
+            value_1_numeric: set.value1,
+            value_2_type: set.value2Type,
+            value_2_numeric: set.value2,
+            notes: set.notes
+          }))
+        })),
+        training_load: trainingLoad,
+        perceived_exertion: perceivedExertion,
+      }
+
+      const response = await fetch(`/api/sessions/${sessionId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(workoutData),
+      })
+
+      if (response.ok) {
+        const savedWorkout = await response.json()
+        router.push(`/training/view/${sessionId}`)
+      } else {
+        const error = await response.json()
+        alert(`Failed to update workout: ${error.message || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error('Error updating workout:', error)
+      alert('Failed to update workout. Please try again.')
+    }
+  }
+
+  const addExerciseFromTemplate = (template: ExerciseTemplate) => {
+    const newExercise: Exercise = {
+      id: Date.now().toString(),
+      name: template.name,
+      notes: '',
+      exercise_id: template.template_id,
+      muscle_groups: template.muscle_groups,
+      equipment: template.equipment,
+      exercise_category: template.exercise_category,
+      exercise_type: template.exercise_type,
+      default_value_1_type: template.default_value_1_type,
+      default_value_2_type: template.default_value_2_type,
+      sets: [createNewSetWithDefaults(1, template.default_value_1_type, template.default_value_2_type)],
+    }
+    
+    setExercises([...exercises, newExercise])
+    setShowExerciseModal(false)
+  }
+
+  if (loadingSession) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Loading workout...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const filteredTemplates = templates.filter(template => {
+    if (!searchQuery) return true
+    return template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           template.muscle_groups.some(group => group.toLowerCase().includes(searchQuery.toLowerCase())) ||
+           template.equipment.toLowerCase().includes(searchQuery.toLowerCase())
+  })
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-md mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={() => router.back()}
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Workout</h1>
+            <button
+              onClick={handleUpdateWorkout}
+              disabled={loading}
+              className="bg-lime-400 text-black px-4 py-2 rounded-lg hover:bg-lime-500 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Updating...' : 'Save'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-md mx-auto px-4 py-6 space-y-6">        
+        {/* Workout Info */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="space-y-4">
+            {/* Workout Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Workout Name
+              </label>
+              <input
+                type="text"
+                value={workoutName}
+                onChange={(e) => setWorkoutName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                placeholder="Enter workout name"
+              />
+            </div>
+
+            {/* Activity Type Toggle */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Activity Type
+              </label>
+              <div className="flex gap-2">
+                {['Strength', 'Cardio'].map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => setActivityType(type.toLowerCase() as 'strength' | 'cardio')}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                      activityType === type.toLowerCase()
+                        ? 'bg-lime-400 text-black'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {type === 'Strength' ? '💪 Strength' : '🏃 Cardio'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Notes
+              </label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none"
+                placeholder="Add workout notes..."
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Training Load */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600 dark:text-gray-300 text-lg">Training Load</span>
+              <div className="w-5 h-5 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                <span className="text-xs text-gray-600 dark:text-gray-300">i</span>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-lime-400 text-xs">{trainingLoad}/10</div>
+            </div>
+          </div>
+
+          {/* Slider */}
+          <div className="relative">
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={trainingLoad}
+              onChange={(e) => setTrainingLoad(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider-blue"
+              style={{
+                backgroundImage: `linear-gradient(to right, #84cc16 0%, #84cc16 ${(trainingLoad - 1) * 11.11}%, #d1d5db ${(trainingLoad - 1) * 11.11}%, #d1d5db 100%)`
+              }}
+            />
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+              <span>Low</span>
+              <span>High</span>
+            </div>
+          </div>
+        </div>
+
+        {/* How was your workout - Perceived Exertion */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600 dark:text-gray-300 text-lg">How was your workout?</span>
+              <div className="w-5 h-5 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                <span className="text-xs text-gray-600 dark:text-gray-300">i</span>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-lime-400 text-xs">
+                {PERCEIVED_EXERTION_LABELS[perceivedExertion - 1]?.label}
+              </div>
+              <div className="text-lime-400 text-xs">{perceivedExertion}/10</div>
+            </div>
+          </div>
+
+          {/* Slider */}
+          <div className="relative">
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={perceivedExertion}
+              onChange={(e) => setPerceivedExertion(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider-lime"
+              style={{
+                backgroundImage: `linear-gradient(to right, #84cc16 0%, #84cc16 ${(perceivedExertion - 1) * 11.11}%, #d1d5db ${(perceivedExertion - 1) * 11.11}%, #d1d5db 100%)`
+              }}
+            />
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+              <span>Resting</span>
+              <span>Max Effort</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Exercises */}
+        <div className="space-y-4">
+          {exercises.map((exercise) => (
+            <ExerciseCard
+              key={exercise.id}
+              exercise={exercise}
+              onAddSet={() => addSetToExercise(exercise.id)}
+              onRemoveSet={(setId) => removeSetFromExercise(exercise.id, setId)}
+              onUpdateSet={(setId, field, value) => updateSet(exercise.id, setId, field, value)}
+              onRemoveExercise={() => removeExercise(exercise.id)}
+              onValueTypeChange={onValueTypeChange}
+              activeDropdown={activeDropdown}
+              setActiveDropdown={setActiveDropdown}
+            />
+          ))}
+        </div>
+
+        {/* Add Exercise Button */}
+        <button
+          onClick={() => setShowExerciseModal(true)}
+          className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 transition-colors"
+        >
+          + Add Exercise
+        </button>
+
+        {/* Action Buttons */}
+        <div className="flex gap-3 pt-4">
+          <button
+            onClick={() => router.push(`/training/view/${sessionId}`)}
+            className="flex-1 py-3 px-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleUpdateWorkout}
+            disabled={exercises.length === 0}
+            className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Update Workout
+          </button>
+        </div>
+      </div>
+
+      {/* Exercise Selection Modal */}
+      {showExerciseModal && (
+        <ExerciseModal
+          templates={templates}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedType={selectedType}
+          setSelectedType={setSelectedType}
+          onAddExercise={addExerciseFromTemplate}
+          onClose={() => setShowExerciseModal(false)}
+          loading={loading}
+        />
+      )}
+    </div>
+  )
+}
+
+// Exercise Card Component
+function ExerciseCard({ 
+  exercise, 
+  onAddSet, 
+  onRemoveSet, 
+  onUpdateSet, 
+  onRemoveExercise,
+  onValueTypeChange,
+  activeDropdown,
+  setActiveDropdown
+}: {
+  exercise: Exercise
+  onAddSet: () => void
+  onRemoveSet: (setId: string) => void
+  onUpdateSet: (setId: string, field: 'value1' | 'value2' | 'notes', value: number | string) => void
+  onRemoveExercise: () => void
+  onValueTypeChange: (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => void
+  activeDropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null
+  setActiveDropdown: (dropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null) => void
+}) {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+      {/* Exercise Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{exercise.name}</h3>
+          {exercise.muscle_groups && exercise.muscle_groups.length > 0 && (
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {exercise.muscle_groups.join(', ')}
+            </p>
+          )}
+        </div>
+        <button
+          onClick={onRemoveExercise}
+          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Sets */}
+      <div className="space-y-2">
+        {exercise.sets.map((set, index) => (
+          <SetRow
+            key={set.id}
+            set={set}
+            exerciseId={exercise.id}
+            onUpdateSet={onUpdateSet}
+            onRemoveSet={onRemoveSet}
+            isOnlySet={exercise.sets.length === 1}
+            onValueTypeChange={onValueTypeChange}
+            activeDropdown={activeDropdown}
+            setActiveDropdown={setActiveDropdown}
+          />
+        ))}
+      </div>
+
+      {/* Add Set Button */}
+      <button
+        onClick={onAddSet}
+        className="w-full mt-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+      >
+        + Add Set
+      </button>
+    </div>
+  )
+}
+
+// Set Row Component
+function SetRow({ 
+  set, 
+  exerciseId,
+  onUpdateSet, 
+  onRemoveSet, 
+  isOnlySet,
+  onValueTypeChange,
+  activeDropdown,
+  setActiveDropdown
+}: {
+  set: WorkoutSet
+  exerciseId: string
+  onUpdateSet: (setId: string, field: 'value1' | 'value2' | 'notes', value: number | string) => void
+  onRemoveSet: (setId: string) => void
+  isOnlySet: boolean
+  onValueTypeChange: (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => void
+  activeDropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null
+  setActiveDropdown: (dropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null) => void
+}) {
+  return (
+    <div className="grid grid-cols-4 gap-4 items-center relative px-2">
+      <div className="text-center min-w-[40px]">
+        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">SET</div>
+        <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          {set.setNumber}
+        </div>
+      </div>
+
+      {/* Value 1 */}
+      <div className="relative">
+        <button
+          onClick={() => {
+            setActiveDropdown(
+              activeDropdown?.exerciseId === exerciseId && 
+              activeDropdown?.setId === set.id && 
+              activeDropdown?.field === 'value1' 
+                ? null 
+                : {exerciseId, setId: set.id, field: 'value1'}
+            )
+          }}
+          className="dropdown-trigger w-full text-xs text-gray-500 dark:text-gray-400 mb-1 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+        >
+          {VALUE_TYPES.find(t => t.value === set.value1Type)?.unit || 'KGS'} ▼
+        </button>
+        <input
+          type="number"
+          value={set.value1 || ''}
+          onChange={(e) => onUpdateSet(set.id, 'value1', parseFloat(e.target.value) || 0)}
+          className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+          placeholder="0"
+        />
+
+        {/* Value 1 Dropdown */}
+        {activeDropdown?.exerciseId === exerciseId && 
+         activeDropdown?.setId === set.id && 
+         activeDropdown?.field === 'value1' && (
+          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+            {VALUE_TYPES.map((type) => (
+              <div
+                key={type.value}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onValueTypeChange(exerciseId, set.id, 'value1Type', type.value)
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
+                  set.value1Type === type.value ? 'bg-gray-100 dark:bg-gray-700 text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
+                }`}
+              >
+                {type.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Value 2 */}
+      <div className="relative">
+        <button
+          onClick={() => {
+            setActiveDropdown(
+              activeDropdown?.exerciseId === exerciseId && 
+              activeDropdown?.setId === set.id && 
+              activeDropdown?.field === 'value2' 
+                ? null 
+                : {exerciseId, setId: set.id, field: 'value2'}
+            )
+          }}
+          className="dropdown-trigger w-full text-xs text-gray-500 dark:text-gray-400 mb-1 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+        >
+          {VALUE_TYPES.find(t => t.value === set.value2Type)?.unit || 'REPS'} ▼
+        </button>
+        <input
+          type="number"
+          value={set.value2 || ''}
+          onChange={(e) => onUpdateSet(set.id, 'value2', parseFloat(e.target.value) || 0)}
+          className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+          placeholder="0"
+        />
+
+        {/* Value 2 Dropdown */}
+        {activeDropdown?.exerciseId === exerciseId && 
+         activeDropdown?.setId === set.id && 
+         activeDropdown?.field === 'value2' && (
+          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+            {VALUE_TYPES.map((type) => (
+              <div
+                key={type.value}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onValueTypeChange(exerciseId, set.id, 'value2Type', type.value)
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
+                  set.value2Type === type.value ? 'bg-gray-100 dark:bg-gray-700 text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
+                }`}
+              >
+                {type.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Delete Button */}
+      <div className="text-center">
+        {!isOnlySet && (
+          <button
+            onClick={() => onRemoveSet(set.id)}
+            className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Exercise Modal Component
+function ExerciseModal({
+  templates,
+  searchQuery,
+  setSearchQuery,
+  selectedCategory,
+  setSelectedCategory,
+  selectedType,
+  setSelectedType,
+  onAddExercise,
+  onClose,
+  loading
+}: {
+  templates: ExerciseTemplate[]
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+  selectedCategory: string
+  setSelectedCategory: (category: string) => void
+  selectedType: string
+  setSelectedType: (type: string) => void
+  onAddExercise: (template: ExerciseTemplate) => void
+  onClose: () => void
+  loading: boolean
+}) {
+  // Filter templates based on search, category, and type
+  const filteredTemplates = templates.filter(template => {
+    const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesCategory = selectedCategory === 'all' || template.exercise_category === selectedCategory
+    const matchesType = selectedType === 'all' || template.exercise_type === selectedType
+    return matchesSearch && matchesCategory && matchesType
+  })
+
+  const categories = ['all', 'strength', 'cardio', 'flexibility', 'sports']
+  const types = ['all', 'STRENGTH', 'CARDIO']
+
+  // Get counts for each type
+  const strengthCount = templates.filter(t => t.exercise_type === 'STRENGTH').length
+  const cardioCount = templates.filter(t => t.exercise_type === 'CARDIO').length
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Exercise</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <input
+            type="text"
+            placeholder="Search exercises..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          />
+        </div>
+
+        {/* Exercise Type Filter */}
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Exercise Type</h4>
+          <div className="flex gap-2">
+            {types.map(type => (
+              <button
+                key={type}
+                onClick={() => setSelectedType(type)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  selectedType === type
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {type === 'all' ? `All (${templates.length})` : 
+                 type === 'STRENGTH' ? `💪 Strength (${strengthCount})` : 
+                 `🏃 Cardio (${cardioCount})`}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Category Filter */}
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</h4>
+          <div className="flex gap-2 flex-wrap">
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-3 py-1 rounded-full text-sm capitalize transition-colors ${
+                  selectedCategory === category
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Exercise List */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+              {searchQuery ? 'SEARCH RESULTS' : 
+               selectedType !== 'all' ? `${selectedType} EXERCISES` : 
+               'EXERCISE LIBRARY'} ({filteredTemplates.length})
+            </h3>
+            <div className="space-y-1">
+              {filteredTemplates.map((template) => (
+                <button
+                  key={template.template_id}
+                  onClick={() => onAddExercise(template)}
+                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="text-gray-900 dark:text-gray-100">{template.name}</div>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      template.exercise_type === 'STRENGTH' 
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
+                        : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                    }`}>
+                      {template.exercise_type === 'STRENGTH' ? '💪 STR' : '🏃 CAR'}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {template.muscle_groups.join(', ')} • {template.exercise_category}
+                    {template.equipment && ` • ${template.equipment}`}
+                  </div>
+                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    Default: {template.default_value_1_type}{template.default_value_2_type && ` + ${template.default_value_2_type}`}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* No Results */}
+          {searchQuery && filteredTemplates.length === 0 && (
+            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+              <p>No exercises found for "{searchQuery}"</p>
+              <button
+                onClick={() => onAddExercise({ name: searchQuery } as ExerciseTemplate)}
+                className="mt-2 text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300"
+              >
+                Create "{searchQuery}" as custom exercise
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
