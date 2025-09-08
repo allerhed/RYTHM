@@ -73,9 +73,9 @@ export default function NewWorkoutPage() {
 
   const fetchExerciseTemplates = async () => {
     try {
-      const response = await fetch('/api/exercises/templates', {
+      const response = await fetch('http://localhost:3001/api/exercises/templates', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
         }
       })
       if (response.ok) {
@@ -274,18 +274,56 @@ export default function NewWorkoutPage() {
 
   const handleSaveWorkout = async () => {
     try {
-      // Save workout logic here
-      console.log('Saving workout:', {
-        name: workoutName,
-        type: activityType,
-        date: workoutDate,
-        duration,
-        notes,
-        exercises
+      if (!user) {
+        console.error('User not authenticated')
+        return
+      }
+
+      // Convert duration string (HH:MM:SS) to seconds
+      const durationParts = duration.split(':').map(part => parseInt(part))
+      const durationSeconds = durationParts[0] * 3600 + durationParts[1] * 60 + durationParts[2]
+
+      // Prepare workout data for API (matching the actual database schema)
+      const workoutData = {
+        category: activityType,
+        notes: notes,
+        exercises: exercises.map(exercise => ({
+          name: exercise.name,
+          notes: exercise.notes,
+          sets: exercise.sets.map(set => ({
+            setNumber: set.setNumber,
+            value1Type: set.value1Type,
+            value1: set.value1?.toString() || "0",
+            value2Type: set.value2Type,
+            value2: set.value2?.toString() || "0",
+            notes: set.notes
+          }))
+        }))
+      }
+
+      console.log('Saving workout:', workoutData)
+
+      const response = await fetch('http://localhost:3001/api/sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+        },
+        body: JSON.stringify(workoutData)
       })
-      router.push('/dashboard')
+
+      if (response.ok) {
+        const savedWorkout = await response.json()
+        console.log('Workout saved successfully:', savedWorkout)
+        router.push('/dashboard')
+      } else {
+        const error = await response.json()
+        console.error('Failed to save workout:', error)
+        alert('Failed to save workout. Please try again.')
+      }
     } catch (error) {
       console.error('Error saving workout:', error)
+      alert('Error saving workout. Please try again.')
     }
   }
 
