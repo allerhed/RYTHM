@@ -225,7 +225,11 @@ function DashboardPage() {
                   <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Training Score:</span>
                   <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">Grinding</span>
                 </div>
-                <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <button 
+                  onClick={() => router.push('/analytics')}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  title="View Analytics"
+                >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>

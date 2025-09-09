@@ -12,11 +12,12 @@ export const trpc = createTRPCReact<AppRouter>()
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') {
-    // Client-side: use the API server port
+    // Client-side: use the external API server port
     return 'http://localhost:3001'
   }
+  // Server-side: use internal Docker network
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-  return `http://localhost:3001` // Use API server port
+  return `http://api:3001` // Use Docker service name
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -33,30 +34,34 @@ export function Providers({ children }: { children: React.ReactNode }) {
     },
   }))
 
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
+  const [trpcClient] = useState(() => {
+    const baseUrl = getBaseUrl()
+    console.log('tRPC Client Configuration:', { baseUrl })
+    
+    return trpc.createClient({
       links: [
         httpBatchLink({
-          url: `${getBaseUrl()}/api/trpc`,
+          url: `${baseUrl}/api/trpc`,
           headers() {
             const token = typeof window !== 'undefined' 
               ? localStorage.getItem('auth-token') 
               : null
             
+            console.log('tRPC Request Headers:', { hasToken: !!token, token: token ? `${token.substring(0, 20)}...` : null })
             return token ? { authorization: `Bearer ${token}` } : {}
           },
         }),
       ],
     })
-  )
+  })
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+    <AuthProvider>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
           {children}
-        </AuthProvider>
-      </QueryClientProvider>
-    </trpc.Provider>
+        </QueryClientProvider>
+      </trpc.Provider>
+    </AuthProvider>
   )
 }
