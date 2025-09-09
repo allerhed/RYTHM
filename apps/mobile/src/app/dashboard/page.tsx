@@ -316,7 +316,7 @@ function DashboardPage() {
               {/* Today's Workouts Section */}
               <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 text-center">
-                  {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                  {new Date().toLocaleDateString('sv-SE', { weekday: 'long', month: 'short', day: 'numeric' })}
                 </h3>
                 
                 {loading ? (

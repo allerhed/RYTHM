@@ -71,8 +71,8 @@ export default function NewWorkoutPage() {
   const [workoutDate, setWorkoutDate] = useState(new Date())
   const [duration, setDuration] = useState('1:00:00')
   const [notes, setNotes] = useState('')
-  const [trainingLoad, setTrainingLoad] = useState<number | null>(null)
-  const [perceivedExertion, setPerceivedExertion] = useState<number>(4)
+  const [trainingLoad, setTrainingLoad] = useState<number | null>(1)
+  const [perceivedExertion, setPerceivedExertion] = useState<number>(1)
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [exerciseTemplates, setExerciseTemplates] = useState<ExerciseTemplate[]>([])
   const [showExerciseModal, setShowExerciseModal] = useState(false)
@@ -492,7 +492,7 @@ export default function NewWorkoutPage() {
                   onClick={() => setShowDatePicker(true)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-left bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
-                  {workoutDate.toLocaleDateString()}
+                  {workoutDate.toLocaleDateString('sv-SE')}
                 </button>
               </div>
               <div>
