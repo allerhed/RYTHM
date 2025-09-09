@@ -65,7 +65,7 @@ const PERCEIVED_EXERTION_LABELS = [
 
 export default function NewWorkoutPage() {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, token } = useAuth()
   const [workoutName, setWorkoutName] = useState('Hybrid')
   const [activityType, setActivityType] = useState<'strength' | 'cardio' | 'hybrid'>('strength')
   const [workoutDate, setWorkoutDate] = useState(new Date())
@@ -128,7 +128,7 @@ export default function NewWorkoutPage() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
           },
           body: JSON.stringify({ customizations: {} })
         })
@@ -357,8 +357,9 @@ export default function NewWorkoutPage() {
 
   const handleSaveWorkout = async () => {
     try {
-      if (!user) {
+      if (!user || !token) {
         console.error('User not authenticated')
+        alert('Please log in again to save workouts')
         return
       }
 
@@ -368,6 +369,7 @@ export default function NewWorkoutPage() {
 
       // Prepare workout data for API (matching the actual database schema)
       const workoutData = {
+        name: workoutName,
         category: activityType,
         notes: notes,
         training_load: trainingLoad,
@@ -392,7 +394,7 @@ export default function NewWorkoutPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+          'Authorization': `Bearer ${token || localStorage.getItem('auth-token')}`
         },
         body: JSON.stringify(workoutData)
       })
@@ -400,6 +402,30 @@ export default function NewWorkoutPage() {
       if (response.ok) {
         const savedWorkout = await response.json()
         console.log('Workout saved successfully:', savedWorkout)
+        
+        // Check if the name was saved - if not, try to update it using PUT
+        const sessionId = savedWorkout.session?.session_id || savedWorkout.session?.id
+        if (sessionId && workoutName && workoutName.trim() !== '') {
+          try {
+            const updateResponse = await fetch(`http://localhost:3001/api/sessions/${sessionId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token || localStorage.getItem('auth-token')}`
+              },
+              body: JSON.stringify({ name: workoutName.trim() })
+            })
+            
+            if (updateResponse.ok) {
+              console.log('Workout name updated successfully')
+            } else {
+              console.warn('Failed to update workout name, but workout was saved')
+            }
+          } catch (updateError) {
+            console.warn('Failed to update workout name, but workout was saved:', updateError)
+          }
+        }
+        
         router.push('/dashboard')
       } else {
         const error = await response.json()

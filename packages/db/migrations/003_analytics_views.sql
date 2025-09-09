@@ -102,7 +102,7 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 -- Create view for personal records
 CREATE VIEW personal_records AS
 WITH weight_prs AS (
-    SELECT DISTINCT ON (s.tenant_id, s.user_id, st.exercise_id, 'weight')
+    SELECT DISTINCT ON (s.tenant_id, s.user_id, st.exercise_id)
         s.tenant_id,
         s.user_id,
         st.exercise_id,
@@ -118,14 +118,14 @@ WITH weight_prs AS (
     JOIN exercises e ON st.exercise_id = e.exercise_id
     WHERE (st.value_1_type = 'weight_kg' OR st.value_2_type = 'weight_kg')
         AND s.completed_at IS NOT NULL
-    ORDER BY s.tenant_id, s.user_id, st.exercise_id, 'weight', 
+    ORDER BY s.tenant_id, s.user_id, st.exercise_id, 
              GREATEST(
                  CASE WHEN st.value_1_type = 'weight_kg' THEN st.value_1_numeric ELSE 0 END,
                  CASE WHEN st.value_2_type = 'weight_kg' THEN st.value_2_numeric ELSE 0 END
              ) DESC, s.started_at DESC
 ),
 one_rm_prs AS (
-    SELECT DISTINCT ON (s.tenant_id, s.user_id, st.exercise_id, '1rm_estimate')
+    SELECT DISTINCT ON (s.tenant_id, s.user_id, st.exercise_id)
         s.tenant_id,
         s.user_id,
         st.exercise_id,
@@ -145,7 +145,7 @@ one_rm_prs AS (
     WHERE (st.value_1_type = 'weight_kg' OR st.value_2_type = 'weight_kg')
         AND st.reps IS NOT NULL
         AND s.completed_at IS NOT NULL
-    ORDER BY s.tenant_id, s.user_id, st.exercise_id, '1rm_estimate',
+    ORDER BY s.tenant_id, s.user_id, st.exercise_id,
              calculate_one_rm(
                  GREATEST(
                      CASE WHEN st.value_1_type = 'weight_kg' THEN st.value_1_numeric ELSE 0 END,

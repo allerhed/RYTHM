@@ -8,6 +8,7 @@ import { appRouter } from './router';
 import { createContext } from './trpc';
 import { db } from '@rythm/db';
 import exerciseRoutes from './routes/exercises';
+import sessionsRoutes from './routes/sessions-rest';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -199,6 +200,9 @@ app.post('/api/auth/login', async (req, res) => {
 
 // Exercise API routes
 app.use('/api/exercises', exerciseRoutes);
+
+// Session API routes
+app.use('/api/sessions', sessionsRoutes);
 
 // tRPC API routes
 app.use('/api/trpc', createExpressMiddleware({

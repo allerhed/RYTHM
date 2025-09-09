@@ -346,8 +346,9 @@ function DashboardPage() {
                             </div>
                             <div>
                               <h4 className="text-lg font-semibold text-white">
-                                {workout.category === 'strength' ? 'Strength Training' : 
-                                 workout.category === 'cardio' ? 'Cardio Workout' : 'Training Session'}
+                                {workout.name || 
+                                 (workout.category === 'strength' ? 'Strength Training' : 
+                                  workout.category === 'cardio' ? 'Cardio Workout' : 'Training Session')}
                               </h4>
                               <p className="text-white/80 text-sm capitalize">
                                 {workout.category} • {workout.exercises?.length || 0} exercises

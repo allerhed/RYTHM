@@ -45,7 +45,8 @@ interface WorkoutSet {
 interface WorkoutSession {
   id: string
   session_id: string
-  category: string
+  name?: string
+  category: 'strength' | 'cardio' | 'hybrid'
   notes: string
   started_at: string
   completed_at: string | null
@@ -106,6 +107,7 @@ export default function EditWorkoutPage() {
   // Loading states
   const [loading, setLoading] = useState(true)
   const [loadingSession, setLoadingSession] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   // Form states
@@ -161,7 +163,8 @@ export default function EditWorkoutPage() {
         const session: WorkoutSession = data.session
 
         // Convert session data to form format
-        setWorkoutName(session.category || 'Workout')
+        setWorkoutName(session.name || 'Workout')
+        setActivityType(session.category || 'strength')
         setNotes(session.notes || '')
         setTrainingLoad(session.training_load || 5)
         setPerceivedExertion(session.perceived_exertion || 4)
@@ -379,10 +382,11 @@ export default function EditWorkoutPage() {
   const handleUpdateWorkout = async () => {
     if (!user || !token) return
 
+    setSaving(true)
     try {
       const workoutData = {
         name: workoutName,
-        category: workoutName,
+        category: activityType, // Use the enum value (strength/cardio/hybrid)
         notes,
         exercises: exercises.map(ex => ({
           exercise_id: ex.exercise_id || ex.id,
@@ -401,7 +405,7 @@ export default function EditWorkoutPage() {
         perceived_exertion: perceivedExertion,
       }
 
-      const response = await fetch(`/api/sessions/${sessionId}`, {
+      const response = await fetch(`http://localhost:3001/api/sessions/${sessionId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -420,6 +424,8 @@ export default function EditWorkoutPage() {
     } catch (error) {
       console.error('Error updating workout:', error)
       alert('Failed to update workout. Please try again.')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -653,10 +659,17 @@ export default function EditWorkoutPage() {
           </button>
           <button
             onClick={handleUpdateWorkout}
-            disabled={exercises.length === 0}
-            className="flex-1 py-3 px-4 bg-lime-400 text-black rounded-lg hover:bg-lime-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            disabled={exercises.length === 0 || saving}
+            className="flex-1 py-3 px-4 bg-lime-400 text-black rounded-lg hover:bg-lime-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
           >
-            Update Workout
+            {saving ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
+                Saving...
+              </>
+            ) : (
+              'Update Workout'
+            )}
           </button>
         </div>
       </div>

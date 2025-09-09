@@ -736,6 +736,110 @@ app.get('/api/sessions/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Update session by ID
+app.put('/api/sessions/:id', authenticateToken, async (req, res) => {
+  console.log('Session update request for session:', req.params.id);
+  
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+    const tenantId = req.user.tenantId;
+    const { name, category, notes, exercises, training_load, perceived_exertion } = req.body;
+
+    // Verify session ownership
+    const sessionCheck = await pool.query(
+      'SELECT session_id FROM sessions WHERE session_id = $1 AND user_id = $2 AND tenant_id = $3',
+      [id, userId, tenantId]
+    );
+
+    if (sessionCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Session not found or access denied' });
+    }
+
+    // Start transaction
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Update session
+      const sessionResult = await client.query(
+        `UPDATE sessions 
+         SET category = COALESCE($1, category),
+             notes = COALESCE($2, notes),
+             training_load = $3,
+             perceived_exertion = $4,
+             updated_at = NOW()
+         WHERE session_id = $5 AND user_id = $6 AND tenant_id = $7
+         RETURNING *`,
+        [category || name, notes, training_load, perceived_exertion, id, userId, tenantId]
+      );
+
+      // Delete existing sets for this session
+      await client.query('DELETE FROM sets WHERE session_id = $1 AND tenant_id = $2', [id, tenantId]);
+
+      // Process exercises and sets if provided
+      if (exercises && exercises.length > 0) {
+        for (const exercise of exercises) {
+          // Find or create exercise
+          let exerciseId = exercise.exercise_id;
+          
+          if (!exerciseId) {
+            // Create new exercise if not found
+            const exerciseResult = await client.query(
+              `INSERT INTO exercises (tenant_id, name, notes)
+               VALUES ($1, $2, $3) 
+               RETURNING exercise_id`,
+              [tenantId, exercise.name || 'Custom Exercise', exercise.notes || '']
+            );
+            exerciseId = exerciseResult.rows[0].exercise_id;
+          }
+
+          // Add sets for this exercise
+          if (exercise.sets && exercise.sets.length > 0) {
+            for (let i = 0; i < exercise.sets.length; i++) {
+              const set = exercise.sets[i];
+              await client.query(
+                `INSERT INTO sets (tenant_id, session_id, exercise_id, set_index, 
+                                   value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                [
+                  tenantId,
+                  id,
+                  exerciseId,
+                  set.set_index || i + 1,
+                  set.value_1_type,
+                  set.value_1_numeric,
+                  set.value_2_type,
+                  set.value_2_numeric,
+                  set.notes
+                ]
+              );
+            }
+          }
+        }
+      }
+
+      await client.query('COMMIT');
+      console.log('Session update completed successfully');
+
+      res.json({
+        message: 'Session updated successfully',
+        session: sessionResult.rows[0]
+      });
+
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+
+  } catch (error) {
+    console.error('Session update error:', error);
+    res.status(500).json({ error: 'Failed to update session', details: error.message });
+  }
+});
+
 // Get exercise templates by type (STRENGTH or CARDIO)
 app.get('/api/exercises/templates/by-type/:type', async (req, res) => {
   const { type } = req.params;

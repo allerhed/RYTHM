@@ -41,10 +41,11 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 apiuser
 
-# Copy built application
+# Copy built application and maintain workspace structure
 COPY --from=builder --chown=apiuser:nodejs /app/apps/api/dist ./dist
-COPY --from=builder --chown=apiuser:nodejs /app/packages/shared/dist ./packages/shared/dist
-COPY --from=builder --chown=apiuser:nodejs /app/packages/db/dist ./packages/db/dist
+COPY --from=builder --chown=apiuser:nodejs /app/apps/api/package.json ./package.json
+COPY --from=builder --chown=apiuser:nodejs /app/packages/shared ./packages/shared
+COPY --from=builder --chown=apiuser:nodejs /app/packages/db ./packages/db
 COPY --from=deps --chown=apiuser:nodejs /app/node_modules ./node_modules
 
 USER apiuser
