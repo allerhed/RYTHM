@@ -529,8 +529,15 @@ app.post('/api/sessions', authenticateToken, async (req, res) => {
           if (exerciseResult.rows.length === 0) {
             // Create new exercise in the library
             exerciseResult = await client.query(
-              'INSERT INTO exercises (tenant_id, name, muscle_groups, equipment, notes) VALUES ($1, $2, $3, $4, $5) RETURNING exercise_id',
-              [req.user.tenantId, exercise.name, [], '', exercise.notes || '']
+              'INSERT INTO exercises (tenant_id, name, muscle_groups, equipment, exercise_category, notes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING exercise_id',
+              [
+                req.user.tenantId, 
+                exercise.name, 
+                exercise.muscle_groups || [], 
+                exercise.equipment || '', 
+                exercise.exercise_category || 'strength',
+                exercise.notes || ''
+              ]
             );
             exerciseId = exerciseResult.rows[0].exercise_id;
           } else {
@@ -550,11 +557,11 @@ app.post('/api/sessions', authenticateToken, async (req, res) => {
                   req.user.tenantId,
                   session.session_id,
                   exerciseId,
-                  i + 1, // set_index starts from 1 (check constraint: set_index > 0)
-                  set.value1Type || null,
-                  parseFloat(set.value1) || 0,
-                  set.value2Type || null,
-                  parseFloat(set.value2) || 0,
+                  set.set_index || i + 1, // Use provided set_index or default to i + 1
+                  set.value1Type || set.value_1_type || null,
+                  parseFloat(set.value1 || set.value_1_numeric) || 0,
+                  set.value2Type || set.value_2_type || null,
+                  parseFloat(set.value2 || set.value_2_numeric) || 0,
                   set.notes || null
                 ]
               );
@@ -786,10 +793,17 @@ app.put('/api/sessions/:id', authenticateToken, async (req, res) => {
           if (!exerciseId) {
             // Create new exercise if not found
             const exerciseResult = await client.query(
-              `INSERT INTO exercises (tenant_id, name, notes)
-               VALUES ($1, $2, $3) 
+              `INSERT INTO exercises (tenant_id, name, muscle_groups, equipment, exercise_category, notes)
+               VALUES ($1, $2, $3, $4, $5, $6) 
                RETURNING exercise_id`,
-              [tenantId, exercise.name || 'Custom Exercise', exercise.notes || '']
+              [
+                tenantId, 
+                exercise.name || 'Custom Exercise', 
+                exercise.muscle_groups || [],
+                exercise.equipment || '',
+                exercise.exercise_category || 'strength',
+                exercise.notes || ''
+              ]
             );
             exerciseId = exerciseResult.rows[0].exercise_id;
           }
@@ -807,11 +821,11 @@ app.put('/api/sessions/:id', authenticateToken, async (req, res) => {
                   id,
                   exerciseId,
                   set.set_index || i + 1,
-                  set.value_1_type,
-                  set.value_1_numeric,
-                  set.value_2_type,
-                  set.value_2_numeric,
-                  set.notes
+                  set.value_1_type || set.value1Type || null,
+                  parseFloat(set.value_1_numeric || set.value1) || 0,
+                  set.value_2_type || set.value2Type || null,
+                  parseFloat(set.value_2_numeric || set.value2) || 0,
+                  set.notes || null
                 ]
               );
             }

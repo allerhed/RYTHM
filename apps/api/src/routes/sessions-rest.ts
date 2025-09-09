@@ -265,11 +265,11 @@ router.put('/:id', authenticateToken, async (req, res) => {
                   id,
                   exerciseId,
                   set.set_index || i + 1,
-                  set.value_1_type,
-                  set.value_1_numeric,
-                  set.value_2_type,
-                  set.value_2_numeric,
-                  set.notes
+                  set.value_1_type || (set as any).value1Type || null,
+                  parseFloat(set.value_1_numeric || (set as any).value1) || 0,
+                  set.value_2_type || (set as any).value2Type || null,
+                  parseFloat(set.value_2_numeric || (set as any).value2) || 0,
+                  set.notes || null
                 ]
               )
             }
@@ -334,10 +334,17 @@ router.post('/', authenticateToken, async (req, res) => {
           if (!exerciseId) {
             // Create new exercise if not found
             const exerciseResult = await client.query(
-              `INSERT INTO exercises (tenant_id, name, notes)
-               VALUES ($1, $2, $3) 
+              `INSERT INTO exercises (tenant_id, name, muscle_groups, equipment, exercise_category, notes)
+               VALUES ($1, $2, $3, $4, $5, $6) 
                RETURNING exercise_id`,
-              [tenantId, exercise.name || 'Custom Exercise', exercise.notes || '']
+              [
+                tenantId, 
+                exercise.name || 'Custom Exercise', 
+                exercise.muscle_groups || [],
+                exercise.equipment || '',
+                exercise.exercise_category || 'strength',
+                exercise.notes || ''
+              ]
             )
             exerciseId = exerciseResult.rows[0].exercise_id
           }
@@ -351,9 +358,12 @@ router.post('/', authenticateToken, async (req, res) => {
                  value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
                 [
-                  tenantId, sessionId, exerciseId, set.setNumber || i + 1,
-                  set.value1Type, parseFloat(set.value1) || 0,
-                  set.value2Type, parseFloat(set.value2) || 0,
+                  tenantId, sessionId, exerciseId, 
+                  set.set_index || set.setNumber || i + 1,
+                  set.value_1_type || set.value1Type || null,
+                  parseFloat(set.value_1_numeric || set.value1) || 0,
+                  set.value_2_type || set.value2Type || null,
+                  parseFloat(set.value_2_numeric || set.value2) || 0,
                   set.notes || ''
                 ]
               )

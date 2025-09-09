@@ -91,7 +91,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     try {
       console.log('📡 Making fetch request to API...')
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,8 +133,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true)
     
     try {
-      console.log('Making fetch request to:', 'http://localhost:3001/api/auth/register')
-      const response = await fetch('http://localhost:3001/api/auth/register', {
+      console.log('Making fetch request to:', '/api/auth/register')
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/api/trpc/auth.refresh', {
+      const response = await fetch('/api/trpc/auth.refresh', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -215,7 +215,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/profile', {
+      const response = await fetch('/api/auth/profile', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -247,7 +247,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/profile', {
+      const response = await fetch('/api/auth/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -280,7 +280,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/password', {
+      const response = await fetch('/api/auth/password', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -309,7 +309,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const formData = new FormData()
       formData.append('avatar', file)
 
-      const response = await fetch('http://localhost:3001/api/auth/avatar', {
+      const response = await fetch('/api/auth/avatar', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

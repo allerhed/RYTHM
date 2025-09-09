@@ -89,7 +89,7 @@ export default function NewWorkoutPage() {
 
   const fetchExerciseTemplates = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/exercises/templates')
+      const response = await fetch('/api/exercises/templates')
       if (response.ok) {
         const templates = await response.json()
         setExerciseTemplates(templates)
@@ -376,13 +376,16 @@ export default function NewWorkoutPage() {
         perceived_exertion: perceivedExertion,
         exercises: exercises.map(exercise => ({
           name: exercise.name,
+          muscle_groups: exercise.muscle_groups || [],
+          equipment: exercise.equipment || '',
+          exercise_category: exercise.exercise_category || 'strength',
           notes: exercise.notes,
           sets: exercise.sets.map(set => ({
-            setNumber: set.setNumber,
-            value1Type: set.value1Type,
-            value1: set.value1?.toString() || "0",
-            value2Type: set.value2Type,
-            value2: set.value2?.toString() || "0",
+            set_index: set.setNumber,
+            value_1_type: set.value1Type,
+            value_1_numeric: set.value1?.toString() || "0",
+            value_2_type: set.value2Type,
+            value_2_numeric: set.value2?.toString() || "0",
             notes: set.notes
           }))
         }))
@@ -390,7 +393,7 @@ export default function NewWorkoutPage() {
 
       console.log('Saving workout:', workoutData)
 
-      const response = await fetch('http://localhost:3001/api/sessions', {
+      const response = await fetch('/api/sessions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -402,29 +405,6 @@ export default function NewWorkoutPage() {
       if (response.ok) {
         const savedWorkout = await response.json()
         console.log('Workout saved successfully:', savedWorkout)
-        
-        // Check if the name was saved - if not, try to update it using PUT
-        const sessionId = savedWorkout.session?.session_id || savedWorkout.session?.id
-        if (sessionId && workoutName && workoutName.trim() !== '') {
-          try {
-            const updateResponse = await fetch(`http://localhost:3001/api/sessions/${sessionId}`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token || localStorage.getItem('auth-token')}`
-              },
-              body: JSON.stringify({ name: workoutName.trim() })
-            })
-            
-            if (updateResponse.ok) {
-              console.log('Workout name updated successfully')
-            } else {
-              console.warn('Failed to update workout name, but workout was saved')
-            }
-          } catch (updateError) {
-            console.warn('Failed to update workout name, but workout was saved:', updateError)
-          }
-        }
         
         router.push('/dashboard')
       } else {

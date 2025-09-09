@@ -28,6 +28,7 @@ interface Exercise {
 interface WorkoutSession {
   id: string
   session_id: string
+  name: string | null
   category: string
   notes: string
   started_at: string
@@ -203,7 +204,7 @@ function ViewWorkoutPage() {
               </svg>
             </button>
             <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              {session.category.charAt(0).toUpperCase() + session.category.slice(1)} Workout
+              {session.name || `${session.category.charAt(0).toUpperCase() + session.category.slice(1)} Workout`}
             </h1>
             <button
               onClick={() => router.push(`/training/edit/${session.id}`)}
@@ -225,7 +226,7 @@ function ViewWorkoutPage() {
                 Workout Name
               </label>
               <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                {session.category.charAt(0).toUpperCase() + session.category.slice(1)} Workout
+                {session.name || `${session.category.charAt(0).toUpperCase() + session.category.slice(1)} Workout`}
               </div>
             </div>
 

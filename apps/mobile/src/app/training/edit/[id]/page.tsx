@@ -216,7 +216,7 @@ export default function EditWorkoutPage() {
 
   const fetchExerciseTemplates = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/exercises/templates')
+      const response = await fetch('/api/exercises/templates')
       if (response.ok) {
         const templates = await response.json()
         setTemplates(templates)
@@ -405,7 +405,7 @@ export default function EditWorkoutPage() {
         perceived_exertion: perceivedExertion,
       }
 
-      const response = await fetch(`http://localhost:3001/api/sessions/${sessionId}`, {
+      const response = await fetch(`/api/sessions/${sessionId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
