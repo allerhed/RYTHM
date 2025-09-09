@@ -414,4 +414,61 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 })
 
+// DELETE session by ID
+router.delete('/:id', authenticateToken, async (req, res) => {
+  const pool: Pool = req.app.locals.pool
+  console.log('Session deletion request for session:', req.params.id)
+  
+  try {
+    const { id } = req.params
+    const userId = req.user?.userId
+    const tenantId = req.user?.tenantId
+
+    if (!userId || !tenantId) {
+      return res.status(401).json({ error: 'Authentication required' })
+    }
+
+    // Verify session ownership before deletion
+    const sessionCheck = await pool.query(
+      'SELECT session_id, name FROM sessions WHERE session_id = $1 AND user_id = $2 AND tenant_id = $3',
+      [id, userId, tenantId]
+    )
+
+    if (sessionCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Session not found or access denied' })
+    }
+
+    const sessionName = sessionCheck.rows[0].name
+
+    // Start transaction using db.transaction
+    await db.transaction(async (client: any) => {
+      // Delete sets first (foreign key constraint)
+      const setsResult = await client.query(
+        'DELETE FROM sets WHERE session_id = $1 AND tenant_id = $2',
+        [id, tenantId]
+      )
+      
+      // Delete the session
+      const sessionResult = await client.query(
+        'DELETE FROM sessions WHERE session_id = $1 AND user_id = $2 AND tenant_id = $3',
+        [id, userId, tenantId]
+      )
+
+      console.log(`Deleted ${setsResult.rowCount} sets and session ${id}`)
+    })
+
+    console.log('Session deletion completed successfully')
+
+    res.json({
+      message: 'Session deleted successfully',
+      sessionId: id,
+      sessionName: sessionName || 'Unnamed Session'
+    })
+
+  } catch (error) {
+    console.error('Session deletion error:', error)
+    res.status(500).json({ error: 'Failed to delete session', details: (error as Error).message })
+  }
+})
+
 export default router

@@ -26,6 +26,8 @@ function DashboardPage() {
   const { user, logout, fetchProfile } = useAuth()
   const [todaysWorkouts, setTodaysWorkouts] = React.useState([])
   const [loading, setLoading] = React.useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState<string | null>(null)
+  const [deleting, setDeleting] = React.useState(false)
 
   // Fetch fresh profile data when component mounts
   React.useEffect(() => {
@@ -80,23 +82,68 @@ function DashboardPage() {
     router.push('/auth/login')
   }
 
+  const handleDeleteWorkout = async (workoutId: string) => {
+    if (!user) return
+
+    setDeleting(true)
+    try {
+      const response = await fetch(`http://localhost:3001/api/sessions/${workoutId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+        }
+      })
+
+      if (response.ok) {
+        // Remove workout from local state
+        setTodaysWorkouts(prev => prev.filter((w: any) => w.id !== workoutId))
+        setShowDeleteConfirm(null)
+      } else {
+        console.error('Failed to delete workout')
+      }
+    } catch (error) {
+      console.error('Error deleting workout:', error)
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <Header 
-        title="Dashboard"
-        showUserAvatar={true}
-        user={user || undefined}
-        actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleLogout}
-          >
-            Sign Out
-          </Button>
-        }
-      />
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 safe-area-top">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => router.push('/training/history')}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title="Workout History"
+            >
+              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Dashboard
+            </h1>
+          </div>
+          
+          <div className="flex items-center space-x-3">
+            {user && (
+              <div className="flex items-center space-x-2">
+                <Avatar user={user} size="sm" />
+              </div>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+            >
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Main content */}
       <div className="px-4 py-8">
@@ -170,83 +217,8 @@ function DashboardPage() {
             </div>
           </div>
 
-          {/* Cards Grid */}
-          <div className="grid gap-6 lg:grid-cols-3 mb-8">
-            {/* Profile Information */}
-            <Card className="p-6">
-              <h2 className="text-subtitle font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                Profile Information
-              </h2>
-              
-              {/* Profile Picture and Basic Info */}
-              <div className="flex items-center space-x-4 mb-6">
-                <Avatar user={user || undefined} size="lg" />
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {user?.firstName} {user?.lastName}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {user?.email}
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {user?.about && (
-                  <div>
-                    <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
-                      About
-                    </span>
-                    <p className="text-body text-gray-900 dark:text-gray-100">
-                      {user.about}
-                    </p>
-                  </div>
-                )}
-                <div>
-                  <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
-                    Role
-                  </span>
-                  <p className="text-body text-gray-900 dark:text-gray-100 capitalize">
-                    {user?.role || 'User'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Quick Actions moved here */}
-              <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Quick Actions</h3>
-                <div className="space-y-2">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => router.push('/training/new')}
-                  >
-                    Log workout
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => router.push('/profile')}
-                  >
-                    Edit Profile
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => router.push('/analytics')}
-                  >
-                    View Analytics
-                  </Button>
-                </div>
-              </div>
-            </Card>
-
-            {/* Training Dashboard - spans 2 columns */}
-
-            <Card className="p-6 lg:col-span-2">
+          {/* Training Dashboard - full width */}
+          <Card className="p-6 mb-8">
               {/* Training Score Header */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-2">
@@ -431,6 +403,15 @@ function DashboardPage() {
                           >
                             <PencilIcon className="w-5 h-5" />
                           </button>
+                          <button 
+                            onClick={() => setShowDeleteConfirm(workout.id)}
+                            className="p-2 text-white/80 hover:text-white hover:bg-red-500/20 rounded-lg transition-colors"
+                            title="Delete workout"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -458,7 +439,6 @@ function DashboardPage() {
                 )}
               </div>
             </Card>
-          </div>
 
           {/* Recent activity */}
           <Card className="p-6 mb-8">
@@ -483,6 +463,78 @@ function DashboardPage() {
             </div>
           </Card>
 
+          {/* Profile Information */}
+          <Card className="p-6 mb-8">
+            <h2 className="text-subtitle font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Profile Information
+            </h2>
+            
+            {/* Profile Picture and Basic Info */}
+            <div className="flex items-center space-x-4 mb-6">
+              <Avatar user={user || undefined} size="lg" />
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {user?.firstName} {user?.lastName}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {user?.email}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {user?.about && (
+                <div>
+                  <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
+                    About
+                  </span>
+                  <p className="text-body text-gray-900 dark:text-gray-100">
+                    {user.about}
+                  </p>
+                </div>
+              )}
+              <div>
+                <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
+                  Role
+                </span>
+                <p className="text-body text-gray-900 dark:text-gray-100 capitalize">
+                  {user?.role || 'User'}
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Quick Actions</h3>
+              <div className="space-y-2">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => router.push('/training/new')}
+                >
+                  Log workout
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => router.push('/profile')}
+                >
+                  Edit Profile
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => router.push('/analytics')}
+                >
+                  View Analytics
+                </Button>
+              </div>
+            </div>
+          </Card>
+
           {/* Development notice */}
           <Card className="p-6 border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20">
             <div className="flex items-start space-x-3">
@@ -501,6 +553,47 @@ function DashboardPage() {
           </Card>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full p-6">
+            <div className="flex items-center mb-4">
+              <div className="w-10 h-10 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mr-3">
+                <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Delete Workout
+              </h3>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Are you sure you want to delete this workout? This action cannot be undone.
+            </p>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                disabled={deleting}
+                className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteWorkout(showDeleteConfirm)}
+                disabled={deleting}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+              >
+                {deleting ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  'Delete'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
