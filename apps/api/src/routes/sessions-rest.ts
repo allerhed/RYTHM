@@ -5,6 +5,20 @@ import { db } from '@rythm/db'
 
 const router = Router()
 
+// Helper function to convert HH:MM:SS duration to seconds
+const parseDurationToSeconds = (duration: string): number => {
+  const parts = duration.split(':').map(part => parseInt(part))
+  return parts[0] * 3600 + parts[1] * 60 + parts[2]
+}
+
+// Helper function to convert seconds to HH:MM:SS format
+const formatSecondsToHMS = (seconds: number): string => {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secs = seconds % 60
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
+
 // Authentication middleware
 const authenticateToken = (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization']
@@ -48,6 +62,7 @@ router.get('/', authenticateToken, async (req, res) => {
         s.completed_at,
         s.training_load,
         s.perceived_exertion,
+        s.duration_seconds,
         COUNT(DISTINCT st.exercise_id) as exercise_count,
         COUNT(st.set_id) as total_sets
       FROM sessions s
@@ -63,7 +78,7 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 
     query += `
-      GROUP BY s.session_id, s.name, s.category, s.notes, s.started_at, s.completed_at, s.training_load, s.perceived_exertion
+      GROUP BY s.session_id, s.name, s.category, s.notes, s.started_at, s.completed_at, s.training_load, s.perceived_exertion, s.duration_seconds
       ORDER BY s.started_at DESC`
 
     console.log('Executing query:', query)
@@ -129,7 +144,8 @@ router.get('/:id', authenticateToken, async (req, res) => {
         s.completed_at,
         s.created_at,
         s.training_load,
-        s.perceived_exertion
+        s.perceived_exertion,
+        s.duration_seconds
       FROM sessions s
       WHERE s.session_id = $1 AND s.user_id = $2 AND s.tenant_id = $3`,
       [id, userId, tenantId]
@@ -306,7 +322,10 @@ router.post('/', authenticateToken, async (req, res) => {
       return res.status(401).json({ error: 'Authentication required' })
     }
 
-    const { name, category, notes, exercises, training_load, perceived_exertion } = req.body
+    const { name, category, notes, exercises, training_load, perceived_exertion, duration } = req.body
+
+    // Convert duration from HH:MM:SS to seconds
+    const durationSeconds = duration ? parseDurationToSeconds(duration) : 3600 // Default 1 hour
 
     // Start transaction using db.transaction
     const result = await db.transaction(async (client: any) => {
@@ -317,10 +336,10 @@ router.post('/', authenticateToken, async (req, res) => {
       
       // Create session
       const sessionResult = await client.query(
-        `INSERT INTO sessions (tenant_id, user_id, name, category, notes, training_load, perceived_exertion, started_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+        `INSERT INTO sessions (tenant_id, user_id, name, category, notes, training_load, perceived_exertion, duration_seconds, started_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
          RETURNING session_id`,
-        [tenantId, userId, name, category, notes, training_load, perceived_exertion]
+        [tenantId, userId, name, category, notes, training_load, perceived_exertion, durationSeconds]
       )
 
       const sessionId = sessionResult.rows[0].session_id

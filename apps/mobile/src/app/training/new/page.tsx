@@ -374,6 +374,7 @@ export default function NewWorkoutPage() {
         notes: notes,
         training_load: trainingLoad,
         perceived_exertion: perceivedExertion,
+        duration: duration,
         exercises: exercises.map(exercise => ({
           name: exercise.name,
           muscle_groups: exercise.muscle_groups || [],

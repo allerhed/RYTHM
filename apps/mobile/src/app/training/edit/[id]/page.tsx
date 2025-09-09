@@ -113,8 +113,8 @@ export default function EditWorkoutPage() {
   // Form states
   const [workoutName, setWorkoutName] = useState('')
   const [notes, setNotes] = useState('')
-  const [trainingLoad, setTrainingLoad] = useState<number | null>(null)
-  const [perceivedExertion, setPerceivedExertion] = useState<number>(4)
+  const [trainingLoad, setTrainingLoad] = useState<number | null>(1)
+  const [perceivedExertion, setPerceivedExertion] = useState<number>(1)
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [activityType, setActivityType] = useState<'strength' | 'cardio' | 'hybrid'>('strength')
   const [workoutDate, setWorkoutDate] = useState(new Date())
@@ -166,8 +166,8 @@ export default function EditWorkoutPage() {
         setWorkoutName(session.name || 'Workout')
         setActivityType(session.category || 'strength')
         setNotes(session.notes || '')
-        setTrainingLoad(session.training_load || 5)
-        setPerceivedExertion(session.perceived_exertion || 4)
+        setTrainingLoad(session.training_load || 1)
+        setPerceivedExertion(session.perceived_exertion || 1)
 
         // Convert exercises and sets
         const convertedExercises: Exercise[] = session.exercises.map(dbEx => ({

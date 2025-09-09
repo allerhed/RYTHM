@@ -36,6 +36,7 @@ interface WorkoutSession {
   created_at: string
   training_load: number | null
   perceived_exertion: number | null
+  duration_seconds: number | null
   exercises: Exercise[]
 }
 
@@ -111,15 +112,11 @@ function ViewWorkoutPage() {
     }
   }
 
-  const formatDuration = (startTime: string, endTime?: string) => {
-    if (!endTime) return 'In progress'
+  const formatDuration = (durationSeconds: number | null) => {
+    if (!durationSeconds) return '1h 0m' // Default duration
     
-    const start = new Date(startTime)
-    const end = new Date(endTime)
-    const durationMs = end.getTime() - start.getTime()
-    
-    const hours = Math.floor(durationMs / (1000 * 60 * 60))
-    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
+    const hours = Math.floor(durationSeconds / 3600)
+    const minutes = Math.floor((durationSeconds % 3600) / 60)
     
     if (hours > 0) {
       return `${hours}h ${minutes}m`
@@ -267,7 +264,7 @@ function ViewWorkoutPage() {
                   Duration
                 </label>
                 <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                  {formatDuration(session.started_at, session.completed_at || undefined)}
+                  {formatDuration(session.duration_seconds)}
                 </div>
               </div>
             </div>
