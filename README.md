@@ -6,17 +6,18 @@ A comprehensive fitness training application with real-time analytics, workout t
 
 ### Prerequisites
 - Docker and Docker Compose
-- Node.js 18+ (for development)
+- **No Node.js installation required** - everything runs in containers
 
 ### Local Development Environment
 
-**⚠️ IMPORTANT: This project uses Docker Compose for local development**
+**⚠️ DOCKER-ONLY DEVELOPMENT: This project runs exclusively in Docker containers**
 
-The local development environment is configured to run with Docker Compose, which provides:
-- Containerized PostgreSQL database
-- API server with hot reload
-- Frontend with Next.js development server
-- Proper networking between services
+The development environment uses Docker Compose with:
+- Containerized PostgreSQL database with persistent storage
+- API server with hot reload via volume mounting
+- Frontend with Next.js development server and hot reload
+- Proper container networking between all services
+- Volume mounting for instant code changes without rebuilds
 
 #### Starting the Development Environment
 
@@ -26,14 +27,19 @@ The local development environment is configured to run with Docker Compose, whic
    open -a Docker
    ```
 
-2. **Start all services with Docker Compose**
+2. **Start the complete development environment**
    ```bash
-   docker-compose up -d
+   npm run dev
+   ```
+   
+   Or manually:
+   ```bash
+   ./scripts/start.sh
    ```
 
 3. **Verify all services are running**
    ```bash
-   docker-compose ps
+   npm run dev:status
    ```
 
 #### Access Points
@@ -48,30 +54,48 @@ The local development environment is configured to run with Docker Compose, whic
 
 ```bash
 # View logs from all services
-docker-compose logs -f
+npm run dev:logs
 
 # View logs from specific service
-docker-compose logs -f api
-docker-compose logs -f mobile
-docker-compose logs -f db
+npm run dev:logs:api      # API server logs
+npm run dev:logs:mobile   # Frontend logs
+npm run dev:logs:db       # Database logs
 
 # Stop all services
-docker-compose down
+npm run dev:down
 
-# Rebuild and restart services
-docker-compose up -d --build
+# Restart all services
+npm run dev:restart
+
+# Restart specific service
+npm run dev:restart:api
+npm run dev:restart:mobile
+
+# Rebuild and restart (after Dockerfile changes)
+npm run dev:build
+npm run dev:up
 
 # Check service status
-docker-compose ps
+npm run dev:status
+
+# Get shell access
+npm run dev:shell:api     # API container shell
+npm run dev:shell:mobile  # Mobile container shell
+npm run dev:shell:db      # Database shell (psql)
+
+# Clean everything (removes volumes and containers)
+npm run dev:clean
 ```
 
-#### Why Docker Compose?
+#### Why Docker-Only Development?
 
-- **Consistent Environment**: Same setup across all development machines
-- **Database Management**: PostgreSQL runs in a container with persistent data
-- **Service Networking**: Proper internal networking between API and frontend
-- **Hot Reload**: Development servers support live code changes
-- **Easy Reset**: Clean database and services with simple commands
+- **Zero Local Dependencies**: No need to install Node.js, PostgreSQL, or other tools
+- **Consistent Environment**: Identical setup across all development machines
+- **Instant Hot Reload**: Volume mounting provides instant code changes without rebuilds
+- **Isolated Database**: PostgreSQL runs in container with persistent data volumes
+- **Perfect Networking**: Container networking matches production deployment
+- **Easy Reset**: Clean slate development environment with one command
+- **Production Parity**: Development environment matches production containers
 
 ## 🏗️ Architecture
 
@@ -111,12 +135,41 @@ The application includes a sophisticated Training Score system that categorizes 
 
 Database migrations are handled automatically when the API container starts. The migration files are located in `packages/db/migrations/`.
 
-### Hot Reload
+### Hot Reload & Development Workflow
 
-Both the API and frontend support hot reload during development:
-- Frontend changes trigger Next.js hot reload
-- API changes trigger nodemon restart
-- Database schema changes require container restart
+The Docker development environment provides instant feedback:
+- **Frontend changes**: Next.js hot reload via volume mounting
+- **API changes**: tsx watch mode restarts the server automatically  
+- **Package changes**: Restart containers to pick up new dependencies
+- **Database changes**: Run migrations in the API container
+- **Configuration changes**: Restart specific services as needed
+
+### Development Workflow Examples
+
+```bash
+# Start development
+npm run dev
+
+# Make code changes (auto-reloads)
+# Edit files in apps/api/src or apps/mobile/src
+
+# Add new dependencies
+npm run dev:shell:api
+npm install new-package
+exit
+npm run dev:restart:api
+
+# Run database migrations
+npm run db:migrate
+
+# Check logs if something isn't working
+npm run dev:logs:api
+npm run dev:logs:mobile
+
+# Clean start if needed
+npm run dev:clean
+npm run dev
+```
 
 ## 📝 Additional Documentation
 

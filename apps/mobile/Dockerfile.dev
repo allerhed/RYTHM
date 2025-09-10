@@ -1,0 +1,30 @@
+# Development Dockerfile for Mobile PWA
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install development dependencies
+RUN apk add --no-cache curl wget
+
+# Copy package files
+COPY package.json package-lock.json* ./
+COPY apps/mobile/package.json ./apps/mobile/
+COPY packages/shared/package.json ./packages/shared/
+
+# Install all dependencies (including dev dependencies)
+RUN npm ci
+
+# Copy source code (this will be overridden by volume mount in development)
+COPY . .
+
+# Build shared packages
+RUN npm run build --workspace=@rythm/shared
+
+# Set development environment
+ENV NODE_ENV=development
+
+# Expose port
+EXPOSE 3000
+
+# Use Next.js dev server with hot reloading
+CMD ["npm", "run", "dev", "--workspace=@rythm/mobile"]

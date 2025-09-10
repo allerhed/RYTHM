@@ -1,0 +1,32 @@
+# Development Dockerfile for API
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install development dependencies
+RUN apk add --no-cache curl wget
+
+# Copy package files
+COPY package.json package-lock.json* ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/db/package.json ./packages/db/
+
+# Install all dependencies (including dev dependencies)
+RUN npm ci
+
+# Copy source code (this will be overridden by volume mount in development)
+COPY . .
+
+# Build shared packages
+RUN npm run build --workspace=@rythm/shared
+RUN npm run build --workspace=@rythm/db
+
+# Set development environment
+ENV NODE_ENV=development
+
+# Expose port
+EXPOSE 3001
+
+# Use tsx for hot reloading in development
+CMD ["npm", "run", "dev", "--workspace=@rythm/api"]

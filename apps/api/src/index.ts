@@ -3,6 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import { appRouter } from './router';
 import { createContext } from './trpc';
@@ -195,6 +198,144 @@ app.post('/api/auth/login', async (req, res) => {
   } catch (error: any) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Login failed', details: error.message });
+  }
+});
+
+// JWT middleware for protected routes
+const authenticateToken = (req: any, res: any, next: any) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token required' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err: any, user: any) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid token' });
+    }
+    req.user = user;
+    next();
+  });
+};
+
+// Get user profile
+app.get('/api/auth/profile', authenticateToken, async (req: any, res) => {
+  try {
+    const userId = req.user.userId;
+    
+    const result = await db.query(
+      `SELECT user_id, tenant_id, email, role, first_name, last_name, avatar_url 
+       FROM users WHERE user_id = $1`,
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = result.rows[0];
+    res.json({
+      id: user.user_id,
+      email: user.email,
+      role: user.role,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      tenantId: user.tenant_id,
+      avatarUrl: user.avatar_url,
+    });
+
+  } catch (error: any) {
+    console.error('Profile fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch profile', details: error.message });
+  }
+});
+
+// Update user profile
+app.put('/api/auth/profile', authenticateToken, async (req: any, res) => {
+  try {
+    const userId = req.user.userId;
+    const { firstName, lastName, email } = req.body;
+    
+    if (!firstName || !lastName || !email) {
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        required: ['firstName', 'lastName', 'email']
+      });
+    }
+
+    const result = await db.query(
+      `UPDATE users 
+       SET first_name = $1, last_name = $2, email = $3 
+       WHERE user_id = $4 
+       RETURNING user_id, tenant_id, email, role, first_name, last_name, avatar_url`,
+      [firstName, lastName, email, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = result.rows[0];
+    res.json({
+      id: user.user_id,
+      email: user.email,
+      role: user.role,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      tenantId: user.tenant_id,
+      avatarUrl: user.avatar_url,
+    });
+
+  } catch (error: any) {
+    console.error('Profile update error:', error);
+    res.status(500).json({ error: 'Failed to update profile', details: error.message });
+  }
+});
+
+// Update password
+app.put('/api/auth/password', authenticateToken, async (req: any, res) => {
+  try {
+    const userId = req.user.userId;
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        required: ['currentPassword', 'newPassword']
+      });
+    }
+
+    // Get current password hash
+    const userResult = await db.query(
+      'SELECT password_hash FROM users WHERE user_id = $1',
+      [userId]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Verify current password
+    const isValidPassword = await bcrypt.compare(currentPassword, userResult.rows[0].password_hash);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+    // Update password
+    await db.query(
+      'UPDATE users SET password_hash = $1 WHERE user_id = $2',
+      [newPasswordHash, userId]
+    );
+
+    res.json({ message: 'Password updated successfully' });
+
+  } catch (error: any) {
+    console.error('Password update error:', error);
+    res.status(500).json({ error: 'Failed to update password', details: error.message });
   }
 });
 
