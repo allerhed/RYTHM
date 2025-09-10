@@ -518,20 +518,19 @@ app.post('/api/sessions', authenticateToken, async (req, res) => {
         console.log('Processing exercises:', exercises.length);
         
         for (const exercise of exercises) {
-          // Find or create exercise in the exercises library
+          // Find or create exercise in the exercises library (globally available)
           console.log('Creating/finding exercise:', exercise.name);
           let exerciseResult = await client.query(
-            'SELECT exercise_id FROM exercises WHERE tenant_id = $1 AND LOWER(name) = LOWER($2)',
-            [req.user.tenantId, exercise.name]
+            'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
+            [exercise.name]
           );
 
           let exerciseId;
           if (exerciseResult.rows.length === 0) {
-            // Create new exercise in the library
+            // Create new exercise in the global library
             exerciseResult = await client.query(
-              'INSERT INTO exercises (tenant_id, name, muscle_groups, equipment, exercise_category, notes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING exercise_id',
+              'INSERT INTO exercises (name, muscle_groups, equipment, exercise_category, notes) VALUES ($1, $2, $3, $4, $5) RETURNING exercise_id',
               [
-                req.user.tenantId, 
                 exercise.name, 
                 exercise.muscle_groups || [], 
                 exercise.equipment || '', 
@@ -631,7 +630,7 @@ app.get('/api/sessions', authenticateToken, async (req, res) => {
         COUNT(st.set_id) as total_sets
       FROM sessions s
       LEFT JOIN sets st ON st.session_id = s.session_id
-      LEFT JOIN exercises e ON e.exercise_id = st.exercise_id AND e.tenant_id = s.tenant_id
+      LEFT JOIN exercises e ON e.exercise_id = st.exercise_id
       WHERE s.user_id = $1 AND s.tenant_id = $2 ${dateFilter}
       GROUP BY s.session_id, s.category, s.notes, s.started_at, s.completed_at, s.created_at, s.training_load, s.perceived_exertion
       ORDER BY s.started_at DESC`,
@@ -647,10 +646,10 @@ app.get('/api/sessions', authenticateToken, async (req, res) => {
           COUNT(st.set_id) as set_count
         FROM exercises e
         JOIN sets st ON st.exercise_id = e.exercise_id
-        WHERE st.session_id = $1 AND e.tenant_id = $2
+        WHERE st.session_id = $1
         GROUP BY e.exercise_id, e.name
         ORDER BY e.name`,
-        [session.session_id, tenantId]
+        [session.session_id]
       );
       session.exercises = exercisesResult.rows;
     }
@@ -707,9 +706,9 @@ app.get('/api/sessions/:id', authenticateToken, async (req, res) => {
         e.exercise_type
       FROM exercises e
       JOIN sets st ON st.exercise_id = e.exercise_id
-      WHERE st.session_id = $1 AND e.tenant_id = $2
+      WHERE st.session_id = $1
       ORDER BY e.name`,
-      [id, tenantId]
+      [id]
     );
 
     // Get sets for each exercise
@@ -791,21 +790,30 @@ app.put('/api/sessions/:id', authenticateToken, async (req, res) => {
           let exerciseId = exercise.exercise_id;
           
           if (!exerciseId) {
-            // Create new exercise if not found
-            const exerciseResult = await client.query(
-              `INSERT INTO exercises (tenant_id, name, muscle_groups, equipment, exercise_category, notes)
-               VALUES ($1, $2, $3, $4, $5, $6) 
-               RETURNING exercise_id`,
-              [
-                tenantId, 
-                exercise.name || 'Custom Exercise', 
-                exercise.muscle_groups || [],
-                exercise.equipment || '',
-                exercise.exercise_category || 'strength',
-                exercise.notes || ''
-              ]
+            // Check if exercise exists globally first
+            const existingResult = await client.query(
+              'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
+              [exercise.name || 'Custom Exercise']
             );
-            exerciseId = exerciseResult.rows[0].exercise_id;
+            
+            if (existingResult.rows.length > 0) {
+              exerciseId = existingResult.rows[0].exercise_id;
+            } else {
+              // Create new exercise in global library
+              const exerciseResult = await client.query(
+                `INSERT INTO exercises (name, muscle_groups, equipment, exercise_category, notes)
+                 VALUES ($1, $2, $3, $4, $5) 
+                 RETURNING exercise_id`,
+                [
+                  exercise.name || 'Custom Exercise', 
+                  exercise.muscle_groups || [],
+                  exercise.equipment || '',
+                  exercise.exercise_category || 'strength',
+                  exercise.notes || ''
+                ]
+              );
+              exerciseId = exerciseResult.rows[0].exercise_id;
+            }
           }
 
           // Add sets for this exercise
@@ -954,14 +962,9 @@ app.get('/api/exercises/templates', async (req, res) => {
   }
 });
 
-// Get tenant-specific exercises
+// Get all exercises (globally available)
 app.get('/api/exercises', authenticateToken, async (req, res) => {
-  console.log('Exercises fetch request for tenant:', req.user?.tenant_id);
-  
-  const tenantId = req.user?.tenant_id;
-  if (!tenantId) {
-    return res.status(401).json({ error: 'Tenant ID required' });
-  }
+  console.log('Exercises fetch request - global library access');
   
   try {
     const { category, search } = req.query;
@@ -979,9 +982,9 @@ app.get('/api/exercises', authenticateToken, async (req, res) => {
         is_active,
         created_at
       FROM exercises 
-      WHERE tenant_id = $1 AND is_active = true
+      WHERE is_active = true
     `;
-    const params = [tenantId];
+    const params = [];
     
     if (category) {
       params.push(category);
@@ -1040,14 +1043,26 @@ app.post('/api/exercises/from-template/:templateId', authenticateToken, async (r
       notes: customizations?.notes || template.description
     };
     
+    // Check if exercise already exists globally
+    const existingResult = await pool.query(
+      'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
+      [exerciseData.name]
+    );
+    
+    if (existingResult.rows.length > 0) {
+      return res.status(409).json({ 
+        error: 'An exercise with this name already exists',
+        existing_exercise_id: existingResult.rows[0].exercise_id
+      });
+    }
+    
     const result = await pool.query(`
       INSERT INTO exercises (
-        tenant_id, name, muscle_groups, equipment, exercise_category,
+        name, muscle_groups, equipment, exercise_category,
         default_value_1_type, default_value_2_type, notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
     `, [
-      tenantId,
       exerciseData.name,
       exerciseData.muscle_groups,
       exerciseData.equipment,
@@ -1069,11 +1084,6 @@ app.post('/api/exercises/from-template/:templateId', authenticateToken, async (r
 app.post('/api/exercises', authenticateToken, async (req, res) => {
   console.log('Creating custom exercise');
   
-  const tenantId = req.user?.tenant_id;
-  if (!tenantId) {
-    return res.status(401).json({ error: 'Tenant ID required' });
-  }
-  
   try {
     const {
       name,
@@ -1089,14 +1099,26 @@ app.post('/api/exercises', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Exercise name is required' });
     }
     
+    // Check if exercise already exists globally
+    const existingResult = await pool.query(
+      'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
+      [name]
+    );
+    
+    if (existingResult.rows.length > 0) {
+      return res.status(409).json({ 
+        error: 'An exercise with this name already exists',
+        existing_exercise_id: existingResult.rows[0].exercise_id
+      });
+    }
+    
     const result = await pool.query(`
       INSERT INTO exercises (
-        tenant_id, name, muscle_groups, equipment, exercise_category,
+        name, muscle_groups, equipment, exercise_category,
         default_value_1_type, default_value_2_type, notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
     `, [
-      tenantId,
       name,
       muscle_groups,
       equipment,
@@ -1118,12 +1140,7 @@ app.post('/api/exercises', authenticateToken, async (req, res) => {
 app.get('/api/exercises/:exerciseId', authenticateToken, async (req, res) => {
   console.log('Fetching exercise:', req.params.exerciseId);
   
-  const tenantId = req.user?.tenant_id;
   const { exerciseId } = req.params;
-  
-  if (!tenantId) {
-    return res.status(401).json({ error: 'Tenant ID required' });
-  }
   
   try {
     const result = await pool.query(`
@@ -1139,8 +1156,8 @@ app.get('/api/exercises/:exerciseId', authenticateToken, async (req, res) => {
         is_active,
         created_at
       FROM exercises 
-      WHERE exercise_id = $1 AND tenant_id = $2
-    `, [exerciseId, tenantId]);
+      WHERE exercise_id = $1
+    `, [exerciseId]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Exercise not found' });

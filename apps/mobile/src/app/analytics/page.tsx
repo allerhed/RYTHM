@@ -104,9 +104,18 @@ function AnalyticsPage() {
     }
   })
 
-  const loading = testQuery.isLoading || trainingLoadQuery.isLoading || summaryQuery.isLoading
+  const categoryBreakdownQuery = trpc.analytics.categoryBreakdown.useQuery(undefined, {
+    enabled: !!user && testQuery.isSuccess, // Only enable if test passes
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    onError: (error) => {
+      console.error('Category breakdown query error:', error)
+    }
+  })
+
+  const loading = testQuery.isLoading || trainingLoadQuery.isLoading || summaryQuery.isLoading || categoryBreakdownQuery.isLoading
   const trainingLoadData = trainingLoadQuery.data
   const summaryData = summaryQuery.data
+  const categoryData = categoryBreakdownQuery.data
 
   // Debug: Log activityTime values for the Activity Time chart
   if (trainingLoadData?.weeklyData) {
@@ -129,7 +138,8 @@ function AnalyticsPage() {
 
   // Defensive data checking
   const hasValidData = trainingLoadData?.weeklyData && Array.isArray(trainingLoadData.weeklyData) && 
-                      summaryData?.currentPeriod && summaryData?.previousPeriod
+                      summaryData?.currentPeriod && summaryData?.previousPeriod &&
+                      categoryData?.currentPeriod && categoryData?.previousPeriod
 
 
 
@@ -175,7 +185,7 @@ function AnalyticsPage() {
     )
   }
 
-  if (testQuery.error || trainingLoadQuery.error || summaryQuery.error) {
+  if (testQuery.error || trainingLoadQuery.error || summaryQuery.error || categoryBreakdownQuery.error) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="bg-white dark:bg-gray-800 shadow-sm">
@@ -195,7 +205,7 @@ function AnalyticsPage() {
         </div>
         <div className="p-4 text-center text-red-500">
           <p>Error loading analytics data:</p>
-          <p className="text-sm mt-2">{testQuery.error?.message || trainingLoadQuery.error?.message || summaryQuery.error?.message}</p>
+          <p className="text-sm mt-2">{testQuery.error?.message || trainingLoadQuery.error?.message || summaryQuery.error?.message || categoryBreakdownQuery.error?.message}</p>
         </div>
       </div>
     )
@@ -220,7 +230,7 @@ function AnalyticsPage() {
           </div>
         </div>
         <div className="p-4 text-center text-gray-500">
-          {!trainingLoadData || !summaryData ? 'No data available' : 'Loading analytics data...'}
+          {!trainingLoadData || !summaryData || !categoryData ? 'No data available' : 'Loading analytics data...'}
         </div>
       </div>
     )
@@ -279,6 +289,7 @@ function AnalyticsPage() {
                   const maxLoad = Math.max(600, Math.max(...weeklyLoads) * 1.2) // Dynamic scale
                   const cardioHeight = Math.max(((week.cardioLoad || 0) / maxLoad) * 180, (week.cardioLoad || 0) > 0 ? 8 : 0)
                   const strengthHeight = Math.max(((week.strengthLoad || 0) / maxLoad) * 180, (week.strengthLoad || 0) > 0 ? 8 : 0)
+                  const hybridHeight = Math.max(((week.hybridLoad || 0) / maxLoad) * 180, (week.hybridLoad || 0) > 0 ? 8 : 0)
                   
                   return (
                     <div key={index} className="flex flex-col items-center space-y-2 ml-1">
@@ -290,6 +301,10 @@ function AnalyticsPage() {
                         <div
                           className="w-6 bg-purple-500 rounded-sm transition-all duration-500"
                           style={{ height: `${strengthHeight}px` }}
+                        />
+                        <div
+                          className="w-6 bg-orange-500 rounded-sm transition-all duration-500"
+                          style={{ height: `${hybridHeight}px` }}
                         />
                       </div>
                       <span className="text-xs text-gray-300 transform rotate-45 origin-bottom-left mt-2">
@@ -312,6 +327,10 @@ function AnalyticsPage() {
               <div className="w-4 h-4 bg-purple-500 rounded"></div>
               <span className="text-sm">Strength</span>
             </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-orange-500 rounded"></div>
+              <span className="text-sm">Hybrid</span>
+            </div>
           </div>
 
           {/* Summary */}
@@ -330,13 +349,15 @@ function AnalyticsPage() {
               const totalCurrentLoad = summaryData.currentPeriod.trainingLoad
               const totalPreviousLoad = summaryData.previousPeriod.trainingLoad
               
-              // Calculate cardio vs strength percentages from weekly data
-              const totalCardio = trainingLoadData.weeklyData.reduce((sum: number, week: any) => sum + week.cardioLoad, 0)
-              const totalStrength = trainingLoadData.weeklyData.reduce((sum: number, week: any) => sum + week.strengthLoad, 0)
-              const total = totalCardio + totalStrength
+              // Calculate cardio vs strength vs hybrid percentages from weekly data
+              const totalCardio = trainingLoadData.weeklyData.reduce((sum: number, week: any) => sum + (week.cardioLoad || 0), 0)
+              const totalStrength = trainingLoadData.weeklyData.reduce((sum: number, week: any) => sum + (week.strengthLoad || 0), 0)
+              const totalHybrid = trainingLoadData.weeklyData.reduce((sum: number, week: any) => sum + (week.hybridLoad || 0), 0)
+              const total = totalCardio + totalStrength + totalHybrid
               
               const cardioPercent = total > 0 ? Math.round((totalCardio / total) * 100) : 0
               const strengthPercent = total > 0 ? Math.round((totalStrength / total) * 100) : 0
+              const hybridPercent = total > 0 ? Math.round((totalHybrid / total) * 100) : 0
               
               const currentWidth = totalCurrentLoad + totalPreviousLoad > 0 ? 
                 Math.round((totalCurrentLoad / (totalCurrentLoad + totalPreviousLoad)) * 100) : 50
@@ -371,10 +392,10 @@ function AnalyticsPage() {
                     </div>
                   </div>
                   
-                  {/* Show cardio vs strength breakdown for current period */}
+                  {/* Show cardio vs strength vs hybrid breakdown for current period */}
                   <div className="mt-4 pt-4 border-t border-gray-600">
                     <div className="text-sm text-gray-400 mb-2">Training Type Breakdown (Last 3 months)</div>
-                    <div className="flex justify-between items-center">
+                    <div className="grid grid-cols-3 gap-2">
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
                         <span className="text-sm text-gray-300">Cardio {cardioPercent}%</span>
@@ -382,6 +403,10 @@ function AnalyticsPage() {
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                         <span className="text-sm text-gray-300">Strength {strengthPercent}%</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        <span className="text-sm text-gray-300">Hybrid {hybridPercent}%</span>
                       </div>
                     </div>
                   </div>
@@ -450,6 +475,155 @@ function AnalyticsPage() {
               <div className="text-2xl font-bold">{formatTime(summaryData.currentPeriod.activityTime)}</div>
               <div className="text-sm text-gray-400">vs. previous 6 months</div>
               <div className="text-lg text-gray-300">{formatTime(summaryData.previousPeriod.activityTime)}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Category Breakdown Widget */}
+        <div className="bg-gray-800 rounded-2xl p-6 text-white">
+          <h2 className="text-xl font-bold mb-2">Training by Category</h2>
+          <p className="text-sm text-gray-400 mb-6">Training load breakdown by category (3-month comparison)</p>
+          
+          {/* Category bars */}
+          <div className="space-y-6">
+            {/* Strength */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-white">Strength</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold text-white">
+                    {categoryData.currentPeriod.strength.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {formatChange(categoryData.currentPeriod.strength, categoryData.previousPeriod.strength)}
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-1">
+                {/* Current period bar */}
+                <div className="w-full h-4 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-purple-500 rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${Math.max(categoryData.currentPeriod.total > 0 ? (categoryData.currentPeriod.strength / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
+                    }}
+                  />
+                </div>
+                {/* Previous period bar */}
+                <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-purple-300 rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${Math.max(categoryData.previousPeriod.total > 0 ? (categoryData.previousPeriod.strength / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-400 mt-1">
+                <span>Last 3 months: {categoryData.currentPeriod.strength.toLocaleString()}</span>
+                <span>Previous: {categoryData.previousPeriod.strength.toLocaleString()}</span>
+              </div>
+            </div>
+
+            {/* Cardio */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-white">Cardio</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold text-white">
+                    {categoryData.currentPeriod.cardio.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {formatChange(categoryData.currentPeriod.cardio, categoryData.previousPeriod.cardio)}
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-1">
+                {/* Current period bar */}
+                <div className="w-full h-4 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-teal-500 rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${Math.max(categoryData.currentPeriod.total > 0 ? (categoryData.currentPeriod.cardio / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
+                    }}
+                  />
+                </div>
+                {/* Previous period bar */}
+                <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-teal-300 rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${Math.max(categoryData.previousPeriod.total > 0 ? (categoryData.previousPeriod.cardio / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-400 mt-1">
+                <span>Last 3 months: {categoryData.currentPeriod.cardio.toLocaleString()}</span>
+                <span>Previous: {categoryData.previousPeriod.cardio.toLocaleString()}</span>
+              </div>
+            </div>
+
+            {/* Hybrid */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-white">Hybrid</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold text-white">
+                    {categoryData.currentPeriod.hybrid.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {formatChange(categoryData.currentPeriod.hybrid, categoryData.previousPeriod.hybrid)}
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-1">
+                {/* Current period bar */}
+                <div className="w-full h-4 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-orange-500 rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${Math.max(categoryData.currentPeriod.total > 0 ? (categoryData.currentPeriod.hybrid / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
+                    }}
+                  />
+                </div>
+                {/* Previous period bar */}
+                <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-orange-300 rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${Math.max(categoryData.previousPeriod.total > 0 ? (categoryData.previousPeriod.hybrid / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-400 mt-1">
+                <span>Last 3 months: {categoryData.currentPeriod.hybrid.toLocaleString()}</span>
+                <span>Previous: {categoryData.previousPeriod.hybrid.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Summary */}
+          <div className="border-t border-gray-700 pt-4 mt-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-300">Total Load Comparison</span>
+              <span className="text-lg font-semibold text-white">
+                {formatChange(categoryData.currentPeriod.total, categoryData.previousPeriod.total)}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm text-gray-400">
+              <span>Last 3 months: {categoryData.currentPeriod.total.toLocaleString()}</span>
+              <span>Previous 3 months: {categoryData.previousPeriod.total.toLocaleString()}</span>
             </div>
           </div>
         </div>

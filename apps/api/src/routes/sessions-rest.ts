@@ -97,10 +97,10 @@ router.get('/', authenticateToken, async (req, res) => {
           COUNT(st.set_id) as set_count
         FROM exercises e
         JOIN sets st ON st.exercise_id = e.exercise_id
-        WHERE st.session_id = $1 AND e.tenant_id = $2
+        WHERE st.session_id = $1
         GROUP BY e.exercise_id, e.name, e.muscle_groups
         ORDER BY e.name`,
-        [session.session_id, tenantId]
+        [session.session_id]
       )
 
       sessions.push({
@@ -168,9 +168,9 @@ router.get('/:id', authenticateToken, async (req, res) => {
         e.exercise_type
       FROM exercises e
       JOIN sets st ON st.exercise_id = e.exercise_id
-      WHERE st.session_id = $1 AND e.tenant_id = $2
+      WHERE st.session_id = $1
       ORDER BY e.name`,
-      [id, tenantId]
+      [id]
     )
 
     // Get sets for each exercise
@@ -258,14 +258,24 @@ router.put('/:id', authenticateToken, async (req, res) => {
           let exerciseId = exercise.exercise_id
           
           if (!exerciseId) {
-            // Create new exercise if not found
-            const exerciseResult = await client.query(
-              `INSERT INTO exercises (tenant_id, name, notes)
-               VALUES ($1, $2, $3) 
-               RETURNING exercise_id`,
-              [tenantId, exercise.name || 'Custom Exercise', exercise.notes || '']
+            // Check if exercise exists globally first
+            const existingResult = await client.query(
+              'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
+              [exercise.name || 'Custom Exercise']
             )
-            exerciseId = exerciseResult.rows[0].exercise_id
+            
+            if (existingResult.rows.length > 0) {
+              exerciseId = existingResult.rows[0].exercise_id
+            } else {
+              // Create new exercise in global library
+              const exerciseResult = await client.query(
+                `INSERT INTO exercises (name, notes)
+                 VALUES ($1, $2) 
+                 RETURNING exercise_id`,
+                [exercise.name || 'Custom Exercise', exercise.notes || '']
+              )
+              exerciseId = exerciseResult.rows[0].exercise_id
+            }
           }
 
           // Add sets for this exercise

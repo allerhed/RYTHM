@@ -402,6 +402,7 @@ export const analyticsRouter = router({
 
         const cardioSessions = weekSessions.filter((s: any) => s.category === 'cardio')
         const strengthSessions = weekSessions.filter((s: any) => s.category === 'strength')
+        const hybridSessions = weekSessions.filter((s: any) => s.category === 'hybrid')
 
         // Use the actual training_load field from sessions
         const actualLoad = weekSessions.reduce((sum: number, s: any) => {
@@ -426,6 +427,11 @@ export const analyticsRouter = router({
           const trainingLoad = parseInt(s.training_load) || 0
           return sum + trainingLoad
         }, 0)
+        
+        const hybridLoad = hybridSessions.reduce((sum: number, s: any) => {
+          const trainingLoad = parseInt(s.training_load) || 0
+          return sum + trainingLoad
+        }, 0)
 
 
 
@@ -434,7 +440,8 @@ export const analyticsRouter = router({
           trainingLoad: actualLoad,
           activityTime: actualTime,
           cardioLoad: cardioLoad,
-          strengthLoad: strengthLoad
+          strengthLoad: strengthLoad,
+          hybridLoad: hybridLoad
         })
 
 
@@ -642,6 +649,93 @@ export const analyticsRouter = router({
         currentPeriod,
         previousPeriod,
         totalSessions: sessions.length
+      }
+    }),
+
+  categoryBreakdown: protectedProcedure
+    .query(async ({ ctx }) => {
+      // Fetch all sessions for the last 6 months to get both current and previous periods
+      const sixMonthsAgo = new Date()
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+
+      const query = `
+        SELECT 
+          s.session_id,
+          s.category,
+          s.started_at,
+          s.training_load
+        FROM sessions s
+        WHERE s.user_id = $1 AND s.started_at >= $2 AND s.training_load IS NOT NULL
+        ORDER BY s.started_at DESC
+      `
+
+      const result = await ctx.db.query(query, [ctx.user.userId, sixMonthsAgo.toISOString()])
+      const sessions = result.rows
+
+      const now = new Date()
+      
+      // Define periods: last 3 months vs previous 3 months
+      const currentPeriodStart = new Date()
+      currentPeriodStart.setMonth(currentPeriodStart.getMonth() - 3)
+      
+      const previousPeriodStart = new Date()
+      previousPeriodStart.setMonth(previousPeriodStart.getMonth() - 6)
+      
+      const previousPeriodEnd = new Date(currentPeriodStart)
+
+      // Filter sessions by periods
+      const currentSessions = sessions.filter((s: any) => {
+        const date = new Date(s.started_at)
+        return date >= currentPeriodStart && date <= now
+      })
+
+      const previousSessions = sessions.filter((s: any) => {
+        const date = new Date(s.started_at)
+        return date >= previousPeriodStart && date < previousPeriodEnd
+      })
+
+      // Calculate totals by category for each period
+      const calculateCategoryTotals = (periodSessions: any[]) => {
+        const totals = {
+          strength: 0,
+          cardio: 0,
+          hybrid: 0
+        }
+
+        periodSessions.forEach((session: any) => {
+          const load = parseInt(session.training_load) || 0
+          if (session.category === 'strength') {
+            totals.strength += load
+          } else if (session.category === 'cardio') {
+            totals.cardio += load
+          } else if (session.category === 'hybrid') {
+            totals.hybrid += load
+          }
+        })
+
+        return totals
+      }
+
+      const currentPeriodTotals = calculateCategoryTotals(currentSessions)
+      const previousPeriodTotals = calculateCategoryTotals(previousSessions)
+
+      // Calculate total loads for percentage calculations
+      const currentTotal = currentPeriodTotals.strength + currentPeriodTotals.cardio + currentPeriodTotals.hybrid
+      const previousTotal = previousPeriodTotals.strength + previousPeriodTotals.cardio + previousPeriodTotals.hybrid
+
+      return {
+        currentPeriod: {
+          strength: currentPeriodTotals.strength,
+          cardio: currentPeriodTotals.cardio,
+          hybrid: currentPeriodTotals.hybrid,
+          total: currentTotal
+        },
+        previousPeriod: {
+          strength: previousPeriodTotals.strength,
+          cardio: previousPeriodTotals.cardio,
+          hybrid: previousPeriodTotals.hybrid,
+          total: previousTotal
+        }
       }
     }),
 });

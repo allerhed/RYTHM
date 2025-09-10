@@ -67,22 +67,47 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Initialize auth state from localStorage
   useEffect(() => {
-    const storedToken = localStorage.getItem('auth-token')
-    const storedUser = localStorage.getItem('auth-user')
-    
-    if (storedToken && storedUser) {
+    try {
+      const storedToken = localStorage.getItem('auth-token')
+      const storedUser = localStorage.getItem('auth-user')
+      
+      if (storedToken && storedUser) {
+        // Validate that storedUser is not '[object Object]'
+        if (storedUser === '[object Object]' || storedUser.startsWith('[object')) {
+          console.warn('Invalid user data in localStorage, clearing...')
+          localStorage.removeItem('auth-token')
+          localStorage.removeItem('auth-user')
+        } else {
+          try {
+            const userData = JSON.parse(storedUser)
+            // Validate parsed data structure
+            if (userData && typeof userData === 'object' && userData.id) {
+              setToken(storedToken)
+              setUser(userData)
+            } else {
+              console.warn('Invalid user data structure, clearing localStorage')
+              localStorage.removeItem('auth-token')
+              localStorage.removeItem('auth-user')
+            }
+          } catch (parseError) {
+            console.error('Failed to parse stored user data:', parseError)
+            localStorage.removeItem('auth-token')
+            localStorage.removeItem('auth-user')
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing auth from localStorage:', error)
+      // Clear potentially corrupted data
       try {
-        const userData = JSON.parse(storedUser)
-        setToken(storedToken)
-        setUser(userData)
-      } catch (error) {
-        console.error('Failed to parse stored user data:', error)
         localStorage.removeItem('auth-token')
         localStorage.removeItem('auth-user')
+      } catch (clearError) {
+        console.error('Error clearing localStorage:', clearError)
       }
+    } finally {
+      setIsLoading(false)
     }
-    
-    setIsLoading(false)
   }, [])
 
   const login = async (email: string, password: string): Promise<void> => {
@@ -113,11 +138,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       // Store in state and localStorage
       console.log('💾 Storing auth data in state and localStorage...')
+      
+      // Validate data before storing
+      if (!userData || typeof userData !== 'object' || !userData.id) {
+        throw new Error('Invalid user data received from server')
+      }
+      
       setToken(authToken)
       setUser(userData as User)
-      localStorage.setItem('auth-token', authToken)
-      localStorage.setItem('auth-user', JSON.stringify(userData))
-      console.log('✅ Auth data stored successfully')
+      
+      try {
+        localStorage.setItem('auth-token', authToken)
+        const userDataString = JSON.stringify(userData)
+        localStorage.setItem('auth-user', userDataString)
+        console.log('✅ Auth data stored successfully')
+      } catch (storageError) {
+        console.error('Failed to store auth data:', storageError)
+        // Continue without localStorage if it fails
+      }
 
     } catch (error: any) {
       console.error('❌ Login error:', error)
@@ -155,10 +193,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const { token: authToken, user: userData } = responseData
 
       // Store in state and localStorage
+      // Validate data before storing
+      if (!userData || typeof userData !== 'object' || !userData.id) {
+        throw new Error('Invalid user data received from server')
+      }
+      
       setToken(authToken)
       setUser(userData as User)
-      localStorage.setItem('auth-token', authToken)
-      localStorage.setItem('auth-user', JSON.stringify(userData))
+      
+      try {
+        localStorage.setItem('auth-token', authToken)
+        const userDataString = JSON.stringify(userData)
+        localStorage.setItem('auth-user', userDataString)
+      } catch (storageError) {
+        console.error('Failed to store auth data:', storageError)
+        // Continue without localStorage if it fails
+      }
 
     } catch (error: any) {
       console.error('Registration error:', error)
@@ -171,8 +221,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = (): void => {
     setUser(null)
     setToken(null)
-    localStorage.removeItem('auth-token')
-    localStorage.removeItem('auth-user')
+    
+    try {
+      localStorage.removeItem('auth-token')
+      localStorage.removeItem('auth-user')
+    } catch (error) {
+      console.error('Error clearing localStorage on logout:', error)
+      // Continue with logout even if localStorage fails
+    }
+    
     router.push('/auth/login')
   }
 
@@ -225,15 +282,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (!response.ok) {
         const error = await response.json()
+        // If it's an auth error, clear storage and throw
+        if (response.status === 401 || response.status === 403) {
+          try {
+            localStorage.removeItem('auth-token')
+            localStorage.removeItem('auth-user')
+          } catch (storageError) {
+            console.error('Error clearing storage:', storageError)
+          }
+          setUser(null)
+          setToken(null)
+        }
         throw new Error(error.error || 'Profile fetch failed')
       }
 
       const responseData = await response.json()
-      const userData = responseData.user
+      const userData = responseData
+
+      // Validate user data structure
+      if (!userData || typeof userData !== 'object' || !userData.id) {
+        throw new Error('Invalid user data received from server')
+      }
 
       // Update state and localStorage
       setUser(userData as User)
-      localStorage.setItem('auth-user', JSON.stringify(userData))
+      
+      try {
+        const userDataString = JSON.stringify(userData)
+        localStorage.setItem('auth-user', userDataString)
+      } catch (storageError) {
+        console.error('Failed to store user data:', storageError)
+        // Continue without localStorage if it fails
+      }
 
     } catch (error: any) {
       console.error('Profile fetch error:', error)

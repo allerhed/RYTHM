@@ -30,6 +30,31 @@ function DashboardPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState<string | null>(null)
   const [deleting, setDeleting] = React.useState(false)
 
+  // Add storage error handler for this page
+  React.useEffect(() => {
+    const handleStorageError = (event: ErrorEvent) => {
+      if (event.message?.includes('JSON.parse') || 
+          event.message?.includes('[object Object]') ||
+          event.message?.includes('storage') ||
+          event.message?.includes('_storageChangeDispatcher')) {
+        console.warn('Storage error caught on dashboard, redirecting to login:', event.message)
+        event.preventDefault()
+        
+        // Clear corrupted data and redirect
+        try {
+          localStorage.removeItem('auth-token')
+          localStorage.removeItem('auth-user')
+        } catch (e) {}
+        
+        router.push('/auth/login')
+        return false
+      }
+    }
+    
+    window.addEventListener('error', handleStorageError)
+    return () => window.removeEventListener('error', handleStorageError)
+  }, [router])
+
   // Fetch fresh profile data when component mounts
   React.useEffect(() => {
     const loadProfile = async () => {
@@ -37,6 +62,14 @@ function DashboardPage() {
         await fetchProfile()
       } catch (error) {
         console.error('Failed to fetch profile:', error)
+        // If profile fetch fails due to auth issues, logout
+        if (error instanceof Error && (
+            error.message.includes('Invalid token') || 
+            error.message.includes('401') || 
+            error.message.includes('Unauthorized'))) {
+          console.log('Authentication error, logging out...')
+          logout()
+        }
       }
     }
     
@@ -51,8 +84,11 @@ function DashboardPage() {
     
     setLoading(true)
     try {
-      const today = new Date().toISOString().split('T')[0]
-      const response = await fetch(`http://localhost:3001/api/sessions?date=${today}`, {
+      // Use local date instead of UTC to avoid timezone issues
+      const today = new Date()
+      const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+      console.log('Fetching workouts for local date:', localDate)
+      const response = await fetch(`http://localhost:3001/api/sessions?date=${localDate}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
         }
