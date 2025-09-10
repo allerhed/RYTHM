@@ -5,6 +5,7 @@ import { Header } from '../../components/Navigation'
 import { Button } from '../../components/Form'
 import { Avatar } from '../../components/Avatar'
 import { useAuth, withAuth } from '../../contexts/AuthContext'
+import { TrainingScoreWidget } from '../../components/TrainingScoreWidget'
 import { PencilIcon, EyeIcon } from '@heroicons/react/24/outline'
 
 // Simple Card component for the dashboard
@@ -217,80 +218,12 @@ function DashboardPage() {
             </div>
           </div>
 
-          {/* Training Dashboard - full width */}
+          {/* Training Score Widget */}
+          <TrainingScoreWidget onViewAnalytics={() => router.push('/analytics')} />
+
+          {/* Today's Workouts */}
           <Card className="p-6 mb-8">
-              {/* Training Score Header */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Training Score:</span>
-                  <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">Grinding</span>
-                </div>
-                <button 
-                  onClick={() => router.push('/analytics')}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                  title="View Analytics"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Score Display */}
-              <div className="mb-6">
-                <div className="flex items-baseline space-x-3 mb-2">
-                  <span className="text-6xl font-bold text-gray-900 dark:text-gray-100">55</span>
-                  <span className="text-lg text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-                    +0 pts this week
-                  </span>
-                </div>
-                
-                {/* Progress Bar */}
-                <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-6">
-                  <div className="h-full flex">
-                    <div className="w-1/6 bg-teal-500"></div>
-                    <div className="w-1/6 bg-yellow-600"></div>
-                    <div className="w-1/6 bg-green-500"></div>
-                    <div className="w-1/6 bg-blue-500"></div>
-                    <div className="w-1/6 bg-purple-500"></div>
-                    <div className="w-1/6 bg-green-600"></div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Hours Trained</span>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">0h 27m</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">-1h 36m</div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500">2h 3m last week</div>
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Training Load</span>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">18</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">-84</div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500">102 last week</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Today's Workouts Section */}
-              <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
+            <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 text-center">
                   {new Date().toLocaleDateString('sv-SE', { weekday: 'long', month: 'short', day: 'numeric' })}
                 </h3>

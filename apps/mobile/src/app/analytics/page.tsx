@@ -58,14 +58,29 @@ function AnalyticsPage() {
   const router = useRouter()
   const { user } = useAuth()
 
+  // Add error boundary for storage issues
+  React.useEffect(() => {
+    const handleStorageError = (event: ErrorEvent) => {
+      if (event.message?.includes('JSON.parse') || event.message?.includes('storage')) {
+        console.warn('Storage error caught and ignored:', event.message)
+        event.preventDefault()
+        return false
+      }
+    }
+    
+    window.addEventListener('error', handleStorageError)
+    return () => window.removeEventListener('error', handleStorageError)
+  }, [])
+
   // Test tRPC connection first
   const testQuery = trpc.analytics.test.useQuery(undefined, {
     enabled: !!user,
+    retry: 2,
     onSuccess: (data) => {
-      console.log('tRPC test successful:', data)
+      console.log('✅ tRPC test successful:', data)
     },
     onError: (error) => {
-      console.error('tRPC test error:', error)
+      console.error('❌ tRPC test error:', error)
     }
   })
 
@@ -73,8 +88,11 @@ function AnalyticsPage() {
   const trainingLoadQuery = trpc.analytics.trainingLoadChart.useQuery(undefined, {
     enabled: !!user && testQuery.isSuccess, // Only enable if test passes
     staleTime: 5 * 60 * 1000, // 5 minutes
+    onSuccess: (data) => {
+      console.log('✅ Training load data received:', data)
+    },
     onError: (error) => {
-      console.error('Training load query error:', error)
+      console.error('❌ Training load query error:', error)
     }
   })
 
@@ -90,19 +108,30 @@ function AnalyticsPage() {
   const trainingLoadData = trainingLoadQuery.data
   const summaryData = summaryQuery.data
 
-  console.log('Analytics Page Debug:', {
-    user: !!user,
-    loading,
-    testStatus: testQuery.status,
-    testError: testQuery.error,
-    testData: testQuery.data,
-    trainingLoadStatus: trainingLoadQuery.status,
-    trainingLoadError: trainingLoadQuery.error,
-    summaryStatus: summaryQuery.status,
-    summaryError: summaryQuery.error,
-    hasTrainingLoadData: !!trainingLoadData,
-    hasSummaryData: !!summaryData
-  })
+  // Debug: Log activityTime values for the Activity Time chart
+  if (trainingLoadData?.weeklyData) {
+    const last12Weeks = trainingLoadData.weeklyData.slice(-12);
+    console.log('🔍 Activity Time Chart Data (last 12 weeks):', last12Weeks.map(w => ({ 
+      date: w.date, 
+      activityTime: w.activityTime,
+      trainingLoad: w.trainingLoad 
+    })));
+    
+    // Log summary of activity time values
+    const activityTimes = last12Weeks.map(w => w.activityTime || 0);
+    console.log('📊 Activity Time Values:', activityTimes);
+    console.log('📈 Min/Max Activity Time:', { min: Math.min(...activityTimes), max: Math.max(...activityTimes) });
+    
+    // Log the specific data we expect from API debug: [156, 0, 180] minutes
+    const last3Weeks = last12Weeks.slice(-3);
+    console.log('🎯 Last 3 Weeks Activity Time (should be ~[156, 0, 180]):', last3Weeks.map(w => w.activityTime));
+  }
+
+  // Defensive data checking
+  const hasValidData = trainingLoadData?.weeklyData && Array.isArray(trainingLoadData.weeklyData) && 
+                      summaryData?.currentPeriod && summaryData?.previousPeriod
+
+
 
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60)
@@ -172,7 +201,7 @@ function AnalyticsPage() {
     )
   }
 
-  if (!trainingLoadData || !summaryData) {
+  if (!hasValidData) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="bg-white dark:bg-gray-800 shadow-sm">
@@ -191,7 +220,7 @@ function AnalyticsPage() {
           </div>
         </div>
         <div className="p-4 text-center text-gray-500">
-          No data available
+          {!trainingLoadData || !summaryData ? 'No data available' : 'Loading analytics data...'}
         </div>
       </div>
     )
@@ -246,9 +275,10 @@ function AnalyticsPage() {
             <div className="flex-1">
               <div className="flex items-end justify-between h-48 mb-4 border-l border-gray-700">
                 {trainingLoadData.weeklyData.slice(-12).map((week: any, index: number) => {
-                  const maxLoad = Math.max(600, Math.max(...trainingLoadData.weeklyData.map((w: any) => w.trainingLoad)) * 1.2) // Dynamic scale
-                  const cardioHeight = Math.max((week.cardioLoad / maxLoad) * 180, week.cardioLoad > 0 ? 8 : 0)
-                  const strengthHeight = Math.max((week.strengthLoad / maxLoad) * 180, week.strengthLoad > 0 ? 8 : 0)
+                  const weeklyLoads = trainingLoadData.weeklyData.map((w: any) => w.trainingLoad || 0)
+                  const maxLoad = Math.max(600, Math.max(...weeklyLoads) * 1.2) // Dynamic scale
+                  const cardioHeight = Math.max(((week.cardioLoad || 0) / maxLoad) * 180, (week.cardioLoad || 0) > 0 ? 8 : 0)
+                  const strengthHeight = Math.max(((week.strengthLoad || 0) / maxLoad) * 180, (week.strengthLoad || 0) > 0 ? 8 : 0)
                   
                   return (
                     <div key={index} className="flex flex-col items-center space-y-2 ml-1">
@@ -363,99 +393,42 @@ function AnalyticsPage() {
 
         {/* Activity Time Widget */}
         <div className="bg-gray-800 rounded-2xl p-6 text-white">
-          <h2 className="text-xl font-bold mb-6">Activity Time</h2>
+          <h2 className="text-xl font-bold mb-2">Activity Time</h2>
+          <p className="text-sm text-gray-400 mb-6">Weekly activity time for the past 3 months</p>
           
           {/* Y-axis labels */}
           <div className="flex mb-4">
             <div className="w-12 flex flex-col justify-between text-xs text-gray-400 h-48">
-              <span>12h 30m</span>
               <span>10h</span>
-              <span>7h 30m</span>
-              <span>5h</span>
-              <span>2h 30m</span>
+              <span>8h</span>
+              <span>6h</span>
+              <span>4h</span>
+              <span>2h</span>
               <span>0h</span>
             </div>
             
-            {/* Chart Area with Line Graph */}
-            <div className="flex-1 relative">
-              <div className="h-48 mb-4 border-l border-gray-700 relative">
-                {/* Grid lines */}
-                {[0, 1, 2, 3, 4, 5].map((line) => (
-                  <div
-                    key={line}
-                    className="absolute w-full border-t border-gray-700 opacity-30"
-                    style={{ top: `${line * 36}px` }}
-                  />
-                ))}
-                
-                {/* Current period line (lime) */}
-                <svg className="absolute inset-0 w-full h-full">
-                  <defs>
-                    <linearGradient id="currentGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: '#84cc16', stopOpacity: 0.3 }} />
-                      <stop offset="100%" style={{ stopColor: '#84cc16', stopOpacity: 0 }} />
-                    </linearGradient>
-                  </defs>
+            {/* Chart Area */}
+            <div className="flex-1">
+              <div className="flex items-end justify-between h-48 mb-4 border-l border-gray-700">
+                {trainingLoadData.weeklyData.slice(-12).map((week: any, index: number) => {
+                  const weeklyTimes = trainingLoadData.weeklyData.map((w: any) => w.activityTime || 0)
+                  const maxTime = Math.max(600, Math.max(...weeklyTimes) * 1.2)
+                  const timeHeight = Math.max(((week.activityTime || 0) / maxTime) * 180, (week.activityTime || 0) > 0 ? 8 : 0)
                   
-                  {/* Current period area fill */}
-                  <path
-                    d={`M20,180 L80,120 L140,150 L200,60 L260,120 L320,180 L320,192 L20,192 Z`}
-                    fill="url(#currentGradient)"
-                  />
-                  
-                  {/* Current period line */}
-                  <path
-                    d={`M20,180 L80,120 L140,150 L200,60 L260,120 L320,180`}
-                    stroke="#84cc16"
-                    strokeWidth="3"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  
-                  {/* Previous period line (blue) */}
-                  <path
-                    d={`M20,170 L80,140 L140,100 L200,80 L260,160 L320,90`}
-                    stroke="#3b82f6"
-                    strokeWidth="3"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  
-                  {/* Data points for current */}
-                  {[{x: 20, y: 180}, {x: 80, y: 120}, {x: 140, y: 150}, {x: 200, y: 60}, {x: 260, y: 120}, {x: 320, y: 180}].map((point, idx) => (
-                    <circle
-                      key={`current-${idx}`}
-                      cx={point.x}
-                      cy={point.y}
-                      r="4"
-                      fill="#84cc16"
-                      stroke="#ffffff"
-                      strokeWidth="2"
-                    />
-                  ))}
-                  
-                  {/* Data points for previous */}
-                  {[{x: 20, y: 170}, {x: 80, y: 140}, {x: 140, y: 100}, {x: 200, y: 80}, {x: 260, y: 160}, {x: 320, y: 90}].map((point, idx) => (
-                    <circle
-                      key={`previous-${idx}`}
-                      cx={point.x}
-                      cy={point.y}
-                      r="4"
-                      fill="#3b82f6"
-                      stroke="#ffffff"
-                      strokeWidth="2"
-                    />
-                  ))}
-                </svg>
-              </div>
-              
-              {/* X-axis labels */}
-              <div className="flex justify-between text-xs text-gray-300 ml-4">
-                {trainingLoadData.weeklyData.slice(-6).map((week: any, index: number) => (
-                  <span key={index}>{formatDate(week.date)}</span>
-                ))}
+                  return (
+                    <div key={index} className="flex flex-col items-center space-y-2 ml-1">
+                      <div className="flex flex-col-reverse items-center">
+                        <div
+                          className="w-6 bg-lime-500 rounded-sm transition-all duration-500"
+                          style={{ height: `${timeHeight}px` }}
+                        />
+                      </div>
+                      <span className="text-xs text-gray-300 transform rotate-45 origin-bottom-left mt-2">
+                        {formatDate(week.date)}
+                      </span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -464,11 +437,7 @@ function AnalyticsPage() {
           <div className="flex space-x-4 mb-6">
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-lime-500 rounded"></div>
-              <span className="text-sm">Current</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-blue-500 rounded"></div>
-              <span className="text-sm">Previous</span>
+              <span className="text-sm">Activity Time</span>
             </div>
           </div>
 
@@ -479,6 +448,7 @@ function AnalyticsPage() {
             </div>
             <div className="space-y-1">
               <div className="text-2xl font-bold">{formatTime(summaryData.currentPeriod.activityTime)}</div>
+              <div className="text-sm text-gray-400">vs. previous 6 months</div>
               <div className="text-lg text-gray-300">{formatTime(summaryData.previousPeriod.activityTime)}</div>
             </div>
           </div>

@@ -35,15 +35,15 @@ RUN npm run build --workspace=@rythm/api
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 apiuser
 
-# Copy built application and maintain workspace structure
-COPY --from=builder --chown=apiuser:nodejs /app/apps/api/dist ./dist
-COPY --from=builder --chown=apiuser:nodejs /app/apps/api/package.json ./package.json
+# Copy root package.json and workspace structure
+COPY --from=builder --chown=apiuser:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=apiuser:nodejs /app/apps/api ./apps/api
 COPY --from=builder --chown=apiuser:nodejs /app/packages/shared ./packages/shared
 COPY --from=builder --chown=apiuser:nodejs /app/packages/db ./packages/db
 COPY --from=deps --chown=apiuser:nodejs /app/node_modules ./node_modules
@@ -52,6 +52,6 @@ USER apiuser
 
 EXPOSE 3001
 
-ENV PORT 3001
+ENV PORT=3001
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "apps/api/dist/index.js"]

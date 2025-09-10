@@ -221,6 +221,105 @@ export const analyticsRouter = router({
       return { message: 'Analytics tRPC is working!', userId: ctx.user.userId };
     }),
 
+  // Training Score endpoint
+  trainingScore: protectedProcedure
+    .query(async ({ ctx }) => {
+      // Helper function to get Monday of a week
+      const getMondayOfWeek = (date: Date) => {
+        const d = new Date(date)
+        const day = d.getDay()
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+        return new Date(d.setDate(diff))
+      }
+
+      const now = new Date()
+      const currentMonday = getMondayOfWeek(now)
+      
+      // Current week (this week)
+      const currentWeekStart = new Date(currentMonday)
+      const currentWeekEnd = new Date(currentWeekStart)
+      currentWeekEnd.setDate(currentWeekEnd.getDate() + 6)
+      currentWeekEnd.setHours(23, 59, 59, 999)
+
+      // Last week
+      const lastWeekStart = new Date(currentMonday)
+      lastWeekStart.setDate(lastWeekStart.getDate() - 7)
+      const lastWeekEnd = new Date(lastWeekStart)
+      lastWeekEnd.setDate(lastWeekEnd.getDate() + 6)
+      lastWeekEnd.setHours(23, 59, 59, 999)
+
+      // Query for current week sessions
+      const currentWeekQuery = `
+        SELECT 
+          s.training_load
+        FROM sessions s
+        WHERE s.user_id = $1 
+          AND s.started_at >= $2 
+          AND s.started_at <= $3
+          AND s.training_load IS NOT NULL
+      `
+
+      // Query for last week sessions
+      const lastWeekQuery = `
+        SELECT 
+          s.training_load
+        FROM sessions s
+        WHERE s.user_id = $1 
+          AND s.started_at >= $2 
+          AND s.started_at <= $3
+          AND s.training_load IS NOT NULL
+      `
+
+      const [currentWeekResult, lastWeekResult] = await Promise.all([
+        ctx.db.query(currentWeekQuery, [ctx.user.userId, currentWeekStart.toISOString(), currentWeekEnd.toISOString()]),
+        ctx.db.query(lastWeekQuery, [ctx.user.userId, lastWeekStart.toISOString(), lastWeekEnd.toISOString()])
+      ])
+
+      // Calculate total training loads
+      const currentWeekLoad = currentWeekResult.rows.reduce((sum: number, row: any) => {
+        return sum + (parseInt(row.training_load) || 0)
+      }, 0)
+
+      const lastWeekLoad = lastWeekResult.rows.reduce((sum: number, row: any) => {
+        return sum + (parseInt(row.training_load) || 0)
+      }, 0)
+
+      // Determine training score category
+      const getTrainingScoreCategory = (load: number) => {
+        if (load >= 601) return { category: 'Maniacal', min: 601, max: null, color: '#8B5CF6' }
+        if (load >= 501) return { category: 'Locked In', min: 501, max: 600, color: '#3B82F6' }
+        if (load >= 401) return { category: 'Grinding', min: 401, max: 500, color: '#10B981' }
+        if (load >= 301) return { category: 'Consistent', min: 301, max: 400, color: '#F59E0B' }
+        if (load >= 201) return { category: 'Active', min: 201, max: 300, color: '#EF4444' }
+        return { category: 'Aspiring', min: 0, max: 200, color: '#6B7280' }
+      }
+
+      const currentScore = getTrainingScoreCategory(currentWeekLoad)
+      const lastScore = getTrainingScoreCategory(lastWeekLoad)
+
+      // Calculate percentage change
+      const percentageChange = lastWeekLoad > 0 
+        ? ((currentWeekLoad - lastWeekLoad) / lastWeekLoad) * 100 
+        : currentWeekLoad > 0 ? 100 : 0
+
+      return {
+        currentWeek: {
+          load: currentWeekLoad,
+          score: currentScore,
+          sessions: currentWeekResult.rows.length
+        },
+        lastWeek: {
+          load: lastWeekLoad,
+          score: lastScore,
+          sessions: lastWeekResult.rows.length
+        },
+        change: {
+          absolute: currentWeekLoad - lastWeekLoad,
+          percentage: Math.round(percentageChange)
+        }
+      }
+    }),
+
   trainingLoadChart: protectedProcedure
     .query(async ({ ctx }) => {
       // Helper function to get Monday of a week
@@ -231,7 +330,7 @@ export const analyticsRouter = router({
         return new Date(d.setDate(diff))
       }
 
-      // Fetch all sessions with their sets data for the last 6 months
+      // Fetch all sessions with their sets data for the last 6 months (to get both current and previous periods)
       const sixMonthsAgo = new Date()
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
 
@@ -266,17 +365,37 @@ export const analyticsRouter = router({
       const now = new Date()
       const currentMonday = getMondayOfWeek(now)
 
-      // Generate weekly data for the chart (last 12 weeks)
+      // Define periods for comparison
+      const threeMonthsAgo = new Date()
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+      
+      // Filter sessions for current period (last 3 months) and previous period (3-6 months ago)
+      const currentPeriodSessions = sessions.filter((s: any) => {
+        const date = new Date(s.started_at)
+        return date >= threeMonthsAgo
+      })
+      
+      const previousPeriodSessions = sessions.filter((s: any) => {
+        const date = new Date(s.started_at)
+        return date >= sixMonthsAgo && date < threeMonthsAgo
+      })
+
+      // Generate weekly data for the chart (past 3 months only - approximately 13 weeks)
       const weeklyData = []
       
-      for (let i = 11; i >= 0; i--) {
+      for (let i = 12; i >= 0; i--) {
         const weekStart = new Date(currentMonday)
         weekStart.setDate(weekStart.getDate() - (i * 7))
         const weekEnd = new Date(weekStart)
         weekEnd.setDate(weekEnd.getDate() + 6)
         weekEnd.setHours(23, 59, 59, 999) // Include full last day
 
-        const weekSessions = sessions.filter((s: any) => {
+        // Only include weeks from the current period (past 3 months)
+        if (weekStart < threeMonthsAgo) {
+          continue
+        }
+
+        const weekSessions = currentPeriodSessions.filter((s: any) => {
           const date = new Date(s.started_at)
           return date >= weekStart && date <= weekEnd
         })
@@ -290,14 +409,13 @@ export const analyticsRouter = router({
           return sum + trainingLoad
         }, 0)
         
-        // Calculate activity time from session duration or sets duration
+        // Calculate activity time from session duration_seconds field (convert to minutes)
         const actualTime = weekSessions.reduce((sum: number, s: any) => {
-          // First try session duration_seconds, then sets duration, then estimate
-          const sessionDuration = parseInt(s.duration_seconds) || 0
-          const setsDuration = parseFloat(s.sets_duration_s) || 0
-          const estimatedDuration = sessionDuration || setsDuration || (parseInt(s.total_sets) || 0) * 180
-          return sum + estimatedDuration
-        }, 0) / 60 // convert to minutes
+          const sessionDurationMinutes = (parseInt(s.duration_seconds) || 0) / 60
+          return sum + sessionDurationMinutes
+        }, 0)
+        
+
 
         const cardioLoad = cardioSessions.reduce((sum: number, s: any) => {
           const trainingLoad = parseInt(s.training_load) || 0
@@ -309,15 +427,7 @@ export const analyticsRouter = router({
           return sum + trainingLoad
         }, 0)
 
-        // Debug logging for the current week
-        if (i === 0) {
-          console.log(`Current week (${weekStart.toISOString().split('T')[0]} to ${weekEnd.toISOString().split('T')[0]}):`)
-          console.log(`- Sessions found: ${weekSessions.length}`)
-          weekSessions.forEach((s: any) => {
-            console.log(`  - ${s.started_at}: ${s.category}, training_load: ${s.training_load}, ${s.total_sets} sets`)
-          })
-          console.log(`- Total training load: ${actualLoad}`)
-        }
+
 
         weeklyData.push({
           date: weekStart.toISOString().split('T')[0],
@@ -326,10 +436,37 @@ export const analyticsRouter = router({
           cardioLoad: cardioLoad,
           strengthLoad: strengthLoad
         })
+
+
       }
+
+      // Calculate summary stats for comparison
+      const currentPeriodStats = {
+        totalSessions: currentPeriodSessions.length,
+        totalTrainingLoad: currentPeriodSessions.reduce((sum: number, s: any) => sum + (parseInt(s.training_load) || 0), 0),
+        totalActivityTime: currentPeriodSessions.reduce((sum: number, s: any) => sum + ((parseInt(s.duration_seconds) || 0) / 60), 0)
+      }
+
+      const previousPeriodStats = {
+        totalSessions: previousPeriodSessions.length,
+        totalTrainingLoad: previousPeriodSessions.reduce((sum: number, s: any) => sum + (parseInt(s.training_load) || 0), 0),
+        totalActivityTime: previousPeriodSessions.reduce((sum: number, s: any) => sum + ((parseInt(s.duration_seconds) || 0) / 60), 0)
+      }
+
+      // Debug: Log activity time data to verify real values
+      console.log('� Activity Time Debug:', {
+        totalWeeks: weeklyData.length,
+        last3Weeks: weeklyData.slice(-3).map(w => ({
+          date: w.date,
+          activityTime: w.activityTime,
+          trainingLoad: w.trainingLoad
+        }))
+      })
 
       return {
         weeklyData,
+        currentPeriod: currentPeriodStats,
+        previousPeriod: previousPeriodStats,
         totalSessions: sessions.length
       }
     }),
@@ -418,12 +555,12 @@ export const analyticsRouter = router({
 
       const now = new Date()
       
-      // Define periods: last 3 months vs previous 3 months
+      // Define periods: last 3 months vs previous 6 months (for activity time comparison)
       const currentPeriodStart = new Date()
       currentPeriodStart.setMonth(currentPeriodStart.getMonth() - 3)
       
       const previousPeriodStart = new Date()
-      previousPeriodStart.setMonth(previousPeriodStart.getMonth() - 6)
+      previousPeriodStart.setMonth(previousPeriodStart.getMonth() - 9) // 9 months ago to get 6 months of data
       
       const previousPeriodEnd = new Date(currentPeriodStart)
 
@@ -442,29 +579,17 @@ export const analyticsRouter = router({
       const calculatePeriodMetrics = (periodSessions: any[]) => {
         let totalDistance = 0
         let totalWeight = 0
-        let totalDuration = 0
-        let totalSets = 0
 
         // Process each session's exercises and sets
         periodSessions.forEach((session: any) => {
           session.exercises?.forEach((exercise: any) => {
             exercise.sets?.forEach((set: any) => {
-              totalSets++
-              
               // Extract distance (convert from meters to km)
               if (set.value_1_type === 'distance_m' && set.value_1_numeric) {
                 totalDistance += parseFloat(set.value_1_numeric) / 1000
               }
               if (set.value_2_type === 'distance_m' && set.value_2_numeric) {
                 totalDistance += parseFloat(set.value_2_numeric) / 1000
-              }
-              
-              // Extract duration (convert from seconds to minutes)
-              if (set.value_1_type === 'duration_s' && set.value_1_numeric) {
-                totalDuration += parseFloat(set.value_1_numeric) / 60
-              }
-              if (set.value_2_type === 'duration_s' && set.value_2_numeric) {
-                totalDuration += parseFloat(set.value_2_numeric) / 60
               }
               
               // Extract weight calculations (weight * reps)
@@ -491,12 +616,11 @@ export const analyticsRouter = router({
           return sum + (parseInt(session.training_load) || 0)
         }, 0)
         
-        // Use session duration or sets duration, then fallback to estimates
+        // Calculate activity time from session duration_seconds field (convert to minutes)
         const actualTime = periodSessions.reduce((sum: number, session: any) => {
-          const sessionDuration = parseInt(session.duration_seconds) || 0
-          const estimatedDuration = sessionDuration || totalDuration * 60 || 3600 // 1 hour default
-          return sum + estimatedDuration
-        }, 0) / 60 // convert to minutes
+          const sessionDurationMinutes = (parseInt(session.duration_seconds) || 0) / 60
+          return sum + sessionDurationMinutes
+        }, 0)
         
         // Use real data, fallback to estimates only if no data exists
         const finalDistance = totalDistance > 0 ? totalDistance : (periodSessions.filter(s => s.category === 'cardio').length * 5.2)
