@@ -1,0 +1,70 @@
+name,exercise_category,exercise_type,muscle_groups,equipment,default_value_1_type,default_value_2_type,notes
+Double-Under,cardio,CARDIO,calves|shoulders|forearms,Jump Rope,reps,duration_s,Double jump rope revolution per jump
+Echo Bike,cardio,CARDIO,legs|arms|core,Echo Bike,calories,duration_s,Full body cardio exercise
+Row,cardio,CARDIO,lats|rhomboids|legs,Rowing Machine,distance_m,duration_s,Full body rowing exercise
+Run,cardio,CARDIO,legs|glutes|calves,None,distance_m,duration_s,Running for cardiovascular fitness
+Single-Under,cardio,CARDIO,calves|shoulders|forearms,Jump Rope,reps,duration_s,Single jump rope revolution per jump
+Ski-erg,cardio,CARDIO,lats|core|legs,Ski Erg Machine,calories,duration_s,Full body pulling cardio
+Back Squat,strength,STRENGTH,quadriceps|glutes|hamstrings,"Barbell, Squat Rack",weight_kg,reps,Compound lower body strength exercise
+"Banded Y,T,W",strength,STRENGTH,rear_delts|rhomboids|mid_traps,Resistance Bands,reps,,Shoulder rehabilitation exercise
+Bar Dip,strength,STRENGTH,chest|triceps|shoulders,Parallel Bars,reps,,Dips performed on parallel bars
+Bar Muscle-Up,strength,STRENGTH,lats|chest|triceps|core,Pull-Up Bar,reps,,Pull-up to dip transition on bar
+Bar-Facing Burpee,strength,STRENGTH,chest|legs|core,Barbell,reps,,Burpee facing and jumping over barbell
+Bench Press,strength,STRENGTH,chest|triceps|shoulders,"Barbell, Bench",weight_kg,reps,Compound chest exercise
+Box Jump,strength,STRENGTH,legs|glutes|calves,Box,reps,,Explosive lower body power exercise
+Box Jump Over,strength,STRENGTH,legs|glutes|calves,Box,reps,,Box jump with step or jump over
+Bulgarian Split Squat,strength,STRENGTH,quadriceps|glutes|hamstrings,"Dumbbells, Bench",weight_kg,reps,Unilateral leg strength exercise
+Burpee,strength,STRENGTH,chest|legs|core,Bodyweight,reps,,Full body burpee movement
+Butterfly Pull-Up,strength,STRENGTH,lats|rhomboids|core,Pull-Up Bar,reps,,Continuous butterfly pull-up
+Cable Triceps Push,strength,STRENGTH,triceps,Cable Machine,weight_kg,reps,Isolated triceps exercise
+Chest-to-Bar Pull-Up,strength,STRENGTH,lats|rhomboids|biceps,Pull-Up Bar,reps,,Pull-up with chest touching bar
+Cross Body Rear Delt Cable,strength,STRENGTH,rear_delts|rhomboids,Cable Machine,weight_kg,reps,Rear deltoid isolation
+Deadlift,strength,STRENGTH,hamstrings|glutes|lower_back|traps,Barbell,weight_kg,reps,Full body compound movement
+Dumbbell Biceps Curl,strength,STRENGTH,biceps,Dumbbells,weight_kg,reps,Isolated biceps exercise
+Farmers Carry,strength,STRENGTH,traps|forearms|core,Dumbbells/Kettlebells,weight_kg,distance_m,Grip and core strength
+Front Squat,strength,STRENGTH,quadriceps|glutes|core|shoulders,"Barbell, Squat Rack",weight_kg,reps,Front-loaded squat variation with increased core demand
+GHD Back,strength,STRENGTH,lower_back|glutes|hamstrings,GHD Machine,reps,,Posterior chain strengthening
+GHD Situps,strength,STRENGTH,abs|hip_flexors,GHD Machine,reps,,Core strengthening exercise
+Handstand Walk,strength,STRENGTH,shoulders|core|wrists,Open Space,distance_m,,Walking on hands in handstand position
+Incline Dumbbell Press,strength,STRENGTH,chest|shoulders|triceps,"Dumbbells, Incline Bench",weight_kg,reps,Upper chest focused press
+Kipping Handstand Push-Up,strength,STRENGTH,shoulders|triceps|core,Wall,reps,,Kipping handstand push-up with leg drive
+Kipping Pull-Up,strength,STRENGTH,lats|rhomboids|core,Pull-Up Bar,reps,,Dynamic kipping pull-up
+Landmine Chest Press,strength,STRENGTH,chest|shoulders|core,"Barbell, Landmine",weight_kg,reps,Chest focused landmine press
+Landmine Press,strength,STRENGTH,shoulders|chest|core,"Barbell, Landmine",weight_kg,reps,Unilateral pressing movement
+Lat Pull Down Narrow,strength,STRENGTH,lats|rhomboids|biceps,Cable Machine,weight_kg,reps,Narrow grip lat pulldown
+Lat Pull Down Wide,strength,STRENGTH,lats|rhomboids|biceps,Cable Machine,weight_kg,reps,Wide grip lat pulldown
+Lateral Burpee,strength,STRENGTH,chest|legs|core,Bodyweight,reps,,Burpee with lateral movement
+Leaning Flyes,strength,STRENGTH,chest|front_delts,Dumbbells,weight_kg,reps,Chest isolation exercise
+Leg Curl,strength,STRENGTH,hamstrings,Leg Curl Machine,weight_kg,reps,Isolated hamstring exercise
+Leg Extensions,strength,STRENGTH,quadriceps,Leg Extension Machine,weight_kg,reps,Isolated quadriceps exercise
+Med-ball Chest Pass,strength,STRENGTH,chest|shoulders|core,Medicine Ball,weight_kg,reps,Explosive chest exercise
+Overhead Squat,strength,STRENGTH,quadriceps|glutes|shoulders|core,Barbell,weight_kg,reps,Full body mobility and strength exercise
+Pallof Press,strength,STRENGTH,core|obliques,Cable Machine,weight_kg,reps,Anti-rotation core exercise
+Power Clean,strength,STRENGTH,hamstrings|glutes|traps|shoulders,Barbell,weight_kg,reps,Explosive Olympic lift variation
+Power Snatch,strength,STRENGTH,hamstrings|glutes|traps|shoulders,Barbell,weight_kg,reps,Power position snatch Olympic lift
+Push Jerk,strength,STRENGTH,shoulders|triceps|legs|core,Barbell,weight_kg,reps,Explosive overhead pressing movement
+Push Press,strength,STRENGTH,shoulders|triceps|legs|core,Barbell,weight_kg,reps,Leg drive assisted overhead press
+Push-ups,strength,STRENGTH,chest|triceps|shoulders,Bodyweight,reps,,Bodyweight pushing exercise
+Ring Dip,strength,STRENGTH,chest|triceps|shoulders,Gymnastic Rings,reps,,Dips performed on gymnastic rings
+Ring Muscle-Up,strength,STRENGTH,lats|chest|triceps|core,Gymnastic Rings,reps,,Pull-up to dip transition on rings
+Ring Rows,strength,STRENGTH,rhomboids|lats|biceps,Gymnastic Rings,reps,,Bodyweight horizontal pull
+Rope Climb,strength,STRENGTH,lats|biceps|forearms|core,Climbing Rope,distance_m,,Rope climbing exercise
+Seated Row,strength,STRENGTH,rhomboids|mid_traps|biceps,Cable Machine,weight_kg,reps,Horizontal pulling exercise
+Seated Trap Pull,strength,STRENGTH,traps|rhomboids|rear_delts,Cable Machine,weight_kg,reps,Upper trap focused exercise
+Seated Z-press,strength,STRENGTH,shoulders|triceps|core,"Barbell, Bench",weight_kg,reps,Strict overhead press variation
+Shoulder Y,strength,STRENGTH,shoulders|traps,Dumbbells,weight_kg,reps,Shoulder stability exercise
+Sit-Up,strength,STRENGTH,abs|hip_flexors,Bodyweight,reps,,Traditional sit-up exercise
+Sled Pull,strength,STRENGTH,lats|rhomboids|legs,Weight Sled,weight_kg,distance_m,Functional pulling exercise
+Sled Push,strength,STRENGTH,legs|glutes|core,Weight Sled,weight_kg,distance_m,Functional pushing exercise
+Split Jerk,strength,STRENGTH,shoulders|triceps|legs|core,Barbell,weight_kg,reps,Split stance overhead jerk
+Squat Clean,strength,STRENGTH,hamstrings|glutes|quadriceps|traps|shoulders,Barbell,weight_kg,reps,Full squat clean Olympic lift
+Squat Snatch,strength,STRENGTH,hamstrings|glutes|quadriceps|traps|shoulders,Barbell,weight_kg,reps,Full squat snatch Olympic lift
+Standing Overhead Press,strength,STRENGTH,shoulders|triceps|core,Barbell,weight_kg,reps,Full body overhead pressing
+Strict Handstand Push-Up,strength,STRENGTH,shoulders|triceps|core,Wall,reps,,Strict handstand push-up against wall
+Strict Press,strength,STRENGTH,shoulders|triceps|core,Barbell,weight_kg,reps,Strict overhead barbell press
+Strict Pull-Up,strength,STRENGTH,lats|rhomboids|biceps,Pull-Up Bar,reps,,Dead hang strict pull-up
+Sumo Deadlift High Pull,strength,STRENGTH,hamstrings|glutes|traps|rhomboids,Barbell,weight_kg,reps,Wide stance deadlift with high pull
+Thruster,strength,STRENGTH,quadriceps|glutes|shoulders|triceps,Barbell,weight_kg,reps,Front squat to overhead press combination
+Toes-to-Bar,strength,STRENGTH,abs|hip_flexors|lats,Pull-Up Bar,reps,,Hanging toes to bar movement
+Wall Ball Shot,strength,STRENGTH,legs|shoulders|core,"Medicine Ball, Wall",weight_kg,reps,Squat to overhead throw against wall
+Wall-balls,strength,STRENGTH,legs|shoulders|core,Medicine Ball,weight_kg,reps,Full body explosive exercise
