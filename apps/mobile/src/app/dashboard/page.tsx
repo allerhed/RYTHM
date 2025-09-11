@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '../../components/Navigation'
 import { Button } from '../../components/Form'
@@ -30,13 +30,14 @@ function DashboardPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState<string | null>(null)
   const [deleting, setDeleting] = React.useState(false)
 
-  // Week navigation state
   const [selectedWeekStart, setSelectedWeekStart] = React.useState(() => {
     // Get Monday of current week
     const now = new Date()
     const currentDay = now.getDay()
     const diff = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1) // adjust when day is Sunday
-    return new Date(now.setDate(diff))
+    const mondayDate = new Date(now.getTime()) // Create a copy
+    mondayDate.setDate(diff)
+    return mondayDate
   })
   
   const [selectedDayIndex, setSelectedDayIndex] = React.useState(() => {
@@ -48,10 +49,11 @@ function DashboardPage() {
 
   // Helper functions for week navigation
   const getMondayOfWeek = (date: Date) => {
-    const d = new Date(date)
+    const d = new Date(date.getTime()) // Create a copy to avoid mutation
     const day = d.getDay()
     const diff = d.getDate() - day + (day === 0 ? -6 : 1)
-    return new Date(d.setDate(diff))
+    d.setDate(diff)
+    return d
   }
 
   const getCurrentWeekStart = () => {
@@ -101,19 +103,60 @@ function DashboardPage() {
     return Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7)
   }
 
+  // Effect to debug state changes and ensure correct day highlighting
+  useEffect(() => {
+    const currentWeekMonday = getMondayOfWeek(new Date())
+    const isCurrentWeek = currentWeekMonday.toDateString() === selectedWeekStart.toDateString()
+    
+    console.log('State update - selectedWeekStart:', selectedWeekStart.toDateString(), 'selectedDayIndex:', selectedDayIndex, 'isCurrentWeek:', isCurrentWeek)
+    
+    // Additional check: if we're on current week but selectedDayIndex is 0 (Monday), 
+    // and today is not Monday, fix it
+    if (isCurrentWeek) {
+      const today = new Date()
+      const currentDay = today.getDay()
+      const expectedDayIndex = currentDay === 0 ? 6 : currentDay - 1
+      
+      console.log('Current week check - today is day', currentDay, 'expectedDayIndex:', expectedDayIndex, 'selectedDayIndex:', selectedDayIndex)
+      
+      if (selectedDayIndex !== expectedDayIndex) {
+        console.log('Correcting selectedDayIndex from', selectedDayIndex, 'to', expectedDayIndex)
+        // Use setTimeout to avoid infinite loops
+        setTimeout(() => {
+          setSelectedDayIndex(expectedDayIndex)
+        }, 0)
+      }
+    }
+  }, [selectedWeekStart, selectedDayIndex])
+
   // Navigation handlers
   const navigateToPreviousWeek = () => {
     const newWeekStart = new Date(selectedWeekStart)
     newWeekStart.setDate(newWeekStart.getDate() - 7)
-    setSelectedWeekStart(newWeekStart)
     
-    // If moving to current week, set selected day to today
-    if (getMondayOfWeek(new Date()).getTime() === newWeekStart.getTime()) {
-      const now = new Date()
-      const currentDay = now.getDay()
-      setSelectedDayIndex(currentDay === 0 ? 6 : currentDay - 1)
+    // Calculate what day should be selected
+    const today = new Date()
+    const currentWeekMonday = getMondayOfWeek(today)
+    const isMovingToCurrentWeek = currentWeekMonday.toDateString() === newWeekStart.toDateString()
+    
+    console.log('navigateToPreviousWeek:', {
+      newWeekStart: newWeekStart.toDateString(),
+      currentWeekMonday: currentWeekMonday.toDateString(),
+      isMovingToCurrentWeek,
+      todayDay: today.getDay()
+    })
+    
+    // Update both states in one batch
+    if (isMovingToCurrentWeek) {
+      const currentDay = today.getDay()
+      const todayIndex = currentDay === 0 ? 6 : currentDay - 1
+      console.log('Moving to current week - setting selectedDayIndex to', todayIndex, 'for day', currentDay)
+      
+      setSelectedWeekStart(newWeekStart)
+      setSelectedDayIndex(todayIndex)
     } else {
-      // For non-current weeks, default to Monday (index 0)
+      console.log('Moving to non-current week - setting selectedDayIndex to 0 (Monday)')
+      setSelectedWeekStart(newWeekStart)
       setSelectedDayIndex(0)
     }
   }
@@ -121,15 +164,30 @@ function DashboardPage() {
   const navigateToNextWeek = () => {
     const newWeekStart = new Date(selectedWeekStart)
     newWeekStart.setDate(newWeekStart.getDate() + 7)
-    setSelectedWeekStart(newWeekStart)
     
-    // If moving to current week, set selected day to today
-    if (getMondayOfWeek(new Date()).getTime() === newWeekStart.getTime()) {
-      const now = new Date()
-      const currentDay = now.getDay()
-      setSelectedDayIndex(currentDay === 0 ? 6 : currentDay - 1)
+    // Calculate what day should be selected
+    const today = new Date()
+    const currentWeekMonday = getMondayOfWeek(today)
+    const isMovingToCurrentWeek = currentWeekMonday.toDateString() === newWeekStart.toDateString()
+    
+    console.log('navigateToNextWeek:', {
+      newWeekStart: newWeekStart.toDateString(),
+      currentWeekMonday: currentWeekMonday.toDateString(),
+      isMovingToCurrentWeek,
+      todayDay: today.getDay()
+    })
+    
+    // Update both states in one batch
+    if (isMovingToCurrentWeek) {
+      const currentDay = today.getDay()
+      const todayIndex = currentDay === 0 ? 6 : currentDay - 1
+      console.log('Moving to current week - setting selectedDayIndex to', todayIndex, 'for day', currentDay)
+      
+      setSelectedWeekStart(newWeekStart)
+      setSelectedDayIndex(todayIndex)
     } else {
-      // For non-current weeks, default to Monday (index 0)
+      console.log('Moving to non-current week - setting selectedDayIndex to 0 (Monday)')
+      setSelectedWeekStart(newWeekStart)
       setSelectedDayIndex(0)
     }
   }

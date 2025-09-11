@@ -158,7 +158,8 @@ function ViewWorkoutPage() {
   const formatSetValue = (type: string | null, value: number | null, exerciseType?: string | null, isValue1?: boolean) => {
     if (value === null) return '-'
     
-    return `${value}`
+    // Format as whole number (remove decimals)
+    return Math.round(value).toString()
   }
 
   if (loading) {

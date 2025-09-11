@@ -416,7 +416,7 @@ export default function EditWorkoutPage() {
 
       if (response.ok) {
         const savedWorkout = await response.json()
-        router.push(`/training/view/${sessionId}`)
+        router.push('/dashboard')
       } else {
         const error = await response.json()
         alert(`Failed to update workout: ${error.message || 'Unknown error'}`)
@@ -1007,8 +1007,8 @@ function SetRow({
         </button>
         <input
           type="number"
-          value={set.value1 || ''}
-          onChange={(e) => onUpdateSet(set.id, 'value1', parseFloat(e.target.value) || 0)}
+          value={set.value1 ? Math.round(set.value1).toString() : ''}
+          onChange={(e) => onUpdateSet(set.id, 'value1', parseInt(e.target.value) || 0)}
           className="w-full px-3 py-2 text-center text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-transparent"
           placeholder="0"
         />
@@ -1055,8 +1055,8 @@ function SetRow({
         </button>
         <input
           type="number"
-          value={set.value2 || ''}
-          onChange={(e) => onUpdateSet(set.id, 'value2', parseFloat(e.target.value) || 0)}
+          value={set.value2 ? Math.round(set.value2).toString() : ''}
+          onChange={(e) => onUpdateSet(set.id, 'value2', parseInt(e.target.value) || 0)}
           className="w-full px-3 py-2 text-center text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-transparent"
           placeholder="0"
         />
