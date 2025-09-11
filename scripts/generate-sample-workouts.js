@@ -171,16 +171,16 @@ async function main() {
     
     for (const exercise of allExercises) {
       const existingExercise = await client.query(
-        'SELECT exercise_id FROM exercises WHERE tenant_id = $1 AND name = $2',
-        [tenantId, exercise.name]
+        'SELECT exercise_id FROM exercises WHERE name = $1',
+        [exercise.name]
       )
       
       if (existingExercise.rows.length === 0) {
         const result = await client.query(
-          `INSERT INTO exercises (tenant_id, name, muscle_groups, equipment) 
-           VALUES ($1, $2, $3, $4) 
+          `INSERT INTO exercises (name, muscle_groups, equipment) 
+           VALUES ($1, $2, $3) 
            RETURNING exercise_id`,
-          [tenantId, exercise.name, exercise.muscle_groups, exercise.equipment]
+          [exercise.name, exercise.muscle_groups, exercise.equipment]
         )
         createdExercises.push({
           exercise_id: result.rows[0].exercise_id,

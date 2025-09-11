@@ -339,6 +339,86 @@ app.put('/api/auth/password', authenticateToken, async (req: any, res) => {
   }
 });
 
+// Configure multer for avatar uploads
+const avatarStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, '../public/uploads/avatars');
+    // Ensure directory exists
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename with timestamp
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const avatarUpload = multer({
+  storage: avatarStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
+// Update user avatar
+app.put('/api/auth/avatar', authenticateToken, avatarUpload.single('avatar'), async (req: any, res) => {
+  try {
+    const userId = req.user.userId;
+    
+    if (!req.file) {
+      return res.status(400).json({ error: 'No avatar file provided' });
+    }
+
+    // Generate avatar URL (relative path for serving static files)
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+
+    // Update user's avatar URL in database
+    const result = await db.query(
+      `UPDATE users 
+       SET avatar_url = $1 
+       WHERE user_id = $2 
+       RETURNING user_id, tenant_id, email, role, first_name, last_name, avatar_url`,
+      [avatarUrl, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = result.rows[0];
+    res.json({
+      message: 'Avatar updated successfully',
+      user: {
+        id: user.user_id,
+        email: user.email,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        tenantId: user.tenant_id,
+        avatarUrl: user.avatar_url,
+      },
+    });
+
+  } catch (error: any) {
+    console.error('Avatar update error:', error);
+    res.status(500).json({ error: 'Failed to update avatar', details: error.message });
+  }
+});
+
+// Serve static files (avatars)
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+
 // Exercise API routes
 app.use('/api/exercises', exerciseRoutes);
 

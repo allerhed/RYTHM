@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Storage Error Test</title>
+</head>
+<body>
+    <h1>Test Browser Extension Storage Interference</h1>
+    <button onclick="testNormalStorage()">Test Normal Storage</button>
+    <button onclick="testCorruptedStorage()">Test Corrupted Storage</button>
+    <button onclick="testLoginFlow()">Test Login Flow</button>
+    <div id="result"></div>
+
+    <script>
+    function testNormalStorage() {
+        const resultDiv = document.getElementById('result');
+        try {
+            const userData = { id: 'test-123', email: 'test@example.com', firstName: 'Test' };
+            localStorage.setItem('auth-user', JSON.stringify(userData));
+            const retrieved = JSON.parse(localStorage.getItem('auth-user'));
+            resultDiv.innerHTML = '<p style="color: green;">✅ Normal storage works: ' + JSON.stringify(retrieved) + '</p>';
+        } catch (error) {
+            resultDiv.innerHTML = '<p style="color: red;">❌ Normal storage failed: ' + error.message + '</p>';
+        }
+    }
+
+    function testCorruptedStorage() {
+        const resultDiv = document.getElementById('result');
+        try {
+            // Simulate browser extension corruption
+            localStorage.setItem('auth-user', '[object Object]');
+            const retrieved = localStorage.getItem('auth-user');
+            resultDiv.innerHTML = '<p style="color: orange;">⚠️ Stored corrupted data: ' + retrieved + '</p>';
+            
+            // Now try to parse it (this should fail)
+            try {
+                const parsed = JSON.parse(retrieved);
+                resultDiv.innerHTML += '<p style="color: red;">❌ Unexpectedly parsed corrupted data!</p>';
+            } catch (parseError) {
+                resultDiv.innerHTML += '<p style="color: green;">✅ Correctly failed to parse: ' + parseError.message + '</p>';
+                
+                // Test our error handling
+                if (retrieved === '[object Object]' || retrieved.startsWith('[object')) {
+                    localStorage.removeItem('auth-user');
+                    resultDiv.innerHTML += '<p style="color: blue;">🧹 Cleaned up corrupted data</p>';
+                }
+            }
+        } catch (error) {
+            resultDiv.innerHTML = '<p style="color: red;">❌ Test failed: ' + error.message + '</p>';
+        }
+    }
+
+    async function testLoginFlow() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = '<p>Testing login flow...</p>';
+        
+        try {
+            const response = await fetch('http://localhost:3001/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: 'testuser@example.com',
+                    password: 'testpassword'
+                })
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                // Test storing the user data
+                const userData = data.user;
+                if (userData && typeof userData === 'object' && userData.id) {
+                    localStorage.setItem('auth-user', JSON.stringify(userData));
+                    resultDiv.innerHTML += '<p style="color: green;">✅ Login successful and data stored</p>';
+                } else {
+                    resultDiv.innerHTML += '<p style="color: red;">❌ Invalid user data structure</p>';
+                }
+            } else {
+                resultDiv.innerHTML += '<p style="color: orange;">⚠️ Login failed: ' + data.error + '</p>';
+            }
+        } catch (error) {
+            resultDiv.innerHTML += '<p style="color: red;">❌ Network error: ' + error.message + '</p>';
+        }
+    }
+
+    // Simulate the global error handler
+    window.addEventListener('error', (event) => {
+        const error = event.error || event.message;
+        if (typeof error === 'string' && (
+            error.includes('JSON.parse') || 
+            error.includes('[object Object]') ||
+            error.includes('storage') ||
+            error.includes('_storageChangeDispatcher'))) {
+            console.warn('Storage error caught by test handler:', error);
+            event.preventDefault();
+            
+            try {
+                localStorage.removeItem('auth-token');
+                localStorage.removeItem('auth-user');
+                document.getElementById('result').innerHTML += '<p style="color: blue;">🛡️ Global handler cleared corrupted data</p>';
+            } catch (clearError) {
+                console.error('Error clearing localStorage:', clearError);
+            }
+        }
+    });
+    </script>
+</body>
+</html>

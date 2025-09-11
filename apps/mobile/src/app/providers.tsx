@@ -3,9 +3,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { httpBatchLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { AppRouter } from '@rythm/api/src/router'
 import { AuthProvider } from '../contexts/AuthContext'
+import ErrorBoundary, { setupGlobalErrorHandlers } from '../components/ErrorBoundary'
 
 // Create tRPC client
 export const trpc = createTRPCReact<AppRouter>()
@@ -21,6 +22,11 @@ function getBaseUrl() {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  // Set up global error handlers for storage-related issues
+  useEffect(() => {
+    setupGlobalErrorHandlers()
+  }, [])
+
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
@@ -56,12 +62,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
   })
 
   return (
-    <AuthProvider>
-      <trpc.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </trpc.Provider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </trpc.Provider>
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }

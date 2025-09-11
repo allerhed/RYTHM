@@ -101,14 +101,9 @@ router.get('/templates', async (req, res) => {
   }
 })
 
-// Get tenant-specific exercises
+// Get all exercises (globally available)
 router.get('/', authenticateToken, async (req, res) => {
   const pool: Pool = req.app.locals.pool
-  const tenantId = req.user?.tenant_id
-  
-  if (!tenantId) {
-    return res.status(401).json({ error: 'Tenant ID required' })
-  }
   
   try {
     const { category, type, search } = req.query
@@ -127,9 +122,9 @@ router.get('/', authenticateToken, async (req, res) => {
         is_active,
         created_at
       FROM exercises 
-      WHERE tenant_id = $1 AND is_active = true
+      WHERE is_active = true
     `
-    const params: any[] = [tenantId]
+    const params: any[] = []
     
     if (category) {
       params.push(category)
@@ -159,13 +154,8 @@ router.get('/', authenticateToken, async (req, res) => {
 // Create exercise from template
 router.post('/from-template/:templateId', authenticateToken, async (req, res) => {
   const pool: Pool = req.app.locals.pool
-  const tenantId = req.user?.tenant_id
   const { templateId } = req.params
   const { customizations } = req.body
-  
-  if (!tenantId) {
-    return res.status(401).json({ error: 'Tenant ID required' })
-  }
   
   try {
     // Get template
@@ -192,14 +182,26 @@ router.post('/from-template/:templateId', authenticateToken, async (req, res) =>
       notes: customizations?.notes || template.description
     }
     
+    // Check if exercise already exists globally
+    const existingResult = await pool.query(
+      'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
+      [exerciseData.name]
+    )
+    
+    if (existingResult.rows.length > 0) {
+      return res.status(409).json({ 
+        error: 'An exercise with this name already exists',
+        existing_exercise_id: existingResult.rows[0].exercise_id
+      })
+    }
+    
     const result = await pool.query(`
       INSERT INTO exercises (
-        tenant_id, name, muscle_groups, equipment, exercise_category, exercise_type,
+        name, muscle_groups, equipment, exercise_category, exercise_type,
         default_value_1_type, default_value_2_type, notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
     `, [
-      tenantId,
       exerciseData.name,
       exerciseData.muscle_groups,
       exerciseData.equipment,
@@ -220,11 +222,6 @@ router.post('/from-template/:templateId', authenticateToken, async (req, res) =>
 // Create custom exercise
 router.post('/', authenticateToken, async (req, res) => {
   const pool: Pool = req.app.locals.pool
-  const tenantId = req.user?.tenant_id
-  
-  if (!tenantId) {
-    return res.status(401).json({ error: 'Tenant ID required' })
-  }
   
   try {
     const {
@@ -242,14 +239,26 @@ router.post('/', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Exercise name is required' })
     }
     
+    // Check if exercise already exists globally
+    const existingResult = await pool.query(
+      'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
+      [name]
+    )
+    
+    if (existingResult.rows.length > 0) {
+      return res.status(409).json({ 
+        error: 'An exercise with this name already exists',
+        existing_exercise_id: existingResult.rows[0].exercise_id
+      })
+    }
+    
     const result = await pool.query(`
       INSERT INTO exercises (
-        tenant_id, name, muscle_groups, equipment, exercise_category, exercise_type,
+        name, muscle_groups, equipment, exercise_category, exercise_type,
         default_value_1_type, default_value_2_type, notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
     `, [
-      tenantId,
       name,
       muscle_groups,
       equipment,
@@ -270,12 +279,7 @@ router.post('/', authenticateToken, async (req, res) => {
 // Update exercise
 router.put('/:exerciseId', authenticateToken, async (req, res) => {
   const pool: Pool = req.app.locals.pool
-  const tenantId = req.user?.tenant_id
   const { exerciseId } = req.params
-  
-  if (!tenantId) {
-    return res.status(401).json({ error: 'Tenant ID required' })
-  }
   
   try {
     const {
@@ -290,24 +294,38 @@ router.put('/:exerciseId', authenticateToken, async (req, res) => {
       is_active
     } = req.body
     
+    // If name is being updated, check for conflicts
+    if (name) {
+      const existingResult = await pool.query(
+        'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1) AND exercise_id != $2',
+        [name, exerciseId]
+      )
+      
+      if (existingResult.rows.length > 0) {
+        return res.status(409).json({ 
+          error: 'An exercise with this name already exists',
+          existing_exercise_id: existingResult.rows[0].exercise_id
+        })
+      }
+    }
+    
     const result = await pool.query(`
       UPDATE exercises 
       SET 
-        name = COALESCE($3, name),
-        muscle_groups = COALESCE($4, muscle_groups),
-        equipment = COALESCE($5, equipment),
-        exercise_category = COALESCE($6, exercise_category),
-        exercise_type = COALESCE($7, exercise_type),
-        default_value_1_type = COALESCE($8, default_value_1_type),
-        default_value_2_type = COALESCE($9, default_value_2_type),
-        notes = COALESCE($10, notes),
-        is_active = COALESCE($11, is_active),
+        name = COALESCE($2, name),
+        muscle_groups = COALESCE($3, muscle_groups),
+        equipment = COALESCE($4, equipment),
+        exercise_category = COALESCE($5, exercise_category),
+        exercise_type = COALESCE($6, exercise_type),
+        default_value_1_type = COALESCE($7, default_value_1_type),
+        default_value_2_type = COALESCE($8, default_value_2_type),
+        notes = COALESCE($9, notes),
+        is_active = COALESCE($10, is_active),
         updated_at = NOW()
-      WHERE exercise_id = $1 AND tenant_id = $2
+      WHERE exercise_id = $1
       RETURNING *
     `, [
       exerciseId,
-      tenantId,
       name,
       muscle_groups,
       equipment,
@@ -333,12 +351,7 @@ router.put('/:exerciseId', authenticateToken, async (req, res) => {
 // Get exercise by ID with default metrics
 router.get('/:exerciseId', authenticateToken, async (req, res) => {
   const pool: Pool = req.app.locals.pool
-  const tenantId = req.user?.tenant_id
   const { exerciseId } = req.params
-  
-  if (!tenantId) {
-    return res.status(401).json({ error: 'Tenant ID required' })
-  }
   
   try {
     const result = await pool.query(`
@@ -355,8 +368,8 @@ router.get('/:exerciseId', authenticateToken, async (req, res) => {
         is_active,
         created_at
       FROM exercises 
-      WHERE exercise_id = $1 AND tenant_id = $2
-    `, [exerciseId, tenantId])
+      WHERE exercise_id = $1
+    `, [exerciseId])
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Exercise not found' })

@@ -40,6 +40,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
         <meta name="color-scheme" content="light dark" />
+        {/* Prevent browser extension interference */}
+        <meta httpEquiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval'; object-src 'none';" />
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
       <body className="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <Providers>

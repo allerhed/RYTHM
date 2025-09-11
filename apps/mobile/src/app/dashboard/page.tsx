@@ -30,6 +30,114 @@ function DashboardPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState<string | null>(null)
   const [deleting, setDeleting] = React.useState(false)
 
+  // Week navigation state
+  const [selectedWeekStart, setSelectedWeekStart] = React.useState(() => {
+    // Get Monday of current week
+    const now = new Date()
+    const currentDay = now.getDay()
+    const diff = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1) // adjust when day is Sunday
+    return new Date(now.setDate(diff))
+  })
+  
+  const [selectedDayIndex, setSelectedDayIndex] = React.useState(() => {
+    // Get current day index (0 = Monday, 6 = Sunday)
+    const now = new Date()
+    const currentDay = now.getDay()
+    return currentDay === 0 ? 6 : currentDay - 1 // Convert Sunday from 0 to 6
+  })
+
+  // Helper functions for week navigation
+  const getMondayOfWeek = (date: Date) => {
+    const d = new Date(date)
+    const day = d.getDay()
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+    return new Date(d.setDate(diff))
+  }
+
+  const getCurrentWeekStart = () => {
+    return getMondayOfWeek(new Date())
+  }
+
+  const isCurrentWeek = () => {
+    const currentWeekStart = getCurrentWeekStart()
+    return selectedWeekStart.getTime() === currentWeekStart.getTime()
+  }
+
+  const getSelectedDate = () => {
+    const selectedDate = new Date(selectedWeekStart)
+    selectedDate.setDate(selectedDate.getDate() + selectedDayIndex)
+    return selectedDate
+  }
+
+  const getWeekDateRange = (weekStart: Date) => {
+    const weekEnd = new Date(weekStart)
+    weekEnd.setDate(weekEnd.getDate() + 6)
+    return {
+      start: weekStart,
+      end: weekEnd
+    }
+  }
+
+  const formatWeekRange = (weekStart: Date) => {
+    const weekEnd = new Date(weekStart)
+    weekEnd.setDate(weekEnd.getDate() + 6)
+    
+    const startMonth = weekStart.toLocaleDateString('en-US', { month: 'short' }).toUpperCase()
+    const endMonth = weekEnd.toLocaleDateString('en-US', { month: 'short' }).toUpperCase()
+    const startDay = weekStart.getDate()
+    const endDay = weekEnd.getDate()
+    const year = weekStart.getFullYear().toString().slice(-2)
+    
+    if (startMonth === endMonth) {
+      return `${startMonth} ${startDay} - ${endDay}, ${year}`
+    } else {
+      return `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${year}`
+    }
+  }
+
+  const getWeekNumber = (date: Date) => {
+    const startOfYear = new Date(date.getFullYear(), 0, 1)
+    const pastDaysOfYear = (date.getTime() - startOfYear.getTime()) / 86400000
+    return Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7)
+  }
+
+  // Navigation handlers
+  const navigateToPreviousWeek = () => {
+    const newWeekStart = new Date(selectedWeekStart)
+    newWeekStart.setDate(newWeekStart.getDate() - 7)
+    setSelectedWeekStart(newWeekStart)
+    
+    // If moving to current week, set selected day to today
+    if (getMondayOfWeek(new Date()).getTime() === newWeekStart.getTime()) {
+      const now = new Date()
+      const currentDay = now.getDay()
+      setSelectedDayIndex(currentDay === 0 ? 6 : currentDay - 1)
+    } else {
+      // For non-current weeks, default to Monday (index 0)
+      setSelectedDayIndex(0)
+    }
+  }
+
+  const navigateToNextWeek = () => {
+    const newWeekStart = new Date(selectedWeekStart)
+    newWeekStart.setDate(newWeekStart.getDate() + 7)
+    setSelectedWeekStart(newWeekStart)
+    
+    // If moving to current week, set selected day to today
+    if (getMondayOfWeek(new Date()).getTime() === newWeekStart.getTime()) {
+      const now = new Date()
+      const currentDay = now.getDay()
+      setSelectedDayIndex(currentDay === 0 ? 6 : currentDay - 1)
+    } else {
+      // For non-current weeks, default to Monday (index 0)
+      setSelectedDayIndex(0)
+    }
+  }
+
+  const selectDay = (dayIndex: number) => {
+    setSelectedDayIndex(dayIndex)
+  }
+
   // Add storage error handler for this page
   React.useEffect(() => {
     const handleStorageError = (event: ErrorEvent) => {
@@ -78,41 +186,57 @@ function DashboardPage() {
     }
   }, [])
 
-  // Fetch today's workouts
-  const fetchTodaysWorkouts = React.useCallback(async () => {
+  // Fetch workouts for selected date
+  React.useEffect(() => {
     if (!user) return
     
-    setLoading(true)
-    try {
-      // Use local date instead of UTC to avoid timezone issues
-      const today = new Date()
-      const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-      console.log('Fetching workouts for local date:', localDate)
-      const response = await fetch(`http://localhost:3001/api/sessions?date=${localDate}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+    const fetchWorkouts = async () => {
+      setLoading(true)
+      try {
+        // Determine which date to fetch workouts for
+        let dateToFetch: Date
+        
+        // Check if current week by comparing timestamps
+        const currentWeekStart = getCurrentWeekStart()
+        const isCurrentWeekSelected = selectedWeekStart.getTime() === currentWeekStart.getTime()
+        
+        if (isCurrentWeekSelected) {
+          // If current week, show workouts for the selected day
+          dateToFetch = new Date(selectedWeekStart)
+          dateToFetch.setDate(dateToFetch.getDate() + selectedDayIndex)
+        } else {
+          // If not current week, show workouts for the selected day
+          dateToFetch = new Date(selectedWeekStart)
+          dateToFetch.setDate(dateToFetch.getDate() + selectedDayIndex)
         }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        console.log('Today\'s workouts:', data)
-        setTodaysWorkouts(data.sessions || [])
-      } else {
-        console.error('Failed to fetch workouts:', response.status, response.statusText)
-        setTodaysWorkouts([])
-      }
-    } catch (error) {
-      console.error('Error fetching workouts:', error)
-      setTodaysWorkouts([])
-    } finally {
-      setLoading(false)
-    }
-  }, [user])
 
-  React.useEffect(() => {
-    fetchTodaysWorkouts()
-  }, [fetchTodaysWorkouts])
+        const localDate = `${dateToFetch.getFullYear()}-${String(dateToFetch.getMonth() + 1).padStart(2, '0')}-${String(dateToFetch.getDate()).padStart(2, '0')}`
+        console.log('Fetching workouts for date:', localDate, 'Selected week start:', selectedWeekStart, 'Selected day index:', selectedDayIndex)
+        
+        const response = await fetch(`http://localhost:3001/api/sessions?date=${localDate}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+          }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log('Workouts for selected date:', data)
+          setTodaysWorkouts(data.sessions || [])
+        } else {
+          console.error('Failed to fetch workouts:', response.status, response.statusText)
+          setTodaysWorkouts([])
+        }
+      } catch (error) {
+        console.error('Error fetching workouts:', error)
+        setTodaysWorkouts([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchWorkouts()
+  }, [user, selectedWeekStart, selectedDayIndex]) // Added selectedDayIndex dependency
 
   const handleLogout = async () => {
     await logout()
@@ -203,7 +327,10 @@ function DashboardPage() {
           {/* Week Navigation */}
           <div className="flex items-center justify-center mb-6">
             <div className="flex items-center space-x-4 bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
-              <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              <button 
+                onClick={navigateToPreviousWeek}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
@@ -215,10 +342,17 @@ function DashboardPage() {
                   <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
                   <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
                 </div>
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 mx-2">4</span>
-                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">SEP 8 - SEP 14, 25</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 mx-2">
+                  {getWeekNumber(selectedWeekStart)}
+                </span>
+                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {formatWeekRange(selectedWeekStart)}
+                </span>
               </div>
-              <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              <button 
+                onClick={navigateToNextWeek}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -230,38 +364,78 @@ function DashboardPage() {
           <div className="flex justify-center mb-8">
             <div className="flex space-x-8">
               {[
-                { day: 'M', label: 'Monday', active: true },
-                { day: 'T', label: 'Tuesday' },
-                { day: 'W', label: 'Wednesday' },
-                { day: 'T', label: 'Thursday' },
-                { day: 'F', label: 'Friday' },
-                { day: 'S', label: 'Saturday' },
-                { day: 'S', label: 'Sunday' }
-              ].map((item, index) => (
-                <div key={index} className="flex flex-col items-center">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                    item.active 
-                      ? 'bg-teal-500 text-white border-2 border-teal-600' 
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                  }`}>
-                    {item.day}
+                { day: 'M', label: 'Monday', dayIndex: 0 },
+                { day: 'T', label: 'Tuesday', dayIndex: 1 },
+                { day: 'W', label: 'Wednesday', dayIndex: 2 },
+                { day: 'T', label: 'Thursday', dayIndex: 3 },
+                { day: 'F', label: 'Friday', dayIndex: 4 },
+                { day: 'S', label: 'Saturday', dayIndex: 5 },
+                { day: 'S', label: 'Sunday', dayIndex: 6 }
+              ].map((item, index) => {
+                const isSelected = selectedDayIndex === item.dayIndex
+                
+                // Check if this is the current day (only for current week)
+                const currentWeekStart = getCurrentWeekStart()
+                const isCurrentWeekSelected = selectedWeekStart.getTime() === currentWeekStart.getTime()
+                const isCurrentDay = isCurrentWeekSelected && (() => {
+                  const now = new Date()
+                  const currentDay = now.getDay()
+                  const currentDayIndex = currentDay === 0 ? 6 : currentDay - 1
+                  return currentDayIndex === item.dayIndex
+                })()
+                
+                return (
+                  <div key={index} className="flex flex-col items-center">
+                    <button
+                      onClick={() => selectDay(item.dayIndex)}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                        isSelected
+                          ? 'bg-teal-500 text-white border-2 border-teal-600' 
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      }`}
+                      title={item.label}
+                    >
+                      {item.day}
+                    </button>
+                    <div className={`w-2 h-2 rounded-full mt-2 ${
+                      isCurrentDay ? 'bg-teal-500' : 
+                      isSelected ? 'bg-teal-400' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}></div>
                   </div>
-                  <div className={`w-2 h-2 rounded-full mt-2 ${
-                    item.active ? 'bg-teal-500' : 'bg-gray-300 dark:bg-gray-600'
-                  }`}></div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
           {/* Training Score Widget */}
-          <TrainingScoreWidget onViewAnalytics={() => router.push('/analytics')} />
+          <TrainingScoreWidget 
+            onViewAnalytics={() => router.push('/analytics')} 
+            selectedWeekStart={selectedWeekStart}
+          />
 
-          {/* Today's Workouts */}
+          {/* Selected Date Workouts */}
           <Card className="p-6 mb-8">
             <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 text-center">
-                  {new Date().toLocaleDateString('sv-SE', { weekday: 'long', month: 'short', day: 'numeric' })}
+                  {(() => {
+                    const selectedDate = getSelectedDate()
+                    const currentWeekStart = getCurrentWeekStart()
+                    const isCurrentWeekSelected = selectedWeekStart.getTime() === currentWeekStart.getTime()
+                    
+                    if (isCurrentWeekSelected) {
+                      // For current week, show "Today" if it's today, otherwise show the day name
+                      const today = new Date()
+                      const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1
+                      if (selectedDayIndex === todayIndex) {
+                        return `Today - ${selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}`
+                      } else {
+                        return selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+                      }
+                    } else {
+                      // For other weeks, show the selected day
+                      return `${selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })} (Week ${getWeekNumber(selectedWeekStart)})`
+                    }
+                  })()}
                 </h3>
                 
                 {loading ? (
@@ -397,17 +571,55 @@ function DashboardPage() {
                       </svg>
                     </div>
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      No workouts planned for today
+                      {(() => {
+                        const currentWeekStart = getCurrentWeekStart()
+                        const isCurrentWeekSelected = selectedWeekStart.getTime() === currentWeekStart.getTime()
+                        const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                        
+                        if (isCurrentWeekSelected) {
+                          const today = new Date()
+                          const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1
+                          if (selectedDayIndex === todayIndex) {
+                            return "No workouts planned for today"
+                          } else {
+                            return `No workouts planned for ${dayNames[selectedDayIndex]}`
+                          }
+                        } else {
+                          return `No workouts found for ${dayNames[selectedDayIndex]}`
+                        }
+                      })()}
                     </h4>
                     <p className="text-gray-500 dark:text-gray-400 mb-4">
-                      Start your training journey by creating your first workout
+                      {(() => {
+                        const currentWeekStart = getCurrentWeekStart()
+                        const isCurrentWeekSelected = selectedWeekStart.getTime() === currentWeekStart.getTime()
+                        const today = new Date()
+                        const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1
+                        const isToday = isCurrentWeekSelected && selectedDayIndex === todayIndex
+                        
+                        if (isToday) {
+                          return "Start your training journey by creating your first workout"
+                        } else {
+                          return "Select a different day or create a workout for this date"
+                        }
+                      })()}
                     </p>
-                    <Button 
-                      onClick={() => router.push('/training/new')}
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-medium px-6 py-2 rounded-lg transition-colors"
-                    >
-                      Create New Workout
-                    </Button>
+                    {(() => {
+                      const currentWeekStart = getCurrentWeekStart()
+                      const isCurrentWeekSelected = selectedWeekStart.getTime() === currentWeekStart.getTime()
+                      const today = new Date()
+                      const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1
+                      const isToday = isCurrentWeekSelected && selectedDayIndex === todayIndex
+                      
+                      return isToday && (
+                        <Button 
+                          onClick={() => router.push('/training/new')}
+                          className="bg-teal-500 hover:bg-teal-600 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+                        >
+                          Create New Workout
+                        </Button>
+                      )
+                    })()}
                   </div>
                 )}
               </div>

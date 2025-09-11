@@ -76,15 +76,41 @@ const categoryInfo = {
 
 interface TrainingScoreWidgetProps {
   onViewAnalytics?: () => void
+  selectedWeekStart?: Date
 }
 
-export function TrainingScoreWidget({ onViewAnalytics }: TrainingScoreWidgetProps) {
+export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: TrainingScoreWidgetProps) {
   const [showInfoModal, setShowInfoModal] = useState(false)
+  
+  // If selectedWeekStart is provided, check if it's current week
+  const isCurrentWeek = selectedWeekStart ? (() => {
+    const now = new Date()
+    const currentDay = now.getDay()
+    const diff = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1)
+    const currentWeekStart = new Date(now.setDate(diff))
+    return selectedWeekStart.getTime() === currentWeekStart.getTime()
+  })() : true
   
   const trainingScoreQuery = trpc.analytics.trainingScore.useQuery(undefined, {
     retry: 2,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    // Only fetch if it's current week or no selectedWeekStart provided
+    enabled: isCurrentWeek,
   })
+
+  if (!isCurrentWeek) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="text-center text-gray-500 dark:text-gray-400">
+          <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <p className="text-sm">Training Score available for current week only</p>
+          <p className="text-xs mt-1">Navigate to this week to see your training score</p>
+        </div>
+      </div>
+    )
+  }
 
   if (trainingScoreQuery.isLoading) {
     return (
