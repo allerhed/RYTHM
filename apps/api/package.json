@@ -1,6 +1,6 @@
 {
   "name": "@rythm/api",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -12,8 +12,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@rythm/db": "1.0.0",
-    "@rythm/shared": "1.0.0",
+    "@rythm/db": "1.1.0",
+    "@rythm/shared": "1.1.0",
     "@trpc/client": "^10.45.0",
     "@trpc/server": "^10.45.0",
     "bcrypt": "^5.1.1",

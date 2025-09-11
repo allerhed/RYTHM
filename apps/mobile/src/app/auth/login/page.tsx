@@ -36,37 +36,30 @@ export default function LoginPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('🔐 Login form submitted', { email, passwordLength: password.length })
     e.preventDefault()
     
     if (!validateForm()) {
-      console.log('❌ Form validation failed')
       setToast({ type: 'error', message: 'Please fix the errors below' })
       return
     }
     
-    console.log('✅ Form validation passed, starting login process...')
     setLoading(true)
     
     try {
-      console.log('🚀 Calling login function...')
       await login(email, password)
-      console.log('✅ Login successful!')
       setToast({ type: 'success', message: 'Login successful!' })
       
       // Redirect to dashboard after successful login
       setTimeout(() => {
-        console.log('🔄 Redirecting to dashboard...')
         router.push('/dashboard')
       }, 1000)
     } catch (error: any) {
-      console.error('❌ Login error:', error)
+      console.error('Login error:', error)
       setToast({ 
         type: 'error', 
         message: error.message || 'Login failed. Please check your credentials.' 
       })
     } finally {
-      console.log('🏁 Login process finished')
       setLoading(false)
     }
   }
@@ -160,13 +153,6 @@ export default function LoginPage() {
               size="lg"
               loading={isFormLoading}
               className="w-full"
-              onClick={(e) => {
-                console.log('🖱️ Sign In button clicked', { 
-                  type: e.currentTarget.type, 
-                  disabled: e.currentTarget.disabled,
-                  loading: isFormLoading 
-                })
-              }}
             >
               Sign In
             </Button>

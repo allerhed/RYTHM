@@ -1,6 +1,19 @@
-# RYTHM
+# RYTHM v1.1
 
-A comprehensive fitness training application with real-time analytics, workout tracking, and personalized training insights.
+A comprehensive hybrid training mobile web app (PWA) with multi-tenant support, real-time analytics, and personalized training insights designed for athletes, coaches, and fitness organizations.
+
+## 🎯 Features
+
+### ✅ **Version 1.1 - Current State**
+- **Multi-tenant Architecture**: Secure tenant isolation with Row Level Security (RLS)
+- **User Authentication**: JWT-based auth with role management (athlete, coach, tenant_admin, org_admin)
+- **Profile Management**: Complete user profiles with avatar upload and bio
+- **Session Tracking**: Log workouts with categories (strength, cardio, hybrid)
+- **Flexible Set Logging**: Two configurable value fields (weight, distance, duration, calories, reps)
+- **Exercise Management**: Global exercise library with templates and custom exercises
+- **Training Analytics**: Basic volume tracking and session history
+- **Mobile-First PWA**: Responsive design optimized for mobile devices
+- **Docker Development**: Complete containerized development environment
 
 ## 🚀 Quick Start
 
