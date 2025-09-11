@@ -223,7 +223,10 @@ export const analyticsRouter = router({
 
   // Training Score endpoint
   trainingScore: protectedProcedure
-    .query(async ({ ctx }) => {
+    .input(z.object({
+      weekStart: z.string().optional(), // ISO date string for the Monday of the week
+    }).optional())
+    .query(async ({ input, ctx }) => {
       // Helper function to get Monday of a week
       const getMondayOfWeek = (date: Date) => {
         const d = new Date(date)
@@ -232,24 +235,25 @@ export const analyticsRouter = router({
         return new Date(d.setDate(diff))
       }
 
-      const now = new Date()
-      const currentMonday = getMondayOfWeek(now)
+      // Use provided week or default to current week
+      const targetWeekStart = input?.weekStart ? new Date(input.weekStart) : getMondayOfWeek(new Date())
+      const currentMonday = getMondayOfWeek(new Date())
       
-      // Current week (this week)
-      const currentWeekStart = new Date(currentMonday)
-      const currentWeekEnd = new Date(currentWeekStart)
-      currentWeekEnd.setDate(currentWeekEnd.getDate() + 6)
-      currentWeekEnd.setHours(23, 59, 59, 999)
+      // Target week (selected week)
+      const selectedWeekStart = new Date(targetWeekStart)
+      const selectedWeekEnd = new Date(selectedWeekStart)
+      selectedWeekEnd.setDate(selectedWeekEnd.getDate() + 6)
+      selectedWeekEnd.setHours(23, 59, 59, 999)
 
-      // Last week
-      const lastWeekStart = new Date(currentMonday)
-      lastWeekStart.setDate(lastWeekStart.getDate() - 7)
-      const lastWeekEnd = new Date(lastWeekStart)
-      lastWeekEnd.setDate(lastWeekEnd.getDate() + 6)
-      lastWeekEnd.setHours(23, 59, 59, 999)
+      // Previous week (week before the selected week)
+      const previousWeekStart = new Date(targetWeekStart)
+      previousWeekStart.setDate(previousWeekStart.getDate() - 7)
+      const previousWeekEnd = new Date(previousWeekStart)
+      previousWeekEnd.setDate(previousWeekEnd.getDate() + 6)
+      previousWeekEnd.setHours(23, 59, 59, 999)
 
-      // Query for current week sessions
-      const currentWeekQuery = `
+      // Query for selected week sessions
+      const selectedWeekQuery = `
         SELECT 
           s.training_load
         FROM sessions s
@@ -259,8 +263,8 @@ export const analyticsRouter = router({
           AND s.training_load IS NOT NULL
       `
 
-      // Query for last week sessions
-      const lastWeekQuery = `
+      // Query for previous week sessions
+      const previousWeekQuery = `
         SELECT 
           s.training_load
         FROM sessions s
@@ -270,17 +274,17 @@ export const analyticsRouter = router({
           AND s.training_load IS NOT NULL
       `
 
-      const [currentWeekResult, lastWeekResult] = await Promise.all([
-        ctx.db.query(currentWeekQuery, [ctx.user.userId, currentWeekStart.toISOString(), currentWeekEnd.toISOString()]),
-        ctx.db.query(lastWeekQuery, [ctx.user.userId, lastWeekStart.toISOString(), lastWeekEnd.toISOString()])
+      const [selectedWeekResult, previousWeekResult] = await Promise.all([
+        ctx.db.query(selectedWeekQuery, [ctx.user.userId, selectedWeekStart.toISOString(), selectedWeekEnd.toISOString()]),
+        ctx.db.query(previousWeekQuery, [ctx.user.userId, previousWeekStart.toISOString(), previousWeekEnd.toISOString()])
       ])
 
       // Calculate total training loads
-      const currentWeekLoad = currentWeekResult.rows.reduce((sum: number, row: any) => {
+      const selectedWeekLoad = selectedWeekResult.rows.reduce((sum: number, row: any) => {
         return sum + (parseInt(row.training_load) || 0)
       }, 0)
 
-      const lastWeekLoad = lastWeekResult.rows.reduce((sum: number, row: any) => {
+      const previousWeekLoad = previousWeekResult.rows.reduce((sum: number, row: any) => {
         return sum + (parseInt(row.training_load) || 0)
       }, 0)
 
@@ -294,27 +298,29 @@ export const analyticsRouter = router({
         return { category: 'Aspiring', min: 0, max: 200, color: '#6B7280' }
       }
 
-      const currentScore = getTrainingScoreCategory(currentWeekLoad)
-      const lastScore = getTrainingScoreCategory(lastWeekLoad)
+      const selectedScore = getTrainingScoreCategory(selectedWeekLoad)
+      const previousScore = getTrainingScoreCategory(previousWeekLoad)
 
       // Calculate percentage change
-      const percentageChange = lastWeekLoad > 0 
-        ? ((currentWeekLoad - lastWeekLoad) / lastWeekLoad) * 100 
-        : currentWeekLoad > 0 ? 100 : 0
+      const percentageChange = previousWeekLoad > 0 
+        ? ((selectedWeekLoad - previousWeekLoad) / previousWeekLoad) * 100 
+        : selectedWeekLoad > 0 ? 100 : 0
 
       return {
-        currentWeek: {
-          load: currentWeekLoad,
-          score: currentScore,
-          sessions: currentWeekResult.rows.length
+        selectedWeek: {
+          load: selectedWeekLoad,
+          score: selectedScore,
+          sessions: selectedWeekResult.rows.length,
+          weekStart: selectedWeekStart.toISOString()
         },
-        lastWeek: {
-          load: lastWeekLoad,
-          score: lastScore,
-          sessions: lastWeekResult.rows.length
+        previousWeek: {
+          load: previousWeekLoad,
+          score: previousScore,
+          sessions: previousWeekResult.rows.length,
+          weekStart: previousWeekStart.toISOString()
         },
         change: {
-          absolute: currentWeekLoad - lastWeekLoad,
+          absolute: selectedWeekLoad - previousWeekLoad,
           percentage: Math.round(percentageChange)
         }
       }

@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { trpc } from '../app/providers'
 
 interface TrainingScoreData {
-  currentWeek: {
+  selectedWeek: {
     load: number
     score: {
       category: string
@@ -12,8 +12,9 @@ interface TrainingScoreData {
       color: string
     }
     sessions: number
+    weekStart: string
   }
-  lastWeek: {
+  previousWeek: {
     load: number
     score: {
       category: string
@@ -22,6 +23,7 @@ interface TrainingScoreData {
       color: string
     }
     sessions: number
+    weekStart: string
   }
   change: {
     absolute: number
@@ -82,35 +84,24 @@ interface TrainingScoreWidgetProps {
 export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: TrainingScoreWidgetProps) {
   const [showInfoModal, setShowInfoModal] = useState(false)
   
-  // If selectedWeekStart is provided, check if it's current week
-  const isCurrentWeek = selectedWeekStart ? (() => {
-    const now = new Date()
-    const currentDay = now.getDay()
-    const diff = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1)
-    const currentWeekStart = new Date(now.setDate(diff))
-    return selectedWeekStart.getTime() === currentWeekStart.getTime()
-  })() : true
-  
-  const trainingScoreQuery = trpc.analytics.trainingScore.useQuery(undefined, {
-    retry: 2,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    // Only fetch if it's current week or no selectedWeekStart provided
-    enabled: isCurrentWeek,
-  })
-
-  if (!isCurrentWeek) {
-    return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="text-center text-gray-500 dark:text-gray-400">
-          <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-          <p className="text-sm">Training Score available for current week only</p>
-          <p className="text-xs mt-1">Navigate to this week to see your training score</p>
-        </div>
-      </div>
-    )
+  // Helper function to get Monday of a week
+  const getMondayOfWeek = (date: Date) => {
+    const d = new Date(date)
+    const day = d.getDay()
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+    return new Date(d.setDate(diff))
   }
+  
+  // Prepare the week parameter for the API
+  const weekParam = selectedWeekStart ? selectedWeekStart.toISOString().split('T')[0] : undefined
+  
+  const trainingScoreQuery = trpc.analytics.trainingScore.useQuery(
+    weekParam ? { weekStart: weekParam } : undefined,
+    {
+      retry: 2,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    }
+  )
 
   if (trainingScoreQuery.isLoading) {
     return (
@@ -144,13 +135,13 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
   const data = trainingScoreQuery.data
   if (!data) return null
 
-  const categoryDetails = categoryInfo[data.currentWeek.score.category as keyof typeof categoryInfo] || categoryInfo['Aspiring']
+  const categoryDetails = categoryInfo[data.selectedWeek.score.category as keyof typeof categoryInfo] || categoryInfo['Aspiring']
   
   // Calculate progress within the category range
   const getProgressPercentage = () => {
-    const currentScore = data.currentWeek.score
-    const rangeSize = currentScore.max ? (currentScore.max - currentScore.min) : 200 // Default range for open-ended categories
-    const progress = Math.min(100, Math.max(0, ((data.currentWeek.load - currentScore.min) / rangeSize) * 100))
+    const selectedScore = data.selectedWeek.score
+    const rangeSize = selectedScore.max ? (selectedScore.max - selectedScore.min) : 200 // Default range for open-ended categories
+    const progress = Math.min(100, Math.max(0, ((data.selectedWeek.load - selectedScore.min) / rangeSize) * 100))
     return progress
   }
 
@@ -176,7 +167,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
           <div className="flex items-center space-x-2">
             <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Training Score:</span>
             <span className={`text-lg font-semibold ${categoryDetails.color}`}>
-              {data.currentWeek.score.category}
+              {data.selectedWeek.score.category}
             </span>
             <button
               onClick={() => setShowInfoModal(true)}
@@ -205,7 +196,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
         <div className="mb-6">
           <div className="flex items-baseline space-x-3 mb-2">
             <span className="text-6xl font-bold text-gray-900 dark:text-gray-100">
-              {data.currentWeek.load}
+              {data.selectedWeek.load}
             </span>
             <span className={`text-lg px-3 py-1 rounded-full ${
               data.change.percentage > 0
@@ -234,13 +225,13 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
               <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">This Week</span>
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Selected Week</span>
             </div>
             <div className="space-y-1">
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {data.currentWeek.load} pts
+                {data.selectedWeek.load} pts
               </div>
-              <div className="text-xs text-gray-400 dark:text-gray-500">Current week load</div>
+              <div className="text-xs text-gray-400 dark:text-gray-500">Selected week load</div>
             </div>
           </div>
 
@@ -249,11 +240,11 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
               <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Last Week</span>
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Previous Week</span>
             </div>
             <div className="space-y-1">
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {data.lastWeek.load} pts
+                {data.previousWeek.load} pts
               </div>
               <div className="text-xs text-gray-400 dark:text-gray-500">Previous week load</div>
             </div>
@@ -262,7 +253,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
 
         {/* Category Badge */}
         <div className={`${categoryDetails.bgColor} ${categoryDetails.color} p-3 rounded-lg text-center`}>
-          <div className="font-semibold">{data.currentWeek.score.category}</div>
+          <div className="font-semibold">{data.selectedWeek.score.category}</div>
           <div className="text-sm opacity-80">{categoryDetails.range}</div>
         </div>
       </div>
@@ -291,20 +282,20 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
                   <div 
                     key={category}
                     className={`p-4 rounded-lg border-2 ${
-                      data.currentWeek.score.category === category 
+                      data.selectedWeek.score.category === category 
                         ? `${info.bgColor} border-current ${info.color}` 
                         : 'border-gray-200 dark:border-gray-600'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className={`font-semibold ${data.currentWeek.score.category === category ? info.color : 'text-gray-900 dark:text-gray-100'}`}>
+                      <h4 className={`font-semibold ${data.selectedWeek.score.category === category ? info.color : 'text-gray-900 dark:text-gray-100'}`}>
                         {category}
                       </h4>
-                      <span className={`text-sm ${data.currentWeek.score.category === category ? info.color : 'text-gray-500 dark:text-gray-400'}`}>
+                      <span className={`text-sm ${data.selectedWeek.score.category === category ? info.color : 'text-gray-500 dark:text-gray-400'}`}>
                         {info.range}
                       </span>
                     </div>
-                    <p className={`text-sm ${data.currentWeek.score.category === category ? info.color : 'text-gray-600 dark:text-gray-400'}`}>
+                    <p className={`text-sm ${data.selectedWeek.score.category === category ? info.color : 'text-gray-600 dark:text-gray-400'}`}>
                       {info.description}
                     </p>
                   </div>
