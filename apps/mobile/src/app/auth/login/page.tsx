@@ -172,43 +172,6 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Divider */}
-          <div className="my-8 relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-600" />
-            </div>
-            <div className="relative flex justify-center text-caption">
-              <span className="bg-gray-50 dark:bg-gray-900 px-4 text-gray-500 dark:text-gray-400">
-                or
-              </span>
-            </div>
-          </div>
-
-          {/* Social login (demo) */}
-          <div className="space-y-3">
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full"
-              onClick={() => setToast({ type: 'info', message: 'Social login coming soon!' })}
-              disabled={isFormLoading}
-            >
-              <span className="mr-2">🍎</span>
-              Continue with Apple
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full"
-              onClick={() => setToast({ type: 'info', message: 'Social login coming soon!' })}
-              disabled={isFormLoading}
-            >
-              <span className="mr-2">🔷</span>
-              Continue with Google
-            </Button>
-          </div>
-
           {/* Sign up link */}
           <div className="mt-8 text-center">
             <p className="text-body text-gray-600 dark:text-gray-400">

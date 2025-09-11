@@ -22,11 +22,24 @@ async function proxyRequest(request: NextRequest, method: string) {
     const apiBaseUrl = 'http://api:3001';
     
     const url = new URL(request.url);
-    const pathWithQuery = url.pathname.replace('/api', '/api') + url.search;
+    
+    // Handle different types of requests:
+    // 1. API endpoints: /api/auth/login -> /api/auth/login (keep /api prefix)
+    // 2. Static files: /api/uploads/... -> /uploads/... (remove /api prefix)
+    let pathWithQuery: string;
+    
+    if (url.pathname.startsWith('/api/uploads/')) {
+      // For static files, remove the /api prefix
+      pathWithQuery = url.pathname.replace('/api', '') + url.search;
+    } else {
+      // For API endpoints, keep the /api prefix
+      pathWithQuery = url.pathname + url.search;
+    }
+    
     const targetUrl = `${apiBaseUrl}${pathWithQuery}`;
 
     console.log(`Using apiBaseUrl: ${apiBaseUrl}`);
-    console.log(`Proxying ${method} ${pathWithQuery} -> ${targetUrl}`);
+    console.log(`Proxying ${method} ${url.pathname} -> ${targetUrl}`);
 
     // Get the request body if it exists
     const body = method !== 'GET' && method !== 'HEAD' 
@@ -50,11 +63,20 @@ async function proxyRequest(request: NextRequest, method: string) {
     // Get response body
     const responseBody = await response.arrayBuffer();
 
+    // Create the response with proper CORS headers for static files
+    const responseHeaders = new Headers(response.headers);
+    
+    // For static files (like avatars), ensure proper CORS headers
+    if (pathWithQuery.startsWith('/uploads/')) {
+      responseHeaders.set('Access-Control-Allow-Origin', '*');
+      responseHeaders.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    }
+
     // Create the response with the same status and headers
     return new NextResponse(responseBody, {
       status: response.status,
       statusText: response.statusText,
-      headers: response.headers,
+      headers: responseHeaders,
     });
 
   } catch (error) {

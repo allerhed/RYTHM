@@ -225,7 +225,16 @@ function ProfilePage() {
 
   const getAvatarUrl = () => {
     if (user?.avatarUrl) {
-      return `http://localhost:3001${user.avatarUrl}`
+      // If the URL already includes http/https, use it as is
+      if (user.avatarUrl.startsWith('http://') || user.avatarUrl.startsWith('https://')) {
+        return user.avatarUrl
+      }
+      // Use the frontend's API proxy which now handles both API and static files
+      // The proxy will strip /api for static files and keep it for API endpoints
+      const avatarPath = user.avatarUrl.startsWith('/') ? user.avatarUrl : `/${user.avatarUrl}`
+      const fullUrl = `/api${avatarPath}`
+      console.log('Profile Avatar URL constructed (via smart proxy):', fullUrl) // Debug log
+      return fullUrl
     }
     return null
   }

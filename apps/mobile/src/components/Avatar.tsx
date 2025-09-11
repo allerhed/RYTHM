@@ -65,11 +65,11 @@ export function Avatar({ user, size = 'md', className = '', showBorder = true }:
       if (user.avatarUrl.startsWith('http://') || user.avatarUrl.startsWith('https://')) {
         return user.avatarUrl
       }
-      // Otherwise, construct the full URL with the API server
-      // Ensure the path starts with / for proper URL construction
+      // Use the frontend's API proxy which now handles both API and static files
+      // The proxy will strip /api for static files and keep it for API endpoints
       const avatarPath = user.avatarUrl.startsWith('/') ? user.avatarUrl : `/${user.avatarUrl}`
-      const fullUrl = `http://localhost:3001${avatarPath}`
-      console.log('Avatar URL constructed:', fullUrl) // Debug log
+      const fullUrl = `/api${avatarPath}`
+      console.log('Avatar URL constructed (via smart proxy):', fullUrl) // Debug log
       return fullUrl
     }
     return null

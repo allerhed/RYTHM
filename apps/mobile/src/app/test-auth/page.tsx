@@ -21,12 +21,12 @@ export default function TestAuthPage() {
     if (user?.avatarUrl) {
       const constructedUrl = user.avatarUrl.startsWith('http') 
         ? user.avatarUrl 
-        : `http://localhost:3001${user.avatarUrl.startsWith('/') ? user.avatarUrl : '/' + user.avatarUrl}`
+        : `/api${user.avatarUrl.startsWith('/') ? user.avatarUrl : '/' + user.avatarUrl}`
       
       setDebugInfo(`
         User object: ${JSON.stringify(user, null, 2)}
         Avatar URL from user: ${user.avatarUrl}
-        Constructed URL: ${constructedUrl}
+        Constructed URL (via smart proxy): ${constructedUrl}
       `)
     } else {
       setDebugInfo('No avatar URL found in user object')

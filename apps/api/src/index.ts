@@ -19,12 +19,15 @@ const port = process.env.PORT || 3001;
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: false, // Disable for development
+  crossOriginResourcePolicy: false, // Allow cross-origin resources for static files
 }));
 
 // CORS configuration
 app.use(cors({
   origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000', 'http://localhost:3002'],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // Body parsing middleware
@@ -255,7 +258,7 @@ app.get('/api/auth/profile', authenticateToken, async (req: any, res) => {
 app.put('/api/auth/profile', authenticateToken, async (req: any, res) => {
   try {
     const userId = req.user.userId;
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName, email, about } = req.body;
     
     if (!firstName || !lastName || !email) {
       return res.status(400).json({ 
@@ -266,10 +269,10 @@ app.put('/api/auth/profile', authenticateToken, async (req: any, res) => {
 
     const result = await db.query(
       `UPDATE users 
-       SET first_name = $1, last_name = $2, email = $3 
-       WHERE user_id = $4 
-       RETURNING user_id, tenant_id, email, role, first_name, last_name, avatar_url`,
-      [firstName, lastName, email, userId]
+       SET first_name = $1, last_name = $2, email = $3, about = $4
+       WHERE user_id = $5 
+       RETURNING user_id, tenant_id, email, role, first_name, last_name, about, avatar_url`,
+      [firstName, lastName, email, about || null, userId]
     );
 
     if (result.rows.length === 0) {
@@ -278,13 +281,16 @@ app.put('/api/auth/profile', authenticateToken, async (req: any, res) => {
 
     const user = result.rows[0];
     res.json({
-      id: user.user_id,
-      email: user.email,
-      role: user.role,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      tenantId: user.tenant_id,
-      avatarUrl: user.avatar_url,
+      user: {
+        id: user.user_id,
+        email: user.email,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        tenantId: user.tenant_id,
+        about: user.about,
+        avatarUrl: user.avatar_url,
+      }
     });
 
   } catch (error: any) {
@@ -343,16 +349,30 @@ app.put('/api/auth/password', authenticateToken, async (req: any, res) => {
 const avatarStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = path.join(__dirname, '../public/uploads/avatars');
+    console.log('Avatar upload - destination directory:', uploadDir);
+    
     // Ensure directory exists
     if (!fs.existsSync(uploadDir)) {
+      console.log('Creating upload directory:', uploadDir);
       fs.mkdirSync(uploadDir, { recursive: true });
     }
+    
+    // Verify directory is writable
+    try {
+      fs.accessSync(uploadDir, fs.constants.W_OK);
+      console.log('Upload directory is writable');
+    } catch (error) {
+      console.error('Upload directory is not writable:', error);
+    }
+    
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     // Generate unique filename with timestamp
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
+    const filename = 'avatar-' + uniqueSuffix + path.extname(file.originalname);
+    console.log('Avatar upload - generated filename:', filename);
+    cb(null, filename);
   }
 });
 
@@ -373,15 +393,37 @@ const avatarUpload = multer({
 
 // Update user avatar
 app.put('/api/auth/avatar', authenticateToken, avatarUpload.single('avatar'), async (req: any, res) => {
+  console.log('Avatar upload endpoint called');
   try {
     const userId = req.user.userId;
     
     if (!req.file) {
+      console.log('No file uploaded');
       return res.status(400).json({ error: 'No avatar file provided' });
+    }
+
+    console.log('File uploaded successfully:', {
+      filename: req.file.filename,
+      path: req.file.path,
+      size: req.file.size,
+      mimetype: req.file.mimetype
+    });
+
+    // Verify file was actually written to disk
+    if (!fs.existsSync(req.file.path)) {
+      console.error('File was not written to disk:', req.file.path);
+      return res.status(500).json({ error: 'File upload failed - file not saved' });
     }
 
     // Generate avatar URL (relative path for serving static files)
     const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    console.log('Generated avatar URL:', avatarUrl);
+
+    // Get current avatar to delete old file later
+    const currentUserResult = await db.query(
+      'SELECT avatar_url FROM users WHERE user_id = $1',
+      [userId]
+    );
 
     // Update user's avatar URL in database
     const result = await db.query(
@@ -393,10 +435,29 @@ app.put('/api/auth/avatar', authenticateToken, avatarUpload.single('avatar'), as
     );
 
     if (result.rows.length === 0) {
+      // Clean up uploaded file if user not found
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Delete old avatar file if it exists
+    if (currentUserResult.rows[0]?.avatar_url) {
+      const oldAvatarPath = path.join(__dirname, '../public', currentUserResult.rows[0].avatar_url);
+      if (fs.existsSync(oldAvatarPath)) {
+        try {
+          fs.unlinkSync(oldAvatarPath);
+          console.log('Deleted old avatar file:', oldAvatarPath);
+        } catch (error) {
+          console.error('Failed to delete old avatar file:', error);
+        }
+      }
+    }
+
     const user = result.rows[0];
+    console.log('Avatar upload completed successfully for user:', user.email);
+    
     res.json({
       message: 'Avatar updated successfully',
       user: {
@@ -412,12 +473,27 @@ app.put('/api/auth/avatar', authenticateToken, avatarUpload.single('avatar'), as
 
   } catch (error: any) {
     console.error('Avatar update error:', error);
+    
+    // Clean up uploaded file on error
+    if (req.file && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+        console.log('Cleaned up uploaded file after error');
+      } catch (cleanupError) {
+        console.error('Failed to clean up uploaded file:', cleanupError);
+      }
+    }
+    
     res.status(500).json({ error: 'Failed to update avatar', details: error.message });
   }
 });
 
-// Serve static files (avatars)
-app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+// Serve static files (avatars) with proper headers
+app.use('/uploads', (req, res, next) => {
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+}, express.static(path.join(__dirname, '../public/uploads')));
 
 // Exercise API routes
 app.use('/api/exercises', exerciseRoutes);
