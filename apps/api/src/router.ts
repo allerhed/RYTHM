@@ -4,6 +4,7 @@ import { sessionsRouter } from './routes/sessions';
 import { setsRouter } from './routes/sets';
 import { analyticsRouter } from './routes/analytics';
 import { usersRouter } from './routes/users';
+import { adminRouter } from './routes/admin';
 
 export const appRouter = router({
   auth: authRouter,
@@ -11,6 +12,7 @@ export const appRouter = router({
   sets: setsRouter,
   analytics: analyticsRouter,
   users: usersRouter,
+  admin: adminRouter,
 });
 
 export type AppRouter = typeof appRouter;

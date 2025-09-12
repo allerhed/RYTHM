@@ -29,10 +29,10 @@ export const createContext = async ({ req }: CreateExpressContextOptions): Promi
       
       // Handle admin tokens (from admin panel)
       if (decoded.type === 'admin') {
-        // For admin users, we'll determine the tenant context dynamically or use a special admin context
+        // For admin users, use the system admin tenant ID
         context.user = {
           userId: decoded.userId.toString(),
-          tenantId: 'admin', // Use 'admin' as a special tenant ID for admin operations
+          tenantId: decoded.tenantId || '00000000-0000-0000-0000-000000000000', // System admin tenant
           role: decoded.role,
           email: decoded.email,
         };
@@ -78,8 +78,8 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   
-  // Set tenant context for RLS (skip for admin users)
-  if (ctx.user.tenantId !== 'admin') {
+  // Set tenant context for RLS (skip for system admin users)
+  if (ctx.user.tenantId !== '00000000-0000-0000-0000-000000000000' && ctx.user.role !== 'system_admin') {
     await db.setTenantContext(
       db, // This will be replaced with actual client in real implementation
       ctx.user.tenantId,
@@ -99,7 +99,7 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 
 // Admin procedure (admin role required)
 export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  if (!['tenant_admin', 'org_admin', 'admin', 'super_admin'].includes(ctx.user.role)) {
+  if (!['tenant_admin', 'org_admin', 'admin', 'super_admin', 'system_admin'].includes(ctx.user.role)) {
     throw new TRPCError({ code: 'FORBIDDEN' });
   }
 

@@ -33,7 +33,7 @@ export const usersRouter = router({
 
       // For admin users, don't filter by tenant - allow them to see all users
       let whereClause = '';
-      if (ctx.user!.tenantId !== 'admin') {
+      if (ctx.user!.role !== 'system_admin' && ctx.user!.tenantId !== '00000000-0000-0000-0000-000000000000') {
         whereClause = `WHERE tenant_id = '${ctx.user!.tenantId}'`;
       }
 
@@ -145,9 +145,9 @@ export const usersRouter = router({
       // Determine tenant ID - use provided organization_id or get the first available tenant for admin users
       let tenantId = organization_id;
       if (!tenantId) {
-        if (ctx.user!.tenantId === 'admin') {
+        if (ctx.user!.role === 'system_admin' || ctx.user!.tenantId === '00000000-0000-0000-0000-000000000000') {
           // For admin users, get the first available tenant if no organization_id is provided
-          const tenantResult = await ctx.db.query('SELECT tenant_id FROM tenants LIMIT 1');
+          const tenantResult = await ctx.db.query('SELECT tenant_id FROM tenants WHERE tenant_id != $1 LIMIT 1', ['00000000-0000-0000-0000-000000000000']);
           if (tenantResult.rows.length === 0) {
             throw new TRPCError({
               code: 'BAD_REQUEST',
@@ -277,7 +277,7 @@ export const usersRouter = router({
     .query(async ({ ctx }) => {
       // For admin users, get stats for all users across all tenants
       let whereClause = '';
-      if (ctx.user!.tenantId !== 'admin') {
+      if (ctx.user!.role !== 'system_admin' && ctx.user!.tenantId !== '00000000-0000-0000-0000-000000000000') {
         whereClause = `WHERE tenant_id = '${ctx.user!.tenantId}'`;
       }
 

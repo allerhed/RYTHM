@@ -5,23 +5,25 @@ import bcrypt from 'bcryptjs'
 // This would typically come from environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'your-development-secret-key'
 
-// In production, this would query your database
-const ADMIN_USERS = [
-  {
-    id: 1,
-    email: 'admin@rythm.app',
-    name: 'System Administrator',
-    role: 'super_admin',
-    passwordHash: '$2b$10$uPwgy7I1bDAShgosEUGZ/eoFlNwrmwAMob4u18TZfPi9SVRWg1gQe' // admin123
-  },
-  {
-    id: 2,
-    email: 'orchestrator@rythm.app',
-    name: 'Orchestrator',
-    role: 'admin',
-    passwordHash: '$2b$10$uPwgy7I1bDAShgosEUGZ/eoFlNwrmwAMob4u18TZfPi9SVRWg1gQe' // Password123
+// Admin tenant ID for system administrators
+const ADMIN_TENANT_ID = '00000000-0000-0000-0000-000000000000'
+
+// Helper function to query the database
+async function queryDatabase(query: string, params: any[] = []) {
+  const response = await fetch(`${process.env.API_URL || 'http://api:3001'}/api/db-query`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query, params }),
+  })
+  
+  if (!response.ok) {
+    throw new Error('Database query failed')
   }
-]
+  
+  return response.json()
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,9 +36,63 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Find admin user
-    const adminUser = ADMIN_USERS.find(user => user.email === email)
-    if (!adminUser) {
+    // First, try to authenticate against system admin users via direct API call
+    const apiResponse = await fetch(`${process.env.API_URL || 'http://api:3001'}/api/admin/validate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    })
+
+    if (apiResponse.ok) {
+      const adminUser = await apiResponse.json()
+      
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          userId: adminUser.user_id,
+          email: adminUser.email,
+          role: adminUser.role,
+          type: 'admin',
+          tenantId: ADMIN_TENANT_ID
+        },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      )
+
+      // Return user data and token
+      return NextResponse.json({
+        user: {
+          id: adminUser.user_id,
+          email: adminUser.email,
+          name: `${adminUser.first_name} ${adminUser.last_name}`,
+          role: adminUser.role
+        },
+        token
+      })
+    }
+
+    // Fallback to hardcoded admin users for backward compatibility
+    const FALLBACK_ADMIN_USERS = [
+      {
+        id: 'admin-1',
+        email: 'admin@rythm.app',
+        name: 'System Administrator',
+        role: 'system_admin',
+        passwordHash: '$2b$10$uPwgy7I1bDAShgosEUGZ/eoFlNwrmwAMob4u18TZfPi9SVRWg1gQe' // admin123
+      },
+      {
+        id: 'admin-2',
+        email: 'orchestrator@rythm.app',
+        name: 'Orchestrator',
+        role: 'system_admin',
+        passwordHash: '$2b$10$uPwgy7I1bDAShgosEUGZ/eoFlNwrmwAMob4u18TZfPi9SVRWg1gQe' // Password123
+      }
+    ]
+
+    const fallbackUser = FALLBACK_ADMIN_USERS.find(user => user.email === email)
+    if (!fallbackUser) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -44,7 +100,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate password using bcrypt
-    const isValidPassword = await bcrypt.compare(password, adminUser.passwordHash)
+    const isValidPassword = await bcrypt.compare(password, fallbackUser.passwordHash)
 
     if (!isValidPassword) {
       return NextResponse.json(
@@ -53,13 +109,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate JWT token
+    // Generate JWT token for fallback user
     const token = jwt.sign(
       {
-        userId: adminUser.id,
-        email: adminUser.email,
-        role: adminUser.role,
-        type: 'admin'
+        userId: fallbackUser.id,
+        email: fallbackUser.email,
+        role: fallbackUser.role,
+        type: 'admin',
+        tenantId: ADMIN_TENANT_ID
       },
       JWT_SECRET,
       { expiresIn: '24h' }
@@ -68,10 +125,10 @@ export async function POST(request: NextRequest) {
     // Return user data and token
     return NextResponse.json({
       user: {
-        id: adminUser.id,
-        email: adminUser.email,
-        name: adminUser.name,
-        role: adminUser.role
+        id: fallbackUser.id,
+        email: fallbackUser.email,
+        name: fallbackUser.name,
+        role: fallbackUser.role
       },
       token
     })
