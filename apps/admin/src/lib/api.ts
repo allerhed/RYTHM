@@ -115,6 +115,121 @@ interface ExerciseTemplateStats {
   recentExerciseTemplates: number
 }
 
+interface Organization {
+  tenant_id: string
+  name: string
+  branding?: Record<string, any>
+  created_at: string
+  updated_at: string
+  user_count?: number
+  session_count?: number
+  last_activity?: string
+}
+
+interface CreateOrganizationData {
+  name: string
+  branding?: Record<string, any>
+}
+
+interface UpdateOrganizationData {
+  tenant_id: string
+  name?: string
+  branding?: Record<string, any>
+}
+
+interface GetOrganizationsParams {
+  page?: number
+  limit?: number
+  search?: string
+}
+
+interface OrganizationsResponse {
+  tenants: Organization[]
+  totalCount: number
+  totalPages: number
+  currentPage: number
+}
+
+interface AnalyticsDashboard {
+  activeUsers: {
+    value: number
+    change?: {
+      value: string
+      type: 'positive' | 'negative'
+    } | null
+  }
+  totalSessions: {
+    value: number
+    change?: {
+      value: string
+      type: 'positive' | 'negative'
+    } | null
+  }
+  avgSessionDuration: {
+    value: number
+    change?: {
+      value: string
+      type: 'positive' | 'negative'
+    } | null
+  }
+  retentionRate: {
+    value: number
+    change?: {
+      value: string
+      type: 'positive' | 'negative'
+    } | null
+  }
+  timeRange: string
+}
+
+interface UsageTrendData {
+  period: string
+  activeUsers: number
+  totalSessions: number
+  activeTenants: number
+  avgDuration: number
+}
+
+interface ExerciseAnalytics {
+  popularExercises: {
+    name: string
+    total_sets: string
+    sessions_used: string
+    unique_users: string
+  }[]
+  muscleGroupUsage: {
+    muscle_group: string
+    total_sets: string
+    unique_users: string
+  }[]
+  categoryBreakdown: {
+    category: string
+    session_count: number
+    unique_users: number
+    avg_duration: number
+  }[]
+}
+
+interface TenantAnalytics {
+  tenantId: string
+  tenantName: string
+  activeUsers: number
+  totalSessions: number
+  avgSessionDuration: number
+  lastActivity: string | null
+  totalUsers: number
+}
+
+interface PerformanceMetrics {
+  totalTenants: number
+  totalUsers: number
+  totalSessions: number
+  totalExercises: number
+  activeUsers24h: number
+  sessions24h: number
+  activeTenants24h: number
+}
+
 class ApiClient {
   private baseUrl: string
   private token: string | null = null
@@ -216,6 +331,67 @@ class ApiClient {
 
   // Admin methods
   admin = {
+    // Organization/Tenant management
+    getOrganizations: async (params: GetOrganizationsParams = {}): Promise<OrganizationsResponse> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getTenants?input=${encodeURIComponent(JSON.stringify(params))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getOrganization: async (tenant_id: string): Promise<Organization> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getTenant?input=${encodeURIComponent(JSON.stringify({ tenant_id }))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    createOrganization: async (organizationData: CreateOrganizationData): Promise<Organization> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.createTenant`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(organizationData),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    updateOrganization: async (organizationData: UpdateOrganizationData): Promise<Organization> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.updateTenant`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(organizationData),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    deleteOrganization: async (tenant_id: string): Promise<{ success: boolean }> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.deleteTenant`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ tenant_id }),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getOrganizationUsers: async (tenant_id: string, params: { page?: number; limit?: number } = {}) => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getTenantUsers?input=${encodeURIComponent(JSON.stringify({ tenant_id, ...params }))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
     // Exercise template management
     getExerciseTemplates: async (params: GetExerciseTemplatesParams = {}): Promise<ExerciseTemplatesResponse> => {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.getExerciseTemplates?input=${encodeURIComponent(JSON.stringify(params))}`, {
@@ -266,6 +442,62 @@ class ApiClient {
       
       const result = await this.handleResponse(response)
       return result.result.data
+    },
+
+    // Analytics methods
+    getAnalyticsDashboard: async (params: {
+      timeRange?: '7d' | '30d' | '90d' | '1y'
+      compareToLast?: boolean
+    } = {}): Promise<AnalyticsDashboard> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getAnalyticsDashboard?input=${encodeURIComponent(JSON.stringify(params))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getUsageTrends: async (params: {
+      timeRange?: '7d' | '30d' | '90d'
+      granularity?: 'hour' | 'day' | 'week'
+    } = {}): Promise<UsageTrendData[]> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getUsageTrends?input=${encodeURIComponent(JSON.stringify(params))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getExerciseAnalytics: async (params: {
+      timeRange?: '30d' | '90d' | '1y'
+    } = {}): Promise<ExerciseAnalytics> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getExerciseAnalytics?input=${encodeURIComponent(JSON.stringify(params))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getTenantAnalytics: async (params: {
+      timeRange?: '30d' | '90d' | '1y'
+    } = {}): Promise<TenantAnalytics[]> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getTenantAnalytics?input=${encodeURIComponent(JSON.stringify(params))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getPerformanceMetrics: async (): Promise<PerformanceMetrics> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getPerformanceMetrics`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
     }
   }
 
@@ -301,5 +533,7 @@ class ApiClient {
 export const apiClient = new ApiClient()
 export type { 
   User, CreateUserData, UpdateUserData, GetUsersParams, UsersResponse, UserStats,
-  ExerciseTemplate, CreateExerciseTemplateData, UpdateExerciseTemplateData, GetExerciseTemplatesParams, ExerciseTemplatesResponse, ExerciseTemplateStats
+  ExerciseTemplate, CreateExerciseTemplateData, UpdateExerciseTemplateData, GetExerciseTemplatesParams, ExerciseTemplatesResponse, ExerciseTemplateStats,
+  Organization, CreateOrganizationData, UpdateOrganizationData, GetOrganizationsParams, OrganizationsResponse,
+  AnalyticsDashboard, UsageTrendData, ExerciseAnalytics, TenantAnalytics, PerformanceMetrics
 }
