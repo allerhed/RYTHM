@@ -84,7 +84,7 @@ export function UserModal({ isOpen, onClose, onSubmit, user, mode }: UserModalPr
         </div>
 
         <div className="p-6">
-          <form onSubmit={handleSubmit(handleFormSubmit)}>
+          <form onSubmit={handleSubmit(handleFormSubmit)} className="modal-form">
             <div className="space-y-4">
               <div>
                 <label htmlFor="first_name" className="block text-sm font-medium text-gray-300">
@@ -137,7 +137,7 @@ export function UserModal({ isOpen, onClose, onSubmit, user, mode }: UserModalPr
                 </label>
                 <select
                   id="role"
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="dropdown-fix mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   {...register('role')}
                 >
                   <option value="athlete">Athlete</option>

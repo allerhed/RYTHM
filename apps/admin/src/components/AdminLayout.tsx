@@ -47,6 +47,15 @@ const navigation = [
     )
   },
   { 
+    name: 'Exercise Templates', 
+    href: '/exercises', 
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h2v8H4V8zm0-3h2v2H4V5zm0 14h2v2H4v-2zm16-11h-2v8h2V8zm0-3h-2v2h2V5zm0 14h-2v2h2v-2zM8 7h8v10H8V7z" />
+      </svg>
+    )
+  },
+  { 
     name: 'Analytics', 
     href: '/analytics', 
     icon: (
@@ -168,7 +177,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           href={item.href}
                           className={`group flex gap-x-4 rounded-xl p-3 text-sm leading-6 font-semibold transition-all duration-200 ${
                             isActive
-                              ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-[1.02]'
+                              ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
                               : 'text-gray-300 hover:text-white hover:bg-gray-700'
                           }`}
                         >

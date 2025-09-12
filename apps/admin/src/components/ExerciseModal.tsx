@@ -1,0 +1,336 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { apiClient, type ExerciseTemplate } from '@/lib/api'
+import { toast } from 'react-hot-toast'
+
+interface ExerciseModalProps {
+  exerciseTemplate?: ExerciseTemplate | null
+  onSave: () => void
+  onClose: () => void
+}
+
+const MUSCLE_GROUPS = [
+  'chest', 'back', 'shoulders', 'biceps', 'triceps', 'forearms',
+  'abs', 'core', 'quads', 'hamstrings', 'glutes', 'calves',
+  'legs', 'full body', 'cardio'
+]
+
+const EQUIPMENT_OPTIONS = [
+  'barbell', 'dumbbell', 'kettlebell', 'cable', 'machine',
+  'bodyweight', 'resistance band', 'medicine ball', 'suspension trainer',
+  'cardio equipment', 'other'
+]
+
+const EXERCISE_CATEGORIES = [
+  'strength', 'cardio', 'flexibility', 'mobility', 'sports', 'other'
+]
+
+const EXERCISE_TYPES = [
+  { value: 'STRENGTH', label: 'Strength' },
+  { value: 'CARDIO', label: 'Cardio' }
+]
+
+const VALUE_TYPES = [
+  'weight_kg', 'weight_lbs', 'reps', 'time_seconds', 'distance_meters',
+  'distance_km', 'distance_miles', 'calories', 'sets', 'other'
+]
+
+export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseModalProps) {
+  const [formData, setFormData] = useState({
+    name: '',
+    muscle_groups: [] as string[],
+    equipment: '',
+    exercise_category: 'strength',
+    exercise_type: 'STRENGTH' as 'STRENGTH' | 'CARDIO',
+    default_value_1_type: 'weight_kg',
+    default_value_2_type: 'reps',
+    description: '',
+    instructions: ''
+  })
+  
+  const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (exerciseTemplate) {
+      setFormData({
+        name: exerciseTemplate.name,
+        muscle_groups: exerciseTemplate.muscle_groups,
+        equipment: exerciseTemplate.equipment || '',
+        exercise_category: exerciseTemplate.exercise_category,
+        exercise_type: exerciseTemplate.exercise_type,
+        default_value_1_type: exerciseTemplate.default_value_1_type,
+        default_value_2_type: exerciseTemplate.default_value_2_type,
+        description: exerciseTemplate.description || '',
+        instructions: exerciseTemplate.instructions || ''
+      })
+    }
+  }, [exerciseTemplate])
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Exercise name is required'
+    }
+
+    if (formData.muscle_groups.length === 0) {
+      newErrors.muscle_groups = 'At least one muscle group is required'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+
+    setIsLoading(true)
+    
+    try {
+      if (exerciseTemplate) {
+        // Update existing exercise template
+        await apiClient.admin.updateExerciseTemplate({
+          template_id: exerciseTemplate.template_id,
+          ...formData
+        })
+        toast.success('Exercise template updated successfully')
+      } else {
+        // Create new exercise template
+        await apiClient.admin.createExerciseTemplate(formData)
+        toast.success('Exercise template created successfully')
+      }
+      
+      onSave()
+    } catch (error: any) {
+      console.error('Error saving exercise template:', error)
+      toast.error(error.message || 'Failed to save exercise template')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleMuscleGroupToggle = (muscleGroup: string) => {
+    setFormData(prev => ({
+      ...prev,
+      muscle_groups: prev.muscle_groups.includes(muscleGroup)
+        ? prev.muscle_groups.filter(mg => mg !== muscleGroup)
+        : [...prev.muscle_groups, muscleGroup]
+    }))
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {exerciseTemplate ? 'Edit Exercise Template' : 'Add New Exercise Template'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="modal-form p-6 space-y-6">
+          {/* Exercise Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Exercise Template Name *
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.name ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="Enter exercise template name"
+            />
+            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+          </div>
+
+          {/* Exercise Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Exercise Type
+            </label>
+            <select
+              value={formData.exercise_type}
+              onChange={(e) => setFormData(prev => ({ 
+                ...prev, 
+                exercise_type: e.target.value as 'STRENGTH' | 'CARDIO' 
+              }))}
+              className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {EXERCISE_TYPES.map(type => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Exercise Category */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Category
+            </label>
+            <select
+              value={formData.exercise_category}
+              onChange={(e) => setFormData(prev => ({ ...prev, exercise_category: e.target.value }))}
+              className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {EXERCISE_CATEGORIES.map(category => (
+                <option key={category} value={category}>
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Muscle Groups */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Muscle Groups *
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {MUSCLE_GROUPS.map(muscleGroup => (
+                <label key={muscleGroup} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.muscle_groups.includes(muscleGroup)}
+                    onChange={() => handleMuscleGroupToggle(muscleGroup)}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 capitalize">
+                    {muscleGroup}
+                  </span>
+                </label>
+              ))}
+            </div>
+            {errors.muscle_groups && (
+              <p className="mt-1 text-sm text-red-600">{errors.muscle_groups}</p>
+            )}
+          </div>
+
+          {/* Equipment */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Equipment
+            </label>
+            <select
+              value={formData.equipment}
+              onChange={(e) => setFormData(prev => ({ ...prev, equipment: e.target.value }))}
+              className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select equipment</option>
+              {EQUIPMENT_OPTIONS.map(equipment => (
+                <option key={equipment} value={equipment}>
+                  {equipment.charAt(0).toUpperCase() + equipment.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Default Value Types */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Primary Value Type
+              </label>
+              <select
+                value={formData.default_value_1_type}
+                onChange={(e) => setFormData(prev => ({ 
+                  ...prev, 
+                  default_value_1_type: e.target.value 
+                }))}
+                className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {VALUE_TYPES.map(type => (
+                  <option key={type} value={type}>
+                    {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Secondary Value Type
+              </label>
+              <select
+                value={formData.default_value_2_type}
+                onChange={(e) => setFormData(prev => ({ 
+                  ...prev, 
+                  default_value_2_type: e.target.value 
+                }))}
+                className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {VALUE_TYPES.map(type => (
+                  <option key={type} value={type}>
+                    {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Description
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              rows={2}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Brief description of the exercise"
+            />
+          </div>
+
+          {/* Instructions */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Instructions
+            </label>
+            <textarea
+              value={formData.instructions}
+              onChange={(e) => setFormData(prev => ({ ...prev, instructions: e.target.value }))}
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Detailed instructions on how to perform the exercise"
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'Saving...' : exerciseTemplate ? 'Update Template' : 'Create Template'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}

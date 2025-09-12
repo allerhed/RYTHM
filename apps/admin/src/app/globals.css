@@ -9,6 +9,110 @@
   body {
     @apply h-full font-sans antialiased;
   }
+  
+  /* Comprehensive fix for dropdown positioning issues */
+  * {
+    /* Reset any transforms that might affect dropdown positioning */
+    backface-visibility: visible !important;
+  }
+  
+  /* Force proper positioning for select elements */
+  select {
+    transform: none !important;
+    perspective: none !important;
+    transform-style: flat !important;
+    contain: none !important;
+    will-change: auto !important;
+    position: relative !important;
+  }
+  
+  /* Ensure select dropdowns are not affected by parent transforms */
+  select option {
+    transform: none !important;
+    position: static !important;
+  }
+  
+  /* Additional fixes for dropdown positioning */
+  select:focus {
+    contain: none !important;
+    transform: none !important;
+  }
+  
+  /* Prevent backdrop filters from affecting dropdowns */
+  .modal-backdrop,
+  .backdrop-blur,
+  .backdrop-blur-sm {
+    contain: none !important;
+  }
+  
+  /* Fix for modal containers that might affect dropdowns */
+  .fixed {
+    contain: none !important;
+  }
+  
+  /* Force browser to treat select as uncontained */
+  select,
+  select * {
+    contain: none !important;
+    isolation: auto !important;
+  }
+  
+  /* Reset any CSS that might create stacking contexts */
+  [class*="transform"],
+  [class*="scale"],
+  [class*="translate"],
+  [class*="rotate"] {
+    contain: none !important;
+  }
+  
+  /* Specific fix for Tailwind transforms */
+  .transform,
+  .scale-105,
+  .scale-110 {
+    contain: none !important;
+  }
+  
+  /* Specific dropdown positioning fix */
+  .dropdown-fix {
+    position: static !important;
+    transform: none !important;
+    contain: none !important;
+    isolation: auto !important;
+    perspective: none !important;
+    transform-style: flat !important;
+    backface-visibility: visible !important;
+    will-change: auto !important;
+    zoom: 1 !important;
+  }
+  
+  /* Force dropdown to ignore parent containment */
+  .dropdown-fix,
+  .dropdown-fix * {
+    contain: none !important;
+  }
+  
+  /* Additional aggressive reset for dropdown containers */
+  .dropdown-fix {
+    /* Force the browser to treat this as uncontained */
+    contain: none !important;
+    /* Reset any transform origin */
+    transform-origin: 0 0 !important;
+    /* Ensure no transform is inherited */
+    transform: translate3d(0, 0, 0) !important;
+    /* Remove any perspective */
+    perspective: none !important;
+    /* Flatten transform style */
+    transform-style: flat !important;
+    /* Reset filter effects */
+    filter: none !important;
+    /* Reset backdrop filter */
+    backdrop-filter: none !important;
+    /* Ensure proper positioning context */
+    position: relative !important;
+    /* Reset any mask */
+    mask: none !important;
+    clip-path: none !important;
+  }
 }
 
 @layer components {
@@ -46,5 +150,28 @@
   
   .table-cell {
     @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100;
+  }
+  
+  /* Fix for dropdown positioning issues */
+  .dropdown-container {
+    contain: none !important;
+    transform: none !important;
+  }
+  
+  /* Ensure select elements are positioned correctly */
+  select {
+    contain: none !important;
+    will-change: auto !important;
+  }
+  
+  /* Fix for forms inside modals */
+  .modal-form {
+    contain: none !important;
+    transform: none !important;
+  }
+  
+  /* Ensure proper stacking context for dropdowns */
+  form {
+    contain: none !important;
   }
 }

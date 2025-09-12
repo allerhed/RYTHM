@@ -53,6 +53,68 @@ interface UserStats {
   new_this_month: string
 }
 
+interface ExerciseTemplate {
+  template_id: string
+  name: string
+  muscle_groups: string[]
+  equipment?: string
+  exercise_category: string
+  exercise_type: 'STRENGTH' | 'CARDIO'
+  default_value_1_type: string
+  default_value_2_type: string
+  description?: string
+  instructions?: string
+  created_at: string
+  updated_at?: string
+}
+
+interface CreateExerciseTemplateData {
+  name: string
+  muscle_groups: string[]
+  equipment?: string
+  exercise_category: string
+  exercise_type: 'STRENGTH' | 'CARDIO'
+  default_value_1_type: string
+  default_value_2_type: string
+  description?: string
+  instructions?: string
+}
+
+interface UpdateExerciseTemplateData {
+  template_id: string
+  name?: string
+  muscle_groups?: string[]
+  equipment?: string
+  exercise_category?: string
+  exercise_type?: 'STRENGTH' | 'CARDIO'
+  default_value_1_type?: string
+  default_value_2_type?: string
+  description?: string
+  instructions?: string
+}
+
+interface GetExerciseTemplatesParams {
+  page?: number
+  limit?: number
+  search?: string
+  category?: string
+  type?: string
+}
+
+interface ExerciseTemplatesResponse {
+  exerciseTemplates: ExerciseTemplate[]
+  totalCount: number
+  totalPages: number
+  currentPage: number
+}
+
+interface ExerciseTemplateStats {
+  totalExerciseTemplates: number
+  exerciseTemplatesByType: { exercise_type: string; count: string }[]
+  topMuscleGroups: { muscle_group: string; count: string }[]
+  recentExerciseTemplates: number
+}
+
 class ApiClient {
   private baseUrl: string
   private token: string | null = null
@@ -152,6 +214,61 @@ class ApiClient {
     return result.result.data
   }
 
+  // Admin methods
+  admin = {
+    // Exercise template management
+    getExerciseTemplates: async (params: GetExerciseTemplatesParams = {}): Promise<ExerciseTemplatesResponse> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getExerciseTemplates?input=${encodeURIComponent(JSON.stringify(params))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getExerciseTemplateStats: async (): Promise<ExerciseTemplateStats> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getExerciseTemplateStats`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    createExerciseTemplate: async (exerciseTemplateData: CreateExerciseTemplateData): Promise<ExerciseTemplate> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.createExerciseTemplate`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(exerciseTemplateData),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    updateExerciseTemplate: async (exerciseTemplateData: UpdateExerciseTemplateData): Promise<ExerciseTemplate> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.updateExerciseTemplate`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(exerciseTemplateData),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    deleteExerciseTemplate: async (params: { template_id: string }): Promise<{ success: boolean }> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.deleteExerciseTemplate`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(params),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    }
+  }
+
   // Authentication methods
   async login(email: string, password: string) {
     const response = await fetch('/api/admin/auth/login', {
@@ -182,4 +299,7 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient()
-export type { User, CreateUserData, UpdateUserData, GetUsersParams, UsersResponse, UserStats }
+export type { 
+  User, CreateUserData, UpdateUserData, GetUsersParams, UsersResponse, UserStats,
+  ExerciseTemplate, CreateExerciseTemplateData, UpdateExerciseTemplateData, GetExerciseTemplatesParams, ExerciseTemplatesResponse, ExerciseTemplateStats
+}
