@@ -10,12 +10,15 @@
     "dev:restart": "docker-compose restart",
     "dev:restart:api": "docker-compose restart api",
     "dev:restart:mobile": "docker-compose restart mobile",
+    "dev:restart:admin": "docker-compose restart admin",
     "dev:logs": "docker-compose logs -f",
     "dev:logs:api": "docker-compose logs -f api",
     "dev:logs:mobile": "docker-compose logs -f mobile",
+    "dev:logs:admin": "docker-compose logs -f admin",
     "dev:logs:db": "docker-compose logs -f db",
     "dev:shell:api": "docker-compose exec api sh",
     "dev:shell:mobile": "docker-compose exec mobile sh",
+    "dev:shell:admin": "docker-compose exec admin sh",
     "dev:shell:db": "docker-compose exec db psql -U rythm_api -d rythm",
     "dev:status": "docker-compose ps",
     "dev:health": "./scripts/health-check.sh",
@@ -24,7 +27,9 @@
     "start": "docker-compose -f docker-compose.prod.yml up -d",
     "stop": "docker-compose -f docker-compose.prod.yml down",
     "db:migrate": "docker-compose exec api npm run db:migrate --workspace=@rythm/db",
-    "db:seed": "docker-compose exec api npm run db:seed --workspace=@rythm/db"
+    "db:seed": "docker-compose exec api npm run db:seed --workspace=@rythm/db",
+    "generate-test-data": "./scripts/generate-test-data.sh",
+    "verify-test-data": "node scripts/verify-test-data.js"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
@@ -34,5 +39,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "bcryptjs": "^3.0.2"
+  }
 }

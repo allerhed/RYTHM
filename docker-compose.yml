@@ -82,20 +82,36 @@ services:
       api:
         condition: service_healthy
 
-  # Web Admin (Future)
-  # admin:
-  #   build:
-  #     context: .
-  #     dockerfile: ./apps/admin/Dockerfile
-  #   environment:
-  #     - NODE_ENV=development
-  #     - API_URL=http://api:3001
-  #     - NEXT_PUBLIC_API_URL=http://localhost:3001
-  #   ports:
-  #     - "3002:3002"
-  #   depends_on:
-  #     api:
-  #       condition: service_healthy
+  # Web Admin
+  admin:
+    build:
+      context: .
+      dockerfile: ./apps/admin/Dockerfile.dev
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://api:3001
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - JWT_SECRET=your-development-secret-key
+    ports:
+      - "3002:3002"
+    volumes:
+      # Mount source code for hot reloading
+      - ./apps/admin/src:/app/apps/admin/src
+      - ./apps/admin/public:/app/apps/admin/public
+      - ./packages:/app/packages
+      - ./package.json:/app/package.json
+      - ./apps/admin/package.json:/app/apps/admin/package.json
+      - ./apps/admin/next.config.js:/app/apps/admin/next.config.js
+      - ./apps/admin/tailwind.config.js:/app/apps/admin/tailwind.config.js
+      - ./apps/admin/postcss.config.js:/app/apps/admin/postcss.config.js
+      - ./apps/admin/tsconfig.json:/app/apps/admin/tsconfig.json
+      # Preserve node_modules and Next.js cache
+      - /app/node_modules
+      - /app/apps/admin/node_modules
+      - /app/apps/admin/.next
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   postgres_data:

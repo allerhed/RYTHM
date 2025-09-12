@@ -1,0 +1,46 @@
+{
+  "name": "@rythm/admin",
+  "version": "1.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start -p 3002",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.17",
+    "@heroicons/react": "^2.0.18",
+    "@hookform/resolvers": "^3.3.2",
+    "@rythm/shared": "1.1.0",
+    "@tanstack/react-query": "^4.36.1",
+    "bcryptjs": "^2.4.3",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
+    "jsonwebtoken": "^9.0.2",
+    "next": "^14.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.62.0",
+    "react-hot-toast": "^2.6.0",
+    "recharts": "^2.8.0",
+    "tailwind-merge": "^2.2.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.55.0",
+    "eslint-config-next": "^14.0.4",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.3.0"
+  }
+}

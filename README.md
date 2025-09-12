@@ -60,6 +60,7 @@ The development environment uses Docker Compose with:
 - **Frontend Application**: http://localhost:3000
 - **Dashboard**: http://localhost:3000/dashboard
 - **Analytics**: http://localhost:3000/analytics
+- **Admin Interface**: http://localhost:3002 (admin@rythm.app / admin123)
 - **API Health Check**: http://localhost:3001/health
 - **Database**: PostgreSQL on localhost:5432
 
@@ -72,6 +73,7 @@ npm run dev:logs
 # View logs from specific service
 npm run dev:logs:api      # API server logs
 npm run dev:logs:mobile   # Frontend logs
+npm run dev:logs:admin    # Admin interface logs
 npm run dev:logs:db       # Database logs
 
 # Stop all services
@@ -83,6 +85,7 @@ npm run dev:restart
 # Restart specific service
 npm run dev:restart:api
 npm run dev:restart:mobile
+npm run dev:restart:admin
 
 # Rebuild and restart (after Dockerfile changes)
 npm run dev:build
@@ -116,6 +119,7 @@ npm run dev:clean
 
 - **Frontend (mobile)**: Next.js application on port 3000
 - **API (api)**: Express.js with tRPC on port 3001
+- **Admin Interface (admin)**: Next.js admin dashboard on port 3002
 - **Database (db)**: PostgreSQL 15 on port 5432
 
 ### Key Features
@@ -124,6 +128,40 @@ npm run dev:clean
 - **Analytics Dashboard**: Comprehensive workout analytics and trends
 - **Workout Tracking**: Log and manage training sessions
 - **User Authentication**: Secure login and profile management
+
+## 🔧 Admin Interface
+
+The RYTHM Admin Interface provides comprehensive system administration capabilities for managing the entire platform.
+
+### Features
+
+- **System Dashboard**: Real-time statistics and health monitoring
+- **User Management**: View and manage user accounts across all tenants
+- **Tenant Administration**: Manage fitness studios and organizations
+- **Activity Monitoring**: Track system activities and user actions
+- **Secure Authentication**: Admin-only access with JWT-based security
+
+### Admin Access
+
+- **URL**: http://localhost:3002
+- **Default Accounts**:
+  - System Admin: `admin@rythm.app` / `admin123`
+  - Orchestrator: `orchestrator@rythm.app` / `Password123`
+
+### Admin Commands
+
+```bash
+# View admin interface logs
+npm run dev:logs:admin
+
+# Restart admin service
+npm run dev:restart:admin
+
+# Access admin shell
+npm run dev:shell:admin
+```
+
+For detailed admin documentation, see [apps/admin/README.md](apps/admin/README.md).
 
 ## 📊 Training Score System
 

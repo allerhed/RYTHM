@@ -25,13 +25,26 @@ export const createContext = async ({ req }: CreateExpressContextOptions): Promi
     const token = authHeader.slice(7);
     
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
-      context.user = {
-        userId: decoded.userId,
-        tenantId: decoded.tenantId,
-        role: decoded.role,
-        email: decoded.email,
-      };
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-development-secret-key') as any;
+      
+      // Handle admin tokens (from admin panel)
+      if (decoded.type === 'admin') {
+        // For admin users, we'll determine the tenant context dynamically or use a special admin context
+        context.user = {
+          userId: decoded.userId.toString(),
+          tenantId: 'admin', // Use 'admin' as a special tenant ID for admin operations
+          role: decoded.role,
+          email: decoded.email,
+        };
+      } else {
+        // Handle regular user tokens
+        context.user = {
+          userId: decoded.userId,
+          tenantId: decoded.tenantId,
+          role: decoded.role,
+          email: decoded.email,
+        };
+      }
     } catch (error) {
       // Invalid token - context will not have user
     }
@@ -65,14 +78,16 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   
-  // Set tenant context for RLS
-  await db.setTenantContext(
-    db, // This will be replaced with actual client in real implementation
-    ctx.user.tenantId,
-    ctx.user.userId,
-    ctx.user.role,
-    ctx.user.role === 'org_admin'
-  );
+  // Set tenant context for RLS (skip for admin users)
+  if (ctx.user.tenantId !== 'admin') {
+    await db.setTenantContext(
+      db, // This will be replaced with actual client in real implementation
+      ctx.user.tenantId,
+      ctx.user.userId,
+      ctx.user.role,
+      ctx.user.role === 'org_admin'
+    );
+  }
 
   return next({
     ctx: {
@@ -84,7 +99,7 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 
 // Admin procedure (admin role required)
 export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  if (!['tenant_admin', 'org_admin'].includes(ctx.user.role)) {
+  if (!['tenant_admin', 'org_admin', 'admin', 'super_admin'].includes(ctx.user.role)) {
     throw new TRPCError({ code: 'FORBIDDEN' });
   }
 
