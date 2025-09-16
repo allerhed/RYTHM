@@ -150,10 +150,9 @@ export const workoutTemplatesRouter = router({
         LEFT JOIN users u ON wt.created_by = u.user_id
         WHERE wt.template_id = $1 
         AND wt.is_active = true
-        AND wt.tenant_id = $2
         AND (
-          (wt.scope = 'user' AND wt.user_id = $3)
-          OR (wt.scope = 'tenant')
+          (wt.scope = 'user' AND wt.user_id = $3 AND wt.tenant_id = $2)
+          OR (wt.scope = 'tenant' AND wt.tenant_id = $2)
           OR (wt.scope = 'system')
         )`,
         [templateId, ctx.user.tenantId, ctx.user.userId]
@@ -173,14 +172,30 @@ export const workoutTemplatesRouter = router({
       const templateId = uuidv4();
       const { name, description, scope, exercises } = input;
 
-      // Regular users can only create user-scoped templates
-      const actualScope = ['tenant_admin', 'org_admin'].includes(ctx.user.role) ? scope : 'user';
+      console.log('🔄 Template CREATE request:', {
+        templateId,
+        name,
+        requestedScope: scope,
+        userRole: ctx.user.role,
+        exerciseCount: exercises?.length || 0
+      });
+
+      // Admin users can create templates with any scope, regular users can only create user-scoped templates
+      const adminRoles = ['tenant_admin', 'org_admin', 'admin', 'super_admin', 'system_admin'];
+      const actualScope = adminRoles.includes(ctx.user.role) ? scope : 'user';
+      
+      console.log('🔍 Scope determination:', {
+        requestedScope: scope,
+        userRole: ctx.user.role,
+        isAdmin: adminRoles.includes(ctx.user.role),
+        actualScope
+      });
       
       // Validate permissions for non-user scopes
-      if (actualScope === 'tenant' && !['tenant_admin', 'org_admin'].includes(ctx.user.role)) {
+      if (actualScope === 'tenant' && !adminRoles.includes(ctx.user.role)) {
         throw new Error('Insufficient permissions to create tenant templates');
       }
-      if (actualScope === 'system' && ctx.user.role !== 'org_admin') {
+      if (actualScope === 'system' && !['org_admin', 'super_admin', 'system_admin'].includes(ctx.user.role)) {
         throw new Error('Insufficient permissions to create system templates');
       }
 
@@ -216,8 +231,19 @@ export const workoutTemplatesRouter = router({
   update: protectedProcedure
     .input(UpdateWorkoutTemplateRequest)
     .mutation(async ({ input, ctx }) => {
-      const { template_id, name, description, exercises } = input;
-      const scope = (input as any).scope; // Type will be fixed after package rebuild
+      const { template_id, name, description, scope, exercises } = input;
+      
+      console.log('🔄 Template update request:', {
+        template_id,
+        name,
+        description: description ? 'has description' : 'no description',
+        scope,
+        exerciseCount: exercises?.length || 0,
+        fullInput: JSON.stringify(input),
+        inputKeys: Object.keys(input),
+        hasScope: 'scope' in input,
+        scopeValue: scope
+      });
 
       // Check if template exists and user has permission to edit
       const checkResult = await ctx.db.query(
@@ -266,9 +292,17 @@ export const workoutTemplatesRouter = router({
       }
 
       if (scope !== undefined) {
+        console.log('🔍 Scope update check:', {
+          newScope: scope,
+          currentScope: template.scope,
+          userRole: ctx.user.role,
+          scopeChanged: scope !== template.scope
+        });
+        
         // Validate scope change permissions
         if (scope !== template.scope) {
           const canChangeScope = ['tenant_admin', 'org_admin', 'admin', 'super_admin', 'system_admin'].includes(ctx.user.role);
+          console.log('🔐 Scope change permission check:', { canChangeScope, userRole: ctx.user.role });
           if (!canChangeScope) {
             throw new Error('Insufficient permissions to change template scope');
           }
@@ -276,6 +310,9 @@ export const workoutTemplatesRouter = router({
         updates.push(`scope = $${paramIndex}`);
         params.push(scope);
         paramIndex++;
+        console.log('✅ Added scope to update query');
+      } else {
+        console.log('❌ Scope is undefined, not updating');
       }
 
       if (exercises !== undefined) {
@@ -300,28 +337,82 @@ export const workoutTemplatesRouter = router({
       return result.rows[0];
     }),
 
-  // Delete workout template (soft delete - only user's own templates)
+  // Delete workout template (soft delete - admin can delete any template)
   delete: protectedProcedure
     .input(z.object({ templateId: z.string().uuid() }))
     .mutation(async ({ input, ctx }) => {
       const { templateId } = input;
 
-      const result = await ctx.db.query(
-        `UPDATE workout_templates 
-        SET is_active = false
-        WHERE template_id = $1 
-        AND scope = 'user' 
-        AND user_id = $2 
-        AND tenant_id = $3
-        RETURNING template_id`,
-        [templateId, ctx.user.userId, ctx.user.tenantId]
-      );
+      // Check if user is admin or owns the template
+      const isAdmin = ['org_admin', 'tenant_admin', 'system_admin'].includes(ctx.user.role as string);
+      
+      console.log('Delete request - User role:', ctx.user.role, 'Is admin:', isAdmin, 'Template ID:', templateId);
 
-      if (result.rows.length === 0) {
+      let result;
+      
+      if (isAdmin) {
+        // Admin can delete any template in their scope
+        if (ctx.user.role === 'system_admin') {
+          // System admin can delete any template
+          result = await ctx.db.query(
+            `UPDATE workout_templates 
+            SET is_active = false
+            WHERE template_id = $1
+            RETURNING template_id, name, scope`,
+            [templateId]
+          );
+        } else if (ctx.user.role === 'org_admin') {
+          // Org admin can delete org and user templates in their tenant
+          result = await ctx.db.query(
+            `UPDATE workout_templates 
+            SET is_active = false
+            WHERE template_id = $1 
+            AND tenant_id = $2
+            AND scope IN ('tenant', 'user')
+            RETURNING template_id, name, scope`,
+            [templateId, ctx.user.tenantId]
+          );
+        } else if (ctx.user.role === 'tenant_admin') {
+          // Tenant admin can delete user templates in their tenant
+          result = await ctx.db.query(
+            `UPDATE workout_templates 
+            SET is_active = false
+            WHERE template_id = $1 
+            AND tenant_id = $2
+            AND scope = 'user'
+            RETURNING template_id, name, scope`,
+            [templateId, ctx.user.tenantId]
+          );
+        }
+      } else {
+        // Regular user can only delete their own user-scoped templates
+        result = await ctx.db.query(
+          `UPDATE workout_templates 
+          SET is_active = false
+          WHERE template_id = $1 
+          AND scope = 'user' 
+          AND user_id = $2 
+          AND tenant_id = $3
+          RETURNING template_id, name, scope`,
+          [templateId, ctx.user.userId, ctx.user.tenantId]
+        );
+      }
+
+      console.log('Delete result:', result?.rows);
+
+      if (!result || result.rows.length === 0) {
         throw new Error('Template not found or access denied');
       }
 
-      return { success: true };
+      const deletedTemplate = result.rows[0];
+      console.log('Successfully deleted template:', deletedTemplate);
+
+      return { 
+        success: true, 
+        templateId: deletedTemplate.template_id,
+        name: deletedTemplate.name,
+        scope: deletedTemplate.scope
+      };
     }),
 
   // Get templates for dropdown/selection (simplified response)
@@ -342,10 +433,9 @@ export const workoutTemplatesRouter = router({
           jsonb_array_length(exercises) as exercise_count
         FROM workout_templates
         WHERE is_active = true
-        AND tenant_id = $1
         AND (
-          (scope = 'user' AND user_id = $2)
-          OR (scope = 'tenant')
+          (scope = 'user' AND user_id = $2 AND tenant_id = $1)
+          OR (scope = 'tenant' AND tenant_id = $1)
           OR (scope = 'system')
         )
       `;

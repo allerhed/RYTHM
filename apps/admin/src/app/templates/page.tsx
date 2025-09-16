@@ -481,6 +481,8 @@ export default function AdminTemplatesPage() {
   const [editingTemplate, setEditingTemplate] = useState<WorkoutTemplate | null>(null)
   const [viewingTemplate, setViewingTemplate] = useState<WorkoutTemplate | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState<WorkoutTemplate | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   
   // API state management
   const [templates, setTemplates] = useState<WorkoutTemplate[]>([])
@@ -713,7 +715,7 @@ export default function AdminTemplatesPage() {
     setFormData({
       name: template.name,
       description: template.description || '',
-      scope: template.scope as 'tenant' | 'system',
+      scope: template.scope as 'user' | 'tenant' | 'system',
       exercises: template.exercises || []
     })
     setEditingTemplate(template)
@@ -731,9 +733,60 @@ export default function AdminTemplatesPage() {
   const confirmDelete = async () => {
     if (!showDeleteModal) return
     
-    // Mock delete for now
-    setTemplates(prev => prev.filter(t => t.template_id !== showDeleteModal.template_id))
-    setShowDeleteModal(null)
+    setIsDeleting(true)
+    setDeleteError(null)
+    
+    try {
+      // Check if we're in the browser environment and have a token
+      if (typeof window === 'undefined') {
+        throw new Error('Not in browser environment')
+      }
+
+      const token = localStorage.getItem('admin_token')
+      if (!token) {
+        throw new Error('No admin token found')
+      }
+
+      console.log('Attempting to delete template:', showDeleteModal.template_id)
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/workoutTemplates.delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          templateId: showDeleteModal.template_id
+        })
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Delete failed:', response.status, errorText)
+        
+        if (response.status === 403) {
+          throw new Error('You do not have permission to delete this template')
+        } else if (response.status === 404) {
+          throw new Error('Template not found')
+        } else {
+          throw new Error(`Failed to delete template (${response.status})`)
+        }
+      }
+
+      const result = await response.json()
+      console.log('Delete response:', result)
+
+      // Remove the template from the local state
+      setTemplates(prev => prev.filter(t => t.template_id !== showDeleteModal.template_id))
+      setShowDeleteModal(null)
+      
+      console.log('Template deleted successfully')
+    } catch (error) {
+      console.error('Error deleting template:', error)
+      setDeleteError(error instanceof Error ? error.message : 'An unexpected error occurred')
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   const handleSubmitTemplate = async () => {
@@ -753,6 +806,14 @@ export default function AdminTemplatesPage() {
       }
 
       // Prepare the template data for API
+      console.log('🔍 FormData before sending:', {
+        name: formData.name,
+        scope: formData.scope,
+        scopeType: typeof formData.scope,
+        description: formData.description,
+        exerciseCount: formData.exercises.length
+      });
+      
       const templateData = {
         name: formData.name,
         description: formData.description || undefined,
@@ -781,20 +842,35 @@ export default function AdminTemplatesPage() {
       }
 
       console.log('Sending template data:', templateData)
+      console.log('🔍 TemplateData scope check:', {
+        scope: templateData.scope,
+        scopeType: typeof templateData.scope,
+        scopeExists: 'scope' in templateData,
+        templateDataKeys: Object.keys(templateData)
+      });
 
       let response
       if (editingTemplate) {
-        // Update existing template
+        // Update existing template - explicitly include all fields and ensure scope is not undefined
+        const updateData = {
+          template_id: editingTemplate.template_id,
+          name: templateData.name,
+          description: templateData.description,
+          scope: formData.scope, // Use formData.scope directly instead of templateData.scope
+          exercises: templateData.exercises
+        };
+        
+        console.log('🔄 Update request data:', updateData);
+        console.log('🔄 Update request JSON:', JSON.stringify(updateData));
+        console.log('🔄 FormData scope direct:', formData.scope);
+        
         response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/workoutTemplates.update`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            template_id: editingTemplate.template_id,
-            ...templateData
-          }),
+          body: JSON.stringify(updateData),
         })
       } else {
         // Create new template
@@ -1222,6 +1298,15 @@ export default function AdminTemplatesPage() {
                         Edit
                       </button>
                     )}
+                    {(['org_admin', 'tenant_admin', 'system_admin'].includes(user.role)) && (
+                      <button
+                        onClick={() => handleDeleteTemplate(template)}
+                        className="px-3 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-colors duration-200 text-sm"
+                        title="Delete template"
+                      >
+                        Delete
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1275,7 +1360,10 @@ export default function AdminTemplatesPage() {
                         </label>
                         <select
                           value={formData.scope}
-                          onChange={(e) => setFormData(prev => ({ ...prev, scope: e.target.value as 'tenant' | 'system' }))}
+                          onChange={(e) => {
+                            console.log('🔄 Scope changed:', e.target.value);
+                            setFormData(prev => ({ ...prev, scope: e.target.value as 'user' | 'tenant' | 'system' }));
+                          }}
                           className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white focus:border-blue-500 focus:ring-blue-500"
                         >
                           <option value="user">User</option>
@@ -1456,7 +1544,7 @@ export default function AdminTemplatesPage() {
         {showDeleteModal && (
           <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
-              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowDeleteModal(null)} />
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => !isDeleting && setShowDeleteModal(null)} />
               
               <div className="relative bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
                 <div className="bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -1472,6 +1560,11 @@ export default function AdminTemplatesPage() {
                         <p className="text-sm text-gray-400">
                           Are you sure you want to delete "{showDeleteModal.name}"? This action cannot be undone.
                         </p>
+                        {deleteError && (
+                          <p className="mt-2 text-sm text-red-400">
+                            {deleteError}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1479,13 +1572,18 @@ export default function AdminTemplatesPage() {
                 <div className="bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                   <button
                     onClick={confirmDelete}
-                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                    disabled={isDeleting}
+                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Delete
+                    {isDeleting ? 'Deleting...' : 'Delete'}
                   </button>
                   <button
-                    onClick={() => setShowDeleteModal(null)}
-                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    onClick={() => {
+                      setShowDeleteModal(null)
+                      setDeleteError(null)
+                    }}
+                    disabled={isDeleting}
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>
