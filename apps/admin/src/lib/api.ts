@@ -221,13 +221,66 @@ interface TenantAnalytics {
 }
 
 interface PerformanceMetrics {
-  totalTenants: number
-  totalUsers: number
-  totalSessions: number
-  totalExercises: number
-  activeUsers24h: number
-  sessions24h: number
-  activeTenants24h: number
+  apiResponseTime: number
+  dbQueryTime: number
+  errorRate: number
+  cacheHitRate: number
+}
+
+// Workout Template Interfaces
+interface WorkoutTemplate {
+  template_id: string
+  name: string
+  description?: string
+  scope: 'user' | 'tenant' | 'system'
+  exercises: TemplateExercise[]
+  exercise_count: number
+  created_at: string
+  updated_at: string
+  created_by_name?: string
+  created_by_lastname?: string
+  user_id?: string
+}
+
+interface TemplateExercise {
+  exercise_id?: string
+  name: string
+  category: 'strength' | 'cardio' | 'hybrid'
+  muscle_groups: string[]
+  sets: number
+  value_1_type?: string
+  value_1_default?: string
+  value_2_type?: string
+  value_2_default?: string
+  notes?: string
+  rest_time?: string
+  order: number
+}
+
+interface CreateWorkoutTemplateData {
+  name: string
+  description?: string
+  scope: 'tenant' | 'system'
+  exercises: TemplateExercise[]
+}
+
+interface UpdateWorkoutTemplateData {
+  template_id: string
+  name?: string
+  description?: string
+  exercises?: TemplateExercise[]
+}
+
+interface GetWorkoutTemplatesParams {
+  search?: string
+  scope?: 'all' | 'user' | 'tenant' | 'system'
+  limit?: number
+  offset?: number
+}
+
+interface WorkoutTemplatesResponse {
+  templates: WorkoutTemplate[]
+  totalCount: number
 }
 
 class ApiClient {
@@ -491,6 +544,67 @@ class ApiClient {
       return result.result.data
     },
 
+    // Workout template management
+    getWorkoutTemplates: async (params: GetWorkoutTemplatesParams = {}): Promise<WorkoutTemplate[]> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/workoutTemplates.list?input=${encodeURIComponent(JSON.stringify(params))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getWorkoutTemplateCount: async (params: Omit<GetWorkoutTemplatesParams, 'limit' | 'offset'> = {}): Promise<number> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/workoutTemplates.count?input=${encodeURIComponent(JSON.stringify(params))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getWorkoutTemplateById: async (templateId: string): Promise<WorkoutTemplate> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/workoutTemplates.getById?input=${encodeURIComponent(JSON.stringify({ templateId }))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    createWorkoutTemplate: async (data: CreateWorkoutTemplateData): Promise<any> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/workoutTemplates.create`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(data),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    updateWorkoutTemplate: async (data: UpdateWorkoutTemplateData): Promise<any> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/workoutTemplates.update`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(data),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    deleteWorkoutTemplate: async (templateId: string): Promise<any> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/workoutTemplates.delete`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ templateId }),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
     getPerformanceMetrics: async (): Promise<PerformanceMetrics> => {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.getPerformanceMetrics`, {
         headers: this.getHeaders(),
@@ -535,5 +649,6 @@ export type {
   User, CreateUserData, UpdateUserData, GetUsersParams, UsersResponse, UserStats,
   ExerciseTemplate, CreateExerciseTemplateData, UpdateExerciseTemplateData, GetExerciseTemplatesParams, ExerciseTemplatesResponse, ExerciseTemplateStats,
   Organization, CreateOrganizationData, UpdateOrganizationData, GetOrganizationsParams, OrganizationsResponse,
-  AnalyticsDashboard, UsageTrendData, ExerciseAnalytics, TenantAnalytics, PerformanceMetrics
+  AnalyticsDashboard, UsageTrendData, ExerciseAnalytics, TenantAnalytics, PerformanceMetrics,
+  WorkoutTemplate, TemplateExercise, CreateWorkoutTemplateData, UpdateWorkoutTemplateData, GetWorkoutTemplatesParams, WorkoutTemplatesResponse
 }

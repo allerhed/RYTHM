@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 interface AdminUser {
   id: string
   email: string
-  role: 'org_admin' | 'tenant_admin'
+  role: 'org_admin' | 'tenant_admin' | 'system_admin'
   firstName?: string
   lastName?: string
   tenantId?: string

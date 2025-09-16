@@ -76,14 +76,14 @@ export async function POST(request: NextRequest) {
     // Fallback to hardcoded admin users for backward compatibility
     const FALLBACK_ADMIN_USERS = [
       {
-        id: 'admin-1',
+        id: '00000000-0000-0000-0000-000000000001', // UUID format for admin-1
         email: 'admin@rythm.app',
         name: 'System Administrator',
         role: 'system_admin',
         passwordHash: '$2b$10$uPwgy7I1bDAShgosEUGZ/eoFlNwrmwAMob4u18TZfPi9SVRWg1gQe' // admin123
       },
       {
-        id: 'admin-2',
+        id: '00000000-0000-0000-0000-000000000002', // UUID format for admin-2
         email: 'orchestrator@rythm.app',
         name: 'Orchestrator',
         role: 'system_admin',

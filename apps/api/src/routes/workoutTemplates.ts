@@ -185,7 +185,12 @@ export const workoutTemplatesRouter = router({
       }
 
       // For user templates, set user_id. For tenant/system templates, user_id is NULL
-      const userId = actualScope === 'user' ? ctx.user.userId : null;
+      // For admin users (who might not exist in users table), set user_id to NULL even for user templates
+      const userId = actualScope === 'user' && !ctx.user.role.includes('admin') ? ctx.user.userId : null;
+
+      // For admin users (who might not exist in users table), set created_by to NULL
+      // Regular users should have their userId in created_by
+      const createdBy = ctx.user.role.includes('admin') ? null : ctx.user.userId;
 
       const result = await ctx.db.query(
         `INSERT INTO workout_templates (
@@ -200,7 +205,7 @@ export const workoutTemplatesRouter = router({
           description || null,
           actualScope,
           JSON.stringify(exercises),
-          ctx.user.userId
+          createdBy
         ]
       );
 
@@ -212,6 +217,7 @@ export const workoutTemplatesRouter = router({
     .input(UpdateWorkoutTemplateRequest)
     .mutation(async ({ input, ctx }) => {
       const { template_id, name, description, exercises } = input;
+      const scope = (input as any).scope; // Type will be fixed after package rebuild
 
       // Check if template exists and user has permission to edit
       const checkResult = await ctx.db.query(
@@ -233,7 +239,10 @@ export const workoutTemplatesRouter = router({
         // Tenant admins can edit tenant templates in their tenant
         (template.scope === 'tenant' && template.tenant_id === ctx.user.tenantId && ['tenant_admin', 'org_admin'].includes(ctx.user.role)) ||
         // Org admins can edit system templates
-        (template.scope === 'system' && ctx.user.role === 'org_admin');
+        (template.scope === 'system' && ctx.user.role === 'org_admin') ||
+        // Admin users can edit any template they have access to (admin users have null user_id in templates)
+        (['tenant_admin', 'org_admin', 'admin', 'super_admin', 'system_admin'].includes(ctx.user.role) && 
+         (template.user_id === null || template.scope !== 'user' || ctx.user.tenantId === template.tenant_id));
 
       if (!canEdit) {
         throw new Error('Insufficient permissions to edit this template');
@@ -253,6 +262,19 @@ export const workoutTemplatesRouter = router({
       if (description !== undefined) {
         updates.push(`description = $${paramIndex}`);
         params.push(description);
+        paramIndex++;
+      }
+
+      if (scope !== undefined) {
+        // Validate scope change permissions
+        if (scope !== template.scope) {
+          const canChangeScope = ['tenant_admin', 'org_admin', 'admin', 'super_admin', 'system_admin'].includes(ctx.user.role);
+          if (!canChangeScope) {
+            throw new Error('Insufficient permissions to change template scope');
+          }
+        }
+        updates.push(`scope = $${paramIndex}`);
+        params.push(scope);
         paramIndex++;
       }
 

@@ -202,12 +202,19 @@ export const sessionsRouter = router({
         const isCompleted = !!row.completed_at;
         const sessionName = row.name || `${row.category.charAt(0).toUpperCase() + row.category.slice(1)} session`;
         
+        // Check if the activity is from today
+        const activityDate = new Date(isCompleted ? row.completed_at : row.started_at);
+        const today = new Date();
+        const isToday = activityDate.toDateString() === today.toDateString();
+        
         return {
           id: row.session_id,
           type: isCompleted ? 'session_completed' : 'session_started',
           action: isCompleted 
             ? `Completed ${sessionName}${row.total_exercises > 0 ? ` (${row.total_exercises} exercises, ${row.total_sets} sets)` : ''}`
-            : `Started ${sessionName}`,
+            : isToday 
+              ? `${sessionName}${row.total_exercises > 0 ? ` (${row.total_exercises} exercises, ${row.total_sets} sets)` : ''}`
+              : `Started ${sessionName}`,
           timestamp: isCompleted ? row.completed_at : row.started_at,
           metadata: {
             category: row.category,

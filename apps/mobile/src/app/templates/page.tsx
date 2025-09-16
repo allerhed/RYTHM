@@ -5,6 +5,14 @@ import { useAuth } from '@/contexts/AuthContext'
 import { trpc } from '../providers'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
 import { 
+  VALUE_TYPE_LABELS, 
+  VALUE_TYPE_UNITS, 
+  VALUE_TYPE_PLACEHOLDERS,
+  COMMON_VALUE_TYPE_COMBINATIONS,
+  type SetValueType,
+  type SessionCategory
+} from '@rythm/shared'
+import { 
   PlusIcon, 
   PencilIcon, 
   TrashIcon, 
@@ -33,10 +41,11 @@ interface TemplateExercise {
   category: 'strength' | 'cardio' | 'hybrid'
   muscle_groups: string[]
   sets: number
-  reps?: string
-  weight?: string
-  duration?: string
-  distance?: string
+  // Configurable value types instead of hardcoded fields
+  value_1_type?: SetValueType
+  value_1_default?: string
+  value_2_type?: SetValueType
+  value_2_default?: string
   notes?: string
   rest_time?: string
   order: number
@@ -76,6 +85,23 @@ const SCOPE_COLORS = {
   user: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
   tenant: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
   system: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
+}
+
+// Helper function to display exercise values
+const getExerciseValueDisplay = (exercise: TemplateExercise): string => {
+  const parts: string[] = []
+  
+  if (exercise.value_1_type && exercise.value_1_default) {
+    const unit = VALUE_TYPE_UNITS[exercise.value_1_type]
+    parts.push(`${exercise.value_1_default}${unit === 'reps' ? '' : unit}`)
+  }
+  
+  if (exercise.value_2_type && exercise.value_2_default) {
+    const unit = VALUE_TYPE_UNITS[exercise.value_2_type]
+    parts.push(`${exercise.value_2_default}${unit === 'reps' ? '' : unit}`)
+  }
+  
+  return parts.length > 0 ? parts.join(' × ') : 'No values set'
 }
 
 export default function TemplatesPage() {
@@ -212,26 +238,34 @@ export default function TemplatesPage() {
     let exerciseData: TemplateExercise
     
     if (template) {
-      // Create exercise from template
+      // Create exercise from template with default value types
+      const defaultValue1 = getDefaultValueForType(template.default_value_1_type as SetValueType, template.exercise_type)
+      const defaultValue2 = getDefaultValueForType(template.default_value_2_type as SetValueType, template.exercise_type)
+      
       exerciseData = {
         exercise_id: template.template_id,
         name: template.name,
         category: template.exercise_category as 'strength' | 'cardio' | 'hybrid',
         muscle_groups: template.muscle_groups,
         sets: 3,
-        reps: template.exercise_type === 'STRENGTH' ? '8-12' : undefined,
-        duration: template.exercise_type === 'CARDIO' ? '30s' : undefined,
+        value_1_type: template.default_value_1_type as SetValueType || undefined,
+        value_1_default: defaultValue1,
+        value_2_type: template.default_value_2_type as SetValueType || undefined,
+        value_2_default: defaultValue2,
         order: formData.exercises.length,
         notes: ''
       }
     } else {
-      // Create custom exercise
+      // Create custom exercise with default strength configuration
       exerciseData = {
         name: exerciseName,
         category: 'strength',
         muscle_groups: [],
         sets: 3,
-        reps: '8-12',
+        value_1_type: 'weight_kg',
+        value_1_default: '75',
+        value_2_type: 'reps',
+        value_2_default: '8-10',
         order: formData.exercises.length,
         notes: ''
       }
@@ -242,6 +276,26 @@ export default function TemplatesPage() {
       exercises: [...prev.exercises, exerciseData]
     }))
     setShowExerciseModal(false)
+  }
+
+  // Helper function to get default values based on value type and exercise type
+  const getDefaultValueForType = (valueType: SetValueType | undefined, exerciseType: string): string | undefined => {
+    if (!valueType) return undefined
+    
+    switch (valueType) {
+      case 'weight_kg':
+        return '75'
+      case 'reps':
+        return exerciseType === 'STRENGTH' ? '8-10' : '12'
+      case 'duration_s':
+        return exerciseType === 'CARDIO' ? '300' : '60' // 5 min for cardio, 1 min for others
+      case 'distance_m':
+        return exerciseType === 'CARDIO' ? '5000' : '100' // 5km for cardio, 100m for others
+      case 'calories':
+        return '200'
+      default:
+        return undefined
+    }
   }
 
   const handleCreateCustomExercise = async (exerciseData: any) => {
@@ -434,7 +488,7 @@ export default function TemplatesPage() {
                           {exercise.name}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {exercise.sets} sets × {exercise.reps}
+                          {exercise.sets} sets × {getExerciseValueDisplay(exercise)}
                         </span>
                       </div>
                       <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ml-2 flex-shrink-0 ${CATEGORY_COLORS[exercise.category]}`}>
@@ -580,7 +634,7 @@ export default function TemplatesPage() {
                               </button>
                             </div>
                             
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
                                 <label htmlFor={`exercise-category-${index}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                   Category
@@ -612,19 +666,111 @@ export default function TemplatesPage() {
                                   className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:border-blue-500 focus:ring-blue-500"
                                 />
                               </div>
+                            </div>
+
+                            {/* Value Type Configuration */}
+                            <div className="mt-3 space-y-3">
+                              <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300">Set Values</h5>
                               
-                              <div>
-                                <label htmlFor={`exercise-reps-${index}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                  Reps
+                              {/* Value 1 */}
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label htmlFor={`value-1-type-${index}`} className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                    Value 1 Type
+                                  </label>
+                                  <select
+                                    id={`value-1-type-${index}`}
+                                    value={exercise.value_1_type || ''}
+                                    onChange={(e) => updateExercise(index, { 
+                                      ...exercise, 
+                                      value_1_type: e.target.value as SetValueType || undefined,
+                                      value_1_default: e.target.value ? exercise.value_1_default || '' : undefined
+                                    })}
+                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                  >
+                                    <option value="">None</option>
+                                    {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
+                                      <option key={value} value={value}>{label}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div>
+                                  <label htmlFor={`value-1-default-${index}`} className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                    Default Value
+                                  </label>
+                                  <input
+                                    id={`value-1-default-${index}`}
+                                    type="text"
+                                    value={exercise.value_1_default || ''}
+                                    onChange={(e) => updateExercise(index, { ...exercise, value_1_default: e.target.value })}
+                                    placeholder={exercise.value_1_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_1_type] : 'Select type first'}
+                                    disabled={!exercise.value_1_type}
+                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Value 2 */}
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label htmlFor={`value-2-type-${index}`} className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                    Value 2 Type
+                                  </label>
+                                  <select
+                                    id={`value-2-type-${index}`}
+                                    value={exercise.value_2_type || ''}
+                                    onChange={(e) => updateExercise(index, { 
+                                      ...exercise, 
+                                      value_2_type: e.target.value as SetValueType || undefined,
+                                      value_2_default: e.target.value ? exercise.value_2_default || '' : undefined
+                                    })}
+                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                  >
+                                    <option value="">None</option>
+                                    {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
+                                      <option key={value} value={value}>{label}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div>
+                                  <label htmlFor={`value-2-default-${index}`} className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                    Default Value
+                                  </label>
+                                  <input
+                                    id={`value-2-default-${index}`}
+                                    type="text"
+                                    value={exercise.value_2_default || ''}
+                                    onChange={(e) => updateExercise(index, { ...exercise, value_2_default: e.target.value })}
+                                    placeholder={exercise.value_2_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_2_type] : 'Select type first'}
+                                    disabled={!exercise.value_2_type}
+                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Quick preset buttons for common combinations */}
+                              <div className="mt-2">
+                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  Quick Presets
                                 </label>
-                                <input
-                                  id={`exercise-reps-${index}`}
-                                  type="text"
-                                  value={exercise.reps || ''}
-                                  onChange={(e) => updateExercise(index, { ...exercise, reps: e.target.value })}
-                                  placeholder="8-12"
-                                  className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:border-blue-500 focus:ring-blue-500"
-                                />
+                                <div className="flex flex-wrap gap-1">
+                                  {COMMON_VALUE_TYPE_COMBINATIONS[exercise.category].map((combo, comboIndex) => (
+                                    <button
+                                      key={comboIndex}
+                                      type="button"
+                                      onClick={() => updateExercise(index, {
+                                        ...exercise,
+                                        value_1_type: combo.value_1_type,
+                                        value_1_default: combo.value_1_type === 'weight_kg' ? '75' : combo.value_1_type === 'reps' ? '8-10' : '30',
+                                        value_2_type: combo.value_2_type || undefined,
+                                        value_2_default: combo.value_2_type === 'reps' ? '8-10' : combo.value_2_type === 'distance_m' ? '1000' : undefined,
+                                      })}
+                                      className="text-xs px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                                    >
+                                      {combo.label}
+                                    </button>
+                                  ))}
+                                </div>
                               </div>
                             </div>
                           </div>

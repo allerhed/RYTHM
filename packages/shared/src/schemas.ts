@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Base enums matching the PRD
 export const SessionCategory = z.enum(['strength', 'cardio', 'hybrid']);
-export const SetValueType = z.enum(['weight_kg', 'distance_m', 'duration_s', 'calories']);
+export const SetValueType = z.enum(['weight_kg', 'distance_m', 'duration_s', 'calories', 'reps']);
 export const UserRole = z.enum(['athlete', 'coach', 'tenant_admin', 'org_admin']);
 export const TemplateScope = z.enum(['user', 'tenant', 'system']);
 
@@ -10,6 +10,51 @@ export type SessionCategory = z.infer<typeof SessionCategory>;
 export type SetValueType = z.infer<typeof SetValueType>;
 export type UserRole = z.infer<typeof UserRole>;
 export type TemplateScope = z.infer<typeof TemplateScope>;
+
+// Value type constants and helpers
+export const VALUE_TYPE_LABELS = {
+  weight_kg: 'Weight (kg)',
+  distance_m: 'Distance (m)',
+  duration_s: 'Duration (s)',
+  calories: 'Calories',
+  reps: 'Reps',
+} as const;
+
+export const VALUE_TYPE_UNITS = {
+  weight_kg: 'kg',
+  distance_m: 'm',
+  duration_s: 's',
+  calories: 'cal',
+  reps: 'reps',
+} as const;
+
+export const VALUE_TYPE_PLACEHOLDERS = {
+  weight_kg: 'e.g., 75, 80, 85',
+  distance_m: 'e.g., 1000, 5000',
+  duration_s: 'e.g., 30, 60, 120',
+  calories: 'e.g., 200, 300',
+  reps: 'e.g., 8-10, 12, AMRAP',
+} as const;
+
+// Common value type combinations for different exercise types
+export const COMMON_VALUE_TYPE_COMBINATIONS = {
+  strength: [
+    { value_1_type: 'weight_kg' as const, value_2_type: 'reps' as const, label: 'Weight × Reps' },
+    { value_1_type: 'reps' as const, value_2_type: null, label: 'Reps Only' },
+  ],
+  cardio: [
+    { value_1_type: 'duration_s' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
+    { value_1_type: 'duration_s' as const, value_2_type: null, label: 'Duration Only' },
+    { value_1_type: 'distance_m' as const, value_2_type: null, label: 'Distance Only' },
+    { value_1_type: 'calories' as const, value_2_type: null, label: 'Calories Only' },
+  ],
+  hybrid: [
+    { value_1_type: 'weight_kg' as const, value_2_type: 'reps' as const, label: 'Weight × Reps' },
+    { value_1_type: 'duration_s' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
+    { value_1_type: 'reps' as const, value_2_type: null, label: 'Reps Only' },
+    { value_1_type: 'duration_s' as const, value_2_type: null, label: 'Duration Only' },
+  ],
+} as const;
 
 // Core entity schemas
 export const TenantSchema = z.object({
@@ -133,10 +178,11 @@ export const TemplateExercise = z.object({
   category: SessionCategory,
   muscle_groups: z.array(z.string()),
   sets: z.number().int().positive(),
-  reps: z.string().optional(), // e.g., "8-10", "AMRAP", etc.
-  weight: z.string().optional(), // e.g., "75kg", "bodyweight", etc.
-  duration: z.string().optional(), // e.g., "30s", "2 min", etc.
-  distance: z.string().optional(), // e.g., "1km", "100m", etc.
+  // Configurable value types instead of hardcoded reps/weight/duration
+  value_1_type: SetValueType.optional(),
+  value_1_default: z.string().optional(), // e.g., "75", "30", "100"
+  value_2_type: SetValueType.optional(),
+  value_2_default: z.string().optional(), // e.g., "8-10", "2 min", "1km"
   notes: z.string().optional(),
   rest_time: z.string().optional(), // e.g., "60s", "2-3 min", etc.
   order: z.number().int().nonnegative().default(0),
@@ -168,6 +214,7 @@ export const UpdateWorkoutTemplateRequest = z.object({
   template_id: z.string().uuid(),
   name: z.string().min(1).max(255).optional(),
   description: z.string().optional(),
+  scope: TemplateScope.optional(),
   exercises: z.array(TemplateExercise).optional(),
 });
 

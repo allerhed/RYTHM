@@ -14,8 +14,31 @@ import {
   CheckIcon,
   ExclamationTriangleIcon,
   EyeIcon,
-  SparklesIcon
+  SparklesIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  Bars3Icon
 } from '@heroicons/react/24/outline'
+// Temporarily disabled drag-and-drop due to Docker dependency issues
+// import {
+//   DndContext,
+//   closestCenter,
+//   KeyboardSensor,
+//   PointerSensor,
+//   useSensor,
+//   useSensors,
+//   DragEndEvent,
+// } from '@dnd-kit/core'
+// import {
+//   arrayMove,
+//   SortableContext,
+//   sortableKeyboardCoordinates,
+//   verticalListSortingStrategy,
+// } from '@dnd-kit/sortable'
+// import {
+//   useSortable,
+// } from '@dnd-kit/sortable'
+// import { CSS } from '@dnd-kit/utilities'
 
 // Local constants to avoid import issues
 type SetValueType = 'weight_kg' | 'distance_m' | 'duration_s' | 'calories' | 'reps'
@@ -106,7 +129,7 @@ interface WorkoutTemplate {
 interface TemplateFormData {
   name: string
   description: string
-  scope: 'tenant' | 'system'
+  scope: 'user' | 'tenant' | 'system'
   exercises: TemplateExercise[]
 }
 
@@ -199,6 +222,255 @@ const SCOPE_LABELS = {
   system: 'System'
 }
 
+// Sortable Exercise Item Component
+interface SortableExerciseItemProps {
+  exercise: TemplateExercise
+  index: number
+  updateExercise: (index: number, exercise: TemplateExercise) => void
+  removeExercise: (index: number) => void
+  moveExerciseUp: (index: number) => void
+  moveExerciseDown: (index: number) => void
+  isFirst: boolean
+  isLast: boolean
+}
+
+function SortableExerciseItem({
+  exercise,
+  index,
+  updateExercise,
+  removeExercise,
+  moveExerciseUp,
+  moveExerciseDown,
+  isFirst,
+  isLast
+}: SortableExerciseItemProps) {
+  // Temporarily disabled drag-and-drop - using mock values
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = {
+    attributes: {},
+    listeners: {},
+    setNodeRef: () => {},
+    transform: null,
+    transition: undefined,
+    isDragging: false,
+  }
+
+  const style = {
+    // transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`border border-gray-600 rounded-lg p-4 bg-gray-750 ${
+        isDragging ? 'opacity-50 z-50' : ''
+      }`}
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center space-x-3 flex-1">
+          {/* Drag Handle */}
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-300"
+            title="Drag to reorder"
+          >
+            <Bars3Icon className="w-5 h-5" />
+          </div>
+          
+          {/* Exercise Name Input */}
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Exercise Name
+            </label>
+            <input
+              type="text"
+              value={exercise.name}
+              onChange={(e) => updateExercise(index, { ...exercise, name: e.target.value })}
+              placeholder="e.g., Bench Press"
+              className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+        
+        {/* Arrow Controls and Remove Button */}
+        <div className="flex items-center space-x-1 ml-3">
+          {/* Move Up Button */}
+          <button
+            onClick={() => moveExerciseUp(index)}
+            disabled={isFirst}
+            className="p-2 text-gray-400 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-600 rounded-lg transition-colors"
+            title="Move up"
+          >
+            <ChevronUpIcon className="w-4 h-4" />
+          </button>
+          
+          {/* Move Down Button */}
+          <button
+            onClick={() => moveExerciseDown(index)}
+            disabled={isLast}
+            className="p-2 text-gray-400 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-600 rounded-lg transition-colors"
+            title="Move down"
+          >
+            <ChevronDownIcon className="w-4 h-4" />
+          </button>
+          
+          {/* Remove Button */}
+          <button
+            onClick={() => removeExercise(index)}
+            className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
+            title="Remove exercise"
+          >
+            <TrashIcon className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Category
+          </label>
+          <select
+            value={exercise.category}
+            onChange={(e) => updateExercise(index, { ...exercise, category: e.target.value as any })}
+            className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+          >
+            <option value="strength">Strength</option>
+            <option value="cardio">Cardio</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Sets
+          </label>
+          <input
+            type="number"
+            value={exercise.sets}
+            onChange={(e) => updateExercise(index, { ...exercise, sets: parseInt(e.target.value) || 1 })}
+            placeholder="3"
+            min="1"
+            max="20"
+            className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      {/* Value Type Configuration */}
+      <div className="mt-3 space-y-3">
+        <h5 className="text-sm font-medium text-gray-300">Set Values</h5>
+        
+        {/* Value 1 */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1">
+              Value 1 Type
+            </label>
+            <select
+              value={exercise.value_1_type || ''}
+              onChange={(e) => updateExercise(index, {
+                ...exercise, 
+                value_1_type: e.target.value as SetValueType || undefined,
+                value_1_default: e.target.value ? exercise.value_1_default || '' : undefined
+              })}
+              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500"
+            >
+              <option value="">None</option>
+              {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1">
+              Default Value
+            </label>
+            <input
+              type="text"
+              value={exercise.value_1_default || ''}
+              onChange={(e) => updateExercise(index, { ...exercise, value_1_default: e.target.value })}
+              placeholder={exercise.value_1_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_1_type] : 'Select type first'}
+              disabled={!exercise.value_1_type}
+              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+          </div>
+        </div>
+
+        {/* Value 2 */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1">
+              Value 2 Type
+            </label>
+            <select
+              value={exercise.value_2_type || ''}
+              onChange={(e) => updateExercise(index, { 
+                ...exercise, 
+                value_2_type: e.target.value as SetValueType || undefined,
+                value_2_default: e.target.value ? exercise.value_2_default || '' : undefined
+              })}
+              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500"
+            >
+              <option value="">None</option>
+              {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1">
+              Default Value
+            </label>
+            <input
+              type="text"
+              value={exercise.value_2_default || ''}
+              onChange={(e) => updateExercise(index, { ...exercise, value_2_default: e.target.value })}
+              placeholder={exercise.value_2_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_2_type] : 'Select type first'}
+              disabled={!exercise.value_2_type}
+              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+          </div>
+        </div>
+
+        {/* Quick preset buttons for common combinations */}
+        <div className="mt-2">
+          <label className="block text-xs font-medium text-gray-400 mb-1">
+            Quick Presets
+          </label>
+          <div className="flex flex-wrap gap-1">
+            {COMMON_VALUE_TYPE_COMBINATIONS[exercise.category].map((combo, comboIndex) => (
+              <button
+                key={comboIndex}
+                type="button"
+                onClick={() => updateExercise(index, {
+                  ...exercise,
+                  value_1_type: combo.value_1_type,
+                  value_1_default: combo.value_1_type === 'weight_kg' ? '75' : combo.value_1_type === 'reps' ? '8-10' : '30',
+                  value_2_type: combo.value_2_type || undefined,
+                  value_2_default: combo.value_2_type === 'reps' ? '8-10' : combo.value_2_type === 'distance_m' ? '1000' : undefined,
+                })}
+                className="text-xs px-2 py-1 bg-blue-900 text-blue-200 rounded-md hover:bg-blue-800 transition-colors"
+              >
+                {combo.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function AdminTemplatesPage() {
   const { user } = useAuth()
   
@@ -280,6 +552,20 @@ export default function AdminTemplatesPage() {
       setIsLoading(true)
       setError(null)
       try {
+        // Check if we're in the browser environment and have a token
+        if (typeof window === 'undefined') {
+          setError('Not in browser environment')
+          setIsLoading(false)
+          return
+        }
+
+        const token = localStorage.getItem('admin_token')
+        if (!token) {
+          setError('No authentication token found')
+          setIsLoading(false)
+          return
+        }
+
         // For system admins, we should fetch ALL templates across all tenants
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/admin.getAllWorkoutTemplates?input=${encodeURIComponent(JSON.stringify({
           limit: 100,
@@ -288,7 +574,7 @@ export default function AdminTemplatesPage() {
           scope: selectedScope === 'all' ? undefined : selectedScope
         }))}`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         })
@@ -337,48 +623,51 @@ export default function AdminTemplatesPage() {
   useEffect(() => {
     const fetchExerciseTemplates = async () => {
       try {
-        // Mock some exercise templates for now
-        const mockExerciseTemplates: ExerciseTemplate[] = [
-          {
-            template_id: '1',
-            name: 'Bench Press',
-            muscle_groups: ['chest', 'triceps', 'shoulders'],
-            equipment: 'barbell',
-            exercise_category: 'strength',
-            exercise_type: 'STRENGTH',
-            default_value_1_type: 'weight_kg',
-            default_value_2_type: 'reps',
-            description: 'Chest exercise using barbell',
-            instructions: 'Lie on bench, lower bar to chest, press up'
+        // Get auth token for API call
+        const token = localStorage.getItem('admin_token')
+        if (!token) {
+          console.warn('No admin token found, using empty exercise templates')
+          setExerciseTemplates([])
+          return
+        }
+
+        // Fetch exercise templates from API using admin endpoint
+        const queryParams = encodeURIComponent(JSON.stringify({
+          limit: 200, // Get a large number of templates
+        }))
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/admin.getExerciseTemplates?input=${queryParams}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
           },
-          {
-            template_id: '2',
-            name: 'Running',
-            muscle_groups: ['legs', 'cardio'],
-            equipment: 'none',
-            exercise_category: 'cardio',
-            exercise_type: 'CARDIO',
-            default_value_1_type: 'duration_s',
-            default_value_2_type: 'distance_m',
-            description: 'Basic running exercise',
-            instructions: 'Run at steady pace'
-          },
-          {
-            template_id: '3',
-            name: 'Squats',
-            muscle_groups: ['quads', 'glutes', 'hamstrings'],
-            equipment: 'barbell',
-            exercise_category: 'strength',
-            exercise_type: 'STRENGTH',
-            default_value_1_type: 'weight_kg',
-            default_value_2_type: 'reps',
-            description: 'Lower body compound exercise',
-            instructions: 'Squat down with straight back, drive through heels'
-          }
-        ]
-        setExerciseTemplates(mockExerciseTemplates)
+        })
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch exercise templates: ${response.status}`)
+        }
+
+        const data = await response.json()
+        const templates = data.result.data.exerciseTemplates // Admin endpoint returns exerciseTemplates array
+
+        // Transform API response to match our ExerciseTemplate interface
+        const exerciseTemplates: ExerciseTemplate[] = templates.map((template: any) => ({
+          template_id: template.template_id,
+          name: template.name,
+          muscle_groups: template.muscle_groups || [],
+          equipment: template.equipment || '',
+          exercise_category: template.exercise_category || 'strength',
+          exercise_type: template.exercise_type || 'STRENGTH',
+          default_value_1_type: template.default_value_1_type || 'weight_kg',
+          default_value_2_type: template.default_value_2_type || 'reps',
+          description: template.description || '',
+          instructions: template.instructions || '',
+        }))
+
+        setExerciseTemplates(exerciseTemplates)
       } catch (error) {
         console.error('Error loading exercise templates:', error)
+        // Fallback to empty array if API fails
         setExerciseTemplates([])
       }
     }
@@ -450,31 +739,102 @@ export default function AdminTemplatesPage() {
   const handleSubmitTemplate = async () => {
     if (!formData.name.trim()) return
 
-    // Mock save for now
-    const newTemplate: WorkoutTemplate = {
-      template_id: Date.now().toString(),
-      name: formData.name,
-      description: formData.description || undefined,
-      scope: formData.scope,
-      exercises: formData.exercises,
-      exercise_count: formData.exercises.length,
-      created_by_name: user.firstName || 'Admin',
-      created_by_lastname: user.lastName || 'User',
-      created_at: new Date().toISOString()
-    }
+    try {
+      // Check if we're in the browser environment and have a token
+      if (typeof window === 'undefined') {
+        console.error('Not in browser environment')
+        return
+      }
 
-    if (editingTemplate) {
-      setTemplates(prev => prev.map(t => 
-        t.template_id === editingTemplate.template_id 
-          ? { ...newTemplate, template_id: editingTemplate.template_id }
-          : t
-      ))
-    } else {
-      setTemplates(prev => [...prev, newTemplate])
+      const token = localStorage.getItem('admin_token')
+      if (!token) {
+        console.error('No authentication token found')
+        return
+      }
+
+      // Prepare the template data for API
+      const templateData = {
+        name: formData.name,
+        description: formData.description || undefined,
+        scope: formData.scope,
+        exercises: formData.exercises.map(exercise => {
+          const exerciseData: any = {
+            name: exercise.name,
+            category: exercise.category,
+            muscle_groups: exercise.muscle_groups || [],
+            sets: exercise.sets,
+            value_1_type: exercise.value_1_type,
+            value_1_default: exercise.value_1_default,
+            value_2_type: exercise.value_2_type,
+            value_2_default: exercise.value_2_default,
+            notes: exercise.notes || '',
+            order: exercise.order || 0,
+          }
+          
+          // Only include exercise_id if it exists and is a valid UUID
+          if (exercise.exercise_id && exercise.exercise_id.length > 10) {
+            exerciseData.exercise_id = exercise.exercise_id
+          }
+          
+          return exerciseData
+        })
+      }
+
+      console.log('Sending template data:', templateData)
+
+      let response
+      if (editingTemplate) {
+        // Update existing template
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/workoutTemplates.update`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            template_id: editingTemplate.template_id,
+            ...templateData
+          }),
+        })
+      } else {
+        // Create new template
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/workoutTemplates.create`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(templateData),
+        })
+      }
+
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status}`)
+      }
+
+      const result = await response.json()
+      console.log('Template saved successfully:', result)
+
+      setShowCreateModal(false)
+      setEditingTemplate(null)
+      
+      // Reset form
+      setFormData({
+        name: '',
+        description: '',
+        scope: 'user' as const,
+        exercises: []
+      })
+
+      // Trigger templates refresh by updating searchTerm temporarily
+      const currentSearchTerm = searchTerm
+      setSearchTerm(currentSearchTerm + ' ')
+      setTimeout(() => setSearchTerm(currentSearchTerm), 100)
+
+    } catch (error) {
+      console.error('Error saving template:', error)
+      alert('Failed to save template. Please try again.')
     }
-    
-    setShowCreateModal(false)
-    setEditingTemplate(null)
   }
 
   // Exercise management functions
@@ -542,18 +902,64 @@ export default function AdminTemplatesPage() {
   const handleCreateCustomExercise = async (exerciseData: any) => {
     setIsCreatingExercise(true)
     try {
-      // Mock creating exercise template for now
+      // Get auth token for API call
+      const token = localStorage.getItem('admin_token')
+      if (!token) {
+        alert('Authentication required. Please login again.')
+        return
+      }
+
+      // Save custom exercise to exercise_templates database first using admin endpoint
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/admin.createExerciseTemplate`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: exerciseData.name,
+          muscle_groups: exerciseData.muscle_groups || [],
+          equipment: exerciseData.equipment || '',
+          exercise_category: exerciseData.exercise_category || 'strength',
+          exercise_type: exerciseData.exercise_type || 'STRENGTH',
+          default_value_1_type: exerciseData.default_value_1_type || 'weight_kg',
+          default_value_2_type: exerciseData.default_value_2_type || 'reps',
+          description: exerciseData.description || '',
+          instructions: exerciseData.instructions || '',
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error?.message || `Failed to save exercise template: ${response.status}`)
+      }
+
+      const savedTemplate = await response.json()
+      
+      // Create the template object for local state
       const newTemplate: ExerciseTemplate = {
-        template_id: Date.now().toString(),
-        ...exerciseData
+        template_id: savedTemplate.result.data.template_id,
+        name: savedTemplate.result.data.name,
+        muscle_groups: savedTemplate.result.data.muscle_groups,
+        equipment: savedTemplate.result.data.equipment,
+        exercise_category: savedTemplate.result.data.exercise_category,
+        exercise_type: savedTemplate.result.data.exercise_type,
+        default_value_1_type: savedTemplate.result.data.default_value_1_type,
+        default_value_2_type: savedTemplate.result.data.default_value_2_type,
+        description: savedTemplate.result.data.description,
+        instructions: savedTemplate.result.data.instructions,
       }
       
+      // Update local state with the saved template
       setExerciseTemplates(prev => [...prev, newTemplate])
+      
+      // Add the exercise to the workout template
       addExerciseToTemplate(newTemplate.name)
       setShowCustomExerciseModal(false)
     } catch (error) {
       console.error('Error creating custom exercise:', error)
-      alert('Failed to create custom exercise. Please try again.')
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create custom exercise. Please try again.'
+      alert(errorMessage)
     } finally {
       setIsCreatingExercise(false)
     }
@@ -572,6 +978,48 @@ export default function AdminTemplatesPage() {
       exercises: prev.exercises.filter((_, i) => i !== index)
     }))
   }
+
+  // Arrow control functions for reordering
+  const moveExerciseUp = (index: number) => {
+    if (index === 0) return
+    setFormData(prev => ({
+      ...prev,
+      exercises: [...prev.exercises.slice(0, index - 1), prev.exercises[index], prev.exercises[index - 1], ...prev.exercises.slice(index + 1)]
+    }))
+  }
+
+  const moveExerciseDown = (index: number) => {
+    if (index === formData.exercises.length - 1) return
+    setFormData(prev => ({
+      ...prev,
+      exercises: [...prev.exercises.slice(0, index), prev.exercises[index + 1], prev.exercises[index], ...prev.exercises.slice(index + 2)]
+    }))
+  }
+
+  // Temporarily disabled drag-and-drop sensors
+  // const sensors = useSensors(
+  //   useSensor(PointerSensor),
+  //   useSensor(KeyboardSensor, {
+  //     coordinateGetter: sortableKeyboardCoordinates,
+  //   })
+  // )
+
+  // Handle drag end
+  // const handleDragEnd = (event: DragEndEvent) => {
+  //   const { active, over } = event
+
+  //   if (active.id !== over?.id) {
+  //     const oldIndex = formData.exercises.findIndex((_, i) => `exercise-${i}` === active.id)
+  //     const newIndex = formData.exercises.findIndex((_, i) => `exercise-${i}` === over?.id)
+
+  //     if (oldIndex !== -1 && newIndex !== -1) {
+  //       setFormData(prev => ({
+  //         ...prev,
+  //         exercises: arrayMove(prev.exercises, oldIndex, newIndex)
+  //       }))
+  //     }
+  //   }
+  // }
 
   return (
     <AdminLayout>
@@ -829,8 +1277,8 @@ export default function AdminTemplatesPage() {
                           value={formData.scope}
                           onChange={(e) => setFormData(prev => ({ ...prev, scope: e.target.value as 'tenant' | 'system' }))}
                           className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white focus:border-blue-500 focus:ring-blue-500"
-                          disabled={editingTemplate?.scope === 'user'}
                         >
+                          <option value="user">User</option>
                           <option value="tenant">Organization</option>
                           {(['org_admin', 'system_admin'].includes(user.role)) && <option value="system">System</option>}
                         </select>
@@ -884,164 +1332,19 @@ export default function AdminTemplatesPage() {
                         </div>
                       ) : (
                         <div className="space-y-4 max-h-96 overflow-y-auto">
+                          {/* Temporarily using simple list instead of drag-and-drop */}
                           {formData.exercises.map((exercise, index) => (
-                            <div key={index} className="border border-gray-600 rounded-lg p-4 bg-gray-750">
-                              <div className="flex items-start justify-between mb-3">
-                                <div className="flex-1">
-                                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                                    Exercise Name
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={exercise.name}
-                                    onChange={(e) => updateExercise(index, { ...exercise, name: e.target.value })}
-                                    placeholder="e.g., Bench Press"
-                                    className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
-                                  />
-                                </div>
-                                <button
-                                  onClick={() => removeExercise(index)}
-                                  className="ml-3 p-2 text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
-                                  aria-label="Remove exercise"
-                                >
-                                  <TrashIcon className="w-5 h-5" />
-                                </button>
-                              </div>
-                              
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                                    Category
-                                  </label>
-                                  <select
-                                    value={exercise.category}
-                                    onChange={(e) => updateExercise(index, { ...exercise, category: e.target.value as any })}
-                                    className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
-                                  >
-                                    <option value="strength">Strength</option>
-                                    <option value="cardio">Cardio</option>
-                                    <option value="hybrid">Hybrid</option>
-                                  </select>
-                                </div>
-                                
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                                    Sets
-                                  </label>
-                                  <input
-                                    type="number"
-                                    value={exercise.sets}
-                                    onChange={(e) => updateExercise(index, { ...exercise, sets: parseInt(e.target.value) || 1 })}
-                                    placeholder="3"
-                                    min="1"
-                                    max="20"
-                                    className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
-                                  />
-                                </div>
-                              </div>
-
-                              {/* Value Type Configuration */}
-                              <div className="mt-3 space-y-3">
-                                <h5 className="text-sm font-medium text-gray-300">Set Values</h5>
-                                
-                                {/* Value 1 */}
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1">
-                                      Value 1 Type
-                                    </label>
-                                    <select
-                                      value={exercise.value_1_type || ''}
-                                      onChange={(e) => updateExercise(index, { 
-                                        ...exercise, 
-                                        value_1_type: e.target.value as SetValueType || undefined,
-                                        value_1_default: e.target.value ? exercise.value_1_default || '' : undefined
-                                      })}
-                                      className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500"
-                                    >
-                                      <option value="">None</option>
-                                      {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
-                                        <option key={value} value={value}>{label}</option>
-                                      ))}
-                                    </select>
-                                  </div>
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1">
-                                      Default Value
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={exercise.value_1_default || ''}
-                                      onChange={(e) => updateExercise(index, { ...exercise, value_1_default: e.target.value })}
-                                      placeholder={exercise.value_1_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_1_type] : 'Select type first'}
-                                      disabled={!exercise.value_1_type}
-                                      className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    />
-                                  </div>
-                                </div>
-
-                                {/* Value 2 */}
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1">
-                                      Value 2 Type
-                                    </label>
-                                    <select
-                                      value={exercise.value_2_type || ''}
-                                      onChange={(e) => updateExercise(index, { 
-                                        ...exercise, 
-                                        value_2_type: e.target.value as SetValueType || undefined,
-                                        value_2_default: e.target.value ? exercise.value_2_default || '' : undefined
-                                      })}
-                                      className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500"
-                                    >
-                                      <option value="">None</option>
-                                      {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
-                                        <option key={value} value={value}>{label}</option>
-                                      ))}
-                                    </select>
-                                  </div>
-                                  <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1">
-                                      Default Value
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={exercise.value_2_default || ''}
-                                      onChange={(e) => updateExercise(index, { ...exercise, value_2_default: e.target.value })}
-                                      placeholder={exercise.value_2_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_2_type] : 'Select type first'}
-                                      disabled={!exercise.value_2_type}
-                                      className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    />
-                                  </div>
-                                </div>
-
-                                {/* Quick preset buttons for common combinations */}
-                                <div className="mt-2">
-                                  <label className="block text-xs font-medium text-gray-400 mb-1">
-                                    Quick Presets
-                                  </label>
-                                  <div className="flex flex-wrap gap-1">
-                                    {COMMON_VALUE_TYPE_COMBINATIONS[exercise.category].map((combo, comboIndex) => (
-                                      <button
-                                        key={comboIndex}
-                                        type="button"
-                                        onClick={() => updateExercise(index, {
-                                          ...exercise,
-                                          value_1_type: combo.value_1_type,
-                                          value_1_default: combo.value_1_type === 'weight_kg' ? '75' : combo.value_1_type === 'reps' ? '8-10' : '30',
-                                          value_2_type: combo.value_2_type || undefined,
-                                          value_2_default: combo.value_2_type === 'reps' ? '8-10' : combo.value_2_type === 'distance_m' ? '1000' : undefined,
-                                        })}
-                                        className="text-xs px-2 py-1 bg-blue-900 text-blue-200 rounded-md hover:bg-blue-800 transition-colors"
-                                      >
-                                        {combo.label}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                            <SortableExerciseItem
+                              key={index}
+                              exercise={exercise}
+                              index={index}
+                              updateExercise={updateExercise}
+                              removeExercise={removeExercise}
+                              moveExerciseUp={moveExerciseUp}
+                              moveExerciseDown={moveExerciseDown}
+                              isFirst={index === 0}
+                              isLast={index === formData.exercises.length - 1}
+                            />
                           ))}
                         </div>
                       )}
