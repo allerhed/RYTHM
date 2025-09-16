@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/Form'
+import { CustomExerciseModal } from '@/components/CustomExerciseModal'
+import { trpc } from '@/app/providers'
 
 interface Exercise {
   id: string
@@ -1027,6 +1029,12 @@ function AddExerciseModal({
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedType, setSelectedType] = useState<string>('all')
+  const [showCustomModal, setShowCustomModal] = useState(false)
+  const [recentlyAddedExerciseId, setRecentlyAddedExerciseId] = useState<string | null>(null)
+  const [isCreatingExercise, setIsCreatingExercise] = useState(false)
+
+  // tRPC mutation for creating exercise templates
+  const createExerciseTemplate = trpc.exerciseTemplates.create.useMutation()
 
   // Filter templates based on search, category, and type
   const filteredTemplates = templates.filter(template => {
@@ -1043,20 +1051,45 @@ function AddExerciseModal({
   const strengthCount = templates.filter(t => t.exercise_type === 'STRENGTH').length
   const cardioCount = templates.filter(t => t.exercise_type === 'CARDIO').length
 
+  const handleCreateCustomExercise = async (exerciseData: any) => {
+    setIsCreatingExercise(true)
+    try {
+      const newTemplate = await createExerciseTemplate.mutateAsync(exerciseData)
+      setRecentlyAddedExerciseId(newTemplate.template_id)
+      setShowCustomModal(false)
+      // Add the new exercise to the workout
+      onAddExercise(newTemplate.name)
+      onClose()
+    } catch (error) {
+      console.error('Error creating custom exercise:', error)
+      alert('Failed to create custom exercise. Please try again.')
+    } finally {
+      setIsCreatingExercise(false)
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Exercise</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowCustomModal(true)}
+              className="text-teal-500 hover:text-teal-600 dark:text-teal-400 dark:hover:text-teal-300 font-medium text-sm"
+            >
+              Custom Exercise
+            </button>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Search */}
@@ -1125,7 +1158,11 @@ function AddExerciseModal({
                 <button
                   key={template.template_id}
                   onClick={() => onAddExercise(template.name)}
-                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                    template.template_id === recentlyAddedExerciseId
+                      ? 'bg-teal-100 dark:bg-teal-900 border-2 border-teal-500'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="text-gray-900 dark:text-gray-100">{template.name}</div>
@@ -1163,6 +1200,15 @@ function AddExerciseModal({
           )}
         </div>
       </div>
+      
+      {/* Custom Exercise Modal */}
+      {showCustomModal && (
+        <CustomExerciseModal
+          onSave={handleCreateCustomExercise}
+          onClose={() => setShowCustomModal(false)}
+          loading={isCreatingExercise}
+        />
+      )}
     </div>
   )
 }

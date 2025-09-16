@@ -132,4 +132,61 @@ export const sessionsRouter = router({
 
       return { success: true };
     }),
+
+  // Get recent activity for user dashboard
+  recentActivity: protectedProcedure
+    .input(z.object({
+      limit: z.number().min(1).max(50).default(10),
+    }))
+    .query(async ({ input, ctx }) => {
+      const { limit } = input;
+      
+      // Get recent sessions with completion status and details
+      const result = await ctx.db.query(
+        `SELECT 
+           s.session_id,
+           s.category,
+           s.name,
+           s.started_at,
+           s.completed_at,
+           s.created_at,
+           s.training_load,
+           s.perceived_exertion,
+           s.notes,
+           COUNT(sets.set_id) as total_sets,
+           COUNT(DISTINCT sets.exercise_id) as total_exercises
+         FROM sessions s
+         LEFT JOIN sets ON s.session_id = sets.session_id
+         WHERE s.tenant_id = $1 AND s.user_id = $2
+         GROUP BY s.session_id, s.category, s.name, s.started_at, s.completed_at, 
+                  s.created_at, s.training_load, s.perceived_exertion, s.notes
+         ORDER BY s.started_at DESC 
+         LIMIT $3`,
+        [ctx.user.tenantId, ctx.user.userId, limit]
+      );
+
+      // Transform the data into activity items
+      const activities = result.rows.map(row => {
+        const isCompleted = !!row.completed_at;
+        const sessionName = row.name || `${row.category.charAt(0).toUpperCase() + row.category.slice(1)} session`;
+        
+        return {
+          id: row.session_id,
+          type: isCompleted ? 'session_completed' : 'session_started',
+          action: isCompleted 
+            ? `Completed ${sessionName}${row.total_exercises > 0 ? ` (${row.total_exercises} exercises, ${row.total_sets} sets)` : ''}`
+            : `Started ${sessionName}`,
+          timestamp: isCompleted ? row.completed_at : row.started_at,
+          metadata: {
+            category: row.category,
+            training_load: row.training_load,
+            perceived_exertion: row.perceived_exertion,
+            total_sets: parseInt(row.total_sets) || 0,
+            total_exercises: parseInt(row.total_exercises) || 0,
+          }
+        };
+      });
+
+      return activities;
+    }),
 });

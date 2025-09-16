@@ -7,6 +7,21 @@ import { Avatar } from '../../components/Avatar'
 import { useAuth, withAuth } from '../../contexts/AuthContext'
 import { TrainingScoreWidget } from '../../components/TrainingScoreWidget'
 import { PencilIcon, EyeIcon } from '@heroicons/react/24/outline'
+import { trpc } from '../providers'
+
+// Utility function to format relative time
+const formatRelativeTime = (timestamp: string | Date) => {
+  const now = new Date()
+  const time = new Date(timestamp)
+  const diffInSeconds = Math.floor((now.getTime() - time.getTime()) / 1000)
+  
+  if (diffInSeconds < 60) return 'Just now'
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`
+  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 604800)} weeks ago`
+  return `${Math.floor(diffInSeconds / 2592000)} months ago`
+}
 
 // Simple Card component for the dashboard
 interface CardProps {
@@ -46,6 +61,16 @@ function DashboardPage() {
     const currentDay = now.getDay()
     return currentDay === 0 ? 6 : currentDay - 1 // Convert Sunday from 0 to 6
   })
+
+  // Fetch recent activity data
+  const { data: recentActivity, isLoading: activityLoading, error: activityError } = trpc.sessions.recentActivity.useQuery(
+    { limit: 5 },
+    { 
+      enabled: !!user,
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    }
+  )
 
   // Helper functions for week navigation
   const getMondayOfWeek = (date: Date) => {
@@ -103,6 +128,9 @@ function DashboardPage() {
     return Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7)
   }
 
+  // Track if the user has manually selected a day to prevent auto-correction
+  const [userHasSelectedDay, setUserHasSelectedDay] = React.useState(false)
+
   // Effect to debug state changes and ensure correct day highlighting
   useEffect(() => {
     const currentWeekMonday = getMondayOfWeek(new Date())
@@ -110,9 +138,8 @@ function DashboardPage() {
     
     console.log('State update - selectedWeekStart:', selectedWeekStart.toDateString(), 'selectedDayIndex:', selectedDayIndex, 'isCurrentWeek:', isCurrentWeek)
     
-    // Additional check: if we're on current week but selectedDayIndex is 0 (Monday), 
-    // and today is not Monday, fix it
-    if (isCurrentWeek) {
+    // Only auto-correct if user hasn't manually selected a day and we're on current week
+    if (isCurrentWeek && !userHasSelectedDay) {
       const today = new Date()
       const currentDay = today.getDay()
       const expectedDayIndex = currentDay === 0 ? 6 : currentDay - 1
@@ -120,14 +147,16 @@ function DashboardPage() {
       console.log('Current week check - today is day', currentDay, 'expectedDayIndex:', expectedDayIndex, 'selectedDayIndex:', selectedDayIndex)
       
       if (selectedDayIndex !== expectedDayIndex) {
-        console.log('Correcting selectedDayIndex from', selectedDayIndex, 'to', expectedDayIndex)
-        // Use setTimeout to avoid infinite loops
-        setTimeout(() => {
-          setSelectedDayIndex(expectedDayIndex)
-        }, 0)
+        console.log('Auto-correcting selectedDayIndex from', selectedDayIndex, 'to', expectedDayIndex)
+        setSelectedDayIndex(expectedDayIndex)
       }
     }
-  }, [selectedWeekStart, selectedDayIndex])
+    
+    // Reset user selection flag when changing weeks
+    if (!isCurrentWeek) {
+      setUserHasSelectedDay(false)
+    }
+  }, [selectedWeekStart, selectedDayIndex, userHasSelectedDay])
 
   // Navigation handlers
   const navigateToPreviousWeek = () => {
@@ -193,7 +222,9 @@ function DashboardPage() {
   }
 
   const selectDay = (dayIndex: number) => {
+    console.log('User selected day index:', dayIndex)
     setSelectedDayIndex(dayIndex)
+    setUserHasSelectedDay(true) // Mark that user has made a manual selection
   }
 
   // Add storage error handler for this page
@@ -419,8 +450,8 @@ function DashboardPage() {
           </div>
 
           {/* Week Days */}
-          <div className="flex justify-center mb-8">
-            <div className="flex space-x-8">
+          <div className="flex justify-between items-center mb-8 mx-4">
+            <div className="flex space-x-2 sm:space-x-4 md:space-x-6 lg:space-x-8 flex-1 justify-between max-w-md mx-auto">
               {[
                 { day: 'M', label: 'Monday', dayIndex: 0 },
                 { day: 'T', label: 'Tuesday', dayIndex: 1 },
@@ -623,11 +654,15 @@ function DashboardPage() {
                   </div>
                 ) : (
                   <div className="bg-gray-50 dark:bg-gray-700 p-8 rounded-xl text-center border-2 border-dashed border-gray-300 dark:border-gray-600">
-                    <div className="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button 
+                      onClick={() => router.push('/training/new')}
+                      className="w-16 h-16 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors cursor-pointer"
+                      title="Create new workout"
+                    >
+                      <svg className="w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
-                    </div>
+                    </button>
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                       {(() => {
                         const currentWeekStart = getCurrentWeekStart()
@@ -689,20 +724,32 @@ function DashboardPage() {
               Recent Activity
             </h2>
             <div className="space-y-4">
-              {[
-                { action: 'Completed strength training session', time: '2 hours ago' },
-                { action: 'Updated profile information', time: '1 day ago' },
-                { action: 'Joined RYTHM community', time: '3 days ago' },
-              ].map((activity, index) => (
-                <div key={index} className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-                  <span className="text-body text-gray-900 dark:text-gray-100">
-                    {activity.action}
-                  </span>
-                  <span className="text-caption text-gray-500 dark:text-gray-400">
-                    {activity.time}
-                  </span>
+              {activityLoading ? (
+                <div className="flex justify-center py-4">
+                  <div className="text-caption text-gray-500 dark:text-gray-400">Loading activity...</div>
                 </div>
-              ))}
+              ) : activityError ? (
+                <div className="flex justify-center py-4">
+                  <div className="text-caption text-red-500">Unable to load activity</div>
+                </div>
+              ) : recentActivity && recentActivity.length > 0 ? (
+                recentActivity.map((activity) => (
+                  <div key={activity.id} className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                    <span className="text-body text-gray-900 dark:text-gray-100">
+                      {activity.action}
+                    </span>
+                    <span className="text-caption text-gray-500 dark:text-gray-400">
+                      {formatRelativeTime(activity.timestamp)}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="flex justify-center py-4">
+                  <div className="text-caption text-gray-500 dark:text-gray-400">
+                    No recent activity. Start your first workout!
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
 
