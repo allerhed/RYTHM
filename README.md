@@ -1,19 +1,31 @@
-# RYTHM v1.1
+# RYTHM v0.9
 
-A comprehensive hybrid training mobile web app (PWA) with multi-tenant support, real-time analytics, and personalized training insights designed for athletes, coaches, and fitness organizations.
+A comprehensive hybrid training mobile web app (PWA) with multi-tenant support, real-time analytics, and enterprise-grade admin functionality designed for athletes, coaches, and fitness organizations.
 
 ## 🎯 Features
 
-### ✅ **Version 1.1 - Current State**
+### ✅ **Version 0.9 - Current Release**
 - **Multi-tenant Architecture**: Secure tenant isolation with Row Level Security (RLS)
-- **User Authentication**: JWT-based auth with role management (athlete, coach, tenant_admin, org_admin)
+- **Advanced Admin Interface**: Complete workout template management with CRUD operations
+- **User Authentication**: JWT-based auth with granular role management (athlete, coach, tenant_admin, org_admin, system_admin)
+- **Enhanced Template System**: System-wide, tenant-scoped, and user-scoped workout templates
 - **Profile Management**: Complete user profiles with avatar upload and bio
 - **Session Tracking**: Log workouts with categories (strength, cardio, hybrid)
 - **Flexible Set Logging**: Two configurable value fields (weight, distance, duration, calories, reps)
 - **Exercise Management**: Global exercise library with templates and custom exercises
+- **Template Access Control**: Role-based permissions for creating, editing, and deleting templates
 - **Training Analytics**: Basic volume tracking and session history
 - **Mobile-First PWA**: Responsive design optimized for mobile devices
 - **Docker Development**: Complete containerized development environment
+
+### 🆕 **New in v0.9**
+- **Admin Template Management**: Full CRUD operations for workout templates
+- **Delete Functionality**: Safe template deletion with confirmation modals
+- **System Template Access**: Universal access to system-scoped templates across all tenants
+- **Enhanced Permissions**: Granular admin permissions (system_admin, org_admin, tenant_admin)
+- **Improved Error Handling**: Comprehensive error messages and loading states
+- **Exercise Template Integration**: Real-time exercise template creation and management
+- **Cross-Service Authentication**: Seamless authentication between admin and API services
 
 ## 🚀 Quick Start
 
@@ -131,10 +143,15 @@ npm run dev:clean
 
 ## 🔧 Admin Interface
 
-The RYTHM Admin Interface provides comprehensive system administration capabilities for managing the entire platform.
+The RYTHM Admin Interface provides comprehensive system administration capabilities for managing the entire platform and workout templates.
 
 ### Features
 
+- **Workout Template Management**: Create, read, update, and delete workout templates with full CRUD operations
+- **Exercise Template Integration**: Real-time creation and management of exercise templates
+- **Scope-Based Access Control**: Support for user, tenant, and system-scoped templates
+- **Delete Functionality**: Safe template deletion with confirmation modals and permission checks
+- **Advanced Filtering**: Search and filter templates by scope, category, and content
 - **System Dashboard**: Real-time statistics and health monitoring
 - **User Management**: View and manage user accounts across all tenants
 - **Tenant Administration**: Manage fitness studios and organizations
@@ -147,6 +164,22 @@ The RYTHM Admin Interface provides comprehensive system administration capabilit
 - **Default Accounts**:
   - System Admin: `admin@rythm.app` / `admin123`
   - Orchestrator: `orchestrator@rythm.app` / `Password123`
+
+### Admin Permissions (v0.9)
+
+- **System Admin**: Can manage all templates across all scopes and tenants
+- **Organization Admin**: Can manage tenant and user templates within their organization
+- **Tenant Admin**: Can manage user templates within their tenant
+- **Regular Users**: Can only manage their own user-scoped templates
+
+### Template Management Features
+
+- **Create Templates**: Full workout template creation with exercise selection
+- **Edit Templates**: Modify existing templates with scope changes
+- **Delete Templates**: Safe deletion with role-based permissions
+- **Exercise Integration**: Create custom exercises that are saved to the exercise template database
+- **Scope Management**: Control template visibility (user/tenant/system)
+- **Real-time Updates**: Instant reflection of changes across the system
 
 ### Admin Commands
 
@@ -224,6 +257,10 @@ npm run dev
 
 ## 📝 Additional Documentation
 
+- `RELEASE_NOTES_0.9.md` - Complete version 0.9 release notes and features
+- `API_DOCUMENTATION_0.9.md` - API endpoints and authentication guide
+- `ADMIN_GUIDE_0.9.md` - Comprehensive admin interface documentation
+- `ARCHITECTURE_0.9.md` - System architecture and component overview
 - `DEBUG_GUIDE.md` - Debugging and troubleshooting
 - `APPLICATION_FIXED.md` - Application fixes and improvements
 - `TRAINING_LOAD_IMPLEMENTATION.md` - Training load system details
