@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🏃‍♂️ Populating RYTHM database with hybrid training exercises..."
+echo "🏃‍♂️ Loading RYTHM consolidated exercise templates..."
 
 # Database connection parameters
 DB_HOST="localhost"
@@ -25,14 +25,14 @@ fi
 
 echo "✅ PostgreSQL is running"
 
-# Run the migration
-echo "🔄 Running exercise type and hybrid training migration..."
-PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -f packages/db/migrations/005_exercise_type_hybrid_training.sql
+# Load the consolidated exercise templates
+echo "🔄 Loading consolidated exercise templates..."
+PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -f exercise_templates_master.sql
 
 if [ $? -eq 0 ]; then
-    echo "✅ Migration completed successfully!"
+    echo "✅ Exercise templates loaded successfully!"
 else
-    echo "❌ Migration failed!"
+    echo "❌ Exercise template loading failed!"
     exit 1
 fi
 
@@ -67,7 +67,7 @@ ORDER BY name
 LIMIT 10;"
 
 echo ""
-echo "🎉 Hybrid training exercise database populated successfully!"
+echo "🎉 Consolidated exercise template database loaded successfully!"
 echo "🔥 Your RYTHM app now has $(echo $EXERCISE_COUNT | xargs) exercises optimized for hybrid training!"
 echo ""
 echo "💡 Next steps:"

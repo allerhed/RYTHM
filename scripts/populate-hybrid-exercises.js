@@ -14,7 +14,7 @@ const pool = new Pool({
 });
 
 async function populateHybridExercises() {
-  console.log('🏃‍♂️ Populating RYTHM database with hybrid training exercises...');
+  console.log('🏃‍♂️ Loading RYTHM consolidated exercise templates...');
   
   try {
     // Test connection
@@ -22,13 +22,13 @@ async function populateHybridExercises() {
     await pool.query('SELECT NOW()');
     console.log('✅ PostgreSQL is running');
 
-    // Read and execute migration file
-    console.log('🔄 Running exercise type and hybrid training migration...');
-    const migrationPath = path.join(__dirname, '..', 'packages', 'db', 'migrations', '005_exercise_type_hybrid_training.sql');
-    const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
+    // Read and execute consolidated exercise templates file
+    console.log('🔄 Loading consolidated exercise templates...');
+    const templatesPath = path.join(__dirname, '..', 'exercise_templates_master.sql');
+    const templatesSQL = fs.readFileSync(templatesPath, 'utf8');
     
-    await pool.query(migrationSQL);
-    console.log('✅ Migration completed successfully!');
+    await pool.query(templatesSQL);
+    console.log('✅ Exercise templates loaded successfully!');
 
     // Verify the data
     console.log('📊 Verifying exercise data...');
@@ -66,7 +66,7 @@ async function populateHybridExercises() {
     `);
     console.table(cardioSamples.rows);
 
-    console.log('\n🎉 Hybrid training exercise database populated successfully!');
+    console.log('\n🎉 Consolidated exercise template database loaded successfully!');
     console.log(`🔥 Your RYTHM app now has ${totalCount} exercises optimized for hybrid training!`);
     console.log('\n💡 Next steps:');
     console.log('   1. Restart your API server to pick up the changes');
