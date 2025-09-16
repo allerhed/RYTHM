@@ -899,4 +899,115 @@ export const adminRouter = router({
         activeTenants24h: parseInt(activity.active_tenants_24h) || 0,
       };
     }),
+
+  // Get all workout templates across all tenants (system admin only)
+  getAllWorkoutTemplates: adminProcedure
+    .input(z.object({
+      search: z.string().optional(),
+      scope: z.enum(['user', 'tenant', 'system']).optional(),
+      limit: z.number().int().positive().max(100).default(50),
+      offset: z.number().int().min(0).default(0),
+    }))
+    .query(async ({ input }) => {
+      const { search, scope, limit, offset } = input;
+
+      let query = `
+        SELECT 
+          wt.template_id,
+          wt.tenant_id,
+          wt.user_id,
+          wt.name,
+          wt.description,
+          wt.scope,
+          wt.exercises,
+          wt.is_active,
+          wt.created_at,
+          wt.updated_at,
+          u.first_name as created_by_name,
+          u.last_name as created_by_lastname,
+          u.email as created_by_email,
+          t.name as tenant_name,
+          CASE 
+            WHEN wt.exercises IS NOT NULL THEN jsonb_array_length(wt.exercises)
+            ELSE 0
+          END as exercise_count
+        FROM workout_templates wt
+        LEFT JOIN users u ON wt.created_by = u.user_id
+        LEFT JOIN tenants t ON wt.tenant_id = t.tenant_id
+        WHERE wt.is_active = true
+      `;
+
+      const params: any[] = [];
+      let paramIndex = 1;
+
+      // Filter by scope if specified
+      if (scope) {
+        query += ` AND wt.scope = $${paramIndex}`;
+        params.push(scope);
+        paramIndex++;
+      }
+
+      // Filter by search term
+      if (search) {
+        query += ` AND (wt.name ILIKE $${paramIndex} OR wt.description ILIKE $${paramIndex})`;
+        params.push(`%${search}%`);
+        paramIndex++;
+      }
+
+      // Order by scope priority and creation date
+      query += ` 
+        ORDER BY 
+          CASE wt.scope 
+            WHEN 'system' THEN 1 
+            WHEN 'tenant' THEN 2 
+            WHEN 'user' THEN 3 
+          END,
+          wt.created_at DESC
+        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+      `;
+      params.push(limit, offset);
+
+      const result = await db.query(query, params);
+      
+      // Exercises are already parsed from JSONB, no need to JSON.parse()
+      return result.rows.map(row => ({
+        ...row,
+        exercises: row.exercises || [],
+        exercise_count: parseInt(row.exercise_count) || 0,
+      }));
+    }),
+
+  // Get count of all workout templates for pagination
+  getAllWorkoutTemplatesCount: adminProcedure
+    .input(z.object({
+      search: z.string().optional(),
+      scope: z.enum(['user', 'tenant', 'system']).optional(),
+    }))
+    .query(async ({ input }) => {
+      const { search, scope } = input;
+
+      let query = `
+        SELECT COUNT(*) as total
+        FROM workout_templates wt
+        WHERE wt.is_active = true
+      `;
+
+      const params: any[] = [];
+      let paramIndex = 1;
+
+      if (scope) {
+        query += ` AND wt.scope = $${paramIndex}`;
+        params.push(scope);
+        paramIndex++;
+      }
+
+      if (search) {
+        query += ` AND (wt.name ILIKE $${paramIndex} OR wt.description ILIKE $${paramIndex})`;
+        params.push(`%${search}%`);
+        paramIndex++;
+      }
+
+      const result = await db.query(query, params);
+      return parseInt(result.rows[0].total);
+    }),
 });

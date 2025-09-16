@@ -1,16 +1,80 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { apiClient } from '@/lib/api'
+import { AdminLayout } from '@/components/AdminLayout'
+import { StatsCard } from '@/components/StatsCard'
+import { CustomExerciseModal } from '@/components/CustomExerciseModal'
+import { AddExerciseModal } from '@/components/AddExerciseModal'
 import { 
   PlusIcon, 
   PencilIcon, 
   TrashIcon, 
   ClipboardDocumentIcon,
   XMarkIcon,
+  CheckIcon,
   ExclamationTriangleIcon,
-  EyeIcon
+  EyeIcon,
+  SparklesIcon
 } from '@heroicons/react/24/outline'
+
+// Local constants to avoid import issues
+type SetValueType = 'weight_kg' | 'distance_m' | 'duration_s' | 'calories' | 'reps'
+
+const VALUE_TYPE_LABELS = {
+  weight_kg: 'Weight (kg)',
+  distance_m: 'Distance (m)',
+  duration_s: 'Duration (s)',
+  calories: 'Calories',
+  reps: 'Reps',
+} as const
+
+const VALUE_TYPE_UNITS = {
+  weight_kg: 'kg',
+  distance_m: 'm',
+  duration_s: 's',
+  calories: 'cal',
+  reps: 'reps',
+} as const
+
+const VALUE_TYPE_PLACEHOLDERS = {
+  weight_kg: 'e.g., 75, 80, 85',
+  distance_m: 'e.g., 1000, 5000',
+  duration_s: 'e.g., 30, 60, 120',
+  calories: 'e.g., 200, 300',
+  reps: 'e.g., 8-10, 12, AMRAP',
+} as const
+
+const COMMON_VALUE_TYPE_COMBINATIONS = {
+  strength: [
+    { value_1_type: 'weight_kg' as const, value_2_type: 'reps' as const, label: 'Weight × Reps' },
+    { value_1_type: 'reps' as const, value_2_type: null, label: 'Reps Only' },
+  ],
+  cardio: [
+    { value_1_type: 'duration_s' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
+    { value_1_type: 'duration_s' as const, value_2_type: null, label: 'Duration Only' },
+    { value_1_type: 'distance_m' as const, value_2_type: null, label: 'Distance Only' },
+    { value_1_type: 'calories' as const, value_2_type: null, label: 'Calories Only' },
+  ],
+  hybrid: [
+    { value_1_type: 'weight_kg' as const, value_2_type: 'reps' as const, label: 'Weight × Reps' },
+    { value_1_type: 'duration_s' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
+    { value_1_type: 'reps' as const, value_2_type: null, label: 'Reps Only' },
+    { value_1_type: 'duration_s' as const, value_2_type: null, label: 'Duration Only' },
+  ],
+} as const
+
+interface ExerciseTemplate {
+  template_id: string
+  name: string
+  muscle_groups: string[]
+  equipment: string
+  exercise_category: string
+  exercise_type: 'STRENGTH' | 'CARDIO'
+  default_value_1_type: string
+  default_value_2_type: string
+  description: string
+  instructions: string
+}
 
 interface TemplateExercise {
   exercise_id?: string
@@ -18,13 +82,12 @@ interface TemplateExercise {
   category: 'strength' | 'cardio' | 'hybrid'
   muscle_groups: string[]
   sets: number
-  reps?: string
-  weight?: string
-  duration?: string
-  distance?: string
-  notes?: string
-  rest_time?: string
+  value_1_type?: SetValueType
+  value_1_default?: string
+  value_2_type?: SetValueType
+  value_2_default?: string
   order: number
+  notes?: string
 }
 
 interface WorkoutTemplate {
@@ -32,13 +95,12 @@ interface WorkoutTemplate {
   name: string
   description?: string
   scope: 'user' | 'tenant' | 'system'
-  exercises: TemplateExercise[]
-  exercise_count: number
-  created_at: string
-  updated_at: string
+  exercises?: TemplateExercise[]
+  exercise_count?: number
   created_by_name?: string
   created_by_lastname?: string
-  user_id?: string
+  created_at?: string
+  updated_at?: string
 }
 
 interface TemplateFormData {
@@ -48,10 +110,87 @@ interface TemplateFormData {
   exercises: TemplateExercise[]
 }
 
+// Mock data for now until API is fully implemented
+const mockTemplates: WorkoutTemplate[] = [
+  {
+    template_id: '1',
+    name: 'Full Body Strength',
+    description: 'Complete upper and lower body strength training template',
+    scope: 'system',
+    exercise_count: 8,
+    created_by_name: 'System',
+    created_by_lastname: 'Administrator',
+    created_at: '2024-03-01T10:00:00Z',
+    exercises: [
+      {
+        name: 'Squats',
+        category: 'strength',
+        muscle_groups: ['quadriceps', 'glutes'],
+        sets: 4,
+        value_1_type: 'weight_kg',
+        value_1_default: '80',
+        value_2_type: 'reps',
+        value_2_default: '8-10',
+        order: 0
+      },
+      {
+        name: 'Bench Press',
+        category: 'strength',
+        muscle_groups: ['chest', 'triceps'],
+        sets: 4,
+        value_1_type: 'weight_kg',
+        value_1_default: '70',
+        value_2_type: 'reps',
+        value_2_default: '8-12',
+        order: 1
+      }
+    ]
+  },
+  {
+    template_id: '2',
+    name: 'HIIT Cardio Blast',
+    description: 'High-intensity interval training for maximum calorie burn',
+    scope: 'tenant',
+    exercise_count: 6,
+    created_by_name: 'Fitness',
+    created_by_lastname: 'Coach',
+    created_at: '2024-02-28T14:30:00Z',
+    exercises: [
+      {
+        name: 'Burpees',
+        category: 'cardio',
+        muscle_groups: ['full-body'],
+        sets: 5,
+        value_1_type: 'duration_s',
+        value_1_default: '30',
+        value_2_type: 'reps',
+        value_2_default: 'AMRAP',
+        order: 0
+      }
+    ]
+  },
+  {
+    template_id: '3',
+    name: 'Beginner Push-Pull',
+    description: 'Simple upper body training split for beginners',
+    scope: 'user',
+    exercise_count: 6,
+    created_by_name: 'Personal',
+    created_by_lastname: 'Trainer',
+    created_at: '2024-02-25T09:15:00Z'
+  }
+]
+
 const CATEGORY_COLORS = {
-  strength: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  cardio: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  hybrid: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+  strength: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  cardio: 'bg-green-500/20 text-green-400 border-green-500/30',
+  hybrid: 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+}
+
+const SCOPE_COLORS = {
+  user: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+  tenant: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+  system: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
 }
 
 const SCOPE_LABELS = {
@@ -60,22 +199,27 @@ const SCOPE_LABELS = {
   system: 'System'
 }
 
-const SCOPE_COLORS = {
-  user: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
-  tenant: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-  system: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
-}
-
 export default function AdminTemplatesPage() {
   const { user } = useAuth()
   
+  // State management
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedScope, setSelectedScope] = useState<'all' | 'user' | 'tenant' | 'system'>('all')
-  const [currentPage, setCurrentPage] = useState(1)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [editingTemplate, setEditingTemplate] = useState<WorkoutTemplate | null>(null)
   const [viewingTemplate, setViewingTemplate] = useState<WorkoutTemplate | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState<WorkoutTemplate | null>(null)
+  
+  // API state management
+  const [templates, setTemplates] = useState<WorkoutTemplate[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  
+  // Exercise template state
+  const [exerciseTemplates, setExerciseTemplates] = useState<ExerciseTemplate[]>([])
+  const [showExerciseModal, setShowExerciseModal] = useState(false)
+  const [showCustomExerciseModal, setShowCustomExerciseModal] = useState(false)
+  const [isCreatingExercise, setIsCreatingExercise] = useState(false)
   
   const [formData, setFormData] = useState<TemplateFormData>({
     name: '',
@@ -84,66 +228,195 @@ export default function AdminTemplatesPage() {
     exercises: []
   })
 
-  const pageSize = 20
-  const offset = (currentPage - 1) * pageSize
+  // Check admin permissions with better error handling
+  if (!user) {
+    return (
+      <AdminLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white mb-4">
+              Loading...
+            </h1>
+            <p className="text-gray-400">
+              Please wait while we verify your authentication.
+            </p>
+          </div>
+        </div>
+      </AdminLayout>
+    )
+  }
 
-  // Fetch templates
-  const { 
-    data: templates, 
-    isLoading, 
-    error,
-    refetch 
-  } = trpc.workoutTemplates.list.useQuery({
-    search: searchTerm || undefined,
-    scope: selectedScope === 'all' ? undefined : selectedScope,
-    limit: pageSize,
-    offset: offset
+  if (!['tenant_admin', 'org_admin', 'system_admin'].includes(user.role)) {
+    return (
+      <AdminLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white mb-4">
+              Access Denied
+            </h1>
+            <p className="text-gray-400">
+              You need admin permissions to manage workout templates.
+            </p>
+            <p className="text-gray-500 text-sm mt-2">
+              Current role: {user.role}
+            </p>
+          </div>
+        </div>
+      </AdminLayout>
+    )
+  }
+
+  // Filter templates
+  const filteredTemplates = templates.filter(template => {
+    const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         template.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesScope = selectedScope === 'all' || template.scope === selectedScope
+    return matchesSearch && matchesScope
   })
 
-  // Fetch total count for pagination
-  const { data: totalCount } = trpc.workoutTemplates.count.useQuery({
-    search: searchTerm || undefined,
-    scope: selectedScope === 'all' ? undefined : selectedScope
-  })
+  // Load templates from API instead of mock data
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        // For system admins, we should fetch ALL templates across all tenants
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/admin.getAllWorkoutTemplates?input=${encodeURIComponent(JSON.stringify({
+          limit: 100,
+          offset: 0,
+          search: searchTerm || undefined,
+          scope: selectedScope === 'all' ? undefined : selectedScope
+        }))}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            'Content-Type': 'application/json',
+          },
+        })
 
-  const totalPages = totalCount ? Math.ceil(totalCount / pageSize) : 0
+        if (!response.ok) {
+          throw new Error(`API call failed: ${response.status}`)
+        }
 
-  // Mutations
-  const createTemplate = trpc.workoutTemplates.create.useMutation({
-    onSuccess: () => {
-      refetch()
-      resetForm()
-      setShowCreateModal(false)
+        const data = await response.json()
+        
+        // Transform API response to match our interface
+        const apiTemplates: WorkoutTemplate[] = (data.result?.data || []).map((template: any) => ({
+          template_id: template.template_id,
+          name: template.name,
+          description: template.description,
+          scope: template.scope,
+          exercises: template.exercises || [],
+          exercise_count: template.exercise_count || 0,
+          created_by_name: template.created_by_name,
+          created_by_lastname: template.created_by_lastname,
+          created_at: template.created_at,
+          updated_at: template.updated_at,
+        }))
+
+        setTemplates(apiTemplates)
+        setIsLoading(false)
+      } catch (err) {
+        console.error('Error loading templates:', err)
+        
+        if (err instanceof Error && err.message.includes('401')) {
+          setError('Authentication required. Please log in.')
+        } else {
+          setError('Failed to load templates from API. Showing sample data.')
+        }
+        
+        // Fall back to mock data
+        setTemplates(mockTemplates)
+        setIsLoading(false)
+      }
     }
-  })
 
-  const updateTemplate = trpc.workoutTemplates.update.useMutation({
-    onSuccess: () => {
-      refetch()
-      resetForm()
-      setEditingTemplate(null)
+    fetchTemplates()
+  }, [searchTerm, selectedScope]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fetch exercise templates for adding to workout templates
+  useEffect(() => {
+    const fetchExerciseTemplates = async () => {
+      try {
+        // Mock some exercise templates for now
+        const mockExerciseTemplates: ExerciseTemplate[] = [
+          {
+            template_id: '1',
+            name: 'Bench Press',
+            muscle_groups: ['chest', 'triceps', 'shoulders'],
+            equipment: 'barbell',
+            exercise_category: 'strength',
+            exercise_type: 'STRENGTH',
+            default_value_1_type: 'weight_kg',
+            default_value_2_type: 'reps',
+            description: 'Chest exercise using barbell',
+            instructions: 'Lie on bench, lower bar to chest, press up'
+          },
+          {
+            template_id: '2',
+            name: 'Running',
+            muscle_groups: ['legs', 'cardio'],
+            equipment: 'none',
+            exercise_category: 'cardio',
+            exercise_type: 'CARDIO',
+            default_value_1_type: 'duration_s',
+            default_value_2_type: 'distance_m',
+            description: 'Basic running exercise',
+            instructions: 'Run at steady pace'
+          },
+          {
+            template_id: '3',
+            name: 'Squats',
+            muscle_groups: ['quads', 'glutes', 'hamstrings'],
+            equipment: 'barbell',
+            exercise_category: 'strength',
+            exercise_type: 'STRENGTH',
+            default_value_1_type: 'weight_kg',
+            default_value_2_type: 'reps',
+            description: 'Lower body compound exercise',
+            instructions: 'Squat down with straight back, drive through heels'
+          }
+        ]
+        setExerciseTemplates(mockExerciseTemplates)
+      } catch (error) {
+        console.error('Error loading exercise templates:', error)
+        setExerciseTemplates([])
+      }
     }
-  })
 
-  const deleteTemplate = trpc.workoutTemplates.delete.useMutation({
-    onSuccess: () => {
-      refetch()
-      setShowDeleteModal(null)
+    fetchExerciseTemplates()
+  }, [])
+
+  const getTemplateIcon = (scope: string) => {
+    switch (scope) {
+      case 'system':
+        return (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+          </svg>
+        )
+      case 'tenant':
+        return (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        )
+      default:
+        return (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        )
     }
-  })
+  }
 
-  const resetForm = () => {
+  const handleCreateTemplate = () => {
+    setEditingTemplate(null)
     setFormData({
       name: '',
       description: '',
       scope: 'tenant',
       exercises: []
     })
-  }
-
-  const handleCreateTemplate = () => {
-    setEditingTemplate(null)
-    resetForm()
     setShowCreateModal(true)
   }
 
@@ -152,7 +425,7 @@ export default function AdminTemplatesPage() {
       name: template.name,
       description: template.description || '',
       scope: template.scope as 'tenant' | 'system',
-      exercises: template.exercises
+      exercises: template.exercises || []
     })
     setEditingTemplate(template)
     setShowCreateModal(true)
@@ -162,49 +435,128 @@ export default function AdminTemplatesPage() {
     setViewingTemplate(template)
   }
 
-  const handleSubmitTemplate = () => {
-    if (!formData.name.trim()) return
-
-    if (editingTemplate) {
-      updateTemplate.mutate({
-        template_id: editingTemplate.template_id,
-        name: formData.name,
-        description: formData.description || undefined,
-        exercises: formData.exercises
-      })
-    } else {
-      createTemplate.mutate({
-        name: formData.name,
-        description: formData.description || undefined,
-        scope: formData.scope,
-        exercises: formData.exercises
-      })
-    }
-  }
-
   const handleDeleteTemplate = (template: WorkoutTemplate) => {
     setShowDeleteModal(template)
   }
 
-  const confirmDelete = () => {
-    if (showDeleteModal) {
-      deleteTemplate.mutate({ templateId: showDeleteModal.template_id })
+  const confirmDelete = async () => {
+    if (!showDeleteModal) return
+    
+    // Mock delete for now
+    setTemplates(prev => prev.filter(t => t.template_id !== showDeleteModal.template_id))
+    setShowDeleteModal(null)
+  }
+
+  const handleSubmitTemplate = async () => {
+    if (!formData.name.trim()) return
+
+    // Mock save for now
+    const newTemplate: WorkoutTemplate = {
+      template_id: Date.now().toString(),
+      name: formData.name,
+      description: formData.description || undefined,
+      scope: formData.scope,
+      exercises: formData.exercises,
+      exercise_count: formData.exercises.length,
+      created_by_name: user.firstName || 'Admin',
+      created_by_lastname: user.lastName || 'User',
+      created_at: new Date().toISOString()
+    }
+
+    if (editingTemplate) {
+      setTemplates(prev => prev.map(t => 
+        t.template_id === editingTemplate.template_id 
+          ? { ...newTemplate, template_id: editingTemplate.template_id }
+          : t
+      ))
+    } else {
+      setTemplates(prev => [...prev, newTemplate])
+    }
+    
+    setShowCreateModal(false)
+    setEditingTemplate(null)
+  }
+
+  // Exercise management functions
+  const addExerciseToTemplate = async (exerciseName: string) => {
+    // First try to find the exercise in templates
+    const template = exerciseTemplates.find(t => t.name === exerciseName)
+    
+    let exerciseData: TemplateExercise
+    
+    if (template) {
+      // Use existing template data
+      exerciseData = {
+        exercise_id: template.template_id,
+        name: template.name,
+        category: template.exercise_category === 'cardio' ? 'cardio' : 'strength',
+        muscle_groups: template.muscle_groups,
+        sets: 3,
+        value_1_type: template.default_value_1_type as SetValueType,
+        value_1_default: getDefaultValue(template.default_value_1_type, template.exercise_type),
+        value_2_type: template.default_value_2_type as SetValueType,
+        value_2_default: getDefaultValue(template.default_value_2_type, template.exercise_type),
+        order: formData.exercises.length,
+        notes: ''
+      }
+    } else {
+      // Create custom exercise
+      exerciseData = {
+        name: exerciseName,
+        category: 'strength',
+        muscle_groups: [],
+        sets: 3,
+        value_1_type: 'weight_kg',
+        value_1_default: '75',
+        value_2_type: 'reps',
+        value_2_default: '8-10',
+        order: formData.exercises.length,
+        notes: ''
+      }
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      exercises: [...prev.exercises, exerciseData]
+    }))
+    setShowExerciseModal(false)
+  }
+
+  const getDefaultValue = (valueType: string, exerciseType: string) => {
+    switch (valueType) {
+      case 'weight_kg':
+        return '75'
+      case 'reps':
+        return '8-10'
+      case 'duration_s':
+        return exerciseType === 'CARDIO' ? '300' : '60' // 5 min for cardio, 1 min for others
+      case 'distance_m':
+        return exerciseType === 'CARDIO' ? '5000' : '100' // 5km for cardio, 100m for others
+      case 'calories':
+        return '200'
+      default:
+        return undefined
     }
   }
 
-  const addExercise = () => {
-    const newExercise: TemplateExercise = {
-      name: '',
-      category: 'strength',
-      muscle_groups: [],
-      sets: 3,
-      reps: '8-12',
-      order: formData.exercises.length
+  const handleCreateCustomExercise = async (exerciseData: any) => {
+    setIsCreatingExercise(true)
+    try {
+      // Mock creating exercise template for now
+      const newTemplate: ExerciseTemplate = {
+        template_id: Date.now().toString(),
+        ...exerciseData
+      }
+      
+      setExerciseTemplates(prev => [...prev, newTemplate])
+      addExerciseToTemplate(newTemplate.name)
+      setShowCustomExerciseModal(false)
+    } catch (error) {
+      console.error('Error creating custom exercise:', error)
+      alert('Failed to create custom exercise. Please try again.')
+    } finally {
+      setIsCreatingExercise(false)
     }
-    setFormData(prev => ({
-      ...prev,
-      exercises: [...prev.exercises, newExercise]
-    }))
   }
 
   const updateExercise = (index: number, exercise: TemplateExercise) => {
@@ -221,102 +573,135 @@ export default function AdminTemplatesPage() {
     }))
   }
 
-  const goToPage = (page: number) => {
-    setCurrentPage(page)
-  }
-
-  // Check admin permissions
-  if (!user || !['tenant_admin', 'org_admin'].includes(user.role)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            Access Denied
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            You need admin permissions to manage workout templates.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                  Workout Templates
-                </h1>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  Manage organizational and system workout templates
-                </p>
-              </div>
-              {(user.role === 'org_admin' || user.role === 'tenant_admin') && (
-                <button
-                  onClick={handleCreateTemplate}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  <PlusIcon className="w-4 h-4 mr-2" />
-                  New Template
-                </button>
-              )}
-            </div>
+    <AdminLayout>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white">
+              Workout Templates
+            </h1>
+            <p className="mt-2 text-gray-400">
+              Create, manage, and monitor workout templates across all organizations.
+            </p>
+            {error && error.includes('Authentication') && (
+              <p className="text-yellow-400 text-sm mt-1">
+                ⚠️ Please log in as orchestrator@rythm.app to see all templates from all users and organizations
+              </p>
+            )}
+            {!error && !isLoading && templates.length > 0 && (
+              <p className="text-green-400 text-sm mt-1">
+                ✅ Showing {templates.length} templates from all organizations and users
+              </p>
+            )}
+          </div>
+          {(['org_admin', 'tenant_admin', 'system_admin'].includes(user.role)) && (
+            <button
+              onClick={handleCreateTemplate}
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
+            >
+              <PlusIcon className="w-4 h-4 mr-2 inline" />
+              Create New Template
+            </button>
+          )}
+        </div>
 
-            {/* Filters */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Search templates..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <select
-                  value={selectedScope}
-                  onChange={(e) => setSelectedScope(e.target.value as any)}
-                  className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                >
-                  <option value="all">All Scopes</option>
-                  <option value="user">Personal Templates</option>
-                  <option value="tenant">Organization Templates</option>
-                  {user.role === 'org_admin' && <option value="system">System Templates</option>}
-                </select>
-              </div>
-            </div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <StatsCard
+            title="Total Templates"
+            value={templates?.length?.toString() || '0'}
+            change="+8%"
+            changeType="positive"
+            gradient="from-blue-500 to-blue-600"
+            icon={
+              <ClipboardDocumentIcon className="w-6 h-6" />
+            }
+          />
+          <StatsCard
+            title="Active Templates"
+            value={templates?.filter(t => t.scope !== 'user')?.length?.toString() || '0'}
+            change="+12%"
+            changeType="positive"
+            gradient="from-green-500 to-emerald-600"
+            icon={
+              <CheckIcon className="w-6 h-6" />
+            }
+          />
+          <StatsCard
+            title="Exercise Count"
+            value={templates?.reduce((sum, t) => sum + (t.exercise_count || 0), 0)?.toString() || '0'}
+            change="+15%"
+            changeType="positive"
+            gradient="from-purple-500 to-pink-600"
+            icon={
+              <SparklesIcon className="w-6 h-6" />
+            }
+          />
+          <StatsCard
+            title="Avg. Exercises"
+            value={Math.round(templates?.reduce((sum, t) => sum + (t.exercise_count || 0), 0) / Math.max(templates?.length || 1, 1))?.toString() || '0'}
+            change="+2%"
+            changeType="positive"
+            gradient="from-orange-500 to-red-600"
+            icon={
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            }
+          />
+        </div>
+
+        {/* Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <input
+              type="text"
+              placeholder="Search templates..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full rounded-lg border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <select
+              value={selectedScope}
+              onChange={(e) => setSelectedScope(e.target.value as any)}
+              className="block w-full rounded-lg border-gray-600 bg-gray-800 text-white focus:border-blue-500 focus:ring-blue-500"
+            >
+              <option value="all">All Scopes</option>
+              <option value="user">Personal Templates</option>
+              <option value="tenant">Organization Templates</option>
+              {(['org_admin', 'system_admin'].includes(user.role)) && <option value="system">System Templates</option>}
+            </select>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Content */}
         {isLoading ? (
           <div className="flex justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         ) : error ? (
           <div className="text-center py-12">
-            <p className="text-red-600 dark:text-red-400">
-              Error loading templates. Please try again.
+            <p className="text-red-400 mb-4">
+              {error}
+            </p>
+            <p className="text-gray-400 text-sm">
+              Showing mock data for demonstration purposes.
             </p>
           </div>
-        ) : !templates || templates.length === 0 ? (
+        ) : filteredTemplates.length === 0 ? (
           <div className="text-center py-12">
             <ClipboardDocumentIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <h3 className="mt-2 text-sm font-medium text-white">
               No templates found
             </h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-sm text-gray-400">
               Get started by creating your first workout template
             </p>
-            {(user.role === 'org_admin' || user.role === 'tenant_admin') && (
+            {(['org_admin', 'tenant_admin', 'system_admin'].includes(user.role)) && (
               <div className="mt-6">
                 <button
                   onClick={handleCreateTemplate}
@@ -329,153 +714,131 @@ export default function AdminTemplatesPage() {
             )}
           </div>
         ) : (
-          <>
-            {/* Templates Table */}
-            <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
-              <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                {templates.map((template: WorkoutTemplate) => (
-                  <li key={template.template_id}>
-                    <div className="px-4 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                              {template.name}
-                            </h3>
-                            {template.description && (
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                {template.description}
-                              </p>
-                            )}
-                            <div className="flex items-center space-x-4 mt-2">
-                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${SCOPE_COLORS[template.scope]}`}>
-                                {SCOPE_LABELS[template.scope]}
-                              </span>
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {template.exercise_count || template.exercises?.length || 0} exercises
-                              </span>
-                              {template.created_by_name && (
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
-                                  Created by {template.created_by_name} {template.created_by_lastname}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => handleViewTemplate(template)}
-                              className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-                              title="View template"
-                            >
-                              <EyeIcon className="w-4 h-4" />
-                            </button>
-                            {(template.scope !== 'user' || user.role === 'org_admin') && (
-                              <>
-                                <button
-                                  onClick={() => handleEditTemplate(template)}
-                                  className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-                                  title="Edit template"
-                                >
-                                  <PencilIcon className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteTemplate(template)}
-                                  className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400"
-                                  title="Delete template"
-                                >
-                                  <TrashIcon className="w-4 h-4" />
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTemplates.map((template) => (
+              <div key={template.template_id} className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg text-white">
+                      {getTemplateIcon(template.scope)}
                     </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">
+                        {template.name}
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        {template.exercise_count || 0} exercises
+                      </p>
+                    </div>
+                  </div>
+                  <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border capitalize ${SCOPE_COLORS[template.scope]}`}>
+                    {SCOPE_LABELS[template.scope]}
+                  </span>
+                </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-6 flex items-center justify-center">
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => goToPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
+                {template.description && (
+                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                    {template.description}
+                  </p>
+                )}
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Created by</span>
+                    <span className="text-white text-sm">
+                      {template.created_by_name} {template.created_by_lastname}
+                    </span>
+                  </div>
                   
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i
-                    return (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Created</span>
+                    <span className="text-gray-300">
+                      {template.created_at ? new Date(template.created_at).toLocaleDateString() : 'Unknown'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-gray-700">
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => handleViewTemplate(template)}
+                      className="flex-1 px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white transition-colors duration-200 text-sm"
+                    >
+                      View Details
+                    </button>
+                    {(template.scope !== 'user' || ['org_admin', 'system_admin'].includes(user.role)) && (
                       <button
-                        key={page}
-                        onClick={() => goToPage(page)}
-                        className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                          page === currentPage
-                            ? 'bg-blue-600 text-white border border-blue-600'
-                            : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-                        }`}
+                        onClick={() => handleEditTemplate(template)}
+                        className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors duration-200 text-sm"
                       >
-                        {page}
+                        Edit
                       </button>
-                    )
-                  })}
-                  
-                  <button
-                    onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            )}
-          </>
+            ))}
+          </div>
         )}
-      </div>
 
-      {/* Create/Edit Modal - Similar to mobile version but with admin-specific fields */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowCreateModal(false)} />
-            
-            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-              <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    {editingTemplate ? 'Edit Template' : 'Create New Template'}
-                  </h3>
-                  <button
-                    onClick={() => setShowCreateModal(false)}
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  >
-                    <XMarkIcon className="w-6 h-6" />
-                  </button>
+        {/* Comprehensive Create/Edit Modal */}
+        {showCreateModal && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowCreateModal(false)} />
+              
+              <div className="relative bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-4xl w-full max-h-[90vh] flex flex-col">
+                {/* Modal Header */}
+                <div className="bg-gray-800 px-6 py-4 border-b border-gray-700 flex-shrink-0">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium text-white">
+                      {editingTemplate ? 'Edit Template' : 'Create New Template'}
+                    </h3>
+                    <button
+                      onClick={() => setShowCreateModal(false)}
+                      className="text-gray-400 hover:text-gray-300"
+                    >
+                      <XMarkIcon className="w-6 h-6" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Template Name
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="Enter template name"
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                      />
+                {/* Modal Body */}
+                <div className="flex-1 overflow-y-auto bg-gray-800">
+                  <div className="p-6 space-y-6">
+                    {/* Basic Information */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Template Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder="Enter template name"
+                          className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Scope
+                        </label>
+                        <select
+                          value={formData.scope}
+                          onChange={(e) => setFormData(prev => ({ ...prev, scope: e.target.value as 'tenant' | 'system' }))}
+                          className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white focus:border-blue-500 focus:ring-blue-500"
+                          disabled={editingTemplate?.scope === 'user'}
+                        >
+                          <option value="tenant">Organization</option>
+                          {(['org_admin', 'system_admin'].includes(user.role)) && <option value="system">System</option>}
+                        </select>
+                      </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
                         Description (optional)
                       </label>
                       <textarea
@@ -483,237 +846,374 @@ export default function AdminTemplatesPage() {
                         onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                         placeholder="Describe this template"
                         rows={3}
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        className="block w-full px-3 py-2 rounded-lg border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Scope
-                      </label>
-                      <select
-                        value={formData.scope}
-                        onChange={(e) => setFormData(prev => ({ ...prev, scope: e.target.value as 'tenant' | 'system' }))}
-                        className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                        disabled={editingTemplate?.scope === 'user'}
-                      >
-                        <option value="tenant">Organization</option>
-                        {user.role === 'org_admin' && <option value="system">System</option>}
-                      </select>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {formData.scope === 'tenant' 
-                          ? 'Available to all users in your organization' 
-                          : 'Available to all users across all organizations'
-                        }
-                      </p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Exercises
-                      </label>
-                      <button
-                        onClick={addExercise}
-                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                      >
-                        Add Exercise
-                      </button>
-                    </div>
-                    
-                    <div className="space-y-3 max-h-96 overflow-y-auto">
-                      {formData.exercises.map((exercise, index) => (
-                        <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-md p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <input
-                              type="text"
-                              value={exercise.name}
-                              onChange={(e) => updateExercise(index, { ...exercise, name: e.target.value })}
-                              placeholder="Exercise name"
-                              className="flex-1 rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
-                            />
+                    {/* Exercises Section */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-lg font-medium text-white">
+                          Exercises ({formData.exercises.length})
+                        </h4>
+                        <button
+                          onClick={() => setShowExerciseModal(true)}
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors border border-blue-500/30"
+                        >
+                          <PlusIcon className="w-4 h-4 mr-1" />
+                          Add Exercise
+                        </button>
+                      </div>
+                      
+                      {formData.exercises.length === 0 ? (
+                        <div className="text-center py-8 border-2 border-dashed border-gray-600 rounded-lg">
+                          <ClipboardDocumentIcon className="mx-auto h-12 w-12 text-gray-500" />
+                          <h3 className="mt-2 text-sm font-medium text-white">No exercises</h3>
+                          <p className="mt-1 text-sm text-gray-400">
+                            Add exercises to create your template
+                          </p>
+                          <div className="mt-4">
                             <button
-                              onClick={() => removeExercise(index)}
-                              className="ml-2 text-red-500 hover:text-red-700"
+                              onClick={() => setShowExerciseModal(true)}
+                              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                             >
-                              <TrashIcon className="w-4 h-4" />
+                              <PlusIcon className="w-4 h-4 mr-2" />
+                              Add First Exercise
                             </button>
                           </div>
-                          
-                          <div className="grid grid-cols-3 gap-2 text-sm">
-                            <select
-                              value={exercise.category}
-                              onChange={(e) => updateExercise(index, { ...exercise, category: e.target.value as any })}
-                              className="rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                            >
-                              <option value="strength">Strength</option>
-                              <option value="cardio">Cardio</option>
-                              <option value="hybrid">Hybrid</option>
-                            </select>
-                            
-                            <input
-                              type="number"
-                              value={exercise.sets}
-                              onChange={(e) => updateExercise(index, { ...exercise, sets: parseInt(e.target.value) || 1 })}
-                              placeholder="Sets"
-                              min="1"
-                              className="rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                            />
-                            
-                            <input
-                              type="text"
-                              value={exercise.reps || ''}
-                              onChange={(e) => updateExercise(index, { ...exercise, reps: e.target.value })}
-                              placeholder="Reps"
-                              className="rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                            />
-                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+                      ) : (
+                        <div className="space-y-4 max-h-96 overflow-y-auto">
+                          {formData.exercises.map((exercise, index) => (
+                            <div key={index} className="border border-gray-600 rounded-lg p-4 bg-gray-750">
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1">
+                                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    Exercise Name
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={exercise.name}
+                                    onChange={(e) => updateExercise(index, { ...exercise, name: e.target.value })}
+                                    placeholder="e.g., Bench Press"
+                                    className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+                                  />
+                                </div>
+                                <button
+                                  onClick={() => removeExercise(index)}
+                                  className="ml-3 p-2 text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
+                                  aria-label="Remove exercise"
+                                >
+                                  <TrashIcon className="w-5 h-5" />
+                                </button>
+                              </div>
+                              
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    Category
+                                  </label>
+                                  <select
+                                    value={exercise.category}
+                                    onChange={(e) => updateExercise(index, { ...exercise, category: e.target.value as any })}
+                                    className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+                                  >
+                                    <option value="strength">Strength</option>
+                                    <option value="cardio">Cardio</option>
+                                    <option value="hybrid">Hybrid</option>
+                                  </select>
+                                </div>
+                                
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    Sets
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={exercise.sets}
+                                    onChange={(e) => updateExercise(index, { ...exercise, sets: parseInt(e.target.value) || 1 })}
+                                    placeholder="3"
+                                    min="1"
+                                    max="20"
+                                    className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+                                  />
+                                </div>
+                              </div>
 
-              <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  onClick={handleSubmitTemplate}
-                  disabled={!formData.name.trim() || createTemplate.isLoading || updateTemplate.isLoading}
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
-                >
-                  {createTemplate.isLoading || updateTemplate.isLoading ? 'Saving...' : editingTemplate ? 'Update' : 'Create'}
-                </button>
-                <button
-                  onClick={() => setShowCreateModal(false)}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+                              {/* Value Type Configuration */}
+                              <div className="mt-3 space-y-3">
+                                <h5 className="text-sm font-medium text-gray-300">Set Values</h5>
+                                
+                                {/* Value 1 */}
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="block text-xs font-medium text-gray-400 mb-1">
+                                      Value 1 Type
+                                    </label>
+                                    <select
+                                      value={exercise.value_1_type || ''}
+                                      onChange={(e) => updateExercise(index, { 
+                                        ...exercise, 
+                                        value_1_type: e.target.value as SetValueType || undefined,
+                                        value_1_default: e.target.value ? exercise.value_1_default || '' : undefined
+                                      })}
+                                      className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500"
+                                    >
+                                      <option value="">None</option>
+                                      {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
+                                        <option key={value} value={value}>{label}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-gray-400 mb-1">
+                                      Default Value
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={exercise.value_1_default || ''}
+                                      onChange={(e) => updateExercise(index, { ...exercise, value_1_default: e.target.value })}
+                                      placeholder={exercise.value_1_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_1_type] : 'Select type first'}
+                                      disabled={!exercise.value_1_type}
+                                      className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    />
+                                  </div>
+                                </div>
 
-      {/* View Template Modal */}
-      {viewingTemplate && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setViewingTemplate(null)} />
-            
-            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-              <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    {viewingTemplate.name}
-                  </h3>
-                  <button
-                    onClick={() => setViewingTemplate(null)}
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  >
-                    <XMarkIcon className="w-6 h-6" />
-                  </button>
-                </div>
+                                {/* Value 2 */}
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="block text-xs font-medium text-gray-400 mb-1">
+                                      Value 2 Type
+                                    </label>
+                                    <select
+                                      value={exercise.value_2_type || ''}
+                                      onChange={(e) => updateExercise(index, { 
+                                        ...exercise, 
+                                        value_2_type: e.target.value as SetValueType || undefined,
+                                        value_2_default: e.target.value ? exercise.value_2_default || '' : undefined
+                                      })}
+                                      className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500"
+                                    >
+                                      <option value="">None</option>
+                                      {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
+                                        <option key={value} value={value}>{label}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-gray-400 mb-1">
+                                      Default Value
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={exercise.value_2_default || ''}
+                                      onChange={(e) => updateExercise(index, { ...exercise, value_2_default: e.target.value })}
+                                      placeholder={exercise.value_2_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_2_type] : 'Select type first'}
+                                      disabled={!exercise.value_2_type}
+                                      className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    />
+                                  </div>
+                                </div>
 
-                <div className="space-y-4">
-                  {viewingTemplate.description && (
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Description</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {viewingTemplate.description}
-                      </p>
-                    </div>
-                  )}
-
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Exercises ({viewingTemplate.exercises?.length || 0})
-                    </h4>
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {viewingTemplate.exercises?.map((exercise, index) => (
-                        <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-md p-3">
-                          <div className="flex items-center justify-between">
-                            <h5 className="font-medium text-gray-900 dark:text-gray-100">
-                              {exercise.name}
-                            </h5>
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${CATEGORY_COLORS[exercise.category]}`}>
-                              {exercise.category}
-                            </span>
-                          </div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            {exercise.sets} sets {exercise.reps && `• ${exercise.reps} reps`} {exercise.weight && `• ${exercise.weight}`}
-                          </div>
-                          {exercise.notes && (
-                            <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                              {exercise.notes}
+                                {/* Quick preset buttons for common combinations */}
+                                <div className="mt-2">
+                                  <label className="block text-xs font-medium text-gray-400 mb-1">
+                                    Quick Presets
+                                  </label>
+                                  <div className="flex flex-wrap gap-1">
+                                    {COMMON_VALUE_TYPE_COMBINATIONS[exercise.category].map((combo, comboIndex) => (
+                                      <button
+                                        key={comboIndex}
+                                        type="button"
+                                        onClick={() => updateExercise(index, {
+                                          ...exercise,
+                                          value_1_type: combo.value_1_type,
+                                          value_1_default: combo.value_1_type === 'weight_kg' ? '75' : combo.value_1_type === 'reps' ? '8-10' : '30',
+                                          value_2_type: combo.value_2_type || undefined,
+                                          value_2_default: combo.value_2_type === 'reps' ? '8-10' : combo.value_2_type === 'distance_m' ? '1000' : undefined,
+                                        })}
+                                        className="text-xs px-2 py-1 bg-blue-900 text-blue-200 rounded-md hover:bg-blue-800 transition-colors"
+                                      >
+                                        {combo.label}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                          )}
+                          ))}
                         </div>
-                      )) || (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">No exercises defined</p>
                       )}
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  onClick={() => setViewingTemplate(null)}
-                  className="w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:text-sm"
-                >
-                  Close
-                </button>
+                {/* Modal Footer */}
+                <div className="bg-gray-700 px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 flex-shrink-0">
+                  <button
+                    onClick={() => setShowCreateModal(false)}
+                    className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-600 text-sm font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSubmitTemplate}
+                    disabled={!formData.name.trim()}
+                    className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-transparent text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <CheckIcon className="w-4 h-4 mr-2" />
+                    {editingTemplate ? 'Update Template' : 'Create Template'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowDeleteModal(null)} />
-            
-            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
-                    <ExclamationTriangleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
-                  </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
-                      Delete Template
+        {/* Simple View Modal */}
+        {viewingTemplate && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setViewingTemplate(null)} />
+              
+              <div className="relative bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-2xl w-full">
+                <div className="bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-medium text-white">
+                      {viewingTemplate.name}
                     </h3>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Are you sure you want to delete "{showDeleteModal.name}"? This action cannot be undone.
-                      </p>
+                    <button
+                      onClick={() => setViewingTemplate(null)}
+                      className="text-gray-400 hover:text-gray-300"
+                    >
+                      <XMarkIcon className="w-6 h-6" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {viewingTemplate.description && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-300">Description</h4>
+                        <p className="text-sm text-gray-400 mt-1">
+                          {viewingTemplate.description}
+                        </p>
+                      </div>
+                    )}
+
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-300 mb-2">
+                        Exercises ({viewingTemplate.exercises?.length || 0})
+                      </h4>
+                      {viewingTemplate.exercises && viewingTemplate.exercises.length > 0 ? (
+                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                          {viewingTemplate.exercises.map((exercise, index) => (
+                            <div key={index} className="border border-gray-600 rounded-md p-3">
+                              <div className="flex items-center justify-between">
+                                <h5 className="font-medium text-white">
+                                  {exercise.name}
+                                </h5>
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${CATEGORY_COLORS[exercise.category]}`}>
+                                  {exercise.category}
+                                </span>
+                              </div>
+                              <div className="text-sm text-gray-400 mt-1">
+                                {exercise.sets} sets
+                                {exercise.value_1_type && exercise.value_1_default && (
+                                  <span> • {exercise.value_1_default} {VALUE_TYPE_UNITS[exercise.value_1_type]}</span>
+                                )}
+                                {exercise.value_2_type && exercise.value_2_default && (
+                                  <span> × {exercise.value_2_default} {VALUE_TYPE_UNITS[exercise.value_2_type]}</span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-400">No exercises defined</p>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  onClick={confirmDelete}
-                  disabled={deleteTemplate.isLoading}
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
-                >
-                  {deleteTemplate.isLoading ? 'Deleting...' : 'Delete'}
-                </button>
-                <button
-                  onClick={() => setShowDeleteModal(null)}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Cancel
-                </button>
+
+                <div className="bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button
+                    onClick={() => setViewingTemplate(null)}
+                    className="w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:text-sm"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowDeleteModal(null)} />
+              
+              <div className="relative bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
+                <div className="bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="sm:flex sm:items-start">
+                    <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
+                      <ExclamationTriangleIcon className="h-6 w-6 text-red-400" />
+                    </div>
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                      <h3 className="text-lg leading-6 font-medium text-white">
+                        Delete Template
+                      </h3>
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-400">
+                          Are you sure you want to delete "{showDeleteModal.name}"? This action cannot be undone.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button
+                    onClick={confirmDelete}
+                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteModal(null)}
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add Exercise Modal */}
+        {showExerciseModal && (
+          <AddExerciseModal
+            onClose={() => setShowExerciseModal(false)}
+            onAddExercise={addExerciseToTemplate}
+            templates={exerciseTemplates}
+            onShowCustomModal={() => {
+              setShowExerciseModal(false)
+              setShowCustomExerciseModal(true)
+            }}
+          />
+        )}
+
+        {/* Custom Exercise Modal */}
+        {showCustomExerciseModal && (
+          <CustomExerciseModal
+            onSave={handleCreateCustomExercise}
+            onClose={() => setShowCustomExerciseModal(false)}
+            loading={isCreatingExercise}
+          />
+        )}
+      </div>
+    </AdminLayout>
   )
 }
