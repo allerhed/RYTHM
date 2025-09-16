@@ -361,21 +361,31 @@ router.post('/', authenticateToken, async (req, res) => {
           let exerciseId = exercise.exercise_id
           
           if (!exerciseId) {
-            // Create new exercise if not found
-            const exerciseResult = await client.query(
-              `INSERT INTO exercises (tenant_id, name, muscle_groups, equipment, exercise_category, notes)
-               VALUES ($1, $2, $3, $4, $5, $6) 
-               RETURNING exercise_id`,
-              [
-                tenantId, 
-                exercise.name || 'Custom Exercise', 
-                exercise.muscle_groups || [],
-                exercise.equipment || '',
-                exercise.exercise_category || 'strength',
-                exercise.notes || ''
-              ]
+            // First, try to find existing exercise by name
+            const existingExerciseResult = await client.query(
+              `SELECT exercise_id FROM exercises WHERE name = $1 LIMIT 1`,
+              [exercise.name || 'Custom Exercise']
             )
-            exerciseId = exerciseResult.rows[0].exercise_id
+            
+            if (existingExerciseResult.rows.length > 0) {
+              // Use existing exercise
+              exerciseId = existingExerciseResult.rows[0].exercise_id
+            } else {
+              // Create new exercise if not found
+              const exerciseResult = await client.query(
+                `INSERT INTO exercises (name, muscle_groups, equipment, exercise_category, notes)
+                 VALUES ($1, $2, $3, $4, $5) 
+                 RETURNING exercise_id`,
+                [
+                  exercise.name || 'Custom Exercise', 
+                  exercise.muscle_groups || [],
+                  exercise.equipment || '',
+                  exercise.exercise_category || 'strength',
+                  exercise.notes || ''
+                ]
+              )
+              exerciseId = exerciseResult.rows[0].exercise_id
+            }
           }
 
           // Add sets for this exercise

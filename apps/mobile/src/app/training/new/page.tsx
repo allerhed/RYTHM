@@ -78,6 +78,7 @@ export default function NewWorkoutPage() {
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [exerciseTemplates, setExerciseTemplates] = useState<ExerciseTemplate[]>([])
   const [showExerciseModal, setShowExerciseModal] = useState(false)
+  const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [showTimePicker, setShowTimePicker] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -190,6 +191,33 @@ export default function NewWorkoutPage() {
     
     setExercises([...exercises, exerciseData])
     setShowExerciseModal(false)
+  }
+
+  const addExercisesFromTemplate = (templateExercises: any[]) => {
+    const newExercises = templateExercises.map((templateEx, index) => {
+      const exerciseId = Date.now().toString() + index
+      const sets = Array.from({ length: templateEx.sets }, (_, setIndex) => 
+        createNewSetWithDefaults(
+          setIndex + 1, 
+          templateEx.weight ? 'weight_kg' : (activityType === 'strength' ? 'weight_kg' : 'distance_m'),
+          templateEx.reps ? 'reps' : (activityType === 'strength' ? 'reps' : 'duration_s')
+        )
+      )
+
+      return {
+        id: exerciseId,
+        name: templateEx.name,
+        notes: templateEx.notes || '',
+        sets: sets,
+        exercise_id: templateEx.exercise_id,
+        muscle_groups: templateEx.muscle_groups || [],
+        exercise_category: templateEx.category,
+        exercise_type: (templateEx.category === 'cardio' ? 'CARDIO' : 'STRENGTH') as 'STRENGTH' | 'CARDIO'
+      }
+    })
+
+    setExercises([...exercises, ...newExercises])
+    setShowTemplateModal(false)
   }
 
   const createNewSetWithDefaults = (setNumber: number, defaultType1?: string, defaultType2?: string): WorkoutSet => ({
@@ -426,27 +454,13 @@ export default function NewWorkoutPage() {
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-md mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <button 
-              onClick={() => router.back()}
-              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
+          <div className="flex items-center justify-center">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">New Workout</h1>
-            <button
-              onClick={handleSaveWorkout}
-              className="bg-lime-400 text-black px-4 py-2 rounded-lg hover:bg-lime-500 transition-colors font-medium"
-            >
-              Save
-            </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-md mx-auto px-4 py-6 pb-24 space-y-6">
         {/* Workout Info */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="space-y-4">
@@ -583,13 +597,22 @@ export default function NewWorkoutPage() {
             />
           ))}
 
-          {/* Add Exercise Button */}
-          <button
-            onClick={() => setShowExerciseModal(true)}
-            className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-lime-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
-          >
-            + Add Exercise
-          </button>
+          {/* Add Exercise Buttons */}
+          <div className="space-y-2">
+            <button
+              onClick={() => setShowExerciseModal(true)}
+              className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-lime-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
+            >
+              + Add Exercise
+            </button>
+            
+            <button
+              onClick={() => setShowTemplateModal(true)}
+              className="w-full py-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors text-sm font-medium"
+            >
+              📋 Add from Template
+            </button>
+          </div>
 
 
         </div>
@@ -618,6 +641,14 @@ export default function NewWorkoutPage() {
         />
       )}
 
+      {/* Template Modal */}
+      {showTemplateModal && (
+        <TemplateSelectionModal
+          onClose={() => setShowTemplateModal(false)}
+          onSelectTemplate={addExercisesFromTemplate}
+        />
+      )}
+
       {/* Date Picker Modal */}
       {showDatePicker && (
         <DatePickerModal
@@ -641,6 +672,18 @@ export default function NewWorkoutPage() {
           }}
         />
       )}
+
+      {/* Fixed Save Button */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 safe-area-bottom">
+        <div className="max-w-md mx-auto">
+          <button
+            onClick={handleSaveWorkout}
+            className="w-full bg-lime-400 text-black px-6 py-4 rounded-lg hover:bg-lime-500 transition-colors font-semibold text-lg shadow-lg"
+          >
+            Save Workout
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
@@ -1209,6 +1252,155 @@ function AddExerciseModal({
           loading={isCreatingExercise}
         />
       )}
+    </div>
+  )
+}
+
+// Template Selection Modal Component
+function TemplateSelectionModal({ 
+  onClose, 
+  onSelectTemplate 
+}: { 
+  onClose: () => void
+  onSelectTemplate: (exercises: any[]) => void 
+}) {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedTemplate, setSelectedTemplate] = useState<any>(null)
+
+  // Fetch templates for selection
+  const { data: templates, isLoading } = trpc.workoutTemplates.getForSelection.useQuery({
+    search: searchTerm || undefined,
+    limit: 20
+  })
+
+  // Get full template details
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
+  const { data: fullTemplate } = trpc.workoutTemplates.getById.useQuery(
+    { templateId: selectedTemplateId! },
+    { enabled: !!selectedTemplateId }
+  )
+
+  // Handle template selection when data is loaded
+  React.useEffect(() => {
+    if (fullTemplate && selectedTemplateId) {
+      onSelectTemplate(fullTemplate.exercises)
+      setSelectedTemplateId(null)
+    }
+  }, [fullTemplate, selectedTemplateId, onSelectTemplate])
+
+  const handleSelectTemplate = (template: any) => {
+    setSelectedTemplate(template)
+  }
+
+  const handleConfirmSelection = () => {
+    if (selectedTemplate) {
+      setSelectedTemplateId(selectedTemplate.template_id)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
+        
+        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md max-h-[80vh] flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Select Workout Template
+            </h3>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              <span className="sr-only">Close</span>
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Search */}
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <input
+              type="text"
+              placeholder="Search templates..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+
+          {/* Template List */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {isLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              </div>
+            ) : templates && templates.length > 0 ? (
+              <div className="space-y-2">
+                {templates.map((template: any) => (
+                  <div
+                    key={template.template_id}
+                    onClick={() => handleSelectTemplate(template)}
+                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      selectedTemplate?.template_id === template.template_id
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                          {template.name}
+                        </h4>
+                        <div className="flex items-center space-x-2">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            template.scope === 'user' 
+                              ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                              : template.scope === 'tenant'
+                              ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+                              : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
+                          }`}>
+                            {template.scope === 'user' ? 'Personal' : template.scope === 'tenant' ? 'Organization' : 'System'}
+                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {template.exercise_count} exercises
+                          </span>
+                        </div>
+                      </div>
+                      {template.description && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          {template.description}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                No templates found
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex gap-3">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmSelection}
+              disabled={!selectedTemplate}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Add Exercises
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

@@ -4,10 +4,12 @@ import { z } from 'zod';
 export const SessionCategory = z.enum(['strength', 'cardio', 'hybrid']);
 export const SetValueType = z.enum(['weight_kg', 'distance_m', 'duration_s', 'calories']);
 export const UserRole = z.enum(['athlete', 'coach', 'tenant_admin', 'org_admin']);
+export const TemplateScope = z.enum(['user', 'tenant', 'system']);
 
 export type SessionCategory = z.infer<typeof SessionCategory>;
 export type SetValueType = z.infer<typeof SetValueType>;
 export type UserRole = z.infer<typeof UserRole>;
+export type TemplateScope = z.infer<typeof TemplateScope>;
 
 // Core entity schemas
 export const TenantSchema = z.object({
@@ -124,6 +126,59 @@ export const PRRecord = z.object({
   achieved_at: z.date(),
 });
 
+// Workout Template schemas
+export const TemplateExercise = z.object({
+  exercise_id: z.string().uuid().optional(), // Optional for custom exercises
+  name: z.string().min(1).max(255),
+  category: SessionCategory,
+  muscle_groups: z.array(z.string()),
+  sets: z.number().int().positive(),
+  reps: z.string().optional(), // e.g., "8-10", "AMRAP", etc.
+  weight: z.string().optional(), // e.g., "75kg", "bodyweight", etc.
+  duration: z.string().optional(), // e.g., "30s", "2 min", etc.
+  distance: z.string().optional(), // e.g., "1km", "100m", etc.
+  notes: z.string().optional(),
+  rest_time: z.string().optional(), // e.g., "60s", "2-3 min", etc.
+  order: z.number().int().nonnegative().default(0),
+});
+
+export const WorkoutTemplateSchema = z.object({
+  template_id: z.string().uuid(),
+  tenant_id: z.string().uuid(),
+  user_id: z.string().uuid().optional(), // NULL for tenant/system templates
+  name: z.string().min(1).max(255),
+  description: z.string().optional(),
+  scope: TemplateScope,
+  exercises: z.array(TemplateExercise),
+  is_active: z.boolean().default(true),
+  created_at: z.date(),
+  updated_at: z.date(),
+  created_by: z.string().uuid().optional(),
+  updated_by: z.string().uuid().optional(),
+});
+
+export const CreateWorkoutTemplateRequest = z.object({
+  name: z.string().min(1).max(255),
+  description: z.string().optional(),
+  scope: TemplateScope.default('user'),
+  exercises: z.array(TemplateExercise),
+});
+
+export const UpdateWorkoutTemplateRequest = z.object({
+  template_id: z.string().uuid(),
+  name: z.string().min(1).max(255).optional(),
+  description: z.string().optional(),
+  exercises: z.array(TemplateExercise).optional(),
+});
+
+export const WorkoutTemplateFilters = z.object({
+  scope: TemplateScope.optional(),
+  search: z.string().optional(),
+  category: SessionCategory.optional(),
+  limit: z.number().int().positive().max(100).default(20),
+  offset: z.number().int().nonnegative().default(0),
+});
+
 // Export types
 export type Tenant = z.infer<typeof TenantSchema>;
 export type User = z.infer<typeof UserSchema>;
@@ -137,3 +192,9 @@ export type CreateSetRequest = z.infer<typeof CreateSetRequest>;
 export type AnalyticsFilters = z.infer<typeof AnalyticsFilters>;
 export type VolumeMetrics = z.infer<typeof VolumeMetrics>;
 export type PRRecord = z.infer<typeof PRRecord>;
+
+export type TemplateExercise = z.infer<typeof TemplateExercise>;
+export type WorkoutTemplate = z.infer<typeof WorkoutTemplateSchema>;
+export type CreateWorkoutTemplateRequest = z.infer<typeof CreateWorkoutTemplateRequest>;
+export type UpdateWorkoutTemplateRequest = z.infer<typeof UpdateWorkoutTemplateRequest>;
+export type WorkoutTemplateFilters = z.infer<typeof WorkoutTemplateFilters>;

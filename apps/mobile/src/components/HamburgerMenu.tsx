@@ -12,7 +12,9 @@ import {
   ArrowRightOnRectangleIcon,
   XMarkIcon,
   Bars3Icon,
-  CalendarIcon
+  CalendarIcon,
+  ClipboardDocumentIcon,
+  PlusCircleIcon
 } from '@heroicons/react/24/outline'
 
 interface NavigationItem {
@@ -30,10 +32,22 @@ const navigationItems: NavigationItem[] = [
     description: 'Your workout overview'
   },
   {
+    name: 'New Workout',
+    href: '/training/new',
+    icon: PlusCircleIcon,
+    description: 'Start a new workout session'
+  },
+  {
     name: 'Calendar',
     href: '/calendar',
     icon: CalendarIcon,
     description: 'Training calendar and schedule'
+  },
+  {
+    name: 'Templates',
+    href: '/templates',
+    icon: ClipboardDocumentIcon,
+    description: 'Workout templates and routines'
   },
   {
     name: 'History',

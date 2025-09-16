@@ -6,6 +6,7 @@ import { analyticsRouter } from './routes/analytics';
 import { usersRouter } from './routes/users';
 import { adminRouter } from './routes/admin';
 import { exerciseTemplatesRouter } from './routes/exerciseTemplates';
+import { workoutTemplatesRouter } from './routes/workoutTemplates';
 
 export const appRouter = router({
   auth: authRouter,
@@ -15,6 +16,7 @@ export const appRouter = router({
   users: usersRouter,
   admin: adminRouter,
   exerciseTemplates: exerciseTemplatesRouter,
+  workoutTemplates: workoutTemplatesRouter,
 });
 
 export type AppRouter = typeof appRouter;
