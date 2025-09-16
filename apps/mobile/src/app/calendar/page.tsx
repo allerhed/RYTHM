@@ -34,26 +34,13 @@ const CATEGORY_LABELS = {
   hybrid: 'HYBRID'
 } as const
 
-function WorkoutHistoryPage() {
+function CalendarPage() {
   const router = useRouter()
   const { user, token } = useAuth()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [workouts, setWorkouts] = useState<WorkoutSession[]>([])
   const [loading, setLoading] = useState(true)
   const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([])
-
-  // Get the first day of the current month
-  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
-  const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
-  
-  // Get the start of the calendar (might include days from previous month)
-  const startOfCalendar = new Date(firstDayOfMonth)
-  startOfCalendar.setDate(startOfCalendar.getDate() - firstDayOfMonth.getDay())
-  
-  // Get the end of the calendar (might include days from next month)
-  const endOfCalendar = new Date(lastDayOfMonth)
-  const daysToAdd = 6 - lastDayOfMonth.getDay()
-  endOfCalendar.setDate(endOfCalendar.getDate() + daysToAdd)
 
   useEffect(() => {
     if (!user || !token) return
@@ -87,6 +74,19 @@ function WorkoutHistoryPage() {
   }, [user, token, currentDate])
 
   useEffect(() => {
+    // Get the first day of the current month
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+    
+    // Get the start of the calendar (might include days from previous month)
+    const startOfCalendar = new Date(firstDayOfMonth)
+    startOfCalendar.setDate(startOfCalendar.getDate() - firstDayOfMonth.getDay())
+    
+    // Get the end of the calendar (might include days from next month)
+    const endOfCalendar = new Date(lastDayOfMonth)
+    const daysToAdd = 6 - lastDayOfMonth.getDay()
+    endOfCalendar.setDate(endOfCalendar.getDate() + daysToAdd)
+
     // Generate calendar days
     const days: CalendarDay[] = []
     const today = new Date()
@@ -114,7 +114,7 @@ function WorkoutHistoryPage() {
     }
     
     setCalendarDays(days)
-  }, [workouts, currentDate, startOfCalendar, endOfCalendar])
+  }, [workouts, currentDate])
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate)
@@ -166,7 +166,7 @@ function WorkoutHistoryPage() {
         <div className="bg-white dark:bg-gray-800 shadow-sm">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Workout History
+              Calendar
             </h1>
           </div>
         </div>
@@ -318,4 +318,4 @@ function WorkoutHistoryPage() {
   )
 }
 
-export default WorkoutHistoryPage
+export default CalendarPage

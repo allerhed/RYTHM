@@ -164,15 +164,7 @@ function AnalyticsPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="bg-white dark:bg-gray-800 shadow-sm">
-          <div className="px-4 py-3 flex items-center">
-            <button
-              onClick={() => router.back()}
-              className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
+          <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
             </h1>
@@ -189,15 +181,7 @@ function AnalyticsPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="bg-white dark:bg-gray-800 shadow-sm">
-          <div className="px-4 py-3 flex items-center">
-            <button
-              onClick={() => router.back()}
-              className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
+          <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
             </h1>
@@ -215,15 +199,7 @@ function AnalyticsPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="bg-white dark:bg-gray-800 shadow-sm">
-          <div className="px-4 py-3 flex items-center">
-            <button
-              onClick={() => router.back()}
-              className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
+          <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
             </h1>
@@ -241,24 +217,10 @@ function AnalyticsPage() {
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => router.back()}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
+          <div className="flex items-center justify-center mb-4">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
               Analytics
             </h1>
-            <div className="p-2">
-              {/* Placeholder for menu */}
-              <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-              </svg>
-            </div>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Providers } from './providers'
+import { HamburgerMenu } from '@/components/HamburgerMenu'
 
 export const metadata: Metadata = {
   title: 'RYTHM - Hybrid Training App',
@@ -46,6 +47,7 @@ export default function RootLayout({
       </head>
       <body className="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <Providers>
+          <HamburgerMenu />
           <main className="h-full min-h-screen">
             {children}
           </main>

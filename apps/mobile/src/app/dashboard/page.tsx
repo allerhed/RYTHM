@@ -327,11 +327,6 @@ function DashboardPage() {
     fetchWorkouts()
   }, [user, selectedWeekStart, selectedDayIndex]) // Added selectedDayIndex dependency
 
-  const handleLogout = async () => {
-    await logout()
-    router.push('/auth/login')
-  }
-
   const handleDeleteWorkout = async (workoutId: string) => {
     if (!user) return
 
@@ -379,18 +374,6 @@ function DashboardPage() {
           </div>
           
           <div className="flex items-center space-x-3">
-            {user && (
-              <div className="flex items-center space-x-2">
-                <Avatar user={user} size="sm" />
-              </div>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-            >
-              Sign Out
-            </Button>
           </div>
         </div>
       </div>

@@ -82,6 +82,38 @@ export const sessionsRouter = router({
       return result.rows;
     }),
 
+  count: protectedProcedure
+    .input(z.object({
+      category: SessionCategory.optional(),
+      userId: z.string().uuid().optional(), // For coaches to view athlete sessions
+    }))
+    .query(async ({ input, ctx }) => {
+      const { category, userId } = input;
+      
+      // Determine target user (own sessions or athlete sessions for coaches)
+      const targetUserId = userId && ['coach', 'tenant_admin', 'org_admin'].includes(ctx.user.role) 
+        ? userId 
+        : ctx.user.userId;
+
+      let query = `
+        SELECT COUNT(*) as total
+        FROM sessions s
+        WHERE s.tenant_id = $1 AND s.user_id = $2
+      `;
+      
+      const params = [ctx.user.tenantId, targetUserId];
+      let paramIndex = 3;
+
+      if (category) {
+        query += ` AND s.category = $${paramIndex}`;
+        params.push(category);
+        paramIndex++;
+      }
+
+      const result = await ctx.db.query(query, params);
+      return parseInt(result.rows[0].total);
+    }),
+
   getById: protectedProcedure
     .input(z.object({ sessionId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {

@@ -250,17 +250,7 @@ function ProfilePage() {
       {/* Header */}
       <Header 
         title="Profile"
-        showBack={true}
-        onBack={() => router.push('/dashboard')}
-        actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push('/dashboard')}
-          >
-            Done
-          </Button>
-        }
+        showBack={false}
       />
 
       {/* Toast Notification */}
