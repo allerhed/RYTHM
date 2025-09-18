@@ -16,7 +16,7 @@ export default function AnalyticsPage() {
   const [exerciseTemplateStats, setExerciseTemplateStats] = useState<ExerciseTemplateStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('90d')
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y' | 'all'>('90d')
 
   const fetchAnalytics = async () => {
     try {
@@ -26,8 +26,8 @@ export default function AnalyticsPage() {
       const [dashboardData, performanceData, tenantData, exerciseData, equipmentData, exerciseTemplateData] = await Promise.all([
         apiClient.admin.getAnalyticsDashboard({ timeRange, compareToLast: true }),
         apiClient.admin.getPerformanceMetrics({ timeRange }),
-        apiClient.admin.getTenantAnalytics({ timeRange: timeRange === '7d' ? '30d' : timeRange }),
-        apiClient.admin.getExerciseAnalytics({ timeRange: timeRange === '7d' ? '30d' : timeRange }),
+        apiClient.admin.getTenantAnalytics({ timeRange: timeRange === '7d' ? '30d' : timeRange === 'all' ? '1y' : timeRange }),
+        apiClient.admin.getExerciseAnalytics({ timeRange: timeRange === '7d' ? '30d' : timeRange === 'all' ? '1y' : timeRange }),
         apiClient.admin.getEquipmentStats({ timeRange }),
         apiClient.admin.getExerciseTemplateStats({ timeRange }),
       ])
@@ -119,7 +119,7 @@ export default function AnalyticsPage() {
           
           {/* Time Range Selector */}
           <div className="flex space-x-2">
-            {(['7d', '30d', '90d', '1y'] as const).map((range) => (
+            {(['7d', '30d', '90d', '1y', 'all'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
@@ -129,7 +129,7 @@ export default function AnalyticsPage() {
                     : 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600'
                 }`}
               >
-                {range.toUpperCase()}
+                {range === 'all' ? 'ALL TIME' : range.toUpperCase()}
               </button>
             ))}
           </div>
@@ -235,7 +235,7 @@ export default function AnalyticsPage() {
               </div>
             </div>
             <UsageTrendsChart 
-              timeRange={timeRange === '1y' ? '90d' : timeRange} 
+              timeRange={timeRange === '1y' || timeRange === 'all' ? '90d' : timeRange} 
               className="h-64"
             />
           </div>
@@ -598,7 +598,7 @@ export default function AnalyticsPage() {
                     </svg>
                   </div>
                   <h4 className="text-xl font-bold text-white">{exerciseTemplateStats.recentExerciseTemplates}</h4>
-                  <p className="text-gray-400 text-sm">New templates ({timeRange.replace('d', ' days').replace('y', ' year')})</p>
+                  <p className="text-gray-400 text-sm">New templates ({timeRange === 'all' ? 'all time' : timeRange.replace('d', ' days').replace('y', ' year')})</p>
                 </div>
               </div>
             </div>

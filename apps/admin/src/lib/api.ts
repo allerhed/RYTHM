@@ -581,7 +581,7 @@ class ApiClient {
     },
 
     getExerciseTemplateStats: async (params: {
-      timeRange?: '7d' | '30d' | '90d' | '1y'
+      timeRange?: '7d' | '30d' | '90d' | '1y' | 'all'
     } = {}): Promise<ExerciseTemplateStats> => {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.getExerciseTemplateStats?input=${encodeURIComponent(JSON.stringify(params))}`, {
         headers: this.getHeaders(),
@@ -626,7 +626,7 @@ class ApiClient {
 
     // Analytics methods
     getAnalyticsDashboard: async (params: {
-      timeRange?: '7d' | '30d' | '90d' | '1y'
+      timeRange?: '7d' | '30d' | '90d' | '1y' | 'all'
       compareToLast?: boolean
     } = {}): Promise<AnalyticsDashboard> => {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.getAnalyticsDashboard?input=${encodeURIComponent(JSON.stringify(params))}`, {
@@ -650,7 +650,7 @@ class ApiClient {
     },
 
     getExerciseAnalytics: async (params: {
-      timeRange?: '30d' | '90d' | '1y'
+      timeRange?: '30d' | '90d' | '1y' | 'all'
     } = {}): Promise<ExerciseAnalytics> => {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.getExerciseAnalytics?input=${encodeURIComponent(JSON.stringify(params))}`, {
         headers: this.getHeaders(),
@@ -661,7 +661,7 @@ class ApiClient {
     },
 
     getTenantAnalytics: async (params: {
-      timeRange?: '30d' | '90d' | '1y'
+      timeRange?: '30d' | '90d' | '1y' | 'all'
     } = {}): Promise<TenantAnalytics[]> => {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.getTenantAnalytics?input=${encodeURIComponent(JSON.stringify(params))}`, {
         headers: this.getHeaders(),
@@ -733,7 +733,7 @@ class ApiClient {
     },
 
     getPerformanceMetrics: async (params: {
-      timeRange?: '7d' | '30d' | '90d' | '1y'
+      timeRange?: '7d' | '30d' | '90d' | '1y' | 'all'
     } = {}): Promise<PerformanceMetrics> => {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.getPerformanceMetrics?input=${encodeURIComponent(JSON.stringify(params))}`, {
         headers: this.getHeaders(),
@@ -773,7 +773,7 @@ class ApiClient {
     },
 
     getEquipmentStats: async (params: {
-      timeRange?: '7d' | '30d' | '90d' | '1y'
+      timeRange?: '7d' | '30d' | '90d' | '1y' | 'all'
     } = {}): Promise<EquipmentStats> => {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.getEquipmentStats?input=${encodeURIComponent(JSON.stringify(params))}`, {
         headers: this.getHeaders(),

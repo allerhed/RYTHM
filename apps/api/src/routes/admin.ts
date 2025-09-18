@@ -413,15 +413,21 @@ export const adminRouter = router({
 
   getExerciseTemplateStats: adminProcedure
     .input(z.object({
-      timeRange: z.enum(['7d', '30d', '90d', '1y']).default('90d'),
+      timeRange: z.enum(['7d', '30d', '90d', '1y', 'all']).default('90d'),
     }).optional())
     .query(async ({ input }) => {
       const { timeRange = '90d' } = input || {};
       
       // Calculate date range
       const now = new Date();
-      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
-      const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+      let startDate: Date;
+      
+      if (timeRange === 'all') {
+        startDate = new Date('2015-01-01'); // Very early date for all-time data
+      } else {
+        const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
+        startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+      }
 
       const stats = await Promise.all([
         // Total exercise templates
@@ -586,7 +592,7 @@ export const adminRouter = router({
   // Analytics endpoints
   getAnalyticsDashboard: adminProcedure
     .input(z.object({
-      timeRange: z.enum(['7d', '30d', '90d', '1y']).default('30d'),
+      timeRange: z.enum(['7d', '30d', '90d', '1y', 'all']).default('90d'),
       compareToLast: z.boolean().default(true),
     }))
     .query(async ({ input }) => {
@@ -594,9 +600,18 @@ export const adminRouter = router({
       
       // Calculate date ranges
       const now = new Date();
-      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
-      const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-      const compareStartDate = new Date(startDate.getTime() - days * 24 * 60 * 60 * 1000);
+      let startDate: Date;
+      let compareStartDate: Date;
+      
+      if (timeRange === 'all') {
+        // For 'all', use a very early date (e.g., 10 years ago)
+        startDate = new Date('2015-01-01');
+        compareStartDate = new Date('2015-01-01');
+      } else {
+        const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
+        startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+        compareStartDate = new Date(startDate.getTime() - days * 24 * 60 * 60 * 1000);
+      }
 
       // Get current period metrics
       const currentMetrics = await Promise.all([
@@ -763,13 +778,18 @@ export const adminRouter = router({
 
   getExerciseAnalytics: adminProcedure
     .input(z.object({
-      timeRange: z.enum(['30d', '90d', '1y']).default('30d'),
+      timeRange: z.enum(['30d', '90d', '1y', 'all']).default('30d'),
     }))
     .query(async ({ input }) => {
       const { timeRange } = input;
       
-      const days = timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
-      const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+      let startDate: Date;
+      if (timeRange === 'all') {
+        startDate = new Date('2015-01-01'); // Very early date for all-time data
+      } else {
+        const days = timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
+        startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+      }
 
       const [popularExercises, muscleGroupUsage, categoryBreakdown] = await Promise.all([
         // Most popular exercises
@@ -835,13 +855,18 @@ export const adminRouter = router({
 
   getTenantAnalytics: adminProcedure
     .input(z.object({
-      timeRange: z.enum(['30d', '90d', '1y']).default('30d'),
+      timeRange: z.enum(['30d', '90d', '1y', 'all']).default('30d'),
     }))
     .query(async ({ input }) => {
       const { timeRange } = input;
       
-      const days = timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
-      const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+      let startDate: Date;
+      if (timeRange === 'all') {
+        startDate = new Date('2015-01-01'); // Very early date for all-time data
+      } else {
+        const days = timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
+        startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+      }
 
       const result = await db.query(`
         SELECT 
@@ -874,15 +899,21 @@ export const adminRouter = router({
 
   getPerformanceMetrics: adminProcedure
     .input(z.object({
-      timeRange: z.enum(['7d', '30d', '90d', '1y']).default('90d'),
+      timeRange: z.enum(['7d', '30d', '90d', '1y', 'all']).default('90d'),
     }).optional())
     .query(async ({ input }) => {
       const { timeRange = '90d' } = input || {};
       
       // Calculate date range
       const now = new Date();
-      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
-      const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+      let startDate: Date;
+      
+      if (timeRange === 'all') {
+        startDate = new Date('2015-01-01'); // Very early date for all-time data
+      } else {
+        const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
+        startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+      }
 
       // System performance metrics for the time range
       const [systemStats, recentActivity] = await Promise.all([
@@ -1370,15 +1401,21 @@ export const adminRouter = router({
 
   getEquipmentStats: adminProcedure
     .input(z.object({
-      timeRange: z.enum(['7d', '30d', '90d', '1y']).default('90d'),
+      timeRange: z.enum(['7d', '30d', '90d', '1y', 'all']).default('90d'),
     }).optional())
     .query(async ({ input }) => {
       const { timeRange = '90d' } = input || {};
       
       // Calculate date range
       const now = new Date();
-      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
-      const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+      let startDate: Date;
+      
+      if (timeRange === 'all') {
+        startDate = new Date('2015-01-01'); // Very early date for all-time data
+      } else {
+        const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
+        startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+      }
 
       const stats = await Promise.all([
         // Total equipment
