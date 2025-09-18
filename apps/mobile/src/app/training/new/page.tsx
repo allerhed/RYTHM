@@ -304,6 +304,26 @@ export default function NewWorkoutPage() {
     setExercises(exercises.filter(ex => ex.id !== exerciseId))
   }
 
+  const moveExerciseUp = (exerciseId: string) => {
+    const currentIndex = exercises.findIndex(ex => ex.id === exerciseId)
+    if (currentIndex <= 0) return // Already at the top or not found
+    
+    const newExercises = [...exercises]
+    const [exerciseToMove] = newExercises.splice(currentIndex, 1)
+    newExercises.splice(currentIndex - 1, 0, exerciseToMove)
+    setExercises(newExercises)
+  }
+
+  const moveExerciseDown = (exerciseId: string) => {
+    const currentIndex = exercises.findIndex(ex => ex.id === exerciseId)
+    if (currentIndex >= exercises.length - 1 || currentIndex < 0) return // Already at the bottom or not found
+    
+    const newExercises = [...exercises]
+    const [exerciseToMove] = newExercises.splice(currentIndex, 1)
+    newExercises.splice(currentIndex + 1, 0, exerciseToMove)
+    setExercises(newExercises)
+  }
+
   const onValueChange = (exerciseId: string, setId: string, field: 'value1' | 'value2', value: number) => {
     setExercises(exercises.map(ex => {
       if (ex.id === exerciseId) {
@@ -583,13 +603,17 @@ export default function NewWorkoutPage() {
 
         {/* Exercises */}
         <div className="space-y-4">
-          {exercises.map((exercise) => (
+          {exercises.map((exercise, index) => (
             <ExerciseCard
               key={exercise.id}
               exercise={exercise}
+              exerciseIndex={index}
+              totalExercises={exercises.length}
               onAddSet={() => addSetToExercise(exercise.id)}
               onRemoveSet={(setId) => removeSetFromExercise(exercise.id, setId)}
               onRemoveExercise={() => removeExercise(exercise.id)}
+              onMoveUp={() => moveExerciseUp(exercise.id)}
+              onMoveDown={() => moveExerciseDown(exercise.id)}
               onValueChange={(setId, field, value) => onValueChange(exercise.id, setId, field, value)}
               onValueTypeChange={(exerciseId, setId, field, type) => onValueTypeChange(exerciseId, setId, field, type)}
               activeDropdown={activeDropdown}
@@ -690,18 +714,26 @@ export default function NewWorkoutPage() {
 
 function ExerciseCard({ 
   exercise, 
+  exerciseIndex,
+  totalExercises,
   onAddSet, 
   onRemoveSet, 
-  onRemoveExercise, 
+  onRemoveExercise,
+  onMoveUp,
+  onMoveDown,
   onValueChange, 
   onValueTypeChange,
   activeDropdown,
   setActiveDropdown
 }: {
   exercise: Exercise
+  exerciseIndex: number
+  totalExercises: number
   onAddSet: () => void
   onRemoveSet: (setId: string) => void
   onRemoveExercise: () => void
+  onMoveUp: () => void
+  onMoveDown: () => void
   onValueChange: (setId: string, field: 'value1' | 'value2', value: number) => void
   onValueTypeChange: (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => void
   activeDropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null
@@ -710,7 +742,7 @@ function ExerciseCard({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
       <div className="flex items-center justify-between mb-4">
-        <div>
+        <div className="flex-1">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100">{exercise.name}</h3>
           {exercise.muscle_groups && (
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -719,14 +751,44 @@ function ExerciseCard({
             </p>
           )}
         </div>
-        <button
-          onClick={onRemoveExercise}
-          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-        </button>
+        
+        {/* Move and Delete Controls */}
+        <div className="flex items-center space-x-2 ml-4">
+          {/* Move Up/Down Arrows */}
+          <div className="flex flex-col space-y-1">
+            <button
+              onClick={onMoveUp}
+              disabled={exerciseIndex === 0}
+              className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Move exercise up"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+            <button
+              onClick={onMoveDown}
+              disabled={exerciseIndex === totalExercises - 1}
+              className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Move exercise down"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+          
+          {/* Delete Button */}
+          <button
+            onClick={onRemoveExercise}
+            className="p-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+            title="Remove exercise"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="space-y-3">

@@ -717,7 +717,12 @@ function DashboardPage() {
                 </div>
               ) : recentActivity && recentActivity.length > 0 ? (
                 recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                  <div 
+                    key={activity.id} 
+                    className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg px-2 -mx-2 transition-colors"
+                    onClick={() => router.push(`/training/view/${activity.id}`)}
+                    title="Click to view workout details"
+                  >
                     <div className="flex items-center space-x-3">
                       {/* Activity Icon */}
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${

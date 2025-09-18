@@ -381,6 +381,36 @@ export default function EditWorkoutPage() {
     setExercises(exercises.filter(ex => ex.id !== exerciseId))
   }
 
+  const moveExerciseUp = (index: number) => {
+    if (index === 0) return // Can't move the first item up
+    
+    console.log('🔼 Moving exercise up from index', index, 'to', index - 1)
+    
+    setExercises(prevExercises => {
+      const newExercises = [...prevExercises]
+      const temp = newExercises[index]
+      newExercises[index] = newExercises[index - 1]
+      newExercises[index - 1] = temp
+      console.log('📋 New exercise order:', newExercises.map((ex, i) => `${i}: ${ex.name}`))
+      return newExercises
+    })
+  }
+
+  const moveExerciseDown = (index: number) => {
+    if (index === exercises.length - 1) return // Can't move the last item down
+    
+    console.log('🔽 Moving exercise down from index', index, 'to', index + 1)
+    
+    setExercises(prevExercises => {
+      const newExercises = [...prevExercises]
+      const temp = newExercises[index]
+      newExercises[index] = newExercises[index + 1]
+      newExercises[index + 1] = temp
+      console.log('📋 New exercise order:', newExercises.map((ex, i) => `${i}: ${ex.name}`))
+      return newExercises
+    })
+  }
+
   const handleUpdateWorkout = async () => {
     if (!user || !token) return
 
@@ -392,7 +422,11 @@ export default function EditWorkoutPage() {
         notes,
         exercises: exercises.map(ex => ({
           exercise_id: ex.exercise_id || ex.id,
-          notes: ex.notes,
+          name: ex.name,
+          muscle_groups: ex.muscle_groups || [],
+          equipment: ex.equipment || '',
+          exercise_category: ex.exercise_category || 'strength',
+          notes: ex.notes || '',
           sets: ex.sets.map(set => ({
             set_id: set.id,
             set_index: set.setNumber,
@@ -406,6 +440,8 @@ export default function EditWorkoutPage() {
         training_load: trainingLoad,
         perceived_exertion: perceivedExertion,
       }
+
+      console.log('🚀 Updating workout with data:', JSON.stringify(workoutData, null, 2))
 
       const response = await fetch(`/api/sessions/${sessionId}`, {
         method: 'PUT',
@@ -628,14 +664,18 @@ export default function EditWorkoutPage() {
 
         {/* Exercises */}
         <div className="space-y-4">
-          {exercises.map((exercise) => (
+          {exercises.map((exercise, index) => (
             <ExerciseCard
               key={exercise.id}
               exercise={exercise}
+              exerciseIndex={index}
+              totalExercises={exercises.length}
               onAddSet={() => addSetToExercise(exercise.id)}
               onRemoveSet={(setId) => removeSetFromExercise(exercise.id, setId)}
               onUpdateSet={(setId, field, value) => updateSet(exercise.id, setId, field, value)}
               onRemoveExercise={() => removeExercise(exercise.id)}
+              onMoveUp={() => moveExerciseUp(index)}
+              onMoveDown={() => moveExerciseDown(index)}
               onValueTypeChange={onValueTypeChange}
               activeDropdown={activeDropdown}
               setActiveDropdown={setActiveDropdown}
@@ -896,19 +936,27 @@ function TimePickerModal({
 // Exercise Card Component
 function ExerciseCard({ 
   exercise, 
+  exerciseIndex,
+  totalExercises,
   onAddSet, 
   onRemoveSet, 
   onUpdateSet, 
   onRemoveExercise,
+  onMoveUp,
+  onMoveDown,
   onValueTypeChange,
   activeDropdown,
   setActiveDropdown
 }: {
   exercise: Exercise
+  exerciseIndex: number
+  totalExercises: number
   onAddSet: () => void
   onRemoveSet: (setId: string) => void
   onUpdateSet: (setId: string, field: 'value1' | 'value2' | 'notes', value: number | string) => void
   onRemoveExercise: () => void
+  onMoveUp: () => void
+  onMoveDown: () => void
   onValueTypeChange: (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => void
   activeDropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null
   setActiveDropdown: (dropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null) => void
@@ -917,7 +965,7 @@ function ExerciseCard({
     <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
       {/* Exercise Header */}
       <div className="flex items-center justify-between mb-4">
-        <div>
+        <div className="flex-1">
           <h3 className="font-semibold text-white">{exercise.name}</h3>
           {exercise.muscle_groups && (
             <p className="text-sm text-gray-400">
@@ -926,14 +974,47 @@ function ExerciseCard({
             </p>
           )}
         </div>
-        <button
-          onClick={onRemoveExercise}
-          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Move buttons */}
+          {totalExercises > 1 && (
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={onMoveUp}
+                disabled={exerciseIndex === 0}
+                className={`p-1 rounded ${
+                  exerciseIndex === 0 
+                    ? 'text-gray-600 cursor-not-allowed' 
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
+              <button
+                onClick={onMoveDown}
+                disabled={exerciseIndex === totalExercises - 1}
+                className={`p-1 rounded ${
+                  exerciseIndex === totalExercises - 1 
+                    ? 'text-gray-600 cursor-not-allowed' 
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          )}
+          <button
+            onClick={onRemoveExercise}
+            className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="space-y-3">

@@ -212,9 +212,7 @@ export const sessionsRouter = router({
           type: isCompleted ? 'session_completed' : 'session_started',
           action: isCompleted 
             ? `Completed ${sessionName}${row.total_exercises > 0 ? ` (${row.total_exercises} exercises, ${row.total_sets} sets)` : ''}`
-            : isToday 
-              ? `${sessionName}${row.total_exercises > 0 ? ` (${row.total_exercises} exercises, ${row.total_sets} sets)` : ''}`
-              : `Started ${sessionName}`,
+            : `${sessionName}${row.total_exercises > 0 ? ` (${row.total_exercises} exercises, ${row.total_sets} sets)` : ''}`,
           timestamp: isCompleted ? row.completed_at : row.started_at,
           metadata: {
             category: row.category,

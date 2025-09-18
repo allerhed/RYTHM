@@ -86,7 +86,7 @@ router.get('/', authenticateToken, async (req, res) => {
 
     const sessionsResult = await pool.query(query, params)
 
-    // Get exercises for each session
+    // Get exercises for each session, ordered by when first set was created
     const sessions = []
     for (const session of sessionsResult.rows) {
       const exercisesResult = await pool.query(
@@ -94,12 +94,13 @@ router.get('/', authenticateToken, async (req, res) => {
           e.exercise_id,
           e.name,
           e.muscle_groups,
-          COUNT(st.set_id) as set_count
+          COUNT(st.set_id) as set_count,
+          MIN(st.created_at) as first_set_created
         FROM exercises e
         JOIN sets st ON st.exercise_id = e.exercise_id
         WHERE st.session_id = $1
         GROUP BY e.exercise_id, e.name, e.muscle_groups
-        ORDER BY e.name`,
+        ORDER BY MIN(st.created_at)`,
         [session.session_id]
       )
 
@@ -157,7 +158,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
     const session = sessionResult.rows[0]
 
-    // Get exercises with sets for this session
+    // Get exercises with sets for this session, ordered by when first set was created
     const exercisesResult = await pool.query(
       `SELECT DISTINCT
         e.exercise_id,
@@ -165,11 +166,13 @@ router.get('/:id', authenticateToken, async (req, res) => {
         e.muscle_groups,
         e.equipment,
         e.exercise_category,
-        e.exercise_type
+        e.exercise_type,
+        MIN(st.created_at) as first_set_created
       FROM exercises e
       JOIN sets st ON st.exercise_id = e.exercise_id
       WHERE st.session_id = $1
-      ORDER BY e.name`,
+      GROUP BY e.exercise_id, e.name, e.muscle_groups, e.equipment, e.exercise_category, e.exercise_type
+      ORDER BY MIN(st.created_at)`,
       [id]
     )
 
@@ -253,7 +256,18 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
       // Process exercises and sets if provided
       if (exercises && exercises.length > 0) {
-        for (const exercise of exercises) {
+        console.log(`📝 Processing ${exercises.length} exercises in order:`)
+        exercises.forEach((ex: any, idx: number) => {
+          console.log(`  ${idx}: ${ex.name || 'Unnamed'} (ID: ${ex.exercise_id || 'none'})`)
+        })
+        
+        // Get base timestamp for this update
+        const baseTimestamp = new Date()
+        
+        for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+          const exercise = exercises[exerciseIndex]
+          console.log(`🏋️ Processing exercise ${exerciseIndex}: ${exercise.name || 'Unnamed'}`)
+          
           // Find or create exercise
           let exerciseId = exercise.exercise_id
           
@@ -278,14 +292,18 @@ router.put('/:id', authenticateToken, async (req, res) => {
             }
           }
 
-          // Add sets for this exercise
+          // Add sets for this exercise with incremented timestamps
           if (exercise.sets && exercise.sets.length > 0) {
             for (let i = 0; i < exercise.sets.length; i++) {
               const set = exercise.sets[i]
+              
+              // Create timestamp that ensures ordering: base + (exerciseIndex * 1000) + (setIndex * 10) milliseconds
+              const setTimestamp = new Date(baseTimestamp.getTime() + (exerciseIndex * 1000) + (i * 10))
+              
               await client.query(
                 `INSERT INTO sets (tenant_id, session_id, exercise_id, set_index, 
-                                   value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                                   value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes, created_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
                 [
                   tenantId,
                   id,
@@ -295,7 +313,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
                   parseFloat(set.value_1_numeric || (set as any).value1) || 0,
                   set.value_2_type || (set as any).value2Type || null,
                   parseFloat(set.value_2_numeric || (set as any).value2) || 0,
-                  set.notes || null
+                  set.notes || null,
+                  setTimestamp
                 ]
               )
             }
@@ -356,7 +375,12 @@ router.post('/', authenticateToken, async (req, res) => {
 
       // Process exercises and sets if provided
       if (exercises && exercises.length > 0) {
-        for (const exercise of exercises) {
+        // Get base timestamp for this session
+        const baseTimestamp = new Date()
+        
+        for (let exerciseIndex = 0; exerciseIndex < exercises.length; exerciseIndex++) {
+          const exercise = exercises[exerciseIndex]
+          
           // Find or create exercise
           let exerciseId = exercise.exercise_id
           
@@ -388,14 +412,18 @@ router.post('/', authenticateToken, async (req, res) => {
             }
           }
 
-          // Add sets for this exercise
+          // Add sets for this exercise with incremented timestamps
           if (exercise.sets && exercise.sets.length > 0) {
             for (let i = 0; i < exercise.sets.length; i++) {
               const set = exercise.sets[i]
+              
+              // Create timestamp that ensures ordering: base + (exerciseIndex * 1000) + (setIndex * 10) milliseconds
+              const setTimestamp = new Date(baseTimestamp.getTime() + (exerciseIndex * 1000) + (i * 10))
+              
               await client.query(
                 `INSERT INTO sets (tenant_id, session_id, exercise_id, set_index, 
-                 value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                 value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes, created_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
                 [
                   tenantId, sessionId, exerciseId, 
                   set.set_index || set.setNumber || i + 1,
@@ -403,7 +431,8 @@ router.post('/', authenticateToken, async (req, res) => {
                   parseFloat(set.value_1_numeric || set.value1) || 0,
                   set.value_2_type || set.value2Type || null,
                   parseFloat(set.value_2_numeric || set.value2) || 0,
-                  set.notes || ''
+                  set.notes || '',
+                  setTimestamp
                 ]
               )
             }
