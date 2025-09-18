@@ -134,76 +134,7 @@ interface TemplateFormData {
   exercises: TemplateExercise[]
 }
 
-// Mock data for now until API is fully implemented
-const mockTemplates: WorkoutTemplate[] = [
-  {
-    template_id: '1',
-    name: 'Full Body Strength',
-    description: 'Complete upper and lower body strength training template',
-    scope: 'system',
-    exercise_count: 8,
-    created_by_name: 'System',
-    created_by_lastname: 'Administrator',
-    created_at: '2024-03-01T10:00:00Z',
-    exercises: [
-      {
-        name: 'Squats',
-        category: 'strength',
-        muscle_groups: ['quadriceps', 'glutes'],
-        sets: 4,
-        value_1_type: 'weight_kg',
-        value_1_default: '80',
-        value_2_type: 'reps',
-        value_2_default: '8-10',
-        order: 0
-      },
-      {
-        name: 'Bench Press',
-        category: 'strength',
-        muscle_groups: ['chest', 'triceps'],
-        sets: 4,
-        value_1_type: 'weight_kg',
-        value_1_default: '70',
-        value_2_type: 'reps',
-        value_2_default: '8-12',
-        order: 1
-      }
-    ]
-  },
-  {
-    template_id: '2',
-    name: 'HIIT Cardio Blast',
-    description: 'High-intensity interval training for maximum calorie burn',
-    scope: 'tenant',
-    exercise_count: 6,
-    created_by_name: 'Fitness',
-    created_by_lastname: 'Coach',
-    created_at: '2024-02-28T14:30:00Z',
-    exercises: [
-      {
-        name: 'Burpees',
-        category: 'cardio',
-        muscle_groups: ['full-body'],
-        sets: 5,
-        value_1_type: 'duration_s',
-        value_1_default: '30',
-        value_2_type: 'reps',
-        value_2_default: 'AMRAP',
-        order: 0
-      }
-    ]
-  },
-  {
-    template_id: '3',
-    name: 'Beginner Push-Pull',
-    description: 'Simple upper body training split for beginners',
-    scope: 'user',
-    exercise_count: 6,
-    created_by_name: 'Personal',
-    created_by_lastname: 'Trainer',
-    created_at: '2024-02-25T09:15:00Z'
-  }
-]
+
 
 const CATEGORY_COLORS = {
   strength: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
@@ -610,11 +541,11 @@ export default function AdminTemplatesPage() {
         if (err instanceof Error && err.message.includes('401')) {
           setError('Authentication required. Please log in.')
         } else {
-          setError('Failed to load templates from API. Showing sample data.')
+          setError('Failed to load templates from API. Please check your connection and try again.')
         }
         
-        // Fall back to mock data
-        setTemplates(mockTemplates)
+        // Don't fall back to mock data - show empty state instead
+        setTemplates([])
         setIsLoading(false)
       }
     }
@@ -1212,12 +1143,21 @@ export default function AdminTemplatesPage() {
           </div>
         ) : error ? (
           <div className="text-center py-12">
-            <p className="text-red-400 mb-4">
-              {error}
-            </p>
-            <p className="text-gray-400 text-sm">
-              Showing mock data for demonstration purposes.
-            </p>
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 mb-4">
+              <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-red-400 mb-4" />
+              <h3 className="text-lg font-medium text-red-400 mb-2">
+                Unable to Load Templates
+              </h3>
+              <p className="text-red-400 mb-4">
+                {error}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
           </div>
         ) : filteredTemplates.length === 0 ? (
           <div className="text-center py-12">
