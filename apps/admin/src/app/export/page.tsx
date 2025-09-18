@@ -87,8 +87,10 @@ export default function ExportPage() {
     }
   }, [user])
 
-  const handleExport = async () => {
-    if (!selectedTenant && exportType === 'tenant') {
+  const handleExport = async (overrideType?: 'tenant' | 'global' | 'full') => {
+    const currentExportType = overrideType || exportType;
+    
+    if (!selectedTenant && currentExportType === 'tenant') {
       alert('Please select a tenant to export')
       return
     }
@@ -97,7 +99,7 @@ export default function ExportPage() {
     
     const newJob: ExportJob = {
       id: Math.random().toString(36).substr(2, 9),
-      type: exportType,
+      type: currentExportType,
       status: 'running',
       progress: 0,
       startTime: new Date(),
@@ -108,7 +110,7 @@ export default function ExportPage() {
     try {
       let exportResult
       
-      if (exportType === 'tenant') {
+      if (currentExportType === 'tenant') {
         exportResult = await apiClient.admin.exportTenant({
           tenantId: selectedTenant,
           includeUsers,
@@ -116,7 +118,7 @@ export default function ExportPage() {
           format: exportFormat,
           dateRange: dateRange.start && dateRange.end ? dateRange : undefined
         })
-      } else if (exportType === 'global') {
+      } else if (currentExportType === 'global') {
         exportResult = await apiClient.admin.exportGlobalData({
           format: exportFormat
         })
@@ -131,7 +133,7 @@ export default function ExportPage() {
       // Update job status
       setJobs(prev => prev.map(job => {
         if (job.id === newJob.id) {
-          const filename = `${exportType}_export_${Date.now()}.${exportFormat}`
+          const filename = `${currentExportType}_export_${Date.now()}.${exportFormat}`
           return {
             ...job,
             status: exportResult.success ? 'completed' : 'failed',
@@ -351,17 +353,28 @@ export default function ExportPage() {
   }
 
   const downloadExport = (job: ExportJob, exportData: any) => {
-    if (!job.downloadUrl || !exportData) return
+    if (!job.downloadUrl || !exportData) {
+      console.log('Download failed - missing data:', { downloadUrl: job.downloadUrl, hasExportData: !!exportData });
+      return;
+    }
+    
+    console.log('Download data structure:', exportData);
+    
+    // Determine format from the job's download URL
+    const jobFormat = job.downloadUrl.includes('.sql') ? 'sql' : 
+                     job.downloadUrl.includes('.csv') ? 'csv' : 'json';
     
     // For download, we want the raw data structure (not the wrapped result)
-    // so the downloaded file can be imported directly
-    const downloadData = exportData
+    // Check if exportData has a nested structure that needs unwrapping
+    const downloadData = exportData.formattedData || exportData.data || exportData;
+    
+    console.log('Using format:', jobFormat, 'Download data:', typeof downloadData);
     
     const blob = new Blob([
-      exportFormat === 'json' ? JSON.stringify(downloadData, null, 2) : downloadData
+      jobFormat === 'json' ? JSON.stringify(downloadData, null, 2) : downloadData
     ], { 
-      type: exportFormat === 'json' ? 'application/json' : 
-           exportFormat === 'sql' ? 'text/sql' : 
+      type: jobFormat === 'json' ? 'application/json' : 
+           jobFormat === 'sql' ? 'text/sql' : 
            'text/csv' 
     })
     
@@ -612,7 +625,7 @@ export default function ExportPage() {
                   {/* Export Button */}
                   <div className="pt-4 border-t border-gray-700">
                     <button
-                      onClick={handleExport}
+                      onClick={() => handleExport()}
                       disabled={loading || (exportType === 'tenant' && !selectedTenant)}
                       className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 shadow-lg"
                     >
@@ -966,12 +979,11 @@ export default function ExportPage() {
               {/* Create Backup Actions */}
               <div className="space-y-4 mb-6">
                 <button 
-                  onClick={async () => {
-                    setExportType('full')
+                  onClick={() => {
                     setExportFormat('sql')
                     setIncludeUsers(true)
                     setIncludeWorkouts(true)
-                    await handleExport()
+                    handleExport('full')
                   }}
                   className="w-full p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-colors"
                 >
@@ -1031,33 +1043,47 @@ export default function ExportPage() {
               <h3 className="text-lg font-semibold text-white mb-4">Backup History</h3>
               
               <div className="space-y-3">
-                {/* Placeholder backup entries - in real implementation, these would come from API */}
-                {[
-                  { id: '1', type: 'Full System', size: '2.4 GB', date: '2025-09-18 02:00', status: 'completed' },
-                  { id: '2', type: 'Global Data', size: '12.8 MB', date: '2025-09-17 14:30', status: 'completed' },
-                  { id: '3', type: 'Full System', size: '2.3 GB', date: '2025-09-17 02:00', status: 'completed' },
-                  { id: '4', type: 'Tenant Export', size: '45.2 MB', date: '2025-09-16 16:15', status: 'completed' }
-                ].map((backup) => (
-                  <div key={backup.id} className="p-4 rounded-lg bg-gray-700/50 border border-gray-600">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-white text-sm">{backup.type}</div>
-                        <div className="text-xs text-gray-400 mt-1">
-                          {backup.date} • {backup.size}
+                {/* Show actual backup jobs */}
+                {jobs.filter(job => job.type === 'full' || job.type === 'global').length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    No backups created yet. Click "Create Full System Backup" to start.
+                  </div>
+                ) : (
+                  jobs.filter(job => job.type === 'full' || job.type === 'global').map((job) => (
+                    <div key={job.id} className="p-4 rounded-lg bg-gray-700/50 border border-gray-600">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium text-white text-sm">
+                            {job.type === 'full' ? 'Full System Backup' : 'Global Data Backup'}
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">
+                            Started: {job.startTime.toLocaleString()}
+                            {job.endTime && ` • Completed: ${job.endTime.toLocaleString()}`}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-2 h-2 rounded-full ${
+                            job.status === 'completed' ? 'bg-green-400' : 
+                            job.status === 'failed' ? 'bg-red-400' : 'bg-yellow-400'
+                          }`}></div>
+                          {job.status === 'completed' && job.downloadUrl && (
+                            <button 
+                              onClick={() => downloadExport(job, job.exportData)}
+                              className="text-xs text-blue-400 hover:text-blue-300 underline"
+                            >
+                              Download
+                            </button>
+                          )}
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                        <button className="text-xs text-blue-400 hover:text-blue-300 underline">
-                          Download
-                        </button>
-                        <button className="text-xs text-orange-400 hover:text-orange-300 underline">
-                          Restore
-                        </button>
-                      </div>
+                      {job.status === 'failed' && job.error && (
+                        <div className="mt-2 text-xs text-red-400">
+                          Error: {job.error}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>
