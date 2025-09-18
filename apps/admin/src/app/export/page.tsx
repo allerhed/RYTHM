@@ -182,16 +182,23 @@ export default function ExportPage() {
       const fileContent = await file.text()
       let data: any
       
+      console.log('Import file name:', file.name)
+      console.log('Import file size:', file.size, 'bytes')
+      
       // Parse file based on extension
       if (file.name.endsWith('.json')) {
         const parsedData = JSON.parse(fileContent)
+        console.log('Parsed JSON keys:', Object.keys(parsedData))
         
         // Check if this is an export result wrapper or raw data
         if (parsedData.success && parsedData.data) {
           // This is an export result - extract the data
+          console.log('Detected export result wrapper, extracting data')
           data = parsedData.data
+          console.log('Extracted data keys:', Object.keys(data))
         } else {
           // This is raw data
+          console.log('Detected raw data structure')
           data = parsedData
         }
       } else if (file.name.endsWith('.sql')) {
@@ -215,6 +222,17 @@ export default function ExportPage() {
       
       // Determine import type and execute
       let result: any
+      
+      console.log('Final data structure for import:', Object.keys(data))
+      console.log('Data structure analysis:')
+      console.log('- Has global:', !!data.global)
+      console.log('- Has tenants:', !!data.tenants)
+      console.log('- Has tenant:', !!data.tenant)
+      console.log('- Has users:', !!data.users)
+      console.log('- Has sessions:', !!data.sessions)
+      console.log('- Has exercises:', !!data.exercises)
+      console.log('- Has equipment:', !!data.equipment)
+      console.log('- Has exercise_templates:', !!data.exercise_templates)
       
       // Check for full system export structure
       if (data.global && data.tenants) {
