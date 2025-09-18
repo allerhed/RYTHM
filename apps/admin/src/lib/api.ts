@@ -111,7 +111,7 @@ interface ExerciseTemplatesResponse {
 interface ExerciseTemplateStats {
   totalExerciseTemplates: number
   exerciseTemplatesByType: { exercise_type: string; count: string }[]
-  topMuscleGroups: { muscle_group: string; count: string }[]
+  topMuscleGroups: { muscle_group: string; template_count: string }[]
   recentExerciseTemplates: number
 }
 
@@ -254,7 +254,7 @@ interface ExerciseTemplateStats {
   }>
   topMuscleGroups: Array<{
     muscle_group: string
-    count: string
+    template_count: string
   }>
   recentExerciseTemplates: number
 }

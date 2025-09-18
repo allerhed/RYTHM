@@ -438,19 +438,13 @@ export const adminRouter = router({
         db.query(`
           SELECT 
             muscle_group,
-            COUNT(DISTINCT et.template_id) as template_count,
-            COUNT(DISTINCT s.session_id) as session_usage
+            COUNT(DISTINCT et.template_id) as template_count
           FROM exercise_templates et
           CROSS JOIN UNNEST(et.muscle_groups) as muscle_group
-          LEFT JOIN exercises ex ON et.template_id = ex.template_id AND ex.is_active = true
-          LEFT JOIN sets st ON ex.exercise_id = st.exercise_id
-          LEFT JOIN sessions s ON st.session_id = s.session_id AND s.started_at >= $1 AND s.started_at <= $2
           GROUP BY muscle_group 
-          ORDER BY 
-            COALESCE(COUNT(DISTINCT s.session_id), 0) DESC,
-            COUNT(DISTINCT et.template_id) DESC
+          ORDER BY COUNT(DISTINCT et.template_id) DESC
           LIMIT 5
-        `, [startDate, now]),
+        `),
         // Recent exercise templates (based on time range)
         db.query(`
           SELECT COUNT(*) as count 

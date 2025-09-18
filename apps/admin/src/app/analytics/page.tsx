@@ -582,7 +582,7 @@ export default function AnalyticsPage() {
                         }`} />
                         <span className="text-gray-300 capitalize">{group.muscle_group}</span>
                       </div>
-                      <span className="text-white font-semibold">{group.count}</span>
+                      <span className="text-white font-semibold">{group.template_count}</span>
                     </div>
                   ))}
                 </div>
