@@ -25,6 +25,12 @@ const PlusIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   </svg>
 );
 
+const SortIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+  </svg>
+);
+
 const DumbbellIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h2v8H4V8zm0-3h2v2H4V5zm0 14h2v2H4v-2zm16-11h-2v8h2V8zm0-3h-2v2h2V5zm0 14h-2v2h2v-2zM8 7h8v10H8V7z" />
@@ -49,6 +55,9 @@ const TrendingUpIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   </svg>
 );
 
+type SortField = 'name' | 'exercise_type' | 'exercise_category' | 'created_at';
+type SortDirection = 'asc' | 'desc';
+
 export default function ExercisesPage() {
   const [exerciseTemplates, setExerciseTemplates] = useState<ExerciseTemplate[]>([]);
   const [stats, setStats] = useState<ExerciseTemplateStats | null>(null);
@@ -61,19 +70,51 @@ export default function ExercisesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+  const sortExercises = (exercises: ExerciseTemplate[]) => {
+    return [...exercises].sort((a, b) => {
+      let aValue: any = a[sortField];
+      let bValue: any = b[sortField];
+      
+      // Handle different data types
+      if (sortField === 'created_at') {
+        aValue = new Date(aValue).getTime();
+        bValue = new Date(bValue).getTime();
+      } else if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+      
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
 
   const loadExerciseTemplates = async () => {
     try {
       setIsLoading(true);
       const response = await apiClient.admin.getExerciseTemplates({
         page: currentPage,
-        limit: 10,
+        limit: 12,
         search: searchTerm || undefined,
         category: categoryFilter || undefined,
         type: typeFilter || undefined,
       });
 
-      setExerciseTemplates(response.exerciseTemplates);
+      const sortedExercises = sortExercises(response.exerciseTemplates);
+      setExerciseTemplates(sortedExercises);
       setTotalPages(response.totalPages);
       setTotalCount(response.totalCount);
     } catch (error) {
@@ -94,7 +135,7 @@ export default function ExercisesPage() {
 
   useEffect(() => {
     loadExerciseTemplates();
-  }, [currentPage, searchTerm, categoryFilter, typeFilter]);
+  }, [currentPage, searchTerm, categoryFilter, typeFilter, sortField, sortDirection]);
 
   useEffect(() => {
     loadStats();
@@ -139,12 +180,16 @@ export default function ExercisesPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Exercise Template Management</h1>
-            <p className="text-gray-600">Manage exercise templates across all tenants</p>
+            <h1 className="text-3xl font-bold text-white">
+              Exercise Template Management
+            </h1>
+            <p className="mt-2 text-gray-400">
+              Manage exercise templates across all organizations.
+            </p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg flex items-center gap-2"
           >
             <PlusIcon className="w-4 h-4" />
             Add Exercise Template
@@ -179,46 +224,49 @@ export default function ExercisesPage() {
           />
         </div>
 
-        {/* Filters */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+        {/* Filters and Sorting */}
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-300">Search:</label>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search exercise templates..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Search exercises..."
+                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-300">Category:</label>
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">All Categories</option>
                 <option value="strength">Strength</option>
                 <option value="cardio">Cardio</option>
                 <option value="flexibility">Flexibility</option>
-                <option value="mobility">Mobility</option>
+                <option value="sports">Sports</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+            
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-300">Type:</label>
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">All Types</option>
                 <option value="STRENGTH">Strength</option>
                 <option value="CARDIO">Cardio</option>
               </select>
             </div>
-            <div className="flex items-end">
+            
+            {(searchTerm || categoryFilter || typeFilter) && (
               <button
                 onClick={() => {
                   setSearchTerm('');
@@ -226,154 +274,180 @@ export default function ExercisesPage() {
                   setTypeFilter('');
                   setCurrentPage(1);
                 }}
-                className="w-full px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-3 py-2 bg-gray-600 text-gray-300 rounded-lg hover:bg-gray-500 transition-colors text-sm"
               >
                 Clear Filters
               </button>
-            </div>
+            )}
+          </div>
+          
+          {/* Sorting Controls */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm font-medium text-gray-300">Sort by:</span>
+            {[{field: 'name' as SortField, label: 'Name'}, {field: 'exercise_type' as SortField, label: 'Type'}, {field: 'exercise_category' as SortField, label: 'Category'}, {field: 'created_at' as SortField, label: 'Date'}].map(({field, label}) => (
+              <button
+                key={field}
+                onClick={() => handleSort(field)}
+                className={`px-3 py-1 rounded-lg text-sm flex items-center gap-1 transition-colors ${
+                  sortField === field 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                {label}
+                {sortField === field && (
+                  <span className={`transform transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`}>
+                    ↑
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Exercise Templates Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-3 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">
-              Exercise Templates ({totalCount})
-            </h3>
+        {/* Exercise Templates Grid */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <span className="ml-3 text-gray-400">Loading exercise templates...</span>
           </div>
+        ) : exerciseTemplates.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-400 text-lg mb-4">No exercise templates found</div>
+            <div className="text-gray-500">Create your first exercise template to get started</div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {exerciseTemplates.map((exerciseTemplate) => (
+              <div key={exerciseTemplate.template_id} className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg text-white">
+                      {exerciseTemplate.exercise_type === 'STRENGTH' ? (
+                        <DumbbellIcon className="w-6 h-6" />
+                      ) : (
+                        <ActivityIcon className="w-6 h-6" />
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">
+                        {exerciseTemplate.name}
+                      </h3>
+                      <p className="text-sm text-gray-400 capitalize">
+                        {exerciseTemplate.exercise_category}
+                      </p>
+                    </div>
+                  </div>
+                  <span className={`inline-flex px-2 py-1 rounded-lg text-xs font-medium border ${
+                    exerciseTemplate.exercise_type === 'STRENGTH' 
+                      ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' 
+                      : 'bg-green-500/20 text-green-400 border-green-500/30'
+                  }`}>
+                    {exerciseTemplate.exercise_type}
+                  </span>
+                </div>
 
-          {isLoading ? (
-            <div className="p-6 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-500">Loading exercise templates...</p>
-            </div>
-          ) : exerciseTemplates.length === 0 ? (
-            <div className="p-6 text-center">
-              <p className="text-gray-500">No exercise templates found</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Exercise Template
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Muscle Groups
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Equipment
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Description
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Created
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {exerciseTemplates.map((exerciseTemplate) => (
-                    <tr key={exerciseTemplate.template_id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{exerciseTemplate.name}</div>
-                          <div className="text-sm text-gray-500">{exerciseTemplate.exercise_category}</div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          exerciseTemplate.exercise_type === 'STRENGTH' 
-                            ? 'bg-blue-100 text-blue-800' 
-                            : 'bg-green-100 text-green-800'
-                        }`}>
-                          {exerciseTemplate.exercise_type}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Equipment</span>
+                    <span className="text-white text-sm">{exerciseTemplate.equipment || 'None'}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Value Types</span>
+                    <div className="flex space-x-1">
+                      {exerciseTemplate.default_value_1_type && (
+                        <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
+                          {exerciseTemplate.default_value_1_type.replace('_', ' ')}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-wrap gap-1">
-                          {exerciseTemplate.muscle_groups.slice(0, 3).map((group, index) => (
-                            <span
-                              key={index}
-                              className="inline-flex px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded"
-                            >
-                              {group}
-                            </span>
-                          ))}
-                          {exerciseTemplate.muscle_groups.length > 3 && (
-                            <span className="inline-flex px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
-                              +{exerciseTemplate.muscle_groups.length - 3} more
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {exerciseTemplate.equipment || 'None'}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-                        {exerciseTemplate.description || 'No description'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(exerciseTemplate.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => handleEdit(exerciseTemplate)}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            <PencilIcon className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(exerciseTemplate.template_id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                      )}
+                      {exerciseTemplate.default_value_2_type && (
+                        <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
+                          {exerciseTemplate.default_value_2_type.replace('_', ' ')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="px-6 py-3 border-t border-gray-200 flex items-center justify-between">
-              <div className="text-sm text-gray-700">
-                Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, totalCount)} of {totalCount} exercise templates
+                  <div>
+                    <span className="text-gray-400 text-sm">Muscle Groups</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {exerciseTemplate.muscle_groups.slice(0, 3).map((group, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex px-2 py-1 text-xs bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded"
+                        >
+                          {group}
+                        </span>
+                      ))}
+                      {exerciseTemplate.muscle_groups.length > 3 && (
+                        <span className="inline-flex px-2 py-1 text-xs bg-gray-500/20 text-gray-400 border border-gray-500/30 rounded">
+                          +{exerciseTemplate.muscle_groups.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {exerciseTemplate.description && (
+                    <div>
+                      <span className="text-gray-400 text-sm">Description</span>
+                      <p className="text-gray-300 text-sm mt-1 line-clamp-2">
+                        {exerciseTemplate.description}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Created</span>
+                    <span className="text-gray-300">{new Date(exerciseTemplate.created_at).toLocaleDateString()}</span>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-gray-700">
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => handleEdit(exerciseTemplate)}
+                      className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors duration-200 text-sm flex items-center justify-center gap-2"
+                    >
+                      <PencilIcon className="w-4 h-4" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(exerciseTemplate.template_id)}
+                      className="flex-1 px-3 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-colors duration-200 text-sm flex items-center justify-center gap-2"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                >
-                  Previous
-                </button>
-                <span className="px-3 py-1 text-sm">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!isLoading && totalPages > 1 && (
+          <div className="flex items-center justify-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <span className="text-gray-400">
+              Page {currentPage} of {totalPages} • {totalCount} total
+            </span>
+            <button
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Exercise Template Modal */}

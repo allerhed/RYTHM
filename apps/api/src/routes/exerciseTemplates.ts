@@ -15,18 +15,20 @@ export const exerciseTemplatesRouter = router({
       
       let query = `
         SELECT 
-          template_id,
-          name,
-          muscle_groups,
-          equipment,
-          exercise_category,
-          exercise_type,
-          default_value_1_type,
-          default_value_2_type,
-          description,
-          instructions,
-          created_at
-        FROM exercise_templates 
+          et.template_id,
+          et.name,
+          et.muscle_groups,
+          COALESCE(e.name, et.equipment) as equipment,
+          et.equipment_id,
+          et.exercise_category,
+          et.exercise_type,
+          et.default_value_1_type,
+          et.default_value_2_type,
+          et.description,
+          et.instructions,
+          et.created_at
+        FROM exercise_templates et
+        LEFT JOIN equipment e ON et.equipment_id = e.equipment_id
         WHERE 1=1
       `;
       
@@ -34,19 +36,19 @@ export const exerciseTemplatesRouter = router({
       let paramIndex = 1;
 
       if (category) {
-        query += ` AND exercise_category = $${paramIndex}`;
+        query += ` AND et.exercise_category = $${paramIndex}`;
         params.push(category);
         paramIndex++;
       }
 
       if (type) {
-        query += ` AND exercise_type = $${paramIndex}`;
+        query += ` AND et.exercise_type = $${paramIndex}`;
         params.push(type);
         paramIndex++;
       }
 
       if (search) {
-        query += ` AND name ILIKE $${paramIndex}`;
+        query += ` AND et.name ILIKE $${paramIndex}`;
         params.push(`%${search}%`);
         paramIndex++;
       }
@@ -64,6 +66,7 @@ export const exerciseTemplatesRouter = router({
       name: z.string().min(1).max(255),
       muscle_groups: z.array(z.string()).default([]),
       equipment: z.string().optional(),
+      equipment_id: z.string().uuid().optional(),
       exercise_category: z.string().default('strength'),
       exercise_type: z.enum(['STRENGTH', 'CARDIO']).default('STRENGTH'),
       default_value_1_type: z.string().default('weight_kg'),
@@ -84,14 +87,15 @@ export const exerciseTemplatesRouter = router({
 
       const result = await ctx.db.query(`
         INSERT INTO exercise_templates (
-          name, muscle_groups, equipment, exercise_category, exercise_type,
+          name, muscle_groups, equipment, equipment_id, exercise_category, exercise_type,
           default_value_1_type, default_value_2_type, description, instructions
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *
       `, [
         input.name,
         input.muscle_groups,
         input.equipment,
+        input.equipment_id,
         input.exercise_category,
         input.exercise_type,
         input.default_value_1_type,

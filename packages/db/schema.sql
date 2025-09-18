@@ -42,7 +42,7 @@ CREATE TABLE exercise_templates (
     template_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL CHECK (length(name) > 0 AND length(name) <= 255),
     muscle_groups TEXT[] NOT NULL DEFAULT '{}',
-    equipment TEXT,
+    equipment_id UUID REFERENCES equipment(equipment_id),
     exercise_category TEXT DEFAULT 'strength' CHECK (exercise_category = ANY (ARRAY['strength', 'cardio', 'flexibility', 'sports'])),
     exercise_type exercise_type NOT NULL,
     default_value_1_type set_value_type,
@@ -58,7 +58,7 @@ CREATE TABLE exercises (
     exercise_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL CHECK (length(name) > 0 AND length(name) <= 255),
     muscle_groups TEXT[] NOT NULL DEFAULT '{}',
-    equipment TEXT,
+    equipment_id UUID REFERENCES equipment(equipment_id),
     media JSONB DEFAULT '{}',
     notes TEXT,
     default_value_1_type set_value_type,
@@ -69,6 +69,17 @@ CREATE TABLE exercises (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(name)
+);
+
+-- Equipment table (global, non-tenant specific)
+CREATE TABLE equipment (
+    equipment_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL UNIQUE CHECK (length(name) > 0 AND length(name) <= 255),
+    category TEXT DEFAULT 'other' CHECK (category = ANY (ARRAY['free_weights', 'machines', 'cardio', 'bodyweight', 'resistance', 'other'])),
+    description TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Programs table
@@ -160,10 +171,15 @@ CREATE INDEX idx_users_tenant_email ON users(tenant_id, email);
 CREATE UNIQUE INDEX idx_exercises_name_unique ON exercises(name);
 CREATE INDEX idx_exercises_type ON exercises(exercise_type);
 CREATE INDEX idx_exercises_default_types ON exercises(default_value_1_type, default_value_2_type);
+CREATE INDEX idx_exercises_equipment_id ON exercises(equipment_id);
 CREATE INDEX idx_exercise_templates_name ON exercise_templates(name);
 CREATE INDEX idx_exercise_templates_type ON exercise_templates(exercise_type);
 CREATE INDEX idx_exercise_templates_category ON exercise_templates(exercise_category);
 CREATE INDEX idx_exercise_templates_category_type ON exercise_templates(exercise_category, exercise_type);
+CREATE INDEX idx_exercise_templates_equipment_id ON exercise_templates(equipment_id);
+CREATE INDEX idx_equipment_name ON equipment(name);
+CREATE INDEX idx_equipment_category ON equipment(category);
+CREATE INDEX idx_equipment_active ON equipment(is_active);
 CREATE INDEX idx_sessions_tenant_user_started ON sessions(tenant_id, user_id, started_at DESC);
 CREATE INDEX idx_sessions_category ON sessions(tenant_id, category, started_at DESC);
 CREATE INDEX idx_sessions_user_completed ON sessions(user_id, completed_at) WHERE completed_at IS NOT NULL;
@@ -184,6 +200,7 @@ CREATE TRIGGER update_tenants_updated_at BEFORE UPDATE ON tenants FOR EACH ROW E
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_exercises_updated_at BEFORE UPDATE ON exercises FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_exercise_templates_updated_at BEFORE UPDATE ON exercise_templates FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_equipment_updated_at BEFORE UPDATE ON equipment FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_programs_updated_at BEFORE UPDATE ON programs FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_workouts_updated_at BEFORE UPDATE ON workouts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_sessions_updated_at BEFORE UPDATE ON sessions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

@@ -1,5 +1,13 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+
+interface Equipment {
+  equipment_id: string
+  name: string
+  category: string
+  description?: string
+  is_active: boolean
+}
 
 interface CustomExerciseModalProps {
   onSave: (exerciseData: {
@@ -8,6 +16,7 @@ interface CustomExerciseModalProps {
     muscle_groups: string[]
     exercise_type: 'STRENGTH' | 'CARDIO'
     equipment: string
+    equipment_id?: string
     default_value_1_type: string
     default_value_2_type: string
     description: string
@@ -21,12 +30,6 @@ const MUSCLE_GROUPS = [
   'chest', 'back', 'shoulders', 'biceps', 'triceps', 'forearms',
   'abs', 'core', 'quads', 'hamstrings', 'glutes', 'calves',
   'legs', 'full body', 'cardio'
-]
-
-const EQUIPMENT_OPTIONS = [
-  'barbell', 'dumbbell', 'kettlebell', 'cable', 'machine',
-  'bodyweight', 'resistance band', 'medicine ball', 'suspension trainer',
-  'cardio equipment', 'other'
 ]
 
 const EXERCISE_CATEGORIES = [
@@ -49,6 +52,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
     exercise_category: 'strength',
     muscle_groups: [] as string[],
     equipment: '',
+    equipment_id: '',
     default_value_1_type: 'weight_kg',
     default_value_2_type: 'reps',
     description: '',
@@ -56,6 +60,31 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [equipmentOptions, setEquipmentOptions] = useState<Equipment[]>([])
+  const [loadingEquipment, setLoadingEquipment] = useState(true)
+
+  // Load equipment options on component mount
+  useEffect(() => {
+    const loadEquipment = async () => {
+      try {
+        setLoadingEquipment(true)
+        const response = await fetch('/api/trpc/equipment.list?input={}')
+        if (response.ok) {
+          const data = await response.json()
+          // tRPC response format: { result: { data: [...] } }
+          setEquipmentOptions(data?.result?.data || [])
+        } else {
+          console.error('Failed to load equipment')
+        }
+      } catch (error) {
+        console.error('Failed to load equipment:', error)
+      } finally {
+        setLoadingEquipment(false)
+      }
+    }
+
+    loadEquipment()
+  }, [])
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -95,6 +124,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
       muscle_groups: formData.muscle_groups,
       exercise_type: formData.exercise_type,
       equipment: formData.equipment,
+      equipment_id: formData.equipment_id,
       default_value_1_type: formData.default_value_1_type,
       default_value_2_type: formData.default_value_2_type,
       description: formData.description.trim(),
@@ -218,18 +248,28 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
               Equipment
             </label>
             <select
-              value={formData.equipment}
-              onChange={(e) => setFormData(prev => ({ ...prev, equipment: e.target.value }))}
+              value={formData.equipment_id}
+              onChange={(e) => {
+                const selectedEquipment = equipmentOptions.find(eq => eq.equipment_id === e.target.value)
+                setFormData(prev => ({ 
+                  ...prev, 
+                  equipment_id: e.target.value,
+                  equipment: selectedEquipment?.name || ''
+                }))
+              }}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
-              disabled={loading}
+              disabled={loading || loadingEquipment}
             >
               <option value="">Select equipment</option>
-              {EQUIPMENT_OPTIONS.map(equipment => (
-                <option key={equipment} value={equipment}>
-                  {equipment.charAt(0).toUpperCase() + equipment.slice(1)}
+              {equipmentOptions.map((equipment: Equipment) => (
+                <option key={equipment.equipment_id} value={equipment.equipment_id}>
+                  {equipment.name} ({equipment.category})
                 </option>
               ))}
             </select>
+            {loadingEquipment && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Loading equipment options...</p>
+            )}
           </div>
 
           {/* Value Types */}

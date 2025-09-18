@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { apiClient, type ExerciseTemplate } from '@/lib/api'
+import { apiClient, type ExerciseTemplate, type Equipment } from '@/lib/api'
 import { toast } from 'react-hot-toast'
 
 interface ExerciseModalProps {
@@ -10,16 +10,16 @@ interface ExerciseModalProps {
   onClose: () => void
 }
 
+interface EquipmentOption {
+  equipment_id: string
+  name: string
+  category: string
+}
+
 const MUSCLE_GROUPS = [
   'chest', 'back', 'shoulders', 'biceps', 'triceps', 'forearms',
   'abs', 'core', 'quads', 'hamstrings', 'glutes', 'calves',
   'legs', 'full body', 'cardio'
-]
-
-const EQUIPMENT_OPTIONS = [
-  'barbell', 'dumbbell', 'kettlebell', 'cable', 'machine',
-  'bodyweight', 'resistance band', 'medicine ball', 'suspension trainer',
-  'cardio equipment', 'other'
 ]
 
 const EXERCISE_CATEGORIES = [
@@ -41,6 +41,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
     name: '',
     muscle_groups: [] as string[],
     equipment: '',
+    equipment_id: '',
     exercise_category: 'strength',
     exercise_type: 'STRENGTH' as 'STRENGTH' | 'CARDIO',
     default_value_1_type: 'weight_kg',
@@ -50,7 +51,27 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
   })
   
   const [isLoading, setIsLoading] = useState(false)
+  const [equipmentOptions, setEquipmentOptions] = useState<Equipment[]>([])
+  const [loadingEquipment, setLoadingEquipment] = useState(true)
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Load equipment options on component mount
+  useEffect(() => {
+    const loadEquipment = async () => {
+      try {
+        setLoadingEquipment(true)
+        const response = await apiClient.admin.getEquipment()
+        setEquipmentOptions(response.equipment || [])
+      } catch (error) {
+        console.error('Failed to load equipment:', error)
+        toast.error('Failed to load equipment options')
+      } finally {
+        setLoadingEquipment(false)
+      }
+    }
+
+    loadEquipment()
+  }, [])
 
   useEffect(() => {
     if (exerciseTemplate) {
@@ -58,6 +79,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
         name: exerciseTemplate.name,
         muscle_groups: exerciseTemplate.muscle_groups,
         equipment: exerciseTemplate.equipment || '',
+        equipment_id: '', // Will be populated based on equipment lookup
         exercise_category: exerciseTemplate.exercise_category,
         exercise_type: exerciseTemplate.exercise_type,
         default_value_1_type: exerciseTemplate.default_value_1_type,
@@ -229,17 +251,28 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
               Equipment
             </label>
             <select
-              value={formData.equipment}
-              onChange={(e) => setFormData(prev => ({ ...prev, equipment: e.target.value }))}
+              value={formData.equipment_id}
+              onChange={(e) => {
+                const selectedEquipment = equipmentOptions.find(eq => eq.equipment_id === e.target.value)
+                setFormData(prev => ({ 
+                  ...prev, 
+                  equipment_id: e.target.value,
+                  equipment: selectedEquipment?.name || ''
+                }))
+              }}
               className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={loadingEquipment}
             >
               <option value="">Select equipment</option>
-              {EQUIPMENT_OPTIONS.map(equipment => (
-                <option key={equipment} value={equipment}>
-                  {equipment.charAt(0).toUpperCase() + equipment.slice(1)}
+              {equipmentOptions.map((equipment: Equipment) => (
+                <option key={equipment.equipment_id} value={equipment.equipment_id}>
+                  {equipment.name} ({equipment.category})
                 </option>
               ))}
             </select>
+            {loadingEquipment && (
+              <p className="mt-1 text-sm text-gray-500">Loading equipment options...</p>
+            )}
           </div>
 
           {/* Default Value Types */}

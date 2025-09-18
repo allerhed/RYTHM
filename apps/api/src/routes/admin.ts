@@ -900,6 +900,154 @@ export const adminRouter = router({
       };
     }),
 
+  // Get all workout sessions across all tenants (system admin only)
+  getWorkoutSessions: adminProcedure
+    .input(z.object({
+      page: z.number().default(1),
+      limit: z.number().default(20),
+      search: z.string().optional(),
+      category: z.enum(['strength', 'cardio', 'hybrid']).optional(),
+      tenant_id: z.string().uuid().optional(),
+      completed_only: z.boolean().default(false),
+      status: z.enum(['all', 'completed', 'in-progress']).default('all'),
+    }))
+    .query(async ({ input }) => {
+      const { page, limit, search, category, tenant_id, completed_only, status } = input;
+      const offset = (page - 1) * limit;
+
+      let whereConditions = [`s.tenant_id != $1`];
+      const params: any[] = [ADMIN_TENANT_ID];
+
+      if (search) {
+        params.push(`%${search}%`);
+        whereConditions.push(`(s.name ILIKE $${params.length} OR u.first_name ILIKE $${params.length} OR u.last_name ILIKE $${params.length})`);
+      }
+
+      if (category) {
+        params.push(category);
+        whereConditions.push(`s.category = $${params.length}`);
+      }
+
+      if (tenant_id) {
+        params.push(tenant_id);
+        whereConditions.push(`s.tenant_id = $${params.length}`);
+      }
+
+      if (completed_only) {
+        whereConditions.push(`s.completed_at IS NOT NULL`);
+      }
+
+      // Add status filtering
+      if (status === 'completed') {
+        whereConditions.push(`s.completed_at IS NOT NULL`);
+      } else if (status === 'in-progress') {
+        whereConditions.push(`s.completed_at IS NULL`);
+      }
+      // 'all' requires no additional filtering
+
+      const whereClause = whereConditions.join(' AND ');
+
+      // Get total count
+      const countResult = await db.query(
+        `SELECT COUNT(*) as count 
+         FROM sessions s 
+         LEFT JOIN users u ON s.user_id = u.user_id
+         WHERE ${whereClause}`,
+        params
+      );
+
+      // Get sessions with user and tenant info
+      params.push(limit, offset);
+      const result = await db.query(`
+        SELECT 
+          s.session_id,
+          s.name,
+          s.category,
+          s.started_at,
+          s.completed_at,
+          s.duration_seconds,
+          s.training_load,
+          s.perceived_exertion,
+          s.notes,
+          u.user_id,
+          u.first_name,
+          u.last_name,
+          u.email,
+          t.tenant_id,
+          t.name as tenant_name,
+          COUNT(DISTINCT st.exercise_id) as exercise_count,
+          COUNT(st.set_id) as total_sets
+        FROM sessions s
+        LEFT JOIN users u ON s.user_id = u.user_id
+        LEFT JOIN tenants t ON s.tenant_id = t.tenant_id
+        LEFT JOIN sets st ON s.session_id = st.session_id
+        WHERE ${whereClause}
+        GROUP BY s.session_id, s.name, s.category, s.started_at, s.completed_at, 
+                 s.duration_seconds, s.training_load, s.perceived_exertion, s.notes,
+                 u.user_id, u.first_name, u.last_name, u.email, 
+                 t.tenant_id, t.name
+        ORDER BY s.started_at DESC
+        LIMIT $${params.length - 1} OFFSET $${params.length}
+      `, params);
+
+      return {
+        sessions: result.rows.map(row => ({
+          id: row.session_id,
+          name: row.name || 'Unnamed Workout',
+          type: row.category,
+          duration: Math.round((row.duration_seconds || 3600) / 60), // Convert to minutes
+          difficulty: row.perceived_exertion ? 
+            (row.perceived_exertion <= 3 ? 'Beginner' : 
+             row.perceived_exertion <= 7 ? 'Intermediate' : 'Advanced') : 'Beginner',
+          instructor: row.first_name && row.last_name ? 
+            `${row.first_name} ${row.last_name}` : (row.email || 'Unknown'),
+          participants: 1, // Individual sessions
+          createdAt: row.started_at,
+          status: row.completed_at ? 'completed' : 'in-progress',
+          tenantId: row.tenant_id,
+          tenantName: row.tenant_name,
+          exerciseCount: parseInt(row.exercise_count) || 0,
+          totalSets: parseInt(row.total_sets) || 0,
+          trainingLoad: row.training_load,
+          notes: row.notes,
+        })),
+        totalCount: parseInt(countResult.rows[0].count),
+        totalPages: Math.ceil(parseInt(countResult.rows[0].count) / limit),
+        currentPage: page,
+      };
+    }),
+
+  // Get workout session statistics
+  getWorkoutSessionStats: adminProcedure
+    .query(async () => {
+      const stats = await Promise.all([
+        // Total sessions across all tenants
+        db.query('SELECT COUNT(*) as count FROM sessions WHERE tenant_id != $1', [ADMIN_TENANT_ID]),
+        // Active sessions (completed)
+        db.query('SELECT COUNT(*) as count FROM sessions WHERE completed_at IS NOT NULL AND tenant_id != $1', [ADMIN_TENANT_ID]),
+        // Total unique participants
+        db.query('SELECT COUNT(DISTINCT user_id) as count FROM sessions WHERE tenant_id != $1', [ADMIN_TENANT_ID]),
+        // Average session duration (in minutes)
+        db.query(`
+          SELECT AVG(
+            CASE 
+              WHEN completed_at IS NOT NULL THEN EXTRACT(EPOCH FROM (completed_at - started_at))/60
+              ELSE duration_seconds/60
+            END
+          ) as avg_duration
+          FROM sessions 
+          WHERE tenant_id != $1
+        `, [ADMIN_TENANT_ID]),
+      ]);
+
+      return {
+        totalWorkouts: parseInt(stats[0].rows[0].count),
+        activeWorkouts: parseInt(stats[1].rows[0].count),
+        totalParticipants: parseInt(stats[2].rows[0].count),
+        avgDuration: Math.round(parseFloat(stats[3].rows[0].avg_duration) || 42),
+      };
+    }),
+
   // Get all workout templates across all tenants (system admin only)
   getAllWorkoutTemplates: adminProcedure
     .input(z.object({
@@ -1009,5 +1157,240 @@ export const adminRouter = router({
 
       const result = await db.query(query, params);
       return parseInt(result.rows[0].total);
+    }),
+
+  // Equipment Management
+  getEquipment: adminProcedure
+    .input(z.object({
+      page: z.number().default(1),
+      limit: z.number().default(20),
+      search: z.string().optional(),
+      category: z.string().optional(),
+      active_only: z.boolean().default(false),
+    }))
+    .query(async ({ input }) => {
+      const { page, limit, search, category, active_only } = input;
+      const offset = (page - 1) * limit;
+
+      let whereConditions = [];
+      const params: any[] = [];
+
+      if (active_only) {
+        whereConditions.push('e.is_active = true');
+      }
+
+      if (category) {
+        params.push(category);
+        whereConditions.push(`e.category = $${params.length}`);
+      }
+
+      if (search) {
+        params.push(`%${search}%`);
+        whereConditions.push(`(e.name ILIKE $${params.length} OR e.description ILIKE $${params.length})`);
+      }
+
+      const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+
+      // Get total count
+      const countResult = await db.query(`
+        SELECT COUNT(*) as count
+        FROM equipment e
+        ${whereClause}
+      `, params);
+
+      // Get equipment with usage stats
+      params.push(limit, offset);
+      const result = await db.query(`
+        SELECT 
+          e.equipment_id,
+          e.name,
+          e.category,
+          e.description,
+          e.is_active,
+          e.created_at,
+          e.updated_at,
+          COUNT(DISTINCT ex.exercise_id) as exercise_count,
+          COUNT(DISTINCT et.template_id) as template_count
+        FROM equipment e
+        LEFT JOIN exercises ex ON e.equipment_id = ex.equipment_id AND ex.is_active = true
+        LEFT JOIN exercise_templates et ON e.equipment_id = et.equipment_id
+        ${whereClause}
+        GROUP BY e.equipment_id, e.name, e.category, e.description, e.is_active, e.created_at, e.updated_at
+        ORDER BY 
+          CASE WHEN e.name = 'None' THEN 0 ELSE 1 END,
+          e.category,
+          e.name
+        LIMIT $${params.length - 1} OFFSET $${params.length}
+      `, params);
+
+      return {
+        equipment: result.rows.map(row => ({
+          ...row,
+          exercise_count: parseInt(row.exercise_count) || 0,
+          template_count: parseInt(row.template_count) || 0,
+        })),
+        totalCount: parseInt(countResult.rows[0].count),
+        totalPages: Math.ceil(parseInt(countResult.rows[0].count) / limit),
+        currentPage: page,
+      };
+    }),
+
+  createEquipment: adminProcedure
+    .input(z.object({
+      name: z.string().min(1).max(255),
+      category: z.enum(['free_weights', 'machines', 'cardio', 'bodyweight', 'resistance', 'other']).default('other'),
+      description: z.string().optional(),
+      is_active: z.boolean().default(true),
+    }))
+    .mutation(async ({ input }) => {
+      // Check if equipment with same name already exists
+      const existingResult = await db.query(
+        'SELECT equipment_id FROM equipment WHERE LOWER(name) = LOWER($1)',
+        [input.name]
+      );
+
+      if (existingResult.rows.length > 0) {
+        throw new Error('Equipment with this name already exists');
+      }
+
+      const result = await db.query(`
+        INSERT INTO equipment (name, category, description, is_active)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *
+      `, [input.name, input.category, input.description, input.is_active]);
+
+      return result.rows[0];
+    }),
+
+  updateEquipment: adminProcedure
+    .input(z.object({
+      equipment_id: z.string().uuid(),
+      name: z.string().min(1).max(255).optional(),
+      category: z.enum(['free_weights', 'machines', 'cardio', 'bodyweight', 'resistance', 'other']).optional(),
+      description: z.string().optional(),
+      is_active: z.boolean().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      const { equipment_id, ...updateData } = input;
+
+      // If name is being updated, check for conflicts
+      if (updateData.name) {
+        const existingResult = await db.query(
+          'SELECT equipment_id FROM equipment WHERE LOWER(name) = LOWER($1) AND equipment_id != $2',
+          [updateData.name, equipment_id]
+        );
+
+        if (existingResult.rows.length > 0) {
+          throw new Error('Equipment with this name already exists');
+        }
+      }
+
+      const setClauses: string[] = [];
+      const params: any[] = [equipment_id];
+
+      Object.entries(updateData).forEach(([key, value]) => {
+        if (value !== undefined) {
+          params.push(value);
+          setClauses.push(`${key} = $${params.length}`);
+        }
+      });
+
+      if (setClauses.length === 0) {
+        throw new Error('No fields to update');
+      }
+
+      params.push(new Date()); // updated_at
+      setClauses.push(`updated_at = $${params.length}`);
+
+      const result = await db.query(`
+        UPDATE equipment 
+        SET ${setClauses.join(', ')}
+        WHERE equipment_id = $1
+        RETURNING *
+      `, params);
+
+      if (result.rows.length === 0) {
+        throw new Error('Equipment not found');
+      }
+
+      return result.rows[0];
+    }),
+
+  deleteEquipment: adminProcedure
+    .input(z.object({
+      equipment_id: z.string().uuid(),
+    }))
+    .mutation(async ({ input }) => {
+      // Check if equipment is being used
+      const [exerciseUsage, templateUsage] = await Promise.all([
+        db.query('SELECT COUNT(*) as count FROM exercises WHERE equipment_id = $1 AND is_active = true', [input.equipment_id]),
+        db.query('SELECT COUNT(*) as count FROM exercise_templates WHERE equipment_id = $1', [input.equipment_id]),
+      ]);
+
+      const exerciseCount = parseInt(exerciseUsage.rows[0].count);
+      const templateCount = parseInt(templateUsage.rows[0].count);
+
+      if (exerciseCount > 0 || templateCount > 0) {
+        throw new Error(`Cannot delete equipment. It is being used by ${exerciseCount} exercises and ${templateCount} templates. Consider deactivating instead.`);
+      }
+
+      const result = await db.query(`
+        DELETE FROM equipment 
+        WHERE equipment_id = $1
+        RETURNING *
+      `, [input.equipment_id]);
+
+      if (result.rows.length === 0) {
+        throw new Error('Equipment not found');
+      }
+
+      return { success: true };
+    }),
+
+  getEquipmentStats: adminProcedure
+    .query(async () => {
+      const stats = await Promise.all([
+        // Total equipment
+        db.query('SELECT COUNT(*) as count FROM equipment'),
+        // Active equipment
+        db.query('SELECT COUNT(*) as count FROM equipment WHERE is_active = true'),
+        // Equipment by category
+        db.query(`
+          SELECT 
+            category,
+            COUNT(*) as count
+          FROM equipment
+          WHERE is_active = true
+          GROUP BY category
+          ORDER BY count DESC
+        `),
+        // Most used equipment
+        db.query(`
+          SELECT 
+            e.name,
+            e.category,
+            COUNT(DISTINCT ex.exercise_id) as exercise_count,
+            COUNT(DISTINCT et.template_id) as template_count
+          FROM equipment e
+          LEFT JOIN exercises ex ON e.equipment_id = ex.equipment_id AND ex.is_active = true
+          LEFT JOIN exercise_templates et ON e.equipment_id = et.equipment_id
+          WHERE e.is_active = true
+          GROUP BY e.equipment_id, e.name, e.category
+          HAVING COUNT(DISTINCT ex.exercise_id) > 0 OR COUNT(DISTINCT et.template_id) > 0
+          ORDER BY (COUNT(DISTINCT ex.exercise_id) + COUNT(DISTINCT et.template_id)) DESC
+          LIMIT 10
+        `),
+      ]);
+
+      return {
+        totalEquipment: parseInt(stats[0].rows[0].count),
+        activeEquipment: parseInt(stats[1].rows[0].count),
+        equipmentByCategory: stats[2].rows,
+        mostUsedEquipment: stats[3].rows.map(row => ({
+          ...row,
+          exercise_count: parseInt(row.exercise_count),
+          template_count: parseInt(row.template_count),
+        })),
+      };
     }),
 });

@@ -91,6 +91,7 @@ interface ExerciseTemplate {
   name: string
   muscle_groups: string[]
   equipment: string
+  equipment_id?: string
   exercise_category: string
   exercise_type: 'STRENGTH' | 'CARDIO'
   default_value_1_type: string
@@ -996,6 +997,7 @@ export default function AdminTemplatesPage() {
           name: exerciseData.name,
           muscle_groups: exerciseData.muscle_groups || [],
           equipment: exerciseData.equipment || '',
+          equipment_id: exerciseData.equipment_id || null,
           exercise_category: exerciseData.exercise_category || 'strength',
           exercise_type: exerciseData.exercise_type || 'STRENGTH',
           default_value_1_type: exerciseData.default_value_1_type || 'weight_kg',
@@ -1018,6 +1020,7 @@ export default function AdminTemplatesPage() {
         name: savedTemplate.result.data.name,
         muscle_groups: savedTemplate.result.data.muscle_groups,
         equipment: savedTemplate.result.data.equipment,
+        equipment_id: savedTemplate.result.data.equipment_id,
         exercise_category: savedTemplate.result.data.exercise_category,
         exercise_type: savedTemplate.result.data.exercise_type,
         default_value_1_type: savedTemplate.result.data.default_value_1_type,

@@ -18,27 +18,29 @@ router.get('/templates/by-type/:type', async (req, res) => {
     
     let query = `
       SELECT 
-        template_id,
-        name,
-        muscle_groups,
-        equipment,
-        exercise_category,
-        exercise_type,
-        default_value_1_type,
-        default_value_2_type,
-        description,
-        instructions
-      FROM exercise_templates 
-      WHERE exercise_type = $1
+        et.template_id,
+        et.name,
+        et.muscle_groups,
+        COALESCE(e.name, et.equipment) as equipment,
+        et.equipment_id,
+        et.exercise_category,
+        et.exercise_type,
+        et.default_value_1_type,
+        et.default_value_2_type,
+        et.description,
+        et.instructions
+      FROM exercise_templates et
+      LEFT JOIN equipment e ON et.equipment_id = e.equipment_id
+      WHERE et.exercise_type = $1
     `
     const params: any[] = [type.toUpperCase()]
     
     if (search) {
       params.push(`%${search}%`)
-      query += ` AND name ILIKE $${params.length}`
+      query += ` AND et.name ILIKE $${params.length}`
     }
     
-    query += ` ORDER BY name ASC`
+    query += ` ORDER BY et.name ASC`
     
     const result = await pool.query(query, params)
     res.json({
@@ -61,37 +63,39 @@ router.get('/templates', async (req, res) => {
     
     let query = `
       SELECT 
-        template_id,
-        name,
-        muscle_groups,
-        equipment,
-        exercise_category,
-        exercise_type,
-        default_value_1_type,
-        default_value_2_type,
-        description,
-        instructions
-      FROM exercise_templates 
+        et.template_id,
+        et.name,
+        et.muscle_groups,
+        COALESCE(e.name, et.equipment) as equipment,
+        et.equipment_id,
+        et.exercise_category,
+        et.exercise_type,
+        et.default_value_1_type,
+        et.default_value_2_type,
+        et.description,
+        et.instructions
+      FROM exercise_templates et
+      LEFT JOIN equipment e ON et.equipment_id = e.equipment_id
       WHERE 1=1
     `
     const params: any[] = []
     
     if (category) {
       params.push(category)
-      query += ` AND exercise_category = $${params.length}`
+      query += ` AND et.exercise_category = $${params.length}`
     }
     
     if (type) {
       params.push(type)
-      query += ` AND exercise_type = $${params.length}`
+      query += ` AND et.exercise_type = $${params.length}`
     }
     
     if (search) {
       params.push(`%${search}%`)
-      query += ` AND name ILIKE $${params.length}`
+      query += ` AND et.name ILIKE $${params.length}`
     }
     
-    query += ` ORDER BY exercise_type, name ASC`
+    query += ` ORDER BY et.exercise_type, et.name ASC`
     
     const result = await pool.query(query, params)
     res.json(result.rows)
@@ -110,38 +114,40 @@ router.get('/', authenticateToken, async (req, res) => {
     
     let query = `
       SELECT 
-        exercise_id,
-        name,
-        muscle_groups,
-        equipment,
-        exercise_category,
-        exercise_type,
-        default_value_1_type,
-        default_value_2_type,
-        notes,
-        is_active,
-        created_at
-      FROM exercises 
-      WHERE is_active = true
+        ex.exercise_id,
+        ex.name,
+        ex.muscle_groups,
+        COALESCE(e.name, ex.equipment) as equipment,
+        ex.equipment_id,
+        ex.exercise_category,
+        ex.exercise_type,
+        ex.default_value_1_type,
+        ex.default_value_2_type,
+        ex.notes,
+        ex.is_active,
+        ex.created_at
+      FROM exercises ex
+      LEFT JOIN equipment e ON ex.equipment_id = e.equipment_id
+      WHERE ex.is_active = true
     `
     const params: any[] = []
     
     if (category) {
       params.push(category)
-      query += ` AND exercise_category = $${params.length}`
+      query += ` AND ex.exercise_category = $${params.length}`
     }
     
     if (type) {
       params.push(type)
-      query += ` AND exercise_type = $${params.length}`
+      query += ` AND ex.exercise_type = $${params.length}`
     }
     
     if (search) {
       params.push(`%${search}%`)
-      query += ` AND name ILIKE $${params.length}`
+      query += ` AND ex.name ILIKE $${params.length}`
     }
     
-    query += ` ORDER BY exercise_type, name ASC`
+    query += ` ORDER BY ex.exercise_type, ex.name ASC`
     
     const result = await pool.query(query, params)
     res.json(result.rows)
@@ -158,11 +164,13 @@ router.post('/from-template/:templateId', authenticateToken, async (req, res) =>
   const { customizations } = req.body
   
   try {
-    // Get template
-    const templateResult = await pool.query(
-      'SELECT * FROM exercise_templates WHERE template_id = $1',
-      [templateId]
-    )
+    // Get template with equipment info
+    const templateResult = await pool.query(`
+      SELECT et.*, e.name as equipment_name
+      FROM exercise_templates et
+      LEFT JOIN equipment e ON et.equipment_id = e.equipment_id
+      WHERE et.template_id = $1
+    `, [templateId])
     
     if (templateResult.rows.length === 0) {
       return res.status(404).json({ error: 'Exercise template not found' })
@@ -174,7 +182,8 @@ router.post('/from-template/:templateId', authenticateToken, async (req, res) =>
     const exerciseData = {
       name: customizations?.name || template.name,
       muscle_groups: customizations?.muscle_groups || template.muscle_groups,
-      equipment: customizations?.equipment || template.equipment,
+      equipment: customizations?.equipment || template.equipment_name || template.equipment,
+      equipment_id: customizations?.equipment_id || template.equipment_id,
       exercise_category: customizations?.exercise_category || template.exercise_category,
       exercise_type: customizations?.exercise_type || template.exercise_type,
       default_value_1_type: customizations?.default_value_1_type || template.default_value_1_type,
@@ -197,14 +206,15 @@ router.post('/from-template/:templateId', authenticateToken, async (req, res) =>
     
     const result = await pool.query(`
       INSERT INTO exercises (
-        name, muscle_groups, equipment, exercise_category, exercise_type,
+        name, muscle_groups, equipment, equipment_id, exercise_category, exercise_type,
         default_value_1_type, default_value_2_type, notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
     `, [
       exerciseData.name,
       exerciseData.muscle_groups,
       exerciseData.equipment,
+      exerciseData.equipment_id,
       exerciseData.exercise_category,
       exerciseData.exercise_type,
       exerciseData.default_value_1_type,
@@ -228,6 +238,7 @@ router.post('/', authenticateToken, async (req, res) => {
       name,
       muscle_groups = [],
       equipment,
+      equipment_id,
       exercise_category = 'strength',
       exercise_type = 'STRENGTH',
       default_value_1_type = 'weight_kg',
@@ -254,14 +265,15 @@ router.post('/', authenticateToken, async (req, res) => {
     
     const result = await pool.query(`
       INSERT INTO exercises (
-        name, muscle_groups, equipment, exercise_category, exercise_type,
+        name, muscle_groups, equipment, equipment_id, exercise_category, exercise_type,
         default_value_1_type, default_value_2_type, notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
     `, [
       name,
       muscle_groups,
       equipment,
+      equipment_id,
       exercise_category,
       exercise_type,
       default_value_1_type,
@@ -286,6 +298,7 @@ router.put('/:exerciseId', authenticateToken, async (req, res) => {
       name,
       muscle_groups,
       equipment,
+      equipment_id,
       exercise_category,
       exercise_type,
       default_value_1_type,
@@ -315,12 +328,13 @@ router.put('/:exerciseId', authenticateToken, async (req, res) => {
         name = COALESCE($2, name),
         muscle_groups = COALESCE($3, muscle_groups),
         equipment = COALESCE($4, equipment),
-        exercise_category = COALESCE($5, exercise_category),
-        exercise_type = COALESCE($6, exercise_type),
-        default_value_1_type = COALESCE($7, default_value_1_type),
-        default_value_2_type = COALESCE($8, default_value_2_type),
-        notes = COALESCE($9, notes),
-        is_active = COALESCE($10, is_active),
+        equipment_id = COALESCE($5, equipment_id),
+        exercise_category = COALESCE($6, exercise_category),
+        exercise_type = COALESCE($7, exercise_type),
+        default_value_1_type = COALESCE($8, default_value_1_type),
+        default_value_2_type = COALESCE($9, default_value_2_type),
+        notes = COALESCE($10, notes),
+        is_active = COALESCE($11, is_active),
         updated_at = NOW()
       WHERE exercise_id = $1
       RETURNING *
@@ -329,6 +343,7 @@ router.put('/:exerciseId', authenticateToken, async (req, res) => {
       name,
       muscle_groups,
       equipment,
+      equipment_id,
       exercise_category,
       exercise_type,
       default_value_1_type,
@@ -356,19 +371,21 @@ router.get('/:exerciseId', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
-        exercise_id,
-        name,
-        muscle_groups,
-        equipment,
-        exercise_category,
-        exercise_type,
-        default_value_1_type,
-        default_value_2_type,
-        notes,
-        is_active,
-        created_at
-      FROM exercises 
-      WHERE exercise_id = $1
+        ex.exercise_id,
+        ex.name,
+        ex.muscle_groups,
+        COALESCE(e.name, ex.equipment) as equipment,
+        ex.equipment_id,
+        ex.exercise_category,
+        ex.exercise_type,
+        ex.default_value_1_type,
+        ex.default_value_2_type,
+        ex.notes,
+        ex.is_active,
+        ex.created_at
+      FROM exercises ex
+      LEFT JOIN equipment e ON ex.equipment_id = e.equipment_id
+      WHERE ex.exercise_id = $1
     `, [exerciseId])
     
     if (result.rows.length === 0) {

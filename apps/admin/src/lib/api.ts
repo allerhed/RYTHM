@@ -283,6 +283,99 @@ interface WorkoutTemplatesResponse {
   totalCount: number
 }
 
+// Workout Session Interfaces
+interface WorkoutSession {
+  id: string
+  name: string
+  type: string
+  duration: number
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+  instructor: string
+  participants: number
+  createdAt: string
+  status: 'completed' | 'in-progress'
+  tenantId: string
+  tenantName: string
+  exerciseCount: number
+  totalSets: number
+  trainingLoad?: number
+  notes?: string
+}
+
+interface GetWorkoutSessionsParams {
+  page?: number
+  limit?: number
+  search?: string
+  category?: 'strength' | 'cardio' | 'hybrid'
+  tenant_id?: string
+  completed_only?: boolean
+  status?: 'all' | 'completed' | 'in-progress'
+}
+
+interface WorkoutSessionsResponse {
+  sessions: WorkoutSession[]
+  totalCount: number
+  totalPages: number
+  currentPage: number
+}
+
+interface WorkoutSessionStats {
+  totalWorkouts: number
+  activeWorkouts: number
+  totalParticipants: number
+  avgDuration: number
+}
+
+// Equipment Interfaces
+interface Equipment {
+  equipment_id: string
+  name: string
+  category: 'free_weights' | 'machines' | 'cardio' | 'bodyweight' | 'resistance' | 'other'
+  description?: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+  exercise_count?: number
+  template_count?: number
+}
+
+interface CreateEquipmentData {
+  name: string
+  category: 'free_weights' | 'machines' | 'cardio' | 'bodyweight' | 'resistance' | 'other'
+  description?: string
+  is_active?: boolean
+}
+
+interface UpdateEquipmentData {
+  equipment_id: string
+  name?: string
+  category?: 'free_weights' | 'machines' | 'cardio' | 'bodyweight' | 'resistance' | 'other'
+  description?: string
+  is_active?: boolean
+}
+
+interface GetEquipmentParams {
+  page?: number
+  limit?: number
+  search?: string
+  category?: string
+  active_only?: boolean
+}
+
+interface EquipmentResponse {
+  equipment: Equipment[]
+  totalCount: number
+  totalPages: number
+  currentPage: number
+}
+
+interface EquipmentStats {
+  totalEquipment: number
+  activeEquipment: number
+  equipmentByCategory: { category: string; count: string }[]
+  mostUsedEquipment: { name: string; category: string; exercise_count: number; template_count: number }[]
+}
+
 class ApiClient {
   private baseUrl: string
   private token: string | null = null
@@ -612,6 +705,77 @@ class ApiClient {
       
       const result = await this.handleResponse(response)
       return result.result.data
+    },
+
+    // Workout session management
+    getWorkoutSessions: async (params: GetWorkoutSessionsParams = {}): Promise<WorkoutSessionsResponse> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getWorkoutSessions?input=${encodeURIComponent(JSON.stringify(params))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getWorkoutSessionStats: async (): Promise<WorkoutSessionStats> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getWorkoutSessionStats`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    // Equipment management
+    getEquipment: async (params: GetEquipmentParams = {}): Promise<EquipmentResponse> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getEquipment?input=${encodeURIComponent(JSON.stringify(params))}`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getEquipmentStats: async (): Promise<EquipmentStats> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getEquipmentStats`, {
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    createEquipment: async (equipmentData: CreateEquipmentData): Promise<Equipment> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.createEquipment`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(equipmentData),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    updateEquipment: async (equipmentData: UpdateEquipmentData): Promise<Equipment> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.updateEquipment`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(equipmentData),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    deleteEquipment: async (equipment_id: string): Promise<{ success: boolean }> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.deleteEquipment`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ equipment_id }),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
     }
   }
 
@@ -650,5 +814,7 @@ export type {
   ExerciseTemplate, CreateExerciseTemplateData, UpdateExerciseTemplateData, GetExerciseTemplatesParams, ExerciseTemplatesResponse, ExerciseTemplateStats,
   Organization, CreateOrganizationData, UpdateOrganizationData, GetOrganizationsParams, OrganizationsResponse,
   AnalyticsDashboard, UsageTrendData, ExerciseAnalytics, TenantAnalytics, PerformanceMetrics,
-  WorkoutTemplate, TemplateExercise, CreateWorkoutTemplateData, UpdateWorkoutTemplateData, GetWorkoutTemplatesParams, WorkoutTemplatesResponse
+  WorkoutTemplate, TemplateExercise, CreateWorkoutTemplateData, UpdateWorkoutTemplateData, GetWorkoutTemplatesParams, WorkoutTemplatesResponse,
+  WorkoutSession, GetWorkoutSessionsParams, WorkoutSessionsResponse, WorkoutSessionStats,
+  Equipment, CreateEquipmentData, UpdateEquipmentData, GetEquipmentParams, EquipmentResponse, EquipmentStats
 }
