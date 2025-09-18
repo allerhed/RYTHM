@@ -412,7 +412,17 @@ export const adminRouter = router({
     }),
 
   getExerciseTemplateStats: adminProcedure
-    .query(async () => {
+    .input(z.object({
+      timeRange: z.enum(['7d', '30d', '90d', '1y']).default('90d'),
+    }).optional())
+    .query(async ({ input }) => {
+      const { timeRange = '90d' } = input || {};
+      
+      // Calculate date range
+      const now = new Date();
+      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
+      const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+
       const stats = await Promise.all([
         // Total exercise templates
         db.query('SELECT COUNT(*) as count FROM exercise_templates'),
@@ -424,22 +434,29 @@ export const adminRouter = router({
           FROM exercise_templates 
           GROUP BY exercise_type
         `),
-        // Most used muscle groups
+        // Most used muscle groups in templates (weighted by actual usage in the time range)
         db.query(`
           SELECT 
-            UNNEST(muscle_groups) as muscle_group, 
-            COUNT(*) as count 
-          FROM exercise_templates 
+            muscle_group,
+            COUNT(DISTINCT et.template_id) as template_count,
+            COUNT(DISTINCT s.session_id) as session_usage
+          FROM exercise_templates et
+          CROSS JOIN UNNEST(et.muscle_groups) as muscle_group
+          LEFT JOIN exercises ex ON et.template_id = ex.template_id AND ex.is_active = true
+          LEFT JOIN sets st ON ex.exercise_id = st.exercise_id
+          LEFT JOIN sessions s ON st.session_id = s.session_id AND s.started_at >= $1 AND s.started_at <= $2
           GROUP BY muscle_group 
-          ORDER BY count DESC 
+          ORDER BY 
+            COALESCE(COUNT(DISTINCT s.session_id), 0) DESC,
+            COUNT(DISTINCT et.template_id) DESC
           LIMIT 5
-        `),
-        // Recent exercise templates (last 7 days)
+        `, [startDate, now]),
+        // Recent exercise templates (based on time range)
         db.query(`
           SELECT COUNT(*) as count 
           FROM exercise_templates 
-          WHERE created_at >= NOW() - INTERVAL '7 days'
-        `),
+          WHERE created_at >= $1
+        `, [startDate]),
       ]);
 
       return {
@@ -862,17 +879,27 @@ export const adminRouter = router({
     }),
 
   getPerformanceMetrics: adminProcedure
-    .query(async () => {
-      // System performance metrics
+    .input(z.object({
+      timeRange: z.enum(['7d', '30d', '90d', '1y']).default('90d'),
+    }).optional())
+    .query(async ({ input }) => {
+      const { timeRange = '90d' } = input || {};
+      
+      // Calculate date range
+      const now = new Date();
+      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
+      const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+
+      // System performance metrics for the time range
       const [systemStats, recentActivity] = await Promise.all([
-        // Basic system statistics
+        // Basic system statistics for the time range
         db.query(`
           SELECT 
-            (SELECT COUNT(*) FROM tenants WHERE tenant_id != $1) as total_tenants,
-            (SELECT COUNT(*) FROM users WHERE tenant_id != $1) as total_users,
-            (SELECT COUNT(*) FROM sessions WHERE tenant_id != $1) as total_sessions,
-            (SELECT COUNT(*) FROM exercises) as total_exercises
-        `, [ADMIN_TENANT_ID]),
+            (SELECT COUNT(DISTINCT t.tenant_id) FROM tenants t WHERE t.tenant_id != $3) as total_tenants,
+            (SELECT COUNT(DISTINCT s.user_id) FROM sessions s WHERE s.started_at >= $1 AND s.started_at <= $2 AND s.tenant_id != $3) as total_users,
+            (SELECT COUNT(*) FROM sessions WHERE started_at >= $1 AND started_at <= $2 AND tenant_id != $3) as total_sessions,
+            (SELECT COUNT(DISTINCT e.exercise_id) FROM sessions s JOIN sets st ON s.session_id = st.session_id JOIN exercises e ON st.exercise_id = e.exercise_id WHERE s.started_at >= $1 AND s.started_at <= $2 AND s.tenant_id != $3) as total_exercises
+        `, [startDate, now, ADMIN_TENANT_ID]),
 
         // Recent activity (last 24 hours)
         db.query(`
@@ -1348,7 +1375,17 @@ export const adminRouter = router({
     }),
 
   getEquipmentStats: adminProcedure
-    .query(async () => {
+    .input(z.object({
+      timeRange: z.enum(['7d', '30d', '90d', '1y']).default('90d'),
+    }).optional())
+    .query(async ({ input }) => {
+      const { timeRange = '90d' } = input || {};
+      
+      // Calculate date range
+      const now = new Date();
+      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
+      const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+
       const stats = await Promise.all([
         // Total equipment
         db.query('SELECT COUNT(*) as count FROM equipment'),
@@ -1364,22 +1401,27 @@ export const adminRouter = router({
           GROUP BY category
           ORDER BY count DESC
         `),
-        // Most used equipment
+        // Most used equipment in the time range
         db.query(`
           SELECT 
             e.name,
             e.category,
             COUNT(DISTINCT ex.exercise_id) as exercise_count,
-            COUNT(DISTINCT et.template_id) as template_count
+            COUNT(DISTINCT et.template_id) as template_count,
+            COUNT(DISTINCT s.session_id) as session_usage
           FROM equipment e
           LEFT JOIN exercises ex ON e.equipment_id = ex.equipment_id AND ex.is_active = true
           LEFT JOIN exercise_templates et ON e.equipment_id = et.equipment_id
+          LEFT JOIN sets st ON ex.exercise_id = st.exercise_id
+          LEFT JOIN sessions s ON st.session_id = s.session_id AND s.started_at >= $1 AND s.started_at <= $2
           WHERE e.is_active = true
           GROUP BY e.equipment_id, e.name, e.category
           HAVING COUNT(DISTINCT ex.exercise_id) > 0 OR COUNT(DISTINCT et.template_id) > 0
-          ORDER BY (COUNT(DISTINCT ex.exercise_id) + COUNT(DISTINCT et.template_id)) DESC
+          ORDER BY 
+            COALESCE(COUNT(DISTINCT s.session_id), 0) DESC,
+            (COUNT(DISTINCT ex.exercise_id) + COUNT(DISTINCT et.template_id)) DESC
           LIMIT 10
-        `),
+        `, [startDate, now]),
       ]);
 
       return {
@@ -1390,6 +1432,7 @@ export const adminRouter = router({
           ...row,
           exercise_count: parseInt(row.exercise_count),
           template_count: parseInt(row.template_count),
+          session_usage: parseInt(row.session_usage) || 0,
         })),
       };
     }),

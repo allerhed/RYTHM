@@ -16,7 +16,7 @@ export default function AnalyticsPage() {
   const [exerciseTemplateStats, setExerciseTemplateStats] = useState<ExerciseTemplateStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d')
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('90d')
 
   const fetchAnalytics = async () => {
     try {
@@ -25,11 +25,11 @@ export default function AnalyticsPage() {
 
       const [dashboardData, performanceData, tenantData, exerciseData, equipmentData, exerciseTemplateData] = await Promise.all([
         apiClient.admin.getAnalyticsDashboard({ timeRange, compareToLast: true }),
-        apiClient.admin.getPerformanceMetrics(),
+        apiClient.admin.getPerformanceMetrics({ timeRange }),
         apiClient.admin.getTenantAnalytics({ timeRange: timeRange === '7d' ? '30d' : timeRange }),
         apiClient.admin.getExerciseAnalytics({ timeRange: timeRange === '7d' ? '30d' : timeRange }),
-        apiClient.admin.getEquipmentStats(),
-        apiClient.admin.getExerciseTemplateStats(),
+        apiClient.admin.getEquipmentStats({ timeRange }),
+        apiClient.admin.getExerciseTemplateStats({ timeRange }),
       ])
 
       setDashboard(dashboardData)
@@ -530,8 +530,12 @@ export default function AnalyticsPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="text-white font-semibold">{equipment.exercise_count + equipment.template_count}</span>
-                      <p className="text-xs text-gray-500">uses</p>
+                      <span className="text-white font-semibold">
+                        {equipment.session_usage || equipment.exercise_count + equipment.template_count}
+                      </span>
+                      <p className="text-xs text-gray-500">
+                        {equipment.session_usage ? 'sessions' : 'uses'}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -594,7 +598,7 @@ export default function AnalyticsPage() {
                     </svg>
                   </div>
                   <h4 className="text-xl font-bold text-white">{exerciseTemplateStats.recentExerciseTemplates}</h4>
-                  <p className="text-gray-400 text-sm">New templates (7d)</p>
+                  <p className="text-gray-400 text-sm">New templates ({timeRange.replace('d', ' days').replace('y', ' year')})</p>
                 </div>
               </div>
             </div>

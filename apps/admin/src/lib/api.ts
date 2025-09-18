@@ -242,6 +242,7 @@ interface EquipmentStats {
     category: string
     exercise_count: number
     template_count: number
+    session_usage?: number
   }>
 }
 
@@ -404,7 +405,7 @@ interface EquipmentStats {
   totalEquipment: number
   activeEquipment: number
   equipmentByCategory: { category: string; count: string }[]
-  mostUsedEquipment: { name: string; category: string; exercise_count: number; template_count: number }[]
+  mostUsedEquipment: { name: string; category: string; exercise_count: number; template_count: number; session_usage?: number }[]
 }
 
 class ApiClient {
@@ -579,8 +580,10 @@ class ApiClient {
       return result.result.data
     },
 
-    getExerciseTemplateStats: async (): Promise<ExerciseTemplateStats> => {
-      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getExerciseTemplateStats`, {
+    getExerciseTemplateStats: async (params: {
+      timeRange?: '7d' | '30d' | '90d' | '1y'
+    } = {}): Promise<ExerciseTemplateStats> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getExerciseTemplateStats?input=${encodeURIComponent(JSON.stringify(params))}`, {
         headers: this.getHeaders(),
       })
       
@@ -729,8 +732,10 @@ class ApiClient {
       return result.result.data
     },
 
-    getPerformanceMetrics: async (): Promise<PerformanceMetrics> => {
-      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getPerformanceMetrics`, {
+    getPerformanceMetrics: async (params: {
+      timeRange?: '7d' | '30d' | '90d' | '1y'
+    } = {}): Promise<PerformanceMetrics> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getPerformanceMetrics?input=${encodeURIComponent(JSON.stringify(params))}`, {
         headers: this.getHeaders(),
       })
       
@@ -767,8 +772,10 @@ class ApiClient {
       return result.result.data
     },
 
-    getEquipmentStats: async (): Promise<EquipmentStats> => {
-      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getEquipmentStats`, {
+    getEquipmentStats: async (params: {
+      timeRange?: '7d' | '30d' | '90d' | '1y'
+    } = {}): Promise<EquipmentStats> => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getEquipmentStats?input=${encodeURIComponent(JSON.stringify(params))}`, {
         headers: this.getHeaders(),
       })
       
