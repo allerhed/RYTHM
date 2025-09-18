@@ -814,6 +814,124 @@ class ApiClient {
       
       const result = await this.handleResponse(response)
       return result.result.data
+    },
+
+    // Export/Import API methods
+    exportTenant: async (params: {
+      tenantId: string;
+      includeUsers?: boolean;
+      includeWorkoutData?: boolean;
+      format?: 'json' | 'sql' | 'csv';
+      dateRange?: {
+        start?: string;
+        end?: string;
+      };
+    }) => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.exportTenant`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(params),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    exportGlobalData: async (params: {
+      format?: 'json' | 'sql' | 'csv';
+    } = {}) => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.exportGlobalData`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(params),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    exportAll: async (params: {
+      format?: 'json' | 'sql' | 'csv';
+      includeUsers?: boolean;
+      includeWorkoutData?: boolean;
+    } = {}) => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.exportAll`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(params),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    importTenant: async (params: {
+      data: any;
+      mergeStrategy?: 'replace' | 'merge' | 'skip-existing';
+      validateReferences?: boolean;
+      createBackup?: boolean;
+      dryRun?: boolean;
+    }) => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.importTenant`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(params),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    importGlobalData: async (params: {
+      data: any;
+      mergeStrategy?: 'replace' | 'merge' | 'skip-existing';
+      validateReferences?: boolean;
+      createBackup?: boolean;
+      dryRun?: boolean;
+    }) => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.importGlobalData`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(params),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    getExportableTenants: async () => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.getExportableTenants`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    // Backup Management
+    listBackups: async () => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.listBackups`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
+    },
+
+    restoreFromBackup: async (params: {
+      backupId: string;
+      confirmRestore: boolean;
+    }) => {
+      const response = await fetch(`${this.baseUrl}/api/trpc/admin.restoreFromBackup`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(params),
+      })
+      
+      const result = await this.handleResponse(response)
+      return result.result.data
     }
   }
 

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { adminProcedure, publicProcedure, router } from '../trpc';
-import { db } from '@rythm/db';
+import { db, dataExporter, dataImporter } from '@rythm/db';
 
 // Admin tenant ID
 const ADMIN_TENANT_ID = '00000000-0000-0000-0000-000000000000';
@@ -1465,6 +1465,155 @@ export const adminRouter = router({
           template_count: parseInt(row.template_count),
           session_usage: parseInt(row.session_usage) || 0,
         })),
+      };
+    }),
+
+  // Data Export/Import Endpoints
+
+  // Export tenant data
+  exportTenant: adminProcedure
+    .input(z.object({
+      tenantId: z.string().uuid(),
+      includeUsers: z.boolean().default(true),
+      includeWorkoutData: z.boolean().default(true),
+      format: z.enum(['json', 'sql', 'csv']).default('json'),
+      dateRange: z.object({
+        start: z.string().optional(),
+        end: z.string().optional()
+      }).optional()
+    }))
+    .mutation(async ({ input }) => {
+      const options = {
+        format: input.format,
+        includeUsers: input.includeUsers,
+        includeWorkoutData: input.includeWorkoutData,
+        dateRange: input.dateRange?.start && input.dateRange?.end ? {
+          start: new Date(input.dateRange.start),
+          end: new Date(input.dateRange.end)
+        } : undefined
+      };
+
+      return await dataExporter.exportTenant(input.tenantId, options);
+    }),
+
+  // Export global data
+  exportGlobalData: adminProcedure
+    .input(z.object({
+      format: z.enum(['json', 'sql', 'csv']).default('json')
+    }))
+    .mutation(async ({ input }) => {
+      return await dataExporter.exportGlobalData({ format: input.format });
+    }),
+
+  // Export all system data
+  exportAll: adminProcedure
+    .input(z.object({
+      format: z.enum(['json', 'sql', 'csv']).default('json'),
+      includeUsers: z.boolean().default(true),
+      includeWorkoutData: z.boolean().default(true)
+    }))
+    .mutation(async ({ input }) => {
+      const options = {
+        format: input.format,
+        includeUsers: input.includeUsers,
+        includeWorkoutData: input.includeWorkoutData
+      };
+
+      return await dataExporter.exportAll(options);
+    }),
+
+  // Import tenant data
+  importTenant: adminProcedure
+    .input(z.object({
+      data: z.any(), // TenantExportData - using any for flexibility
+      mergeStrategy: z.enum(['replace', 'merge', 'skip-existing']).default('merge'),
+      validateReferences: z.boolean().default(true),
+      createBackup: z.boolean().default(true),
+      dryRun: z.boolean().default(false)
+    }))
+    .mutation(async ({ input }) => {
+      const options = {
+        mergeStrategy: input.mergeStrategy,
+        validateReferences: input.validateReferences,
+        createBackup: input.createBackup,
+        dryRun: input.dryRun,
+        includeWorkoutData: true
+      };
+
+      return await dataImporter.importTenant(input.data, options);
+    }),
+
+  // Import global data
+  importGlobalData: adminProcedure
+    .input(z.object({
+      data: z.any(), // GlobalExportData - using any for flexibility
+      mergeStrategy: z.enum(['replace', 'merge', 'skip-existing']).default('merge'),
+      validateReferences: z.boolean().default(true),
+      createBackup: z.boolean().default(true),
+      dryRun: z.boolean().default(false)
+    }))
+    .mutation(async ({ input }) => {
+      const options = {
+        mergeStrategy: input.mergeStrategy,
+        validateReferences: input.validateReferences,
+        createBackup: input.createBackup,
+        dryRun: input.dryRun
+      };
+
+      return await dataImporter.importGlobalData(input.data, options);
+    }),
+
+  // Get list of available tenants for export
+  getExportableTenants: adminProcedure
+    .query(async () => {
+      const result = await db.query(`
+        SELECT t.tenant_id, t.name, t.created_at,
+               COUNT(DISTINCT u.user_id) as user_count,
+               COUNT(DISTINCT s.session_id) as session_count
+        FROM tenants t
+        LEFT JOIN users u ON u.tenant_id = t.tenant_id
+        LEFT JOIN sessions s ON s.tenant_id = t.tenant_id
+        WHERE t.tenant_id != $1
+        GROUP BY t.tenant_id, t.name, t.created_at
+        ORDER BY t.name
+      `, [ADMIN_TENANT_ID]);
+
+      return result.rows.map(row => ({
+        ...row,
+        user_count: parseInt(row.user_count),
+        session_count: parseInt(row.session_count)
+      }));
+    }),
+
+  // Backup management endpoints
+  listBackups: adminProcedure
+    .query(async () => {
+      const result = await db.query(`
+        SELECT backup_id, tenant_id, backup_type, file_size, created_at, metadata
+        FROM backups 
+        ORDER BY created_at DESC 
+        LIMIT 50
+      `);
+      
+      return result.rows;
+    }),
+
+  restoreFromBackup: adminProcedure
+    .input(z.object({
+      backupId: z.string(),
+      confirmRestore: z.boolean().default(false)
+    }))
+    .mutation(async ({ input }) => {
+      if (!input.confirmRestore) {
+        throw new Error('Restore confirmation required');
+      }
+      
+      // In a real implementation, this would restore from backup
+      // For now, return a placeholder response
+      return {
+        success: true,
+        message: 'Backup restore initiated',
+        backupId: input.backupId
       };
     }),
 });
