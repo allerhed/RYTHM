@@ -167,6 +167,7 @@ export default function TemplatesPage() {
       refetch()
       resetForm()
       setEditingTemplate(null)
+      setShowCreateModal(false)
     }
   })
 
@@ -195,7 +196,7 @@ export default function TemplatesPage() {
     setFormData({
       name: template.name,
       description: template.description || '',
-      exercises: template.exercises
+      exercises: template.exercises.sort((a, b) => a.order - b.order)
     })
     setEditingTemplate(template)
     setShowCreateModal(true)
@@ -323,8 +324,41 @@ export default function TemplatesPage() {
   const removeExercise = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      exercises: prev.exercises.filter((_, i) => i !== index)
+      exercises: prev.exercises.filter((_, i) => i !== index).map((ex, i) => ({
+        ...ex,
+        order: i
+      }))
     }))
+  }
+
+  const moveExerciseUp = (index: number) => {
+    if (index === 0) return // Can't move the first item up
+    
+    setFormData(prev => {
+      const newExercises = [...prev.exercises]
+      const temp = newExercises[index]
+      newExercises[index] = { ...newExercises[index - 1], order: index }
+      newExercises[index - 1] = { ...temp, order: index - 1 }
+      return {
+        ...prev,
+        exercises: newExercises
+      }
+    })
+  }
+
+  const moveExerciseDown = (index: number) => {
+    setFormData(prev => {
+      if (index === prev.exercises.length - 1) return prev // Can't move the last item down
+      
+      const newExercises = [...prev.exercises]
+      const temp = newExercises[index]
+      newExercises[index] = { ...newExercises[index + 1], order: index }
+      newExercises[index + 1] = { ...temp, order: index + 1 }
+      return {
+        ...prev,
+        exercises: newExercises
+      }
+    })
   }
 
   if (!user) {
@@ -481,7 +515,7 @@ export default function TemplatesPage() {
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Exercises
                   </h4>
-                  {template.exercises?.slice(0, 3).map((exercise, index) => (
+                  {template.exercises?.sort((a, b) => a.order - b.order).slice(0, 3).map((exercise, index) => (
                     <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                       <div className="flex-1 min-w-0">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block">
@@ -625,13 +659,48 @@ export default function TemplatesPage() {
                                   className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:border-blue-500 focus:ring-blue-500"
                                 />
                               </div>
-                              <button
-                                onClick={() => removeExercise(index)}
-                                className="ml-3 p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                                aria-label="Remove exercise"
-                              >
-                                <TrashIcon className="w-5 h-5" />
-                              </button>
+                              <div className="flex items-center gap-2 ml-3">
+                                {/* Move buttons */}
+                                {formData.exercises.length > 1 && (
+                                  <div className="flex flex-col gap-1">
+                                    <button
+                                      onClick={() => moveExerciseUp(index)}
+                                      disabled={index === 0}
+                                      className={`p-1 rounded ${
+                                        index === 0 
+                                          ? 'text-gray-400 cursor-not-allowed' 
+                                          : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600'
+                                      }`}
+                                      aria-label="Move exercise up"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                      </svg>
+                                    </button>
+                                    <button
+                                      onClick={() => moveExerciseDown(index)}
+                                      disabled={index === formData.exercises.length - 1}
+                                      className={`p-1 rounded ${
+                                        index === formData.exercises.length - 1 
+                                          ? 'text-gray-400 cursor-not-allowed' 
+                                          : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600'
+                                      }`}
+                                      aria-label="Move exercise down"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                )}
+                                <button
+                                  onClick={() => removeExercise(index)}
+                                  className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                  aria-label="Remove exercise"
+                                >
+                                  <TrashIcon className="w-5 h-5" />
+                                </button>
+                              </div>
                             </div>
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

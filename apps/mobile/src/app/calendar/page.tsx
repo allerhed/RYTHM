@@ -290,27 +290,76 @@ function CalendarPage() {
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
             {formatMonthYear(currentDate)} Summary
           </h3>
-          <div className="grid grid-cols-3 gap-4">
-            {Object.entries(CATEGORY_LABELS).map(([category, label]) => {
-              const categoryWorkouts = workouts.filter(w => {
+          
+          {/* Monthly Overview Cards */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            {(() => {
+              const monthlyWorkouts = workouts.filter(w => {
                 const workoutDate = new Date(w.started_at)
-                return w.category === category && 
-                       workoutDate.getMonth() === currentDate.getMonth() &&
+                return workoutDate.getMonth() === currentDate.getMonth() &&
                        workoutDate.getFullYear() === currentDate.getFullYear()
               })
               
+              const totalWorkload = monthlyWorkouts.reduce((sum, w) => sum + (w.training_load || 0), 0)
+              const totalHours = monthlyWorkouts.reduce((sum, w) => sum + (w.duration_seconds || 0), 0) / 3600
+              
               return (
-                <div key={category} className="text-center">
-                  <div className={`w-4 h-4 ${CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS]} rounded-sm mx-auto mb-1`} />
-                  <div className="text-lg font-bold text-gray-900 dark:text-white">
-                    {categoryWorkouts.length}
+                <>
+                  <div className="bg-gradient-to-r from-lime-50 to-green-50 dark:from-lime-900/20 dark:to-green-900/20 rounded-lg p-4 border border-lime-200 dark:border-lime-800">
+                    <div className="text-2xl font-bold text-lime-700 dark:text-lime-400">
+                      {totalWorkload}
+                    </div>
+                    <div className="text-sm text-lime-600 dark:text-lime-300 font-medium">
+                      Total Workload
+                    </div>
+                    <div className="text-xs text-lime-500 dark:text-lime-400 mt-1">
+                      Training Load Points
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {label}
+                  
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                    <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">
+                      {totalHours.toFixed(1)}
+                    </div>
+                    <div className="text-sm text-blue-600 dark:text-blue-300 font-medium">
+                      Hours Trained
+                    </div>
+                    <div className="text-xs text-blue-500 dark:text-blue-400 mt-1">
+                      Total Duration
+                    </div>
                   </div>
-                </div>
+                </>
               )
-            })}
+            })()}
+          </div>
+          
+          {/* Workout Type Breakdown */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+              Workout Breakdown
+            </h4>
+            <div className="grid grid-cols-3 gap-4">
+              {Object.entries(CATEGORY_LABELS).map(([category, label]) => {
+                const categoryWorkouts = workouts.filter(w => {
+                  const workoutDate = new Date(w.started_at)
+                  return w.category === category && 
+                         workoutDate.getMonth() === currentDate.getMonth() &&
+                         workoutDate.getFullYear() === currentDate.getFullYear()
+                })
+                
+                return (
+                  <div key={category} className="text-center">
+                    <div className={`w-4 h-4 ${CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS]} rounded-sm mx-auto mb-1`} />
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">
+                      {categoryWorkouts.length}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {label}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
       </div>

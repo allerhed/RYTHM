@@ -632,9 +632,9 @@ export default function NewWorkoutPage() {
             
             <button
               onClick={() => setShowTemplateModal(true)}
-              className="w-full py-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors text-sm font-medium"
+              className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-lime-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
             >
-              📋 Add from Template
+              + Add from Template
             </button>
           </div>
 
