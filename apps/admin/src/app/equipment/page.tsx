@@ -230,13 +230,47 @@ export default function EquipmentPage() {
   }
 
   const handleDelete = async (equipment: Equipment) => {
-    if (!confirm(`Are you sure you want to delete "${equipment.name}"?`)) return
+    // First check if equipment is in use
+    try {
+      const usageResponse = await apiClient.admin.getEquipment({ 
+        page: 1, 
+        limit: 1,
+        search: equipment.name 
+      })
+      
+      const equipmentData = usageResponse.equipment.find(e => e.equipment_id === equipment.equipment_id)
+      const exerciseCount = equipmentData?.exercise_count || 0
+      const templateCount = equipmentData?.template_count || 0
+      
+      if (exerciseCount > 0 || templateCount > 0) {
+        const message = `Cannot delete "${equipment.name}" because it's being used by ${exerciseCount} exercises and ${templateCount} templates.\n\nWould you like to deactivate it instead? This will hide it from new selections while preserving existing data.`
+        
+        if (confirm(message)) {
+          // Deactivate instead of delete
+          await apiClient.admin.updateEquipment({
+            equipment_id: equipment.equipment_id,
+            name: equipment.name,
+            category: equipment.category,
+            description: equipment.description,
+            is_active: false
+          })
+          fetchData()
+        }
+        return
+      }
+    } catch (error) {
+      // If we can't check usage, proceed with original confirmation
+    }
+
+    // If not in use, allow deletion
+    if (!confirm(`Are you sure you want to permanently delete "${equipment.name}"?`)) return
 
     try {
       await apiClient.admin.deleteEquipment(equipment.equipment_id)
       fetchData()
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to delete equipment')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete equipment'
+      alert(`Error: ${errorMessage}`)
     }
   }
 
@@ -471,6 +505,25 @@ export default function EquipmentPage() {
                 </div>
 
                 <div className="space-y-3">
+                  {/* Usage Statistics */}
+                  {((item.exercise_count || 0) > 0 || (item.template_count || 0) > 0) && (
+                    <div className="flex items-center space-x-4 text-sm">
+                      <div className="flex items-center space-x-1">
+                        <span className="text-gray-400">Used by:</span>
+                      </div>
+                      {(item.exercise_count || 0) > 0 && (
+                        <span className="text-blue-400">
+                          {item.exercise_count} exercise{item.exercise_count !== 1 ? 's' : ''}
+                        </span>
+                      )}
+                      {(item.template_count || 0) > 0 && (
+                        <span className="text-purple-400">
+                          {item.template_count} template{item.template_count !== 1 ? 's' : ''}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   {item.description && (
                     <div>
                       <span className="text-gray-400 text-sm">Description</span>
@@ -506,9 +559,18 @@ export default function EquipmentPage() {
                     </button>
                     <button
                       onClick={() => handleDelete(item)}
-                      className="flex-1 px-3 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-colors duration-200 text-sm"
+                      className={`flex-1 px-3 py-2 border rounded-lg transition-colors duration-200 text-sm ${
+                        ((item.exercise_count || 0) > 0 || (item.template_count || 0) > 0)
+                          ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30'
+                          : 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30'
+                      }`}
+                      title={
+                        ((item.exercise_count || 0) > 0 || (item.template_count || 0) > 0)
+                          ? 'Equipment is in use - will offer to deactivate instead'
+                          : 'Delete equipment permanently'
+                      }
                     >
-                      Delete
+                      {((item.exercise_count || 0) > 0 || (item.template_count || 0) > 0) ? 'Deactivate' : 'Delete'}
                     </button>
                   </div>
                 </div>

@@ -221,10 +221,41 @@ interface TenantAnalytics {
 }
 
 interface PerformanceMetrics {
-  apiResponseTime: number
-  dbQueryTime: number
-  errorRate: number
-  cacheHitRate: number
+  totalTenants: number
+  totalUsers: number
+  totalSessions: number
+  totalExercises: number
+  activeUsers24h: number
+  sessions24h: number
+  activeTenants24h: number
+}
+
+interface EquipmentStats {
+  totalEquipment: number
+  activeEquipment: number
+  equipmentByCategory: Array<{
+    category: string
+    count: string
+  }>
+  mostUsedEquipment: Array<{
+    name: string
+    category: string
+    exercise_count: number
+    template_count: number
+  }>
+}
+
+interface ExerciseTemplateStats {
+  totalExerciseTemplates: number
+  exerciseTemplatesByType: Array<{
+    exercise_type: string
+    count: string
+  }>
+  topMuscleGroups: Array<{
+    muscle_group: string
+    count: string
+  }>
+  recentExerciseTemplates: number
 }
 
 // Workout Template Interfaces
