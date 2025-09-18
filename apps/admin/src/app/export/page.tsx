@@ -257,7 +257,7 @@ export default function ExportPage() {
           const tenantResult = await apiClient.admin.importTenant({
             data: tenantData,
             mergeStrategy: importStrategy,
-            validateReferences,
+            validateReferences: dryRun ? false : validateReferences, // Disable validation for dry run since global data isn't committed yet
             createBackup: false, // Only backup once for the full import
             dryRun
           })
@@ -910,7 +910,9 @@ export default function ExportPage() {
                                   {Object.entries(job.result.imported).map(([table, count]) => (
                                     <div key={table} className="flex justify-between">
                                       <span className="capitalize">{table}:</span>
-                                      <span className="text-blue-400">{count}</span>
+                                      <span className="text-blue-400">
+                                        {typeof count === 'object' ? JSON.stringify(count) : count}
+                                      </span>
                                     </div>
                                   ))}
                                 </div>

@@ -1,5 +1,6 @@
 import { Database } from './database';
 import { sqlFormatter, csvFormatter, jsonFormatter } from './formatters';
+import { randomUUID } from 'crypto';
 
 // Types for export/import data structures
 export interface TenantExportData {
@@ -262,20 +263,23 @@ export class DataExporter {
       if (options.includeWorkoutData) {
         let sessionQuery = `
           SELECT s.*,
-                 json_agg(
-                   json_build_object(
-                     'set_id', st.set_id,
-                     'exercise_id', st.exercise_id,
-                     'set_index', st.set_index,
-                     'reps', st.reps,
-                     'value_1_type', st.value_1_type,
-                     'value_1_numeric', st.value_1_numeric,
-                     'value_2_type', st.value_2_type,
-                     'value_2_numeric', st.value_2_numeric,
-                     'notes', st.notes,
-                     'created_at', st.created_at,
-                     'updated_at', st.updated_at
-                   ) ORDER BY st.set_index
+                 COALESCE(
+                   json_agg(
+                     json_build_object(
+                       'set_id', st.set_id,
+                       'exercise_id', st.exercise_id,
+                       'set_index', st.set_index,
+                       'reps', st.reps,
+                       'value_1_type', st.value_1_type,
+                       'value_1_numeric', st.value_1_numeric,
+                       'value_2_type', st.value_2_type,
+                       'value_2_numeric', st.value_2_numeric,
+                       'notes', st.notes,
+                       'created_at', st.created_at,
+                       'updated_at', st.updated_at
+                     ) ORDER BY st.set_index
+                   ) FILTER (WHERE st.set_id IS NOT NULL),
+                   '[]'::json
                  ) as sets
           FROM sessions s
           LEFT JOIN sets st ON st.session_id = s.session_id
@@ -647,27 +651,36 @@ export class DataImporter {
 
               // Import sets for this session
               for (const set of session.sets) {
-                await client.query(`
-                  INSERT INTO sets (
-                    set_id, tenant_id, session_id, exercise_id, set_index, reps,
-                    value_1_type, value_1_numeric, value_2_type, value_2_numeric,
-                    notes, created_at, updated_at
-                  )
-                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-                  ON CONFLICT (set_id) DO UPDATE SET
-                    reps = EXCLUDED.reps,
-                    value_1_type = EXCLUDED.value_1_type,
-                    value_1_numeric = EXCLUDED.value_1_numeric,
-                    value_2_type = EXCLUDED.value_2_type,
-                    value_2_numeric = EXCLUDED.value_2_numeric,
-                    notes = EXCLUDED.notes,
-                    updated_at = EXCLUDED.updated_at
-                `, [
-                  set.set_id, data.tenant.tenant_id, session.session_id, set.exercise_id,
-                  set.set_index, set.reps, set.value_1_type, set.value_1_numeric,
-                  set.value_2_type, set.value_2_numeric, set.notes, set.created_at, set.updated_at
-                ]);
-                importedSets++;
+                try {
+                  // Generate new UUID if set_id is null
+                  const setId = set.set_id || randomUUID();
+                  console.log(`Importing set: original_id=${set.set_id}, using_id=${setId}`);
+                  
+                  await client.query(`
+                    INSERT INTO sets (
+                      set_id, tenant_id, session_id, exercise_id, set_index, reps,
+                      value_1_type, value_1_numeric, value_2_type, value_2_numeric,
+                      notes, created_at, updated_at
+                    )
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                    ON CONFLICT (set_id) DO UPDATE SET
+                      reps = EXCLUDED.reps,
+                      value_1_type = EXCLUDED.value_1_type,
+                      value_1_numeric = EXCLUDED.value_1_numeric,
+                      value_2_type = EXCLUDED.value_2_type,
+                      value_2_numeric = EXCLUDED.value_2_numeric,
+                      notes = EXCLUDED.notes,
+                      updated_at = EXCLUDED.updated_at
+                  `, [
+                    setId, data.tenant.tenant_id, session.session_id, set.exercise_id,
+                    set.set_index, set.reps, set.value_1_type, set.value_1_numeric,
+                    set.value_2_type, set.value_2_numeric, set.notes, set.created_at, set.updated_at
+                  ]);
+                  importedSets++;
+                } catch (setError) {
+                  result.errors.push(`Failed to import set ${set.set_id || 'null'}: ${setError}`);
+                  // Continue with next set instead of failing entire session
+                }
               }
             } catch (error) {
               result.errors.push(`Failed to import session ${session.session_id}: ${error}`);
@@ -875,13 +888,18 @@ export class DataImporter {
       const exerciseIds = new Set<string>();
       data.sessions.forEach(session => {
         session.sets.forEach(set => {
-          exerciseIds.add(set.exercise_id);
+          if (set.exercise_id && set.exercise_id !== null && set.exercise_id !== 'null') { // Skip null/undefined exercise_ids
+            exerciseIds.add(set.exercise_id);
+          }
         });
       });
+
+      console.log('Validating exercise IDs:', Array.from(exerciseIds));
 
       for (const exerciseId of exerciseIds) {
         const exists = await client.query('SELECT exercise_id FROM exercises WHERE exercise_id = $1', [exerciseId]);
         if (exists.rows.length === 0) {
+          console.log(`Exercise validation failed for: ${exerciseId}`);
           errors.push(`Exercise ${exerciseId} referenced in sets but not found in global exercises`);
         }
       }
