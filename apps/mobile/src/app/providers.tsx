@@ -13,12 +13,18 @@ export const trpc = createTRPCReact<AppRouter>()
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') {
-    // Client-side: use the external API server port
-    return 'http://localhost:3001'
+    // Client-side: use environment variable or fallback to localhost
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
   }
-  // Server-side: use internal Docker network
+  
+  // Server-side: prioritize environment variables
+  if (process.env.API_URL) {
+    return process.env.API_URL
+  }
+  
+  // Fallback for development
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-  return `http://api:3001` // Use Docker service name
+  return `http://api:3001` // Use Docker service name for local development
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {

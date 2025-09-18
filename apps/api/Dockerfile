@@ -53,5 +53,6 @@ USER apiuser
 EXPOSE 3001
 
 ENV PORT=3001
+ENV NODE_ENV=production
 
 CMD ["node", "apps/api/dist/index.js"]

@@ -18,8 +18,8 @@ export async function DELETE(request: NextRequest) {
 
 async function proxyRequest(request: NextRequest, method: string) {
   try {
-    // Force Docker service name for container environment
-    const apiBaseUrl = 'http://api:3001';
+    // Use environment variable for API URL, fallback to Docker service name
+    const apiBaseUrl = process.env.API_URL || 'http://api:3001';
     
     const url = new URL(request.url);
     

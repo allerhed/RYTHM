@@ -136,6 +136,66 @@ resource postgresFirewallRule 'Microsoft.DBforPostgreSQL/flexibleServers/firewal
   }
 }
 
+// Storage Account for file uploads and backups
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+  name: 'st${resourceToken}'
+  location: location
+  tags: tags
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    allowBlobPublicAccess: false
+    minimumTlsVersion: 'TLS1_2'
+    supportsHttpsTrafficOnly: true
+  }
+}
+
+// Blob service
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
+  parent: storageAccount
+  name: 'default'
+}
+
+// Storage containers
+resource uploadsContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
+  parent: blobService
+  name: 'uploads'
+  properties: {
+    publicAccess: 'None'
+  }
+}
+
+resource backupsContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
+  parent: blobService
+  name: 'backups'
+  properties: {
+    publicAccess: 'None'
+  }
+}
+
+// Key Vault for secrets management
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+  name: 'kv-${resourceToken}'
+  location: location
+  tags: tags
+  properties: {
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    tenantId: tenant().tenantId
+    enabledForDeployment: false
+    enabledForDiskEncryption: false
+    enabledForTemplateDeployment: true
+    enableSoftDelete: true
+    softDeleteRetentionInDays: 7
+    enablePurgeProtection: false
+    enableRbacAuthorization: true
+  }
+}
+
 // User Assigned Identity for container apps
 resource apiIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: 'id-api-${resourceToken}'
@@ -145,6 +205,12 @@ resource apiIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-3
 
 resource mobileIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: 'id-mobile-${resourceToken}'
+  location: location
+  tags: tags
+}
+
+resource adminIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: 'id-admin-${resourceToken}'
   location: location
   tags: tags
 }
@@ -171,6 +237,48 @@ resource mobileAcrRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-0
   properties: {
     principalId: mobileIdentity.properties.principalId
     roleDefinitionId: acrPullRoleDefinition.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource adminAcrRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: containerRegistry
+  name: guid(containerRegistry.id, adminIdentity.id, acrPullRoleDefinition.id)
+  properties: {
+    principalId: adminIdentity.properties.principalId
+    roleDefinitionId: acrPullRoleDefinition.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Storage Blob Data Contributor role for file uploads
+resource storageBlobDataContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe' // Storage Blob Data Contributor role
+}
+
+resource apiStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: storageAccount
+  name: guid(storageAccount.id, apiIdentity.id, storageBlobDataContributorRoleDefinition.id)
+  properties: {
+    principalId: apiIdentity.properties.principalId
+    roleDefinitionId: storageBlobDataContributorRoleDefinition.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Key Vault Secrets User role for apps
+resource keyVaultSecretsUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User role
+}
+
+resource apiKeyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: keyVault
+  name: guid(keyVault.id, apiIdentity.id, keyVaultSecretsUserRoleDefinition.id)
+  properties: {
+    principalId: apiIdentity.properties.principalId
+    roleDefinitionId: keyVaultSecretsUserRoleDefinition.id
     principalType: 'ServicePrincipal'
   }
 }
@@ -261,16 +369,20 @@ resource apiContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
               name: 'PORT'
               value: '3001'
             }
+            {
+              name: 'AZURE_STORAGE_ACCOUNT_NAME'
+              value: storageAccount.name
+            }
           ]
           resources: {
-            cpu: json('0.25')
-            memory: '0.5Gi'
+            cpu: json('0.5')
+            memory: '1Gi'
           }
         }
       ]
       scale: {
         minReplicas: 1
-        maxReplicas: 3
+        maxReplicas: 5
       }
     }
   }
@@ -322,21 +434,13 @@ resource mobileContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
               value: 'production'
             }
             {
-              name: 'API_URL'
-              value: 'https://${apiContainerApp.properties.configuration.ingress.fqdn}'
-            }
-            {
-              name: 'NEXT_PUBLIC_API_URL'
-              value: 'https://${apiContainerApp.properties.configuration.ingress.fqdn}'
-            }
-            {
               name: 'PORT'
               value: '3000'
             }
           ]
           resources: {
-            cpu: json('0.25')
-            memory: '0.5Gi'
+            cpu: json('0.5')
+            memory: '1Gi'
           }
         }
       ]
@@ -351,6 +455,70 @@ resource mobileContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
   ]
 }
 
+// Admin Container App
+resource adminContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
+  name: 'ca-admin-${resourceToken}'
+  location: location
+  tags: tags
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${adminIdentity.id}': {}
+    }
+  }
+  properties: {
+    managedEnvironmentId: containerAppsEnvironment.id
+    configuration: {
+      registries: [
+        {
+          server: containerRegistry.properties.loginServer
+          identity: adminIdentity.id
+        }
+      ]
+      ingress: {
+        external: true
+        targetPort: 3002
+        allowInsecure: false
+        traffic: [
+          {
+            weight: 100
+            latestRevision: true
+          }
+        ]
+      }
+    }
+    template: {
+      containers: [
+        {
+          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          name: 'admin'
+          env: [
+            {
+              name: 'NODE_ENV'
+              value: 'production'
+            }
+            {
+              name: 'PORT'
+              value: '3002'
+            }
+          ]
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+        }
+      ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 2
+      }
+    }
+  }
+  dependsOn: [
+    adminAcrRoleAssignment
+  ]
+}
+
 // App outputs
 output AZURE_LOCATION string = location
 output AZURE_TENANT_ID string = tenant().tenantId
@@ -359,8 +527,12 @@ output AZURE_RESOURCE_GROUP string = resourceGroup().name
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.properties.loginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = containerRegistry.name
 
+output AZURE_STORAGE_ACCOUNT_NAME string = storageAccount.name
+output AZURE_KEY_VAULT_NAME string = keyVault.name
+
 output API_BASE_URL string = 'https://${apiContainerApp.properties.configuration.ingress.fqdn}'
 output MOBILE_BASE_URL string = 'https://${mobileContainerApp.properties.configuration.ingress.fqdn}'
+output ADMIN_BASE_URL string = 'https://${adminContainerApp.properties.configuration.ingress.fqdn}'
 
 output POSTGRES_HOST string = postgresServer.properties.fullyQualifiedDomainName
 output POSTGRES_DATABASE string = 'rythm'

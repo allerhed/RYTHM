@@ -60,13 +60,33 @@ export class Database {
 }
 
 // Export singleton instance
-export const db = new Database({
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME || 'rythm',
-  user: process.env.DB_USER || 'rythm_api',
-  password: process.env.DB_PASSWORD || 'password',
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+export const db = new Database(getDatabaseConfig());
+
+function getDatabaseConfig(): PoolConfig {
+  // If DATABASE_URL is provided (Azure), parse it
+  if (process.env.DATABASE_URL) {
+    const url = new URL(process.env.DATABASE_URL);
+    return {
+      host: url.hostname,
+      port: parseInt(url.port || '5432'),
+      database: url.pathname.substring(1), // Remove leading slash
+      user: url.username,
+      password: url.password,
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    };
+  }
+  
+  // Fallback to individual environment variables (local development)
+  return {
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432'),
+    database: process.env.DB_NAME || 'rythm',
+    user: process.env.DB_USER || 'rythm_api',
+    password: process.env.DB_PASSWORD || 'password',
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  };
+}
