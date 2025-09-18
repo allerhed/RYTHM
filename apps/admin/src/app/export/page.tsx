@@ -184,7 +184,16 @@ export default function ExportPage() {
       
       // Parse file based on extension
       if (file.name.endsWith('.json')) {
-        data = JSON.parse(fileContent)
+        const parsedData = JSON.parse(fileContent)
+        
+        // Check if this is an export result wrapper or raw data
+        if (parsedData.success && parsedData.data) {
+          // This is an export result - extract the data
+          data = parsedData.data
+        } else {
+          // This is raw data
+          data = parsedData
+        }
       } else if (file.name.endsWith('.sql')) {
         // For SQL files, we'd need a SQL parser - for now, show error
         throw new Error('SQL import not yet implemented - please use JSON format')
@@ -206,7 +215,57 @@ export default function ExportPage() {
       
       // Determine import type and execute
       let result: any
-      if (data.tenant) {
+      
+      // Check for full system export structure
+      if (data.global && data.tenants) {
+        console.log('Detected full system export, importing global data first')
+        
+        // Import global data first
+        const globalResult = await apiClient.admin.importGlobalData({
+          data: data.global,
+          mergeStrategy: importStrategy,
+          validateReferences,
+          createBackup,
+          dryRun
+        })
+        
+        if (!globalResult.success) {
+          throw new Error(`Global data import failed: ${globalResult.errors.join(', ')}`)
+        }
+        
+        // Then import each tenant
+        const tenantResults = []
+        for (const [tenantId, tenantData] of Object.entries(data.tenants)) {
+          const tenantResult = await apiClient.admin.importTenant({
+            data: tenantData,
+            mergeStrategy: importStrategy,
+            validateReferences,
+            createBackup: false, // Only backup once for the full import
+            dryRun
+          })
+          tenantResults.push(tenantResult)
+        }
+        
+        // Combine results
+        result = {
+          success: tenantResults.every(r => r.success) && globalResult.success,
+          imported: {
+            global: globalResult.imported || {},
+            tenants: tenantResults.reduce((acc, r, i) => {
+              acc[Object.keys(data.tenants)[i]] = r.imported || {}
+              return acc
+            }, {} as Record<string, any>)
+          },
+          errors: [
+            ...(globalResult.errors || []),
+            ...tenantResults.flatMap(r => r.errors || [])
+          ],
+          backupId: globalResult.backupId
+        }
+      }
+      // Check for tenant data structure
+      else if (data.tenant || (data.users && data.sessions)) {
+        console.log('Detected tenant data structure, importing as tenant data')
         result = await apiClient.admin.importTenant({
           data,
           mergeStrategy: importStrategy,
@@ -214,7 +273,10 @@ export default function ExportPage() {
           createBackup,
           dryRun
         })
-      } else if (data.exercises || data.equipment || data.exercise_templates) {
+      } 
+      // Check for global data structure
+      else if (data.exercises || data.equipment || data.exercise_templates) {
+        console.log('Detected global data structure, importing as global data')
         result = await apiClient.admin.importGlobalData({
           data,
           mergeStrategy: importStrategy,
@@ -222,8 +284,16 @@ export default function ExportPage() {
           createBackup,
           dryRun
         })
-      } else {
-        throw new Error('Invalid data format. Expected tenant or global data structure.')
+      }
+      else {
+        // Try to give more helpful error message
+        const dataKeys = Object.keys(data || {})
+        throw new Error(`Invalid data format. Expected:
+        - Full export: 'global' and 'tenants' properties
+        - Tenant data: 'tenant', 'users', or 'sessions' properties  
+        - Global data: 'exercises', 'equipment', or 'exercise_templates' properties
+        
+        Found properties: ${dataKeys.join(', ')}`)
       }
       
       // Update job with completion
@@ -265,8 +335,12 @@ export default function ExportPage() {
   const downloadExport = (job: ExportJob, exportData: any) => {
     if (!job.downloadUrl || !exportData) return
     
+    // For download, we want the raw data structure (not the wrapped result)
+    // so the downloaded file can be imported directly
+    const downloadData = exportData
+    
     const blob = new Blob([
-      exportFormat === 'json' ? JSON.stringify(exportData, null, 2) : exportData
+      exportFormat === 'json' ? JSON.stringify(downloadData, null, 2) : downloadData
     ], { 
       type: exportFormat === 'json' ? 'application/json' : 
            exportFormat === 'sql' ? 'text/sql' : 
