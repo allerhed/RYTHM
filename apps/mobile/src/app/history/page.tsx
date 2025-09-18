@@ -1,10 +1,12 @@
 'use client'
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { trpc } from '../providers'
 import { CalendarIcon, ClockIcon, PlayIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 export default function HistoryPage() {
+  const router = useRouter()
   const { user } = useAuth()
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'strength' | 'cardio'>('all')
   const [currentPage, setCurrentPage] = useState(1)
@@ -72,7 +74,7 @@ export default function HistoryPage() {
   }
 
   const formatDuration = (startedAt: string, completedAt: string | null) => {
-    if (!completedAt) return 'In progress'
+    if (!completedAt) return null // Don't show duration for incomplete workouts
     
     const start = new Date(startedAt)
     const end = new Date(completedAt)
@@ -184,10 +186,16 @@ export default function HistoryPage() {
               {recentSessions.map((session: any) => (
                 <div
                   key={session.session_id}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow"
+                  onClick={() => router.push(`/training/view/${session.session_id}`)}
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-all cursor-pointer"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
+                      {/* Workout Name */}
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                        {session.name || `${session.category.charAt(0).toUpperCase() + session.category.slice(1)} Workout`}
+                      </h3>
+                      
                       <div className="flex items-center space-x-3">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(session.category)}`}>
                           {session.category.charAt(0).toUpperCase() + session.category.slice(1)}
@@ -196,7 +204,7 @@ export default function HistoryPage() {
                           <CalendarIcon className="w-4 h-4 mr-1" />
                           {formatDate(session.started_at)}
                         </div>
-                        {session.completed_at && (
+                        {formatDuration(session.started_at, session.completed_at) && (
                           <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                             <ClockIcon className="w-4 h-4 mr-1" />
                             {formatDuration(session.started_at, session.completed_at)}
@@ -220,13 +228,11 @@ export default function HistoryPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2">
-                      {!session.completed_at && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                          <PlayIcon className="w-3 h-3 mr-1" />
-                          In Progress
-                        </span>
-                      )}
+                    <div className="flex items-center">
+                      {/* Click indicator */}
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </div>
                   </div>
                 </div>
