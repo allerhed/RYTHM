@@ -1,0 +1,144 @@
+name: Deploy Infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy (prod only)'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - prod
+      confirm_deployment:
+        description: 'Type "deploy" to confirm infrastructure deployment'
+        required: true
+        type: string
+
+env:
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate-input:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm_deployment }}" != "deploy" ]; then
+            echo "❌ Deployment not confirmed. Please type 'deploy' to proceed."
+            exit 1
+          fi
+          echo "✅ Deployment confirmed for production in Sweden Central"
+
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+    needs: [validate-input]
+    environment: prod
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Resource Group
+        run: |
+          az group create \
+            --name rg-rythm-prod \
+            --location ${{ vars.AZURE_LOCATION || 'swedencentral' }} \
+            --tags azd-env-name=rythm-prod
+
+      - name: Generate secrets and deploy infrastructure
+        run: |
+          # Generate secure passwords
+          POSTGRES_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
+          echo "::add-mask::$POSTGRES_PASSWORD"
+          
+          JWT_SECRET=$(openssl rand -base64 64 | tr -d "=+/" | cut -c1-64)
+          echo "::add-mask::$JWT_SECRET"
+          
+          DEPLOYMENT_NAME="rythm-infra-$(date +%Y%m%d-%H%M%S)"
+          
+          echo "Validating infrastructure template..."
+          az deployment group validate \
+            --resource-group rg-rythm-prod \
+            --template-file infra/main.bicep \
+            --parameters \
+              environmentName=rythm-prod \
+              location=${{ vars.AZURE_LOCATION || 'swedencentral' }} \
+              postgresAdminLogin=rythm_admin \
+              postgresAdminPassword="$POSTGRES_PASSWORD" \
+              jwtSecret="$JWT_SECRET"
+          
+          echo "Deploying infrastructure..."
+          az deployment group create \
+            --resource-group rg-rythm-prod \
+            --template-file infra/main.bicep \
+            --parameters \
+              environmentName=rythm-prod \
+              location=${{ vars.AZURE_LOCATION || 'swedencentral' }} \
+              postgresAdminLogin=rythm_admin \
+              postgresAdminPassword="$POSTGRES_PASSWORD" \
+              jwtSecret="$JWT_SECRET" \
+            --name $DEPLOYMENT_NAME
+          
+          # Get deployment outputs
+          DEPLOYMENT_OUTPUTS=$(az deployment group show \
+            --resource-group rg-rythm-prod \
+            --name $DEPLOYMENT_NAME \
+            --query properties.outputs \
+            --output json)
+          
+          # Extract key values
+          CONTAINER_REGISTRY=$(echo $DEPLOYMENT_OUTPUTS | jq -r '.AZURE_CONTAINER_REGISTRY_NAME.value')
+          STORAGE_ACCOUNT=$(echo $DEPLOYMENT_OUTPUTS | jq -r '.AZURE_STORAGE_ACCOUNT_NAME.value')
+          KEY_VAULT=$(echo $DEPLOYMENT_OUTPUTS | jq -r '.AZURE_KEY_VAULT_NAME.value')
+          
+          # Store in Key Vault for application deployment
+          az keyvault secret set --vault-name $KEY_VAULT --name "postgres-admin-password" --value "$POSTGRES_PASSWORD"
+          az keyvault secret set --vault-name $KEY_VAULT --name "jwt-secret" --value "$JWT_SECRET"
+          az keyvault secret set --vault-name $KEY_VAULT --name "container-registry-name" --value "$CONTAINER_REGISTRY"
+          az keyvault secret set --vault-name $KEY_VAULT --name "storage-account-name" --value "$STORAGE_ACCOUNT"
+          
+          echo "✅ Infrastructure deployed successfully to Sweden Central"
+          echo "🔐 Secrets stored in Key Vault: $KEY_VAULT"
+          echo "📦 Container Registry: $CONTAINER_REGISTRY"
+          echo "💾 Storage Account: $STORAGE_ACCOUNT"
+          
+          # Run database migrations
+          POSTGRES_HOST=$(echo $DEPLOYMENT_OUTPUTS | jq -r '.POSTGRES_HOST.value')
+          
+          # Install PostgreSQL client
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          
+          # Wait for PostgreSQL to be ready
+          echo "Waiting for PostgreSQL to be ready..."
+          timeout 300 bash -c "until pg_isready -h $POSTGRES_HOST -U rythm_admin; do sleep 10; done"
+          
+          # Run migrations
+          export PGPASSWORD="$POSTGRES_PASSWORD"
+          for migration in packages/db/migrations/*.sql; do
+            echo "Running migration: $migration"
+            psql -h $POSTGRES_HOST -U rythm_admin -d rythm -f $migration
+          done
+          
+          echo "✅ Database migrations completed"
+
+      - name: Summary
+        run: |
+          echo "🎉 Production infrastructure deployment completed in Sweden Central"
+          echo "📋 Next steps:"
+          echo "  1. Run the 'Deploy Applications' workflow"
+          echo "  2. Configure custom domains if needed"
+          echo "  3. Set up monitoring alerts"

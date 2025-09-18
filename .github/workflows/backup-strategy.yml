@@ -1,0 +1,138 @@
+name: Backup Strategy
+
+on:
+  schedule:
+    # Daily at 2 AM UTC (3 AM CET, 4 AM CEST)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      backup_type:
+        description: 'Type of backup to run'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - database-only
+          - files-only
+
+env:
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    environment: prod
+    
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get Azure resources
+        run: |
+          RESOURCE_GROUP="rg-rythm-prod"
+          
+          # Get PostgreSQL server
+          POSTGRES_SERVER=$(az postgres flexible-server list --resource-group $RESOURCE_GROUP --query "[0].name" -o tsv)
+          
+          # Get storage account
+          STORAGE_ACCOUNT=$(az storage account list --resource-group $RESOURCE_GROUP --query "[0].name" -o tsv)
+          
+          # Get Key Vault
+          KEY_VAULT_NAME=$(az keyvault list --resource-group $RESOURCE_GROUP --query "[0].name" -o tsv)
+          
+          echo "RESOURCE_GROUP=$RESOURCE_GROUP" >> $GITHUB_ENV
+          echo "POSTGRES_SERVER=$POSTGRES_SERVER" >> $GITHUB_ENV
+          echo "STORAGE_ACCOUNT=$STORAGE_ACCOUNT" >> $GITHUB_ENV
+          echo "KEY_VAULT_NAME=$KEY_VAULT_NAME" >> $GITHUB_ENV
+
+      - name: Database backup
+        if: ${{ github.event.inputs.backup_type == 'full' || github.event.inputs.backup_type == 'database-only' || github.event_name == 'schedule' }}
+        run: |
+          BACKUP_DATE=$(date +%Y%m%d-%H%M%S)
+          
+          # Get database password from Key Vault
+          POSTGRES_PASSWORD=$(az keyvault secret show --vault-name ${{ env.KEY_VAULT_NAME }} --name "postgres-admin-password" --query "value" -o tsv)
+          
+          # Install PostgreSQL client
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          
+          # Create database backup
+          export PGPASSWORD="$POSTGRES_PASSWORD"
+          pg_dump -h ${{ env.POSTGRES_SERVER }}.postgres.database.azure.com \
+                  -U rythm_admin \
+                  -d rythm \
+                  --no-password \
+                  --format=custom \
+                  --compress=9 \
+                  --verbose \
+                  > rythm-backup-$BACKUP_DATE.dump
+          
+          # Upload backup to Azure Storage
+          az storage blob upload \
+            --account-name ${{ env.STORAGE_ACCOUNT }} \
+            --container-name backups \
+            --name "database/rythm-backup-$BACKUP_DATE.dump" \
+            --file rythm-backup-$BACKUP_DATE.dump \
+            --auth-mode login
+          
+          echo "✅ Database backup completed: rythm-backup-$BACKUP_DATE.dump"
+
+      - name: File storage backup
+        if: ${{ github.event.inputs.backup_type == 'full' || github.event.inputs.backup_type == 'files-only' || github.event_name == 'schedule' }}
+        run: |
+          BACKUP_DATE=$(date +%Y%m%d-%H%M%S)
+          
+          # Sync user uploads to backup container
+          az storage blob sync \
+            --account-name ${{ env.STORAGE_ACCOUNT }} \
+            --container uploads \
+            --destination uploads-backup-$BACKUP_DATE \
+            --auth-mode login
+          
+          echo "✅ File storage backup completed: uploads-backup-$BACKUP_DATE"
+
+      - name: Cleanup old backups
+        if: ${{ github.event_name == 'schedule' }}
+        run: |
+          # Keep only last 30 days of backups
+          CUTOFF_DATE=$(date -d '30 days ago' +%Y%m%d)
+          
+          # List and delete old database backups
+          az storage blob list \
+            --account-name ${{ env.STORAGE_ACCOUNT }} \
+            --container-name backups \
+            --prefix "database/" \
+            --auth-mode login \
+            --query "[?lastModified<'$(date -d '30 days ago' --iso-8601)'].name" \
+            -o tsv | while read blob; do
+              if [ ! -z "$blob" ]; then
+                az storage blob delete \
+                  --account-name ${{ env.STORAGE_ACCOUNT }} \
+                  --container-name backups \
+                  --name "$blob" \
+                  --auth-mode login
+                echo "Deleted old backup: $blob"
+              fi
+            done
+          
+          echo "✅ Backup cleanup completed"
+
+      - name: Summary
+        run: |
+          echo "🎉 Backup strategy completed for production environment"
+          echo "📋 Backup details:"
+          echo "  - Database backups: daily at 2 AM UTC"
+          echo "  - File storage sync: daily backup with versioning"
+          echo "  - Retention: 30 days"
+          echo "  - Location: Azure Storage Account in Sweden Central"

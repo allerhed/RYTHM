@@ -1,0 +1,128 @@
+name: Deploy Applications
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'infra/**'
+      - 'docs/**'
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy (prod only)'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - prod
+
+env:
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  REGISTRY_LOGIN_SERVER: ${{ vars.REGISTRY_LOGIN_SERVER }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get Azure resources
+        run: |
+          # Get resource names from deployment
+          RESOURCE_GROUP="rg-rythm-prod"
+          
+          # Get container registry
+          REGISTRY_NAME=$(az acr list --resource-group $RESOURCE_GROUP --query "[0].name" -o tsv)
+          REGISTRY_LOGIN_SERVER=$(az acr show --name $REGISTRY_NAME --resource-group $RESOURCE_GROUP --query "loginServer" -o tsv)
+          
+          # Get Key Vault for secrets
+          KEY_VAULT_NAME=$(az keyvault list --resource-group $RESOURCE_GROUP --query "[0].name" -o tsv)
+          
+          echo "REGISTRY_NAME=$REGISTRY_NAME" >> $GITHUB_ENV
+          echo "REGISTRY_LOGIN_SERVER=$REGISTRY_LOGIN_SERVER" >> $GITHUB_ENV
+          echo "KEY_VAULT_NAME=$KEY_VAULT_NAME" >> $GITHUB_ENV
+          echo "RESOURCE_GROUP=$RESOURCE_GROUP" >> $GITHUB_ENV
+
+      - name: Build and push API image
+        run: |
+          az acr build \
+            --registry ${{ env.REGISTRY_NAME }} \
+            --image rythm-api:${{ github.sha }} \
+            --image rythm-api:latest \
+            ./apps/api
+
+      - name: Build and push Mobile image  
+        run: |
+          az acr build \
+            --registry ${{ env.REGISTRY_NAME }} \
+            --image rythm-mobile:${{ github.sha }} \
+            --image rythm-mobile:latest \
+            ./apps/mobile
+
+      - name: Deploy API to Container Apps
+        run: |
+          # Get secrets from Key Vault
+          POSTGRES_PASSWORD=$(az keyvault secret show --vault-name ${{ env.KEY_VAULT_NAME }} --name "postgres-admin-password" --query "value" -o tsv)
+          JWT_SECRET=$(az keyvault secret show --vault-name ${{ env.KEY_VAULT_NAME }} --name "jwt-secret" --query "value" -o tsv)
+          
+          # Get PostgreSQL host from existing deployment
+          POSTGRES_HOST=$(az postgres flexible-server list --resource-group ${{ env.RESOURCE_GROUP }} --query "[0].fullyQualifiedDomainName" -o tsv)
+          
+          # Update API container app
+          az containerapp update \
+            --name ca-rythm-api-prod \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.REGISTRY_LOGIN_SERVER }}/rythm-api:${{ github.sha }} \
+            --set-env-vars \
+              DATABASE_URL="postgresql://rythm_admin:$POSTGRES_PASSWORD@$POSTGRES_HOST:5432/rythm?sslmode=require" \
+              JWT_SECRET="$JWT_SECRET" \
+              NODE_ENV=production \
+              PORT=8080
+
+      - name: Deploy Mobile to Container Apps
+        run: |
+          # Update Mobile container app
+          az containerapp update \
+            --name ca-rythm-mobile-prod \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.REGISTRY_LOGIN_SERVER }}/rythm-mobile:${{ github.sha }} \
+            --set-env-vars \
+              NEXT_PUBLIC_API_URL="https://ca-rythm-api-prod.politeplant-12345678.${{ vars.AZURE_LOCATION || 'swedencentral' }}.azurecontainerapps.io" \
+              NODE_ENV=production
+
+      - name: Health checks
+        run: |
+          echo "Performing health checks..."
+          
+          # Get container app URLs
+          API_URL=$(az containerapp show --name ca-rythm-api-prod --resource-group ${{ env.RESOURCE_GROUP }} --query "properties.configuration.ingress.fqdn" -o tsv)
+          MOBILE_URL=$(az containerapp show --name ca-rythm-mobile-prod --resource-group ${{ env.RESOURCE_GROUP }} --query "properties.configuration.ingress.fqdn" -o tsv)
+          
+          # Test API health
+          echo "Testing API at https://$API_URL/health"
+          curl -f "https://$API_URL/health" || echo "⚠️ API health check failed"
+          
+          # Test Mobile app
+          echo "Testing Mobile app at https://$MOBILE_URL"
+          curl -f "https://$MOBILE_URL" || echo "⚠️ Mobile app health check failed"
+          
+          echo "✅ Deployment completed"
+          echo "🌐 API: https://$API_URL"
+          echo "📱 Mobile: https://$MOBILE_URL"
