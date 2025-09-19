@@ -33,7 +33,9 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
     name: 'Basic'
   }
   properties: {
-    adminUserEnabled: true
+    adminUserEnabled: false  // Use managed identity instead
+    publicNetworkAccess: 'Enabled'
+    zoneRedundancy: 'Disabled'
   }
 }
 
@@ -127,6 +129,7 @@ resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2
 }
 
 // Firewall rule to allow Azure services
+// Note: 0.0.0.0 allows all Azure services - consider restricting to Container Apps subnet in production
 resource postgresFirewallRule 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-03-01-preview' = {
   parent: postgresServer
   name: 'AllowAzureServices'
@@ -149,6 +152,9 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     allowBlobPublicAccess: false
     minimumTlsVersion: 'TLS1_2'
     supportsHttpsTrafficOnly: true
+    defaultToOAuthAuthentication: true
+    allowSharedKeyAccess: false  // Force use of RBAC
+    publicNetworkAccess: 'Enabled'  // Can be restricted later
   }
 }
 
@@ -324,9 +330,12 @@ resource apiContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
           }
         ]
         corsPolicy: {
-          allowedOrigins: ['*']
+          allowedOrigins: [
+            'https://${mobileContainerApp.name}.${containerAppsEnvironment.properties.defaultDomain}'
+            'https://${adminContainerApp.name}.${containerAppsEnvironment.properties.defaultDomain}'
+          ]
           allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-          allowedHeaders: ['*']
+          allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
           allowCredentials: true
         }
       }
