@@ -33,7 +33,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
     name: 'Basic'
   }
   properties: {
-    adminUserEnabled: false  // Use managed identity instead
+    adminUserEnabled: true  // Enable temporarily for deployment
     publicNetworkAccess: 'Enabled'
     zoneRedundancy: 'Disabled'
   }
@@ -222,6 +222,7 @@ resource adminIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01
 }
 
 // Role assignment for container registry access
+/*
 resource acrPullRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: subscription()
   name: '7f951dda-4ed3-4680-a7ca-43fe172d538d' // AcrPull role
@@ -288,6 +289,7 @@ resource apiKeyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
     principalType: 'ServicePrincipal'
   }
 }
+*/
 
 // API Container App
 resource apiContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
@@ -312,11 +314,16 @@ resource apiContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
           name: 'jwt-secret'
           value: jwtSecret
         }
+        {
+          name: 'registry-password'
+          value: containerRegistry.listCredentials().passwords[0].value
+        }
       ]
       registries: [
         {
           server: containerRegistry.properties.loginServer
-          identity: apiIdentity.id
+          username: containerRegistry.name
+          passwordSecretRef: 'registry-password'
         }
       ]
       ingress: {
@@ -330,10 +337,10 @@ resource apiContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
           }
         ]
         corsPolicy: {
-          allowedOrigins: ['*']  // Will be updated by deployment workflow
+          allowedOrigins: ['*']
           allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
           allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-          allowCredentials: false  // Safer with wildcard origins
+          allowCredentials: false
         }
       }
     }
@@ -392,9 +399,6 @@ resource apiContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
       }
     }
   }
-  dependsOn: [
-    apiAcrRoleAssignment
-  ]
 }
 
 // Mobile Container App
@@ -411,10 +415,17 @@ resource mobileContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
+      secrets: [
+        {
+          name: 'registry-password'
+          value: containerRegistry.listCredentials().passwords[0].value
+        }
+      ]
       registries: [
         {
           server: containerRegistry.properties.loginServer
-          identity: mobileIdentity.id
+          username: containerRegistry.name
+          passwordSecretRef: 'registry-password'
         }
       ]
       ingress: {
@@ -456,9 +467,6 @@ resource mobileContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
       }
     }
   }
-  dependsOn: [
-    mobileAcrRoleAssignment
-  ]
 }
 
 // Admin Container App
@@ -475,10 +483,17 @@ resource adminContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
+      secrets: [
+        {
+          name: 'registry-password'
+          value: containerRegistry.listCredentials().passwords[0].value
+        }
+      ]
       registries: [
         {
           server: containerRegistry.properties.loginServer
-          identity: adminIdentity.id
+          username: containerRegistry.name
+          passwordSecretRef: 'registry-password'
         }
       ]
       ingress: {
@@ -520,9 +535,6 @@ resource adminContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
       }
     }
   }
-  dependsOn: [
-    adminAcrRoleAssignment
-  ]
 }
 
 // App outputs
