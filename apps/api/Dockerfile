@@ -18,8 +18,14 @@ RUN npm ci --only=production
 FROM base AS builder
 WORKDIR /app
 
-# Copy dependencies
-COPY --from=deps /app/node_modules ./node_modules
+# Copy package files for dev dependencies
+COPY package.json package-lock.json* ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/db/package.json ./packages/db/
+
+# Install all dependencies (including dev dependencies for TypeScript)
+RUN npm ci
 
 # Copy source code
 COPY . .

@@ -23,6 +23,9 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy source code
 COPY . .
 
+# Set environment variables for build
+ENV NEXT_PUBLIC_API_URL=https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io
+
 # Build shared packages first
 RUN npm run build --workspace=@rythm/shared
 

@@ -115,8 +115,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true)
     
     try {
-      console.log('📡 Making fetch request to API...')
-      const response = await fetch('/api/auth/login', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const loginUrl = `${apiUrl}/api/auth/login`
+      console.log('📡 Making fetch request to API:', loginUrl)
+      
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -171,8 +174,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true)
     
     try {
-      console.log('Making fetch request to:', '/api/auth/register')
-      const response = await fetch('/api/auth/register', {
+      console.log('Environment variables check:')
+      console.log('- process.env.API_URL:', process.env.API_URL)
+      console.log('- process.env.NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
+      console.log('- All process.env keys containing API:', Object.keys(process.env).filter(k => k.includes('API')))
+      
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const registerUrl = `${apiUrl}/api/auth/register`
+      console.log('Final API URL being used:', apiUrl)
+      console.log('Making fetch request to:', registerUrl)
+      
+      const response = await fetch(registerUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -272,7 +284,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const response = await fetch('/api/auth/profile', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const profileUrl = `${apiUrl}/api/auth/profile`
+      
+      const response = await fetch(profileUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -327,7 +342,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const response = await fetch('/api/auth/profile', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const profileUrl = `${apiUrl}/api/auth/profile`
+      
+      const response = await fetch(profileUrl, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -360,7 +378,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const response = await fetch('/api/auth/password', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const passwordUrl = `${apiUrl}/api/auth/password`
+      
+      const response = await fetch(passwordUrl, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -386,10 +407,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const avatarUrl = `${apiUrl}/api/auth/avatar`
+      
       const formData = new FormData()
       formData.append('avatar', file)
 
-      const response = await fetch('/api/auth/avatar', {
+      const response = await fetch(avatarUrl, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -161,27 +161,7 @@ export default function LoginPage() {
             </div>
           </form>
 
-          {/* Demo Credentials */}
-          <div className="mt-8 pt-6 border-t border-gray-700">
-            <div className="bg-gray-700/50 rounded-xl p-4">
-              <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center">
-                <svg className="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Demo Credentials
-              </h3>
-              <div className="space-y-2 text-xs text-gray-400">
-                <div className="flex justify-between">
-                  <span>Email:</span>
-                  <span className="font-mono text-blue-400">orchestrator@rythm.app</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Password:</span>
-                  <span className="font-mono text-blue-400">Password123</span>
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
 
         {/* Footer */}

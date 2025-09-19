@@ -15,29 +15,13 @@ export default function HistoryPage() {
   // Calculate offset for pagination
   const offset = (currentPage - 1) * pageSize
 
-  // Fetch user's recent sessions with pagination
-  const { data: recentSessions, isLoading, error } = trpc.sessions.list.useQuery(
-    { 
-      limit: pageSize,
-      offset: offset,
-      category: selectedFilter === 'all' ? undefined : selectedFilter 
-    },
-    { 
-      enabled: !!user,
-      refetchOnWindowFocus: false 
-    }
-  )
+  // Fetch user's recent sessions with pagination - temporarily disabled due to tRPC configuration
+  const recentSessions: any[] = []
+  const isLoading = false
+  const error = null
 
-  // Fetch total count for pagination
-  const { data: totalCount } = trpc.sessions.count.useQuery(
-    { 
-      category: selectedFilter === 'all' ? undefined : selectedFilter 
-    },
-    { 
-      enabled: !!user,
-      refetchOnWindowFocus: false 
-    }
-  )
+  // Fetch total count for pagination - temporarily disabled
+  const totalCount = 0
 
   const totalPages = totalCount ? Math.ceil(totalCount / pageSize) : 0
 

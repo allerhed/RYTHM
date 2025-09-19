@@ -6,7 +6,10 @@ export class Database {
   constructor(config: PoolConfig) {
     this.pool = new Pool({
       ...config,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      ssl: process.env.NODE_ENV === 'production' ? { 
+        rejectUnauthorized: false,
+        requestCert: false 
+      } : false,
     });
   }
 
@@ -87,6 +90,6 @@ function getDatabaseConfig(): PoolConfig {
     password: process.env.DB_PASSWORD || 'password',
     max: 20,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 10000, // Increased timeout for Azure
   };
 }

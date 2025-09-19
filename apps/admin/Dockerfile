@@ -8,9 +8,10 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy package files
-COPY package.json turbo.json ./
-COPY packages/*/package.json ./packages/*/
+COPY package.json package-lock.json* ./
 COPY apps/admin/package.json ./apps/admin/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/db/package.json ./packages/db/
 
 # Install dependencies
 RUN npm ci --only=production
@@ -19,9 +20,24 @@ RUN npm ci --only=production
 FROM base AS builder
 WORKDIR /app
 
-# Copy dependencies
-COPY --from=deps /app/node_modules ./node_modules
+# Copy package files for dev dependencies
+COPY package.json package-lock.json* ./
+COPY apps/admin/package.json ./apps/admin/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/db/package.json ./packages/db/
+
+# Install all dependencies (including dev dependencies for TypeScript)
+RUN npm ci
+
+# Copy source code
 COPY . .
+
+# Set environment variables for build
+ENV NEXT_PUBLIC_API_URL=https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io
+
+# Build shared packages first
+RUN npm run build --workspace=@rythm/shared
+RUN npm run build --workspace=@rythm/db
 
 # Build the admin app
 RUN npm run build --workspace=@rythm/admin
