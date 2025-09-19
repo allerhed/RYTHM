@@ -54,7 +54,9 @@ RUN adduser --system --uid 1001 nextjs
 # Copy built application
 COPY --from=builder /app/apps/admin/.next/standalone ./
 COPY --from=builder /app/apps/admin/.next/static ./apps/admin/.next/static
-COPY --from=builder /app/apps/admin/public ./apps/admin/public
+
+# Create public directory structure
+RUN mkdir -p ./apps/admin/public
 
 USER nextjs
 
