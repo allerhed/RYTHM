@@ -145,24 +145,51 @@ jobs:
         run: |
           echo "Performing health checks..."
           
+          # Get container app names again (in case variables weren't passed)
+          API_APP_NAME=$(az containerapp list --resource-group $RESOURCE_GROUP --query "[?contains(name, 'api')].name" -o tsv)
+          MOBILE_APP_NAME=$(az containerapp list --resource-group $RESOURCE_GROUP --query "[?contains(name, 'mobile')].name" -o tsv)
+          ADMIN_APP_NAME=$(az containerapp list --resource-group $RESOURCE_GROUP --query "[?contains(name, 'admin')].name" -o tsv)
+          
+          echo "Found container apps:"
+          echo "API: $API_APP_NAME"
+          echo "Mobile: $MOBILE_APP_NAME" 
+          echo "Admin: $ADMIN_APP_NAME"
+          
           # Get container app URLs
           API_URL=$(az containerapp show --name $API_APP_NAME --resource-group $RESOURCE_GROUP --query "properties.configuration.ingress.fqdn" -o tsv)
           MOBILE_URL=$(az containerapp show --name $MOBILE_APP_NAME --resource-group $RESOURCE_GROUP --query "properties.configuration.ingress.fqdn" -o tsv)
           ADMIN_URL=$(az containerapp show --name $ADMIN_APP_NAME --resource-group $RESOURCE_GROUP --query "properties.configuration.ingress.fqdn" -o tsv)
           
+          echo "Container app URLs:"
+          echo "API: https://$API_URL"
+          echo "Mobile: https://$MOBILE_URL"
+          echo "Admin: https://$ADMIN_URL"
+          
           # Test API health
           echo "Testing API at https://$API_URL/health"
-          curl -f "https://$API_URL/health" || echo "⚠️ API health check failed"
+          if curl -f "https://$API_URL/health" --max-time 30; then
+            echo "✅ API health check passed"
+          else
+            echo "⚠️ API health check failed"
+          fi
           
           # Test Mobile app
           echo "Testing Mobile app at https://$MOBILE_URL"
-          curl -f "https://$MOBILE_URL" || echo "⚠️ Mobile app health check failed"
+          if curl -f "https://$MOBILE_URL" --max-time 30; then
+            echo "✅ Mobile app health check passed"
+          else
+            echo "⚠️ Mobile app health check failed"
+          fi
           
           # Test Admin app  
           echo "Testing Admin app at https://$ADMIN_URL"
-          curl -f "https://$ADMIN_URL" || echo "⚠️ Admin app health check failed"
+          if curl -f "https://$ADMIN_URL" --max-time 30; then
+            echo "✅ Admin app health check passed"
+          else
+            echo "⚠️ Admin app health check failed"
+          fi
           
           echo "✅ Deployment completed successfully"
           echo "🌐 API: https://$API_URL"
-          echo "📱 Mobile: https://$MOBILE_URL"
+          echo "📱 Mobile: https://$MOBILE_URL"  
           echo "🔧 Admin: https://$ADMIN_URL"
