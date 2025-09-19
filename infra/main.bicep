@@ -330,13 +330,10 @@ resource apiContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
           }
         ]
         corsPolicy: {
-          allowedOrigins: [
-            'https://${mobileContainerApp.name}.${containerAppsEnvironment.properties.defaultDomain}'
-            'https://${adminContainerApp.name}.${containerAppsEnvironment.properties.defaultDomain}'
-          ]
+          allowedOrigins: ['*']  // Will be updated by deployment workflow
           allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
           allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-          allowCredentials: true
+          allowCredentials: false  // Safer with wildcard origins
         }
       }
     }
