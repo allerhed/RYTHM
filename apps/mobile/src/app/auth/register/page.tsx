@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Input, Button } from '../../../components/Form'
-import { Header } from '../../../components/Navigation'
 import { Toast } from '../../../components/Feedback'
 import { useAuth } from '../../../contexts/AuthContext'
 
@@ -133,7 +132,7 @@ export default function RegisterPage() {
       })
       
       console.log('Registration successful!')
-      setToast({ type: 'success', message: 'Account created successfully!' })
+      setToast({ type: 'success', message: 'Welcome to RYTHM! Setting up your account...' })
       
       // Redirect to dashboard after successful registration
       // Give a moment for the auth state to update
@@ -153,12 +152,20 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header 
-        title="Create Account" 
-        showBack 
-        onBack={() => step === 1 ? router.back() : setStep(1)} 
-      />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+      {/* Header */}
+      <header className="safe-area-top px-6 pt-4">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => step === 1 ? router.back() : setStep(1)}
+            className="flex items-center justify-center w-10 h-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 transition-colors"
+          >
+            <span className="text-gray-600 dark:text-gray-400">←</span>
+          </button>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Create Account</h1>
+          <div className="w-10" /> {/* Spacer for center alignment */}
+        </div>
+      </header>
       
       {toast && (
         <Toast
@@ -168,178 +175,222 @@ export default function RegisterPage() {
         />
       )}
 
-      <div className="px-4 py-8">
+      <div className="px-6 py-8">
         <div className="max-w-md mx-auto">
+          {/* Logo and Welcome */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-6 shadow-lg">
+              <span className="text-2xl font-bold text-white">R</span>
+            </div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+              {step === 1 ? 'Join RYTHM' : 'Almost There!'}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
+              {step === 1 
+                ? 'Start your fitness journey today'
+                : 'Complete your profile setup'
+              }
+            </p>
+          </div>
+
           {/* Progress indicator */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-caption text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                 Step {step} of 2
               </span>
-              <span className="text-caption text-gray-500 dark:text-gray-400">
-                {step === 1 ? 'Account Details' : 'Personal Info'}
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {step === 1 ? 'Account Setup' : 'Personal Details'}
               </span>
             </div>
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div 
-                className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${(step / 2) * 100}%` }}
               />
             </div>
           </div>
 
-          {/* Welcome message */}
-          <div className="text-center mb-8">
-            <h2 className="text-title font-bold text-gray-900 dark:text-gray-100 mb-2">
-              {step === 1 ? 'Create Your Account' : 'Tell Us About You'}
-            </h2>
-            <p className="text-body text-gray-600 dark:text-gray-400">
-              {step === 1 
-                ? 'Start your training journey with RYTHM'
-                : 'Set up your organization profile'
-              }
-            </p>
-          </div>
+          {/* Form */}
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+            <form onSubmit={step === 1 ? handleNextStep : handleSubmit} className="space-y-6">
+              {step === 1 ? (
+                // Step 1: Account credentials
+                <>
+                  <div>
+                    <Input
+                      label="Email address"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange('email')}
+                      error={errors.email}
+                      placeholder="Enter your email"
+                      autoComplete="email"
+                      inputMode="email"
+                      required
+                      className="bg-gray-50/50 dark:bg-gray-700/50 border-gray-200/50 dark:border-gray-600/50"
+                    />
+                  </div>
 
-          <form onSubmit={step === 1 ? handleNextStep : handleSubmit} className="space-y-6">
-            {step === 1 ? (
-              // Step 1: Account credentials
-              <>
-                <Input
-                  label="Email address"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange('email')}
-                  error={errors.email}
-                  placeholder="Enter your email"
-                  autoComplete="email"
-                  inputMode="email"
-                  required
-                />
+                  <div>
+                    <Input
+                      label="Password"
+                      type="password"
+                      value={formData.password}
+                      onChange={handleInputChange('password')}
+                      error={errors.password}
+                      placeholder="Create a strong password"
+                      autoComplete="new-password"
+                      helperText="8+ characters with uppercase, lowercase, and number"
+                      required
+                      className="bg-gray-50/50 dark:bg-gray-700/50 border-gray-200/50 dark:border-gray-600/50"
+                    />
+                  </div>
 
-                <Input
-                  label="Password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleInputChange('password')}
-                  error={errors.password}
-                  placeholder="Create a strong password"
-                  autoComplete="new-password"
-                  helperText="Must be 8+ characters with uppercase, lowercase, and number"
-                  required
-                />
+                  <div>
+                    <Input
+                      label="Confirm Password"
+                      type="password"
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange('confirmPassword')}
+                      error={errors.confirmPassword}
+                      placeholder="Confirm your password"
+                      autoComplete="new-password"
+                      required
+                      className="bg-gray-50/50 dark:bg-gray-700/50 border-gray-200/50 dark:border-gray-600/50"
+                    />
+                  </div>
 
-                <Input
-                  label="Confirm Password"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange('confirmPassword')}
-                  error={errors.confirmPassword}
-                  placeholder="Confirm your password"
-                  autoComplete="new-password"
-                  required
-                />
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  className="w-full"
-                >
-                  Continue
-                </Button>
-              </>
-            ) : (
-              // Step 2: Personal information
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    label="First Name"
-                    type="text"
-                    value={formData.firstName}
-                    onChange={handleInputChange('firstName')}
-                    error={errors.firstName}
-                    placeholder="First name"
-                    autoComplete="given-name"
-                    required
-                  />
-
-                  <Input
-                    label="Last Name"
-                    type="text"
-                    value={formData.lastName}
-                    onChange={handleInputChange('lastName')}
-                    error={errors.lastName}
-                    placeholder="Last name"
-                    autoComplete="family-name"
-                    required
-                  />
-                </div>
-
-                <Input
-                  label="Organization Name"
-                  type="text"
-                  value={formData.tenantName}
-                  onChange={handleInputChange('tenantName')}
-                  error={errors.tenantName}
-                  placeholder="Your gym, team, or organization"
-                  autoComplete="organization"
-                  helperText="This will be your organization's workspace in RYTHM"
-                  required
-                />
-
-                <div className="space-y-4">
                   <Button
                     type="submit"
                     variant="primary"
                     size="lg"
-                    loading={loading || authLoading}
-                    className="w-full"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
-                    Create Account
+                    Continue
                   </Button>
-                  
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="lg"
-                    className="w-full"
-                    onClick={() => setStep(1)}
-                  >
-                    Back
-                  </Button>
-                </div>
-              </>
-            )}
-          </form>
+                </>
+              ) : (
+                // Step 2: Personal information
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      label="First Name"
+                      type="text"
+                      value={formData.firstName}
+                      onChange={handleInputChange('firstName')}
+                      error={errors.firstName}
+                      placeholder="First name"
+                      autoComplete="given-name"
+                      required
+                      className="bg-gray-50/50 dark:bg-gray-700/50 border-gray-200/50 dark:border-gray-600/50"
+                    />
+
+                    <Input
+                      label="Last Name"
+                      type="text"
+                      value={formData.lastName}
+                      onChange={handleInputChange('lastName')}
+                      error={errors.lastName}
+                      placeholder="Last name"
+                      autoComplete="family-name"
+                      required
+                      className="bg-gray-50/50 dark:bg-gray-700/50 border-gray-200/50 dark:border-gray-600/50"
+                    />
+                  </div>
+
+                  <div>
+                    <Input
+                      label="Organization Name"
+                      type="text"
+                      value={formData.tenantName}
+                      onChange={handleInputChange('tenantName')}
+                      error={errors.tenantName}
+                      placeholder="Your gym, team, or organization"
+                      autoComplete="organization"
+                      helperText="This will be your organization's workspace"
+                      required
+                      className="bg-gray-50/50 dark:bg-gray-700/50 border-gray-200/50 dark:border-gray-600/50"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      size="lg"
+                      loading={loading || authLoading}
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    >
+                      {loading || authLoading ? 'Creating Account...' : 'Create Account'}
+                    </Button>
+                    
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="lg"
+                      className="w-full bg-white/50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700"
+                      onClick={() => setStep(1)}
+                    >
+                      Back
+                    </Button>
+                  </div>
+                </>
+              )}
+            </form>
+          </div>
 
           {/* Terms and login link */}
           <div className="mt-8 space-y-4">
             {step === 2 && (
-              <p className="text-caption text-center text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-center text-gray-600 dark:text-gray-400 leading-relaxed">
                 By creating an account, you agree to our{' '}
-                <Link href="/terms" className="text-primary-600 dark:text-primary-400 hover:underline">
+                <Link href="/terms" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors">
                   Terms of Service
                 </Link>
                 {' '}and{' '}
-                <Link href="/privacy" className="text-primary-600 dark:text-primary-400 hover:underline">
+                <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors">
                   Privacy Policy
                 </Link>
               </p>
             )}
             
             <div className="text-center">
-              <p className="text-body text-gray-600 dark:text-gray-400">
-                Already have an account?{' '}
+              <p className="text-gray-600 dark:text-gray-400">
+                Already training with RYTHM?{' '}
                 <Link 
                   href="/auth/login" 
-                  className="text-primary-600 dark:text-primary-400 font-medium hover:underline focus:underline focus:outline-none"
+                  className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                 >
-                  Sign in
+                  Sign in here
                 </Link>
               </p>
             </div>
           </div>
+
+          {/* Benefits preview */}
+          {step === 1 && (
+            <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center mb-2">
+                  <span className="text-blue-600 dark:text-blue-400">📊</span>
+                </div>
+                <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Smart Analytics</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center mb-2">
+                  <span className="text-green-600 dark:text-green-400">💪</span>
+                </div>
+                <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">All Training</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-xl flex items-center justify-center mb-2">
+                  <span className="text-purple-600 dark:text-purple-400">📈</span>
+                </div>
+                <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Progress Tracking</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
