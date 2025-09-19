@@ -57,21 +57,24 @@ jobs:
             --registry $REGISTRY_NAME \
             --image rythm-api:${{ github.sha }} \
             --image rythm-api:latest \
-            ./apps/api
+            --file ./apps/api/Dockerfile \
+            .
           
           echo "Building and pushing Mobile image..."
           az acr build \
             --registry $REGISTRY_NAME \
             --image rythm-mobile:${{ github.sha }} \
             --image rythm-mobile:latest \
-            ./apps/mobile
+            --file ./apps/mobile/Dockerfile \
+            .
           
           echo "Building and pushing Admin image..."
           az acr build \
             --registry $REGISTRY_NAME \
             --image rythm-admin:${{ github.sha }} \
             --image rythm-admin:latest \
-            ./apps/admin
+            --file ./apps/admin/Dockerfile \
+            .
           
           # Store values for later steps
           echo "REGISTRY_NAME=$REGISTRY_NAME" >> $GITHUB_ENV
