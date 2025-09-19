@@ -85,7 +85,7 @@ jobs:
       - name: Deploy all applications
         run: |
           # Get secrets from Key Vault
-          POSTGRES_PASSWORD=$(az keyvault secret show --vault-name $KEY_VAULT_NAME --name "postgres-admin-password" --query "value" -o tsv)
+          POSTGRES_PASSWORD=$(az keyvault secret show --vault-name $KEY_VAULT_NAME --name "postgres-password" --query "value" -o tsv)
           JWT_SECRET=$(az keyvault secret show --vault-name $KEY_VAULT_NAME --name "jwt-secret" --query "value" -o tsv)
           
           # Get PostgreSQL host
