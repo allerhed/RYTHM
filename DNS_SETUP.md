@@ -32,7 +32,9 @@ To complete the setup of `api.rythm.training` custom domain, you need to add the
 - ✅ **API Container**: Deployed and running with updated image
 - ✅ **Build Scripts**: Direct ACR build scripts created and tested
 - ✅ **Code Updates**: All apps now reference `api.rythm.training`
-- ⏳ **DNS Setup**: Waiting for TXT record to be added to domain
+- ✅ **DNS Setup**: TXT record added and domain verified
+- ✅ **SSL Certificate**: Managed certificate created and bound
+- ✅ **API Testing**: https://api.rythm.training is live and responding
 
 ## URLs After Complete Setup
 
@@ -46,6 +48,6 @@ To complete the setup of `api.rythm.training` custom domain, you need to add the
 |----------------|-------------------|------------|-------------|
 | **Mobile App** | `https://rythm.training` | ✅ Live | End-user fitness tracking PWA |
 | **Admin App** | `https://admin.rythm.training` | ✅ Live | System administration interface |
-| **API Backend** | `https://api.rythm.training` | ⏳ DNS Setup | Backend API serving both apps |
+| **API Backend** | `https://api.rythm.training` | ✅ Live | Backend API serving both apps |
 
 All apps are now configured to use the clean custom domain URLs!

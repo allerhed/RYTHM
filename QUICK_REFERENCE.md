@@ -6,7 +6,7 @@
 |----------------|---------|------------|
 | **Mobile App** | `https://rythm.training` | ✅ Live |
 | **Admin App** | `https://admin.rythm.training` | ✅ Live |
-| **API Backend** | `https://api.rythm.training` | ⏳ DNS Pending |
+| **API Backend** | `https://api.rythm.training` | ✅ Live |
 
 ## 🚀 Fast Deployment Commands
 
