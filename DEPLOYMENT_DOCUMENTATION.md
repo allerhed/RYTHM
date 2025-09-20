@@ -23,7 +23,7 @@
 - **Production URLs:**
   - **Mobile App (Main)**: `https://rythm.training` - End-user fitness tracking PWA
   - **Admin Dashboard**: `https://admin.rythm.training` - System administration interface
-  - **API Backend**: Internal service at Azure Container Apps URL
+  - **API Backend**: `https://api.rythm.training` - Backend API serving both applications
 - **Deployment Date:** September 19, 2025
 - **Azure Region:** Sweden Central
 - **Subscription:** Visual Studio Enterprise Subscription (5899f73d-9264-4a9a-aee7-037197501dfa)

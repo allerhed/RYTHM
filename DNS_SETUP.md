@@ -36,8 +36,16 @@ To complete the setup of `api.rythm.training` custom domain, you need to add the
 
 ## URLs After Complete Setup
 
-- **Mobile App**: `https://rythm.training`
-- **Admin App**: `https://admin.rythm.training`  
-- **API**: `https://api.rythm.training`
+- **Mobile App**: `https://rythm.training` ✅ Live
+- **Admin App**: `https://admin.rythm.training` ✅ Live  
+- **API**: `https://api.rythm.training` ⏳ Pending DNS
+
+## Complete Production URL Structure
+
+| **Application** | **Production URL** | **Status** | **Purpose** |
+|----------------|-------------------|------------|-------------|
+| **Mobile App** | `https://rythm.training` | ✅ Live | End-user fitness tracking PWA |
+| **Admin App** | `https://admin.rythm.training` | ✅ Live | System administration interface |
+| **API Backend** | `https://api.rythm.training` | ⏳ DNS Setup | Backend API serving both apps |
 
 All apps are now configured to use the clean custom domain URLs!

@@ -1,4 +1,9 @@
-# RYTHM v0.9
+# RY## 🌐 Production Access
+
+### **Live Applications**
+- **Mobile App**: `https://rythm.training` - Main fitness tracking application for end users
+- **Admin App**: `https://admin.rythm.training` - Administrative interface for system management
+- **API Backend**: `https://api.rythm.training` - Backend API serving both applications.9
 
 A comprehensive hybrid training mobile web app (PWA) with multi-tenant support, real-time analytics, and enterprise-grade admin functionality designed for athletes, coaches, and fitness organizations.
 

@@ -8,6 +8,7 @@ This document contains all Azure URLs, configuration settings, and deployment in
 ### **Live Applications**
 - **Mobile App**: `https://rythm.training` - Main fitness tracking PWA for end users
 - **Admin App**: `https://admin.rythm.training` - Administrative interface for system management
+- **API Backend**: `https://api.rythm.training` - Backend API serving both applications
 
 ### **Azure Container Apps (Internal URLs)**
 - **Mobile App**: `https://ca-mobile-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io`
