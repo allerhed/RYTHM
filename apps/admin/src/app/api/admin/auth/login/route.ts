@@ -10,7 +10,7 @@ const ADMIN_TENANT_ID = '00000000-0000-0000-0000-000000000000'
 
 // Helper function to query the database
 async function queryDatabase(query: string, params: any[] = []) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'}/api/db-query`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'https://api.rythm.training'}/api/db-query`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // First, try to authenticate against system admin users via direct API call
-    const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'}/api/admin/validate`, {
+    const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'https://api.rythm.training'}/api/admin/validate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

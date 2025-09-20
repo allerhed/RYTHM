@@ -414,7 +414,7 @@ class ApiClient {
 
   constructor(baseUrl?: string) {
     // Use environment variable or provided baseUrl, fallback to production API for reliability
-    this.baseUrl = baseUrl || process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+    this.baseUrl = baseUrl || process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
     if (typeof window !== 'undefined') {
       this.token = localStorage.getItem('admin_token')
     }

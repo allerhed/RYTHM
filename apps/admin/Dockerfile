@@ -33,7 +33,7 @@ RUN npm ci
 COPY . .
 
 # Set environment variables for build
-ENV NEXT_PUBLIC_API_URL=https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io
+ENV NEXT_PUBLIC_API_URL=https://api.rythm.training
 
 # Build shared packages first
 RUN npm run build --workspace=@rythm/shared

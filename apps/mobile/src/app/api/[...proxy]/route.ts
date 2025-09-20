@@ -21,7 +21,7 @@ async function proxyRequest(request: NextRequest, method: string) {
     // Use environment variable for API URL, with fallbacks for different environments
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 
                       process.env.API_URL || 
-                      'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io';
+                      'https://api.rythm.training';
     
     const url = new URL(request.url);
     

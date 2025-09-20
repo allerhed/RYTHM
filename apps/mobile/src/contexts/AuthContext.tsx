@@ -115,7 +115,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true)
     
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
       const loginUrl = `${apiUrl}/api/auth/login`
       console.log('📡 Making fetch request to API:', loginUrl)
       
@@ -179,7 +179,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.log('- process.env.NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
       console.log('- All process.env keys containing API:', Object.keys(process.env).filter(k => k.includes('API')))
       
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
       const registerUrl = `${apiUrl}/api/auth/register`
       console.log('Final API URL being used:', apiUrl)
       console.log('Making fetch request to:', registerUrl)
@@ -284,7 +284,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
       const profileUrl = `${apiUrl}/api/auth/profile`
       
       const response = await fetch(profileUrl, {
@@ -342,7 +342,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
       const profileUrl = `${apiUrl}/api/auth/profile`
       
       const response = await fetch(profileUrl, {
@@ -378,7 +378,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
       const passwordUrl = `${apiUrl}/api/auth/password`
       
       const response = await fetch(passwordUrl, {
@@ -407,7 +407,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
       const avatarUrl = `${apiUrl}/api/auth/avatar`
       
       const formData = new FormData()
