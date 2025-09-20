@@ -1,13 +1,15 @@
-name: Backup Strategy
+name: Backup Strategy - DISABLED
 
 on:
-  schedule:
-    # Daily at 2 AM UTC (3 AM CET, 4 AM CEST)
-    - cron: '0 2 * * *'
+  # DISABLED: Automatic backups disabled
+  # UNCOMMENT BELOW TO RE-ENABLE:
+  # schedule:
+  #   # Daily at 2 AM UTC (3 AM CET, 4 AM CEST)
+  #   - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       backup_type:
-        description: 'Type of backup to run'
+        description: 'Type of backup to run - DISABLED BY DEFAULT'
         required: true
         default: 'full'
         type: choice
@@ -29,6 +31,8 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     environment: prod
+    # SAFETY CHECK: This workflow is DISABLED - remove this condition to re-enable
+    if: false
     
     steps:
       - name: Azure Login
