@@ -2,7 +2,14 @@
 
 A comprehensive hybrid training mobile web app (PWA) with multi-tenant support, real-time analytics, and enterprise-grade admin functionality designed for athletes, coaches, and fitness organizations.
 
-## 🎯 Features
+## � Production Access
+
+### **Live Applications**
+- **Mobile App**: `https://rythm.training` - Main fitness tracking application for end users
+- **Admin App**: `https://admin.rythm.training` - Administrative interface for system management
+- **API Backend**: Internal API serving both applications
+
+## �🎯 Features
 
 ### ✅ **Version 0.9 - Current Release**
 - **Multi-tenant Architecture**: Secure tenant isolation with Row Level Security (RLS)

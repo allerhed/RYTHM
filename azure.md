@@ -3,6 +3,17 @@
 ## Overview
 This document contains all Azure URLs, configuration settings, and deployment information for the RYTHM application suite deployed to Azure Container Apps.
 
+## 🌐 Production URLs
+
+### **Live Applications**
+- **Mobile App**: `https://rythm.training` - Main fitness tracking PWA for end users
+- **Admin App**: `https://admin.rythm.training` - Administrative interface for system management
+
+### **Azure Container Apps (Internal URLs)**
+- **Mobile App**: `https://ca-mobile-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io`
+- **Admin App**: `https://ca-admin-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io`
+- **API Backend**: `https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io`
+
 ## Environment Information
 - **Environment Name**: `rythm-prod`
 - **Azure Region**: Sweden Central
