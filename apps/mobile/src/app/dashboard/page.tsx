@@ -297,7 +297,7 @@ function DashboardPage() {
         const localDate = `${dateToFetch.getFullYear()}-${String(dateToFetch.getMonth() + 1).padStart(2, '0')}-${String(dateToFetch.getDate()).padStart(2, '0')}`
         console.log('Fetching workouts for date:', localDate, 'Selected week start:', selectedWeekStart, 'Selected day index:', selectedDayIndex)
         
-        const response = await fetch(`http://localhost:3001/api/sessions?date=${localDate}`, {
+        const response = await fetch(`/api/sessions?date=${localDate}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
           }
@@ -327,7 +327,7 @@ function DashboardPage() {
 
     setDeleting(true)
     try {
-      const response = await fetch(`http://localhost:3001/api/sessions/${workoutId}`, {
+      const response = await fetch(`/api/sessions/${workoutId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
