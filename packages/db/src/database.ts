@@ -18,6 +18,9 @@ export class Database {
     try {
       const result = await client.query(text, params);
       return result;
+    } catch (error) {
+      console.error('Database query error:', error);
+      throw error;
     } finally {
       client.release();
     }
@@ -75,9 +78,9 @@ function getDatabaseConfig(): PoolConfig {
       database: url.pathname.substring(1), // Remove leading slash
       user: url.username,
       password: url.password,
-      max: 20,
+      max: 10, // Reduced pool size for Azure
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
+      connectionTimeoutMillis: 15000, // Increased timeout for Azure SSL connections
     };
   }
   
