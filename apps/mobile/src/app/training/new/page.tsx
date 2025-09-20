@@ -87,22 +87,17 @@ export default function NewWorkoutPage() {
   const [activeDropdown, setActiveDropdown] = useState<{exerciseId: string, setId: string, field: 'value1' | 'value2'} | null>(null)
 
 
-  // Fetch exercise templates on component mount
-  useEffect(() => {
-    fetchExerciseTemplates()
-  }, [])
+  // Fetch exercise templates using tRPC
+  const { data: exerciseTemplatesData } = trpc.exerciseTemplates.list.useQuery({
+    limit: 200
+  })
 
-  const fetchExerciseTemplates = async () => {
-    try {
-      const response = await fetch('/api/exercises/templates')
-      if (response.ok) {
-        const templates = await response.json()
-        setExerciseTemplates(templates)
-      }
-    } catch (error) {
-      console.error('Error fetching exercise templates:', error)
+  // Update local state when tRPC data changes
+  useEffect(() => {
+    if (exerciseTemplatesData) {
+      setExerciseTemplates(exerciseTemplatesData)
     }
-  }
+  }, [exerciseTemplatesData])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -127,59 +122,18 @@ export default function NewWorkoutPage() {
     let exerciseData: Exercise
     
     if (template) {
-      // Create exercise from template in database
-      try {
-        const response = await fetch(`/api/exercises/from-template/${template.template_id}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
-          },
-          body: JSON.stringify({ customizations: {} })
-        })
-        
-        if (response.ok) {
-          const dbExercise = await response.json()
-          exerciseData = {
-            id: Date.now().toString(),
-            name: dbExercise.name,
-            notes: '',
-            sets: [createNewSetWithDefaults(1, dbExercise.default_value_1_type, dbExercise.default_value_2_type)],
-            exercise_id: dbExercise.exercise_id,
-            muscle_groups: dbExercise.muscle_groups,
-            equipment: dbExercise.equipment,
-            exercise_category: dbExercise.exercise_category,
-            default_value_1_type: dbExercise.default_value_1_type,
-            default_value_2_type: dbExercise.default_value_2_type
-          }
-        } else {
-          // Fallback to template data without creating in DB
-          exerciseData = {
-            id: Date.now().toString(),
-            name: template.name,
-            notes: '',
-            sets: [createNewSetWithDefaults(1, template.default_value_1_type, template.default_value_2_type)],
-            muscle_groups: template.muscle_groups,
-            equipment: template.equipment,
-            exercise_category: template.exercise_category,
-            default_value_1_type: template.default_value_1_type,
-            default_value_2_type: template.default_value_2_type
-          }
-        }
-      } catch (error) {
-        console.error('Error creating exercise from template:', error)
-        // Fallback to template data
-        exerciseData = {
-          id: Date.now().toString(),
-          name: template.name,
-          notes: '',
-          sets: [createNewSetWithDefaults(1, template.default_value_1_type, template.default_value_2_type)],
-          muscle_groups: template.muscle_groups,
-          equipment: template.equipment,
-          exercise_category: template.exercise_category,
-          default_value_1_type: template.default_value_1_type,
-          default_value_2_type: template.default_value_2_type
-        }
+      // Use template data directly for workout creation
+      exerciseData = {
+        id: Date.now().toString(),
+        name: template.name,
+        notes: '',
+        sets: [createNewSetWithDefaults(1, template.default_value_1_type, template.default_value_2_type)],
+        muscle_groups: template.muscle_groups,
+        equipment: template.equipment,
+        exercise_category: template.exercise_category,
+        exercise_type: template.exercise_type,
+        default_value_1_type: template.default_value_1_type,
+        default_value_2_type: template.default_value_2_type
       }
     } else {
       // Create custom exercise

@@ -213,22 +213,17 @@ export default function EditWorkoutPage() {
     fetchSession()
   }, [user, token, sessionId])
 
-  // Load exercise templates
-  useEffect(() => {
-    fetchExerciseTemplates()
-  }, [])
+  // Fetch exercise templates using tRPC
+  const { data: exerciseTemplatesData } = trpc.exerciseTemplates.list.useQuery({
+    limit: 200
+  })
 
-  const fetchExerciseTemplates = async () => {
-    try {
-      const response = await fetch('/api/exercises/templates')
-      if (response.ok) {
-        const templates = await response.json()
-        setTemplates(templates)
-      }
-    } catch (error) {
-      console.error('Error fetching exercise templates:', error)
+  // Update local state when tRPC data changes
+  useEffect(() => {
+    if (exerciseTemplatesData) {
+      setTemplates(exerciseTemplatesData)
     }
-  }
+  }, [exerciseTemplatesData])
 
   // Click outside handler for dropdowns
   useEffect(() => {
