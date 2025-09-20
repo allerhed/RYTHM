@@ -413,8 +413,8 @@ class ApiClient {
   private token: string | null = null
 
   constructor(baseUrl?: string) {
-    // Use environment variable or provided baseUrl, fallback to localhost for development
-    this.baseUrl = baseUrl || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+    // Use environment variable or provided baseUrl, fallback to production API for reliability
+    this.baseUrl = baseUrl || process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'
     if (typeof window !== 'undefined') {
       this.token = localStorage.getItem('admin_token')
     }

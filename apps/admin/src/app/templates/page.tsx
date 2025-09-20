@@ -501,7 +501,7 @@ export default function AdminTemplatesPage() {
         }
 
         // For system admins, we should fetch ALL templates across all tenants
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/admin.getAllWorkoutTemplates?input=${encodeURIComponent(JSON.stringify({
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'}/api/trpc/admin.getAllWorkoutTemplates?input=${encodeURIComponent(JSON.stringify({
           limit: 100,
           offset: 0,
           search: searchTerm || undefined,
@@ -570,7 +570,7 @@ export default function AdminTemplatesPage() {
           limit: 200, // Get a large number of templates
         }))
         
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/admin.getExerciseTemplates?input=${queryParams}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'}/api/trpc/admin.getExerciseTemplates?input=${queryParams}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -681,7 +681,7 @@ export default function AdminTemplatesPage() {
 
       console.log('Attempting to delete template:', showDeleteModal.template_id)
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/workoutTemplates.delete`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'}/api/trpc/workoutTemplates.delete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -796,7 +796,7 @@ export default function AdminTemplatesPage() {
         console.log('🔄 Update request JSON:', JSON.stringify(updateData));
         console.log('🔄 FormData scope direct:', formData.scope);
         
-        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/workoutTemplates.update`, {
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'}/api/trpc/workoutTemplates.update`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -806,7 +806,7 @@ export default function AdminTemplatesPage() {
         })
       } else {
         // Create new template
-        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/workoutTemplates.create`, {
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'}/api/trpc/workoutTemplates.create`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -918,7 +918,7 @@ export default function AdminTemplatesPage() {
       }
 
       // Save custom exercise to exercise_templates database first using admin endpoint
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/trpc/admin.createExerciseTemplate`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://ca-api-tvqklipuckq3a.niceflower-8f98874d.swedencentral.azurecontainerapps.io'}/api/trpc/admin.createExerciseTemplate`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
