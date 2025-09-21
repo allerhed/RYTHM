@@ -41,11 +41,72 @@ export class MigrationRunner {
     }));
   }
 
+  async isDatabaseEmpty(): Promise<boolean> {
+    try {
+      // Check if any user tables exist (excluding the migrations table)
+      const result = await db.query(`
+        SELECT COUNT(*) as table_count 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name != 'migrations'
+        AND table_type = 'BASE TABLE'
+      `);
+      
+      const tableCount = parseInt(result.rows[0].table_count);
+      return tableCount === 0;
+    } catch (error) {
+      // If there's an error, assume database might be empty
+      return true;
+    }
+  }
+
   async runMigrations() {
     await this.init();
     
+    const isDatabaseEmpty = await this.isDatabaseEmpty();
     const executedMigrations = await this.getExecutedMigrations();
-    const allMigrations = await this.getMigrationFiles();
+    
+    // If database is empty and no migrations have been run, use consolidated schema
+    if (isDatabaseEmpty && executedMigrations.length === 0) {
+      console.log('Fresh database detected. Using consolidated schema...');
+      
+      const consolidatedSchemaPath = path.join(this.migrationsPath, '000_consolidated_schema.sql');
+      if (fs.existsSync(consolidatedSchemaPath)) {
+        try {
+          const consolidatedSql = fs.readFileSync(consolidatedSchemaPath, 'utf8');
+          
+          await db.transaction(async (client) => {
+            await client.query(consolidatedSql);
+            // Mark all individual migrations as executed since consolidated schema includes them
+            const allMigrations = await this.getMigrationFiles();
+            for (const migration of allMigrations) {
+              if (migration.filename !== '000_consolidated_schema.sql') {
+                await client.query(
+                  'INSERT INTO migrations (filename) VALUES ($1) ON CONFLICT (filename) DO NOTHING',
+                  [migration.filename]
+                );
+              }
+            }
+            // Mark the consolidated schema as executed
+            await client.query(
+              'INSERT INTO migrations (filename) VALUES ($1)',
+              ['000_consolidated_schema.sql']
+            );
+          });
+          
+          console.log('✓ Consolidated schema applied successfully');
+          console.log('Database is ready for use!');
+          return;
+        } catch (error) {
+          console.error('✗ Failed to apply consolidated schema:', error);
+          console.log('Falling back to individual migrations...');
+        }
+      }
+    }
+    
+    // Standard migration approach for existing databases or if consolidated schema failed
+    const allMigrations = await this.getMigrationFiles()
+      .then(migrations => migrations.filter(m => m.filename !== '000_consolidated_schema.sql'));
     
     const pendingMigrations = allMigrations.filter(
       migration => !executedMigrations.includes(migration.filename)
