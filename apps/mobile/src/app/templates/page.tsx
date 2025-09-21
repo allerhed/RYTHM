@@ -288,7 +288,7 @@ export default function TemplatesPage() {
         return '75'
       case 'reps':
         return exerciseType === 'STRENGTH' ? '8-10' : '12'
-      case 'duration_s':
+      case 'duration_m':
         return exerciseType === 'CARDIO' ? '300' : '60' // 5 min for cardio, 1 min for others
       case 'distance_m':
         return exerciseType === 'CARDIO' ? '5000' : '100' // 5km for cardio, 100m for others

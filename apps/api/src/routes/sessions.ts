@@ -9,12 +9,16 @@ export const sessionsRouter = router({
     .mutation(async ({ input, ctx }) => {
       const sessionId = uuidv4();
       const { category, program_id, notes } = input;
+      const started_at = (input as any).started_at; // Temporary cast until packages rebuild
 
+      // Use provided started_at or default to NOW()
       const result = await ctx.db.query(
         `INSERT INTO sessions (session_id, tenant_id, user_id, program_id, category, notes, started_at)
-         VALUES ($1, $2, $3, $4, $5, $6, NOW())
+         VALUES ($1, $2, $3, $4, $5, $6, ${started_at ? '$7' : 'NOW()'})
          RETURNING session_id, tenant_id, user_id, program_id, category, notes, started_at, created_at`,
-        [sessionId, ctx.user.tenantId, ctx.user.userId, program_id || null, category, notes || null]
+        started_at 
+          ? [sessionId, ctx.user.tenantId, ctx.user.userId, program_id || null, category, notes || null, new Date(started_at).toISOString()]
+          : [sessionId, ctx.user.tenantId, ctx.user.userId, program_id || null, category, notes || null]
       );
 
       return result.rows[0];

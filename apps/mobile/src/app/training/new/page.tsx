@@ -39,16 +39,16 @@ interface ExerciseTemplate {
 interface WorkoutSet {
   id: string
   setNumber: number
-  value1Type: 'weight_kg' | 'distance_m' | 'duration_s' | 'calories' | 'reps' | null
+  value1Type: 'weight_kg' | 'distance_m' | 'duration_m' | 'calories' | 'reps' | null
   value1: number | null
-  value2Type: 'weight_kg' | 'distance_m' | 'duration_s' | 'calories' | 'reps' | null
+  value2Type: 'weight_kg' | 'distance_m' | 'duration_m' | 'calories' | 'reps' | null
   value2: number | null
   notes: string
 }
 
 const VALUE_TYPES = [
   { value: 'weight_kg', label: 'KGS', unit: 'KGS' },
-  { value: 'duration_s', label: 'DURATION', unit: 'DURATION' },
+  { value: 'duration_m', label: 'DURATION', unit: 'DURATION' },
   { value: 'distance_m', label: 'DISTANCE', unit: 'DISTANCE' },
   { value: 'calories', label: 'CALORIES', unit: 'CALORIES' },
   { value: 'reps', label: 'REPS', unit: 'REPS' }
@@ -156,7 +156,7 @@ export default function NewWorkoutPage() {
         createNewSetWithDefaults(
           setIndex + 1, 
           templateEx.weight ? 'weight_kg' : (activityType === 'strength' ? 'weight_kg' : 'distance_m'),
-          templateEx.reps ? 'reps' : (activityType === 'strength' ? 'reps' : 'duration_s')
+          templateEx.reps ? 'reps' : (activityType === 'strength' ? 'reps' : 'duration_m')
         )
       )
 
@@ -181,7 +181,7 @@ export default function NewWorkoutPage() {
     setNumber,
     value1Type: (defaultType1 as any) || (activityType === 'strength' ? 'weight_kg' : 'distance_m'),
     value1: 0,
-    value2Type: (defaultType2 as any) || (activityType === 'strength' ? 'reps' : 'duration_s'),
+    value2Type: (defaultType2 as any) || (activityType === 'strength' ? 'reps' : 'duration_m'),
     value2: 0,
     notes: ''
   })
@@ -191,7 +191,7 @@ export default function NewWorkoutPage() {
     setNumber,
     value1Type: activityType === 'strength' ? 'weight_kg' : 'distance_m',
     value1: 0,
-    value2Type: activityType === 'strength' ? 'reps' : 'duration_s',
+    value2Type: activityType === 'strength' ? 'reps' : 'duration_m',
     value2: 0,
     notes: ''
   })
@@ -381,6 +381,7 @@ export default function NewWorkoutPage() {
         training_load: trainingLoad,
         perceived_exertion: perceivedExertion,
         duration: duration,
+        started_at: workoutDate.toISOString(), // Include selected workout date
         exercises: exercises.map(exercise => ({
           name: exercise.name,
           muscle_groups: exercise.muscle_groups || [],

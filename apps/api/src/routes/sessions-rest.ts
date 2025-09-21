@@ -351,10 +351,13 @@ router.post('/', authenticateToken, async (req, res) => {
       return res.status(401).json({ error: 'Authentication required' })
     }
 
-    const { name, category, notes, exercises, training_load, perceived_exertion, duration } = req.body
+    const { name, category, notes, exercises, training_load, perceived_exertion, duration, started_at } = req.body
 
     // Convert duration from HH:MM:SS to seconds
     const durationSeconds = duration ? parseDurationToSeconds(duration) : 3600 // Default 1 hour
+
+    // Use provided started_at or default to current time
+    const sessionStartTime = started_at ? new Date(started_at) : new Date()
 
     // Start transaction using db.transaction
     const result = await db.transaction(async (client: any) => {
@@ -366,9 +369,9 @@ router.post('/', authenticateToken, async (req, res) => {
       // Create session
       const sessionResult = await client.query(
         `INSERT INTO sessions (tenant_id, user_id, name, category, notes, training_load, perceived_exertion, duration_seconds, started_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
          RETURNING session_id`,
-        [tenantId, userId, name, category, notes, training_load, perceived_exertion, durationSeconds]
+        [tenantId, userId, name, category, notes, training_load, perceived_exertion, durationSeconds, sessionStartTime]
       )
 
       const sessionId = sessionResult.rows[0].session_id

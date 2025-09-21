@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Base enums matching the PRD
 export const SessionCategory = z.enum(['strength', 'cardio', 'hybrid']);
-export const SetValueType = z.enum(['weight_kg', 'distance_m', 'duration_s', 'calories', 'reps']);
+export const SetValueType = z.enum(['weight_kg', 'distance_m', 'duration_m', 'calories', 'reps']);
 export const UserRole = z.enum(['athlete', 'coach', 'tenant_admin', 'org_admin']);
 export const TemplateScope = z.enum(['user', 'tenant', 'system']);
 
@@ -15,7 +15,7 @@ export type TemplateScope = z.infer<typeof TemplateScope>;
 export const VALUE_TYPE_LABELS = {
   weight_kg: 'Weight (kg)',
   distance_m: 'Distance (m)',
-  duration_s: 'Duration (s)',
+  duration_m: 'Duration (min)',
   calories: 'Calories',
   reps: 'Reps',
 } as const;
@@ -23,7 +23,7 @@ export const VALUE_TYPE_LABELS = {
 export const VALUE_TYPE_UNITS = {
   weight_kg: 'kg',
   distance_m: 'm',
-  duration_s: 's',
+  duration_m: 'min',
   calories: 'cal',
   reps: 'reps',
 } as const;
@@ -31,7 +31,7 @@ export const VALUE_TYPE_UNITS = {
 export const VALUE_TYPE_PLACEHOLDERS = {
   weight_kg: 'e.g., 75, 80, 85',
   distance_m: 'e.g., 1000, 5000',
-  duration_s: 'e.g., 30, 60, 120',
+  duration_m: 'e.g., 5, 10, 30',
   calories: 'e.g., 200, 300',
   reps: 'e.g., 8-10, 12, AMRAP',
 } as const;
@@ -43,16 +43,16 @@ export const COMMON_VALUE_TYPE_COMBINATIONS = {
     { value_1_type: 'reps' as const, value_2_type: null, label: 'Reps Only' },
   ],
   cardio: [
-    { value_1_type: 'duration_s' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
-    { value_1_type: 'duration_s' as const, value_2_type: null, label: 'Duration Only' },
+    { value_1_type: 'duration_m' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
+    { value_1_type: 'duration_m' as const, value_2_type: null, label: 'Duration Only' },
     { value_1_type: 'distance_m' as const, value_2_type: null, label: 'Distance Only' },
     { value_1_type: 'calories' as const, value_2_type: null, label: 'Calories Only' },
   ],
   hybrid: [
     { value_1_type: 'weight_kg' as const, value_2_type: 'reps' as const, label: 'Weight × Reps' },
-    { value_1_type: 'duration_s' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
+    { value_1_type: 'duration_m' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
     { value_1_type: 'reps' as const, value_2_type: null, label: 'Reps Only' },
-    { value_1_type: 'duration_s' as const, value_2_type: null, label: 'Duration Only' },
+    { value_1_type: 'duration_m' as const, value_2_type: null, label: 'Duration Only' },
   ],
 } as const;
 
@@ -134,6 +134,7 @@ export const CreateSessionRequest = z.object({
   category: SessionCategory,
   program_id: z.string().uuid().optional(),
   notes: z.string().optional(),
+  started_at: z.string().datetime().optional(), // ISO datetime string for custom workout date
 });
 
 export const CreateSetRequest = z.object({

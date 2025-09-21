@@ -175,11 +175,11 @@ INSERT INTO exercise_templates (
 ('Bar Dip', ARRAY['chest', 'triceps', 'shoulders'], (SELECT equipment_id FROM equipment WHERE name = 'Parallel Bars'), 'strength', 'STRENGTH', 'reps', NULL, 'Dips performed on parallel bars', 'Support on bars, lower body, press up'),
 
 -- CORE STRENGTH
-('Plank', ARRAY['core'], (SELECT equipment_id FROM equipment WHERE name = 'Floor/Mat'), 'strength', 'STRENGTH', 'duration_s', 'reps', 'Isometric core strength and stability', 'Maintain straight line from head to heels'),
-('Dead Bug', ARRAY['core'], (SELECT equipment_id FROM equipment WHERE name = 'Floor/Mat'), 'strength', 'STRENGTH', 'reps', 'duration_s', 'Core stability and limb dissociation', 'Lying on back, extend opposite arm and leg slowly'),
-('Pallof Press', ARRAY['core'], (SELECT equipment_id FROM equipment WHERE name = 'Resistance Bands'), 'strength', 'STRENGTH', 'reps', 'duration_s', 'Anti-rotation core strength', 'Hold band at chest, press out and resist rotation'),
-('Hanging Leg Raises', ARRAY['core', 'hip flexors'], (SELECT equipment_id FROM equipment WHERE name = 'Pull-up Bar'), 'strength', 'STRENGTH', 'reps', 'duration_s', 'Dynamic core strength', 'Hang from bar, raise legs to 90 degrees'),
-('Bird Dog', ARRAY['core', 'glutes'], (SELECT equipment_id FROM equipment WHERE name = 'Floor/Mat'), 'strength', 'STRENGTH', 'reps', 'duration_s', 'Core stability and hip strength', 'On hands and knees, extend opposite arm and leg'),
+('Plank', ARRAY['core'], (SELECT equipment_id FROM equipment WHERE name = 'Floor/Mat'), 'strength', 'STRENGTH', 'duration_m', 'reps', 'Isometric core strength and stability', 'Maintain straight line from head to heels'),
+('Dead Bug', ARRAY['core'], (SELECT equipment_id FROM equipment WHERE name = 'Floor/Mat'), 'strength', 'STRENGTH', 'reps', 'duration_m', 'Core stability and limb dissociation', 'Lying on back, extend opposite arm and leg slowly'),
+('Pallof Press', ARRAY['core'], (SELECT equipment_id FROM equipment WHERE name = 'Resistance Bands'), 'strength', 'STRENGTH', 'reps', 'duration_m', 'Anti-rotation core strength', 'Hold band at chest, press out and resist rotation'),
+('Hanging Leg Raises', ARRAY['core', 'hip flexors'], (SELECT equipment_id FROM equipment WHERE name = 'Pull-up Bar'), 'strength', 'STRENGTH', 'reps', 'duration_m', 'Dynamic core strength', 'Hang from bar, raise legs to 90 degrees'),
+('Bird Dog', ARRAY['core', 'glutes'], (SELECT equipment_id FROM equipment WHERE name = 'Floor/Mat'), 'strength', 'STRENGTH', 'reps', 'duration_m', 'Core stability and hip strength', 'On hands and knees, extend opposite arm and leg'),
 ('GHD Back', ARRAY['lower_back', 'glutes', 'hamstrings'], (SELECT equipment_id FROM equipment WHERE name = 'GHD Machine'), 'strength', 'STRENGTH', 'reps', NULL, 'Posterior chain strengthening', 'GHD machine, extend back engaging posterior chain'),
 ('GHD Situps', ARRAY['abs', 'hip_flexors'], (SELECT equipment_id FROM equipment WHERE name = 'GHD Machine'), 'strength', 'STRENGTH', 'reps', NULL, 'Core strengthening exercise', 'GHD machine, full range sit-up movement'),
 ('Toes-to-Bar', ARRAY['abs', 'hip_flexors', 'lats'], (SELECT equipment_id FROM equipment WHERE name = 'Pull-up Bar'), 'strength', 'STRENGTH', 'reps', NULL, 'Hanging toes to bar movement', 'Hang from bar, bring toes up to touch bar'),
@@ -207,50 +207,50 @@ INSERT INTO exercise_templates (
 -- ============================================
 
 -- RUNNING VARIATIONS
-('Easy Run', ARRAY['cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Aerobic base building for endurance', 'Conversational pace, nose breathing, relaxed effort'),
-('Tempo Run', ARRAY['cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Lactate threshold training', 'Comfortably hard pace, sustainable for 20-60 minutes'),
-('Interval Running', ARRAY['cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'High-intensity aerobic power', 'Alternating high and low intensity periods'),
+('Easy Run', ARRAY['cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Aerobic base building for endurance', 'Conversational pace, nose breathing, relaxed effort'),
+('Tempo Run', ARRAY['cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Lactate threshold training', 'Comfortably hard pace, sustainable for 20-60 minutes'),
+('Interval Running', ARRAY['cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'High-intensity aerobic power', 'Alternating high and low intensity periods'),
 ('Hill Sprints', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'reps', 'Power endurance and lactate tolerance', 'Maximum effort uphill sprints with recovery'),
-('Fartlek Run', ARRAY['cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Unstructured speed play training', 'Varying pace throughout run, play with speed'),
-('Run', ARRAY['legs', 'glutes', 'calves'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Running for cardiovascular fitness', 'Outdoor or treadmill running at various paces'),
+('Fartlek Run', ARRAY['cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Unstructured speed play training', 'Varying pace throughout run, play with speed'),
+('Run', ARRAY['legs', 'glutes', 'calves'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Running for cardiovascular fitness', 'Outdoor or treadmill running at various paces'),
 
 -- CYCLING VARIATIONS
-('Zone 2 Cycling', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Exercise Bike'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Aerobic base building on bike', 'Steady moderate effort, can maintain conversation'),
-('Bike Intervals', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Exercise Bike'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'High-intensity cycling power', 'Alternating high power and recovery periods'),
-('Hill Cycling', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Exercise Bike'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Climbing strength and endurance', 'Sustained efforts on inclines'),
-('Spin Bike HIIT', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Exercise Bike'), 'cardio', 'CARDIO', 'duration_s', 'calories', 'High-intensity interval training', 'Short bursts of maximum effort with rest'),
+('Zone 2 Cycling', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Exercise Bike'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Aerobic base building on bike', 'Steady moderate effort, can maintain conversation'),
+('Bike Intervals', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Exercise Bike'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'High-intensity cycling power', 'Alternating high power and recovery periods'),
+('Hill Cycling', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Exercise Bike'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Climbing strength and endurance', 'Sustained efforts on inclines'),
+('Spin Bike HIIT', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Exercise Bike'), 'cardio', 'CARDIO', 'duration_m', 'calories', 'High-intensity interval training', 'Short bursts of maximum effort with rest'),
 
 -- SWIMMING
-('Freestyle Swimming', ARRAY['full body', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Low-impact full body cardio', 'Efficient stroke technique, bilateral breathing'),
-('Swimming Intervals', ARRAY['full body', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'High-intensity swim training', 'Alternating fast and recovery swimming'),
+('Freestyle Swimming', ARRAY['full body', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Low-impact full body cardio', 'Efficient stroke technique, bilateral breathing'),
+('Swimming Intervals', ARRAY['full body', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'High-intensity swim training', 'Alternating fast and recovery swimming'),
 
 -- ROWING
-('Steady State Rowing', ARRAY['back', 'legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Rowing Machine'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Full body aerobic exercise', 'Consistent pace, proper technique: legs, back, arms'),
-('Rowing Intervals', ARRAY['back', 'legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Rowing Machine'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'High-intensity rowing power', 'Alternating high and low intensity periods'),
-('Row', ARRAY['lats', 'rhomboids', 'legs'], (SELECT equipment_id FROM equipment WHERE name = 'Rowing Machine'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Full body rowing exercise', 'Rowing machine with proper drive and recovery'),
+('Steady State Rowing', ARRAY['back', 'legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Rowing Machine'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Full body aerobic exercise', 'Consistent pace, proper technique: legs, back, arms'),
+('Rowing Intervals', ARRAY['back', 'legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Rowing Machine'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'High-intensity rowing power', 'Alternating high and low intensity periods'),
+('Row', ARRAY['lats', 'rhomboids', 'legs'], (SELECT equipment_id FROM equipment WHERE name = 'Rowing Machine'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Full body rowing exercise', 'Rowing machine with proper drive and recovery'),
 
 -- MACHINE CARDIO
-('Echo Bike', ARRAY['legs', 'arms', 'core'], (SELECT equipment_id FROM equipment WHERE name = 'Echo Bike'), 'cardio', 'CARDIO', 'calories', 'duration_s', 'Full body cardio exercise', 'Bike using both arms and legs for max calorie burn'),
-('Ski-erg', ARRAY['lats', 'core', 'legs'], (SELECT equipment_id FROM equipment WHERE name = 'Ski Erg'), 'cardio', 'CARDIO', 'calories', 'duration_s', 'Full body pulling cardio', 'Simulate skiing motion for cardio and upper body'),
+('Echo Bike', ARRAY['legs', 'arms', 'core'], (SELECT equipment_id FROM equipment WHERE name = 'Echo Bike'), 'cardio', 'CARDIO', 'calories', 'duration_m', 'Full body cardio exercise', 'Bike using both arms and legs for max calorie burn'),
+('Ski-erg', ARRAY['lats', 'core', 'legs'], (SELECT equipment_id FROM equipment WHERE name = 'Ski Erg'), 'cardio', 'CARDIO', 'calories', 'duration_m', 'Full body pulling cardio', 'Simulate skiing motion for cardio and upper body'),
 ('Assault Bike', ARRAY['full body', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Assault Bike'), 'cardio', 'CARDIO', 'distance_m', 'calories', 'Full body cardio machine', 'Push and pull with arms while pedaling'),
 ('Ski Erg', ARRAY['full body', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Ski Erg'), 'cardio', 'CARDIO', 'distance_m', 'calories', 'Upper body dominant cardio', 'Pulling motion similar to skiing'),
-('Stair Climber', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Stair Climber'), 'cardio', 'CARDIO', 'duration_s', 'calories', 'Lower body cardio endurance', 'Maintain upright posture, avoid leaning on handles'),
-('Elliptical', ARRAY['full body', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Elliptical Machine'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Low-impact full body cardio', 'Smooth stride, use arms and legs'),
+('Stair Climber', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Stair Climber'), 'cardio', 'CARDIO', 'duration_m', 'calories', 'Lower body cardio endurance', 'Maintain upright posture, avoid leaning on handles'),
+('Elliptical', ARRAY['full body', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Elliptical Machine'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Low-impact full body cardio', 'Smooth stride, use arms and legs'),
 
 -- HIGH-INTENSITY CARDIO
-('Mountain Climbers', ARRAY['core', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Floor/Mat'), 'cardio', 'CARDIO', 'reps', 'duration_s', 'Core strength and cardio endurance', 'Plank position, alternate bringing knees to chest rapidly'),
-('High Knees', ARRAY['hip flexors', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'duration_s', 'reps', 'Dynamic cardio and leg turnover', 'Run in place, bring knees to chest level'),
-('Battle Ropes', ARRAY['arms', 'core', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Battle Ropes'), 'cardio', 'CARDIO', 'duration_s', 'reps', 'Upper body cardio and power endurance', 'Alternate or simultaneous rope waves'),
+('Mountain Climbers', ARRAY['core', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Floor/Mat'), 'cardio', 'CARDIO', 'reps', 'duration_m', 'Core strength and cardio endurance', 'Plank position, alternate bringing knees to chest rapidly'),
+('High Knees', ARRAY['hip flexors', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'duration_m', 'reps', 'Dynamic cardio and leg turnover', 'Run in place, bring knees to chest level'),
+('Battle Ropes', ARRAY['arms', 'core', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Battle Ropes'), 'cardio', 'CARDIO', 'duration_m', 'reps', 'Upper body cardio and power endurance', 'Alternate or simultaneous rope waves'),
 
 -- JUMP ROPE
-('Single-Under', ARRAY['calves', 'shoulders', 'forearms'], (SELECT equipment_id FROM equipment WHERE name = 'Jump Rope'), 'cardio', 'CARDIO', 'reps', 'duration_s', 'Single jump rope revolution per jump', 'Jump rope with one rope revolution per jump'),
-('Double-Under', ARRAY['calves', 'shoulders', 'forearms'], (SELECT equipment_id FROM equipment WHERE name = 'Jump Rope'), 'cardio', 'CARDIO', 'reps', 'duration_s', 'Double jump rope revolution per jump', 'Jump rope with two rope revolutions per jump'),
-('Jump Rope', ARRAY['calves', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Jump Rope'), 'cardio', 'CARDIO', 'duration_s', 'reps', 'Coordination and cardio endurance', 'Light bounces, stay on balls of feet, relaxed arms'),
+('Single-Under', ARRAY['calves', 'shoulders', 'forearms'], (SELECT equipment_id FROM equipment WHERE name = 'Jump Rope'), 'cardio', 'CARDIO', 'reps', 'duration_m', 'Single jump rope revolution per jump', 'Jump rope with one rope revolution per jump'),
+('Double-Under', ARRAY['calves', 'shoulders', 'forearms'], (SELECT equipment_id FROM equipment WHERE name = 'Jump Rope'), 'cardio', 'CARDIO', 'reps', 'duration_m', 'Double jump rope revolution per jump', 'Jump rope with two rope revolutions per jump'),
+('Jump Rope', ARRAY['calves', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Jump Rope'), 'cardio', 'CARDIO', 'duration_m', 'reps', 'Coordination and cardio endurance', 'Light bounces, stay on balls of feet, relaxed arms'),
 
 -- RECOVERY/ACTIVE RECOVERY CARDIO
-('Walking', ARRAY['cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Active recovery and base fitness', 'Brisk pace, focus on posture and breathing'),
-('Easy Bike Ride', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Exercise Bike'), 'cardio', 'CARDIO', 'distance_m', 'duration_s', 'Low-intensity recovery exercise', 'Gentle pace, enjoy the ride, active recovery'),
-('Pool Walking', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'duration_s', 'distance_m', 'Low-impact recovery exercise', 'Walk in waist-deep water, resistance without impact');
+('Walking', ARRAY['cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Active recovery and base fitness', 'Brisk pace, focus on posture and breathing'),
+('Easy Bike Ride', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'Exercise Bike'), 'cardio', 'CARDIO', 'distance_m', 'duration_m', 'Low-intensity recovery exercise', 'Gentle pace, enjoy the ride, active recovery'),
+('Pool Walking', ARRAY['legs', 'cardiovascular'], (SELECT equipment_id FROM equipment WHERE name = 'None'), 'cardio', 'CARDIO', 'duration_m', 'distance_m', 'Low-impact recovery exercise', 'Walk in waist-deep water, resistance without impact');
 
 COMMIT;
 

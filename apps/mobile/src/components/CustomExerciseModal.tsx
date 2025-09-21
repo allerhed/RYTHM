@@ -42,7 +42,7 @@ const EXERCISE_TYPES = [
 ]
 
 const VALUE_TYPES = [
-  'weight_kg', 'distance_m', 'duration_s', 'calories', 'reps'
+  'weight_kg', 'distance_m', 'duration_m', 'calories', 'reps'
 ]
 
 export function CustomExerciseModal({ onSave, onClose, loading = false }: CustomExerciseModalProps) {

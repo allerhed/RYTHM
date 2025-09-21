@@ -8,7 +8,7 @@ CREATE EXTENSION IF NOT EXISTS "citext";
 
 -- Create custom types
 CREATE TYPE session_category AS ENUM ('strength', 'cardio', 'hybrid');
-CREATE TYPE set_value_type AS ENUM ('weight_kg', 'distance_m', 'duration_s', 'calories', 'reps');
+CREATE TYPE set_value_type AS ENUM ('weight_kg', 'distance_m', 'duration_m', 'calories', 'reps');
 CREATE TYPE user_role AS ENUM ('athlete', 'coach', 'tenant_admin', 'org_admin');
 CREATE TYPE exercise_type AS ENUM ('STRENGTH', 'CARDIO');
 

@@ -56,8 +56,8 @@ BEGIN
     -- Evening workout sets (Row, Front Squat as bodyweight, Push-ups)
     INSERT INTO sets (tenant_id, session_id, exercise_id, set_index, value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes)
     VALUES 
-        -- Row set (distance_m + duration_s)
-        ('9386cbbf-24eb-4593-a2e2-b94b9578caba'::uuid, evening_session_id, row_id, 1, 'distance_m', 2000, 'duration_s', 480, 'Steady pace, 8:00 split - great cardio!'),
+        -- Row set (distance_m + duration_m)
+        ('9386cbbf-24eb-4593-a2e2-b94b9578caba'::uuid, evening_session_id, row_id, 1, 'distance_m', 2000, 'duration_m', 8, 'Steady pace, 8:00 split - great cardio!'),
         
         -- Front Squat sets (bodyweight - reps only)
         ('9386cbbf-24eb-4593-a2e2-b94b9578caba'::uuid, evening_session_id, front_squat_id, 1, 'reps', 20, NULL, NULL, 'Bodyweight squats - good warm-up'),
