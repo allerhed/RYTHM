@@ -1,18 +1,18 @@
-name: Deploy Applications - DISABLED
+name: Deploy Applications
 
 on:
-  # DISABLED: Automatic deployment disabled. Use manual trigger only if needed.
-  # UNCOMMENT BELOW TO RE-ENABLE:
-  # push:
-  #   branches: [main]
-  #   paths-ignore:
-  #     - 'infra/**'
-  #     - 'docs/**'
-  #     - '**.md'
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'infra/**'
+      - 'docs/**'
+      - '**.md'
+      - '.github/workflows/deploy-infrastructure.yml'
+      - '.github/workflows/backup-strategy.yml'
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to deploy (prod only) - DISABLED BY DEFAULT'
+        description: 'Environment to deploy'
         required: true
         default: 'prod'
         type: choice
@@ -32,8 +32,6 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: prod
-    # SAFETY CHECK: This workflow is DISABLED - remove this condition to re-enable
-    if: false
     
     steps:
       - name: Checkout code
