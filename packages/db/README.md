@@ -88,11 +88,35 @@ The consolidated schema includes:
 - **Multi-tenancy**: Full tenant isolation with RLS policies
 - **User management**: Roles, authentication, profiles
 - **Exercise library**: Global exercise database with equipment
+- **Exercise templates**: 98 comprehensive exercise templates (68 strength, 30 cardio)
 - **Workout templates**: Reusable workout structures
 - **Training sessions**: Session tracking with flexible value types
 - **Analytics**: Materialized views for performance metrics
 - **Duration handling**: All durations in minutes (not seconds)
 - **Equipment management**: Structured equipment catalog
+
+### Exercise Templates Library
+
+The consolidated schema includes 98 exercise templates optimized for hybrid training:
+
+**Strength Templates (68):**
+- Compound movements (squats, deadlifts, bench press)
+- Olympic lifting (cleans, snatches, jerks)
+- Functional movements (thrusters, Turkish get-ups)
+- Plyometric exercises (box jumps, medicine ball slams)
+- Unilateral training (Bulgarian split squats, single-leg deadlifts)
+- Upper body push/pull variations
+- Core strengthening exercises
+- CrossFit-style functional movements
+
+**Cardio Templates (30):**
+- Running variations (easy runs, intervals, hill sprints)
+- Cycling workouts (zone 2, HIIT, hill climbing)
+- Swimming exercises
+- Machine cardio (echo bike, ski erg, rowing)
+- High-intensity movements (mountain climbers, battle ropes)
+- Jump rope variations
+- Recovery cardio (walking, easy cycling)
 
 ## Environment Variables
 

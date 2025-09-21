@@ -163,8 +163,8 @@ export const analyticsRouter = router({
           COUNT(st.set_id) as total_sets,
           AVG(
             CASE 
-              WHEN st.value_1_type = 'duration_s' THEN st.value_1_numeric
-              WHEN st.value_2_type = 'duration_s' THEN st.value_2_numeric
+              WHEN st.value_1_type = 'duration_m' THEN st.value_1_numeric
+              WHEN st.value_2_type = 'duration_m' THEN st.value_2_numeric
               ELSE NULL
             END
           ) as avg_session_duration,
@@ -353,11 +353,11 @@ export const analyticsRouter = router({
           COUNT(sets.set_id) as total_sets,
           SUM(
             CASE 
-              WHEN sets.value_1_type = 'duration_s' THEN sets.value_1_numeric
-              WHEN sets.value_2_type = 'duration_s' THEN sets.value_2_numeric
+              WHEN sets.value_1_type = 'duration_m' THEN sets.value_1_numeric
+              WHEN sets.value_2_type = 'duration_m' THEN sets.value_2_numeric
               ELSE 0
             END
-          ) as sets_duration_s
+          ) as sets_duration_m
         FROM sessions s
         LEFT JOIN sets ON sets.session_id = s.session_id
         WHERE s.user_id = $1 AND s.started_at >= $2

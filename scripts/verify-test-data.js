@@ -106,7 +106,7 @@ async function verifyTestData() {
       SELECT 
         COUNT(*) as total_sets,
         COUNT(CASE WHEN value_1_type = 'weight_kg' THEN 1 END) as weight_sets,
-        COUNT(CASE WHEN value_1_type = 'duration_s' THEN 1 END) as duration_sets,
+        COUNT(CASE WHEN value_1_type = 'duration_m' THEN 1 END) as duration_sets,
         COUNT(CASE WHEN value_1_type = 'distance_m' THEN 1 END) as distance_sets,
         COUNT(CASE WHEN value_2_type = 'calories' THEN 1 END) as calorie_sets
       FROM sets

@@ -111,22 +111,22 @@ function generateRandomSets(exercise, numSets) {
       // Cardio exercises
       if (exercise.name.includes('Row')) {
         value_1_type = 'distance_m';
-        value_2_type = 'duration_s';
+        value_2_type = 'duration_m';
         value_1_numeric = randomInt(250, 2000);
-        value_2_numeric = randomInt(60, 480);
+        value_2_numeric = randomInt(1, 8); // Convert seconds to minutes
       } else if (exercise.name.includes('Bike') || exercise.name.includes('Echo')) {
         value_1_type = 'calories';
-        value_2_type = 'duration_s';
+        value_2_type = 'duration_m';
         value_1_numeric = randomInt(15, 50);
-        value_2_numeric = randomInt(300, 1800);
+        value_2_numeric = randomInt(5, 30); // Convert seconds to minutes
       } else if (exercise.name.includes('Run')) {
         value_1_type = 'distance_m';
-        value_2_type = 'duration_s';
+        value_2_type = 'duration_m';
         value_1_numeric = randomInt(400, 5000);
-        value_2_numeric = randomInt(120, 1800);
+        value_2_numeric = randomInt(2, 30); // Convert seconds to minutes
       } else {
         // General cardio
-        value_1_type = 'duration_s';
+        value_1_type = 'duration_m';
         value_2_type = null;
         value_1_numeric = randomInt(300, 1800);
         value_2_numeric = 0;

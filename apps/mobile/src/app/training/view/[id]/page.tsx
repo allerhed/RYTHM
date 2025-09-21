@@ -45,7 +45,7 @@ const VALUE_TYPES = {
   'reps': { label: 'REPS', unit: 'REPS' },
   'distance_m': { label: 'DISTANCE', unit: 'DISTANCE' },
   'calories': { label: 'CALORIES', unit: 'CALORIES' },
-  'duration_s': { label: 'DURATION', unit: 'DURATION' }
+  'duration_m': { label: 'DURATION', unit: 'DURATION' }
 } as const
 
 function ViewWorkoutPage() {

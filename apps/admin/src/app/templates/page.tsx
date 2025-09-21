@@ -41,12 +41,12 @@ import {
 // import { CSS } from '@dnd-kit/utilities'
 
 // Local constants to avoid import issues
-type SetValueType = 'weight_kg' | 'distance_m' | 'duration_s' | 'calories' | 'reps'
+type SetValueType = 'weight_kg' | 'distance_m' | 'duration_m' | 'calories' | 'reps'
 
 const VALUE_TYPE_LABELS = {
   weight_kg: 'Weight (kg)',
   distance_m: 'Distance (m)',
-  duration_s: 'Duration (s)',
+  duration_m: 'Duration (min)',
   calories: 'Calories',
   reps: 'Reps',
 } as const
@@ -54,7 +54,7 @@ const VALUE_TYPE_LABELS = {
 const VALUE_TYPE_UNITS = {
   weight_kg: 'kg',
   distance_m: 'm',
-  duration_s: 's',
+  duration_m: 'min',
   calories: 'cal',
   reps: 'reps',
 } as const
@@ -62,7 +62,7 @@ const VALUE_TYPE_UNITS = {
 const VALUE_TYPE_PLACEHOLDERS = {
   weight_kg: 'e.g., 75, 80, 85',
   distance_m: 'e.g., 1000, 5000',
-  duration_s: 'e.g., 30, 60, 120',
+  duration_m: 'e.g., 5, 10, 30',
   calories: 'e.g., 200, 300',
   reps: 'e.g., 8-10, 12, AMRAP',
 } as const
@@ -73,16 +73,16 @@ const COMMON_VALUE_TYPE_COMBINATIONS = {
     { value_1_type: 'reps' as const, value_2_type: null, label: 'Reps Only' },
   ],
   cardio: [
-    { value_1_type: 'duration_s' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
-    { value_1_type: 'duration_s' as const, value_2_type: null, label: 'Duration Only' },
+    { value_1_type: 'duration_m' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
+    { value_1_type: 'duration_m' as const, value_2_type: null, label: 'Duration Only' },
     { value_1_type: 'distance_m' as const, value_2_type: null, label: 'Distance Only' },
     { value_1_type: 'calories' as const, value_2_type: null, label: 'Calories Only' },
   ],
   hybrid: [
     { value_1_type: 'weight_kg' as const, value_2_type: 'reps' as const, label: 'Weight × Reps' },
-    { value_1_type: 'duration_s' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
+    { value_1_type: 'duration_m' as const, value_2_type: 'distance_m' as const, label: 'Duration × Distance' },
     { value_1_type: 'reps' as const, value_2_type: null, label: 'Reps Only' },
-    { value_1_type: 'duration_s' as const, value_2_type: null, label: 'Duration Only' },
+    { value_1_type: 'duration_m' as const, value_2_type: null, label: 'Duration Only' },
   ],
 } as const
 
@@ -896,7 +896,7 @@ export default function AdminTemplatesPage() {
         return '75'
       case 'reps':
         return '8-10'
-      case 'duration_s':
+      case 'duration_m':
         return exerciseType === 'CARDIO' ? '300' : '60' // 5 min for cardio, 1 min for others
       case 'distance_m':
         return exerciseType === 'CARDIO' ? '5000' : '100' // 5km for cardio, 100m for others

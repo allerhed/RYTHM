@@ -38,7 +38,7 @@ RESPONSE=$(curl -s -X POST http://localhost:3001/api/sessions \
             "setNumber": 1,
             "value1Type": "reps",
             "value1": "20",
-            "value2Type": "duration_s",
+            "value2Type": "duration_m",
             "value2": "45",
             "notes": ""
           },
@@ -46,7 +46,7 @@ RESPONSE=$(curl -s -X POST http://localhost:3001/api/sessions \
             "setNumber": 2,
             "value1Type": "reps",
             "value1": "18",
-            "value2Type": "duration_s",
+            "value2Type": "duration_m",
             "value2": "40",
             "notes": ""
           }
@@ -60,7 +60,7 @@ RESPONSE=$(curl -s -X POST http://localhost:3001/api/sessions \
             "setNumber": 1,
             "value1Type": "distance_m",
             "value1": "5000",
-            "value2Type": "duration_s",
+            "value2Type": "duration_m",
             "value2": "1800",
             "notes": "5K run in 30 minutes"
           }

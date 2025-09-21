@@ -263,14 +263,14 @@ async function main() {
             // Cardio exercise
             if (Math.random() > 0.5) {
               // Duration + Distance/Calories
-              value1Type = 'duration_s'
-              value1Numeric = randomInt(300, 3600) // 5 minutes to 1 hour
+              value1Type = 'duration_m'
+              value1Numeric = randomInt(5, 60) // 5 minutes to 1 hour
               value2Type = Math.random() > 0.5 ? 'distance_m' : 'calories'
               value2Numeric = value2Type === 'distance_m' ? randomInt(1000, 10000) : randomInt(100, 800)
             } else {
               // Just duration
-              value1Type = 'duration_s'
-              value1Numeric = randomInt(300, 3600)
+              value1Type = 'duration_m'
+              value1Numeric = randomInt(5, 60) // 5 minutes to 1 hour
               value2Type = null
               value2Numeric = null
             }
