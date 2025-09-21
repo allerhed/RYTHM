@@ -132,26 +132,29 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-700">
+      <div className="bg-gray-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-700 shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
-          <h2 className="text-xl font-semibold text-white">New Exercise</h2>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={onClose}
-              disabled={loading}
-              className="text-gray-400 hover:text-gray-300 disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
-            >
-              {loading ? 'Adding...' : 'Add'}
-            </button>
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-white">New Exercise Template</h2>
+              <p className="text-sm text-gray-400">Create a new exercise template for the library</p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="text-gray-400 hover:text-gray-300 disabled:opacity-50 p-2 hover:bg-gray-700 rounded-lg transition-colors duration-200"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -164,7 +167,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
               type="text"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 border-gray-600 text-gray-100 ${
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 placeholder-gray-400 transition-colors duration-200 ${
                 errors.name ? 'border-red-500' : 'border-gray-600'
               }`}
               placeholder="Enter exercise name"
@@ -176,23 +179,25 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
           {/* Exercise Type */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Exercise Type
+              Exercise Type *
             </label>
-            <select
-              value={formData.exercise_type}
-              onChange={(e) => setFormData(prev => ({ 
-                ...prev, 
-                exercise_type: e.target.value as 'STRENGTH' | 'CARDIO' 
-              }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-100"
-              disabled={loading}
-            >
-              {EXERCISE_TYPES.map(type => (
-                <option key={type.value} value={type.value}>
+            <div className="grid grid-cols-2 gap-3">
+              {EXERCISE_TYPES.map((type) => (
+                <button
+                  key={type.value}
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, exercise_type: type.value as 'STRENGTH' | 'CARDIO' }))}
+                  className={`px-4 py-3 border rounded-lg font-medium transition-all duration-200 ${
+                    formData.exercise_type === type.value
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-blue-500 shadow-lg'
+                      : 'border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700 hover:border-gray-500'
+                  }`}
+                  disabled={loading}
+                >
                   {type.label}
-                </option>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
           {/* Category */}
@@ -203,11 +208,11 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
             <select
               value={formData.exercise_category}
               onChange={(e) => setFormData(prev => ({ ...prev, exercise_category: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-100"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
               disabled={loading}
             >
               {EXERCISE_CATEGORIES.map(category => (
-                <option key={category} value={category}>
+                <option key={category} value={category} className="bg-gray-700 text-gray-100">
                   {category.charAt(0).toUpperCase() + category.slice(1)}
                 </option>
               ))}
@@ -219,14 +224,14 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Muscle Groups *
             </label>
-            <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto border border-gray-600 rounded-md p-3 bg-gray-750">
+            <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto border border-gray-600 rounded-lg p-4 bg-gray-750">
               {MUSCLE_GROUPS.map(muscleGroup => (
                 <label key={muscleGroup} className="flex items-center space-x-2 text-sm">
                   <input
                     type="checkbox"
                     checked={formData.muscle_groups.includes(muscleGroup)}
                     onChange={() => handleMuscleGroupToggle(muscleGroup)}
-                    className="rounded border-gray-500 text-blue-600 focus:ring-blue-500 bg-gray-700"
+                    className="rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-2 bg-gray-700"
                     disabled={loading}
                   />
                   <span className="text-gray-300 capitalize">
@@ -253,18 +258,24 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                   equipment: selectedEquipment?.name || ''
                 }))
               }}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-100"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
               disabled={loading || loadingEquipment}
             >
-              <option value="">Select equipment</option>
+              <option value="" className="bg-gray-700 text-gray-100">Select equipment (optional)</option>
               {equipmentOptions.map((equipment: Equipment) => (
-                <option key={equipment.equipment_id} value={equipment.equipment_id}>
+                <option key={equipment.equipment_id} value={equipment.equipment_id} className="bg-gray-700 text-gray-100">
                   {equipment.name} ({equipment.category})
                 </option>
               ))}
             </select>
             {loadingEquipment && (
-              <p className="text-sm text-gray-400 mt-1">Loading equipment options...</p>
+              <p className="text-sm text-gray-400 mt-1 flex items-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading equipment options...
+              </p>
             )}
           </div>
 
@@ -280,11 +291,11 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                   ...prev, 
                   default_value_1_type: e.target.value 
                 }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-100"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
                 disabled={loading}
               >
                 {VALUE_TYPES.map(type => (
-                  <option key={type} value={type}>
+                  <option key={type} value={type} className="bg-gray-700 text-gray-100">
                     {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </option>
                 ))}
@@ -300,11 +311,11 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                   ...prev, 
                   default_value_2_type: e.target.value 
                 }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-100"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
                 disabled={loading}
               >
                 {VALUE_TYPES.map(type => (
-                  <option key={type} value={type}>
+                  <option key={type} value={type} className="bg-gray-700 text-gray-100">
                     {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </option>
                 ))}
@@ -321,7 +332,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-100"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 placeholder-gray-400 resize-none transition-colors duration-200"
               placeholder="Brief description of the exercise"
               disabled={loading}
             />
@@ -336,10 +347,44 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
               value={formData.instructions}
               onChange={(e) => setFormData(prev => ({ ...prev, instructions: e.target.value }))}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-100"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 placeholder-gray-400 resize-none transition-colors duration-200"
               placeholder="Detailed instructions on how to perform the exercise"
               disabled={loading}
             />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-700">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:text-white hover:bg-gray-700 hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg transition-all duration-200 flex items-center space-x-2"
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Create Exercise
+                </>
+              )}
+            </button>
           </div>
         </form>
       </div>

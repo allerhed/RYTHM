@@ -7,7 +7,7 @@ import { Avatar } from '../../components/Avatar'
 import { useAuth, withAuth } from '../../contexts/AuthContext'
 import { TrainingScoreWidget } from '../../components/TrainingScoreWidget'
 import { PencilIcon, EyeIcon } from '@heroicons/react/24/outline'
-import { trpc } from '../providers'
+import { trpc } from '../../lib/trpc'
 
 // Utility function to format relative time
 const formatRelativeTime = (timestamp: string | Date) => {
@@ -62,10 +62,13 @@ function DashboardPage() {
     return currentDay === 0 ? 6 : currentDay - 1 // Convert Sunday from 0 to 6
   })
 
-  // Fetch recent activity data - temporarily disabled due to tRPC configuration
-  const recentActivity: any[] = []
-  const activityLoading = false
-  const activityError = null
+  // Fetch recent activity data
+  const { data: recentActivity = [], isLoading: activityLoading, error: activityError } = trpc.sessions.recentActivity.useQuery({
+    limit: 5
+  }, {
+    enabled: !!user,
+    retry: 2
+  })
 
   // Helper functions for week navigation
   const getMondayOfWeek = (date: Date) => {

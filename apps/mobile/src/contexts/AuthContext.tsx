@@ -115,9 +115,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true)
     
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
-      const loginUrl = `${apiUrl}/api/auth/login`
-      console.log('📡 Making fetch request to API:', loginUrl)
+      // Use relative URL to go through the mobile app's proxy
+      const loginUrl = '/api/auth/login'
+      console.log('📡 Making fetch request to proxy:', loginUrl)
       
       const response = await fetch(loginUrl, {
         method: 'POST',
@@ -174,15 +174,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true)
     
     try {
-      console.log('Environment variables check:')
-      console.log('- process.env.API_URL:', process.env.API_URL)
-      console.log('- process.env.NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
-      console.log('- All process.env keys containing API:', Object.keys(process.env).filter(k => k.includes('API')))
-      
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
-      const registerUrl = `${apiUrl}/api/auth/register`
-      console.log('Final API URL being used:', apiUrl)
-      console.log('Making fetch request to:', registerUrl)
+      // Use relative URL to go through the mobile app's proxy
+      const registerUrl = '/api/auth/register'
+      console.log('Making fetch request to proxy:', registerUrl)
       
       const response = await fetch(registerUrl, {
         method: 'POST',
@@ -284,8 +278,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
-      const profileUrl = `${apiUrl}/api/auth/profile`
+      // Use relative URL to go through the mobile app's proxy
+      const profileUrl = '/api/auth/profile'
       
       const response = await fetch(profileUrl, {
         method: 'GET',
@@ -342,8 +336,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
-      const profileUrl = `${apiUrl}/api/auth/profile`
+      // Use relative URL to go through the mobile app's proxy
+      const profileUrl = '/api/auth/profile'
       
       const response = await fetch(profileUrl, {
         method: 'PUT',
@@ -378,8 +372,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
-      const passwordUrl = `${apiUrl}/api/auth/password`
+      // Use relative URL to go through the mobile app's proxy
+      const passwordUrl = '/api/auth/password'
       
       const response = await fetch(passwordUrl, {
         method: 'PUT',
@@ -407,8 +401,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
-      const avatarUrl = `${apiUrl}/api/auth/avatar`
+      // Use relative URL to go through the mobile app's proxy
+      const avatarUrl = '/api/auth/avatar'
       
       const formData = new FormData()
       formData.append('avatar', file)

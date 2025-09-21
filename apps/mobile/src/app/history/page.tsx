@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { trpc } from '../providers'
+import { trpc } from '../../lib/trpc'
 import { CalendarIcon, ClockIcon, PlayIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 export default function HistoryPage() {
@@ -15,13 +15,18 @@ export default function HistoryPage() {
   // Calculate offset for pagination
   const offset = (currentPage - 1) * pageSize
 
-  // Fetch user's recent sessions with pagination - temporarily disabled due to tRPC configuration
-  const recentSessions: any[] = []
-  const isLoading = false
-  const error = null
+  // Fetch user's recent sessions with pagination
+  const { data: recentSessions = [], isLoading, error } = trpc.sessions.list.useQuery({
+    category: selectedFilter === 'all' ? undefined : selectedFilter,
+    offset,
+    limit: pageSize
+  }, {
+    enabled: !!user,
+    retry: 2
+  })
 
-  // Fetch total count for pagination - temporarily disabled
-  const totalCount = 0
+  // For now, use approximate count based on returned data
+  const totalCount = recentSessions.length === pageSize ? (currentPage * pageSize) + 1 : (currentPage - 1) * pageSize + recentSessions.length
 
   const totalPages = totalCount ? Math.ceil(totalCount / pageSize) : 0
 

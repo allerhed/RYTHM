@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/Form'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
-import { trpc } from '@/app/providers'
+import { trpc } from '@/lib/trpc'
 
 interface Exercise {
   id: string
@@ -127,7 +127,7 @@ export default function NewWorkoutPage() {
         id: Date.now().toString(),
         name: template.name,
         notes: '',
-        sets: [createNewSetWithDefaults(1, template.default_value_1_type, template.default_value_2_type)],
+        sets: [createNewSetWithDefaults(1, template.default_value_1_type, template.default_value_2_type, template.exercise_type)],
         muscle_groups: template.muscle_groups,
         equipment: template.equipment,
         exercise_category: template.exercise_category,
@@ -152,13 +152,107 @@ export default function NewWorkoutPage() {
   const addExercisesFromTemplate = (templateExercises: any[]) => {
     const newExercises = templateExercises.map((templateEx, index) => {
       const exerciseId = Date.now().toString() + index
-      const sets = Array.from({ length: templateEx.sets }, (_, setIndex) => 
-        createNewSetWithDefaults(
-          setIndex + 1, 
-          templateEx.weight ? 'weight_kg' : (activityType === 'strength' ? 'weight_kg' : 'distance_m'),
-          templateEx.reps ? 'reps' : (activityType === 'strength' ? 'reps' : 'duration_m')
-        )
-      )
+      
+      // Parse template exercise values and determine types
+      const exerciseType = templateEx.category === 'cardio' ? 'CARDIO' : 'STRENGTH'
+      
+      // Create sets with template default values
+      const sets = Array.from({ length: templateEx.sets }, (_, setIndex) => {
+        const setId = Date.now().toString() + setIndex + index
+        
+        // Determine value types and defaults from template exercise
+        let value1Type: string | null = null
+        let value1: number = 0
+        let value2Type: string | null = null  
+        let value2: number = 0
+        
+        // Check if template uses new format (value_1_type, value_1_default, etc.)
+        if (templateEx.value_1_type || templateEx.value_2_type) {
+          // New format - use template defaults directly
+          value1Type = templateEx.value_1_type || null
+          value1 = parseFloat(templateEx.value_1_default) || 0
+          value2Type = templateEx.value_2_type || null
+          value2 = parseFloat(templateEx.value_2_default) || 0
+        } else {
+          // Old format - parse individual fields like reps, weight, etc.
+          if (templateEx.weight) {
+            value1Type = 'weight_kg'
+            value1 = parseFloat(templateEx.weight) || 75
+          }
+          
+          if (templateEx.reps) {
+            const repsType = value1Type ? 'value2Type' : 'value1Type'
+            
+            if (repsType === 'value1Type') {
+              value1Type = 'reps'
+              // Parse reps like "8-10" to just use the first number, or use the number directly
+              const repsStr = templateEx.reps.toString()
+              value1 = parseFloat(repsStr.split('-')[0]) || 10
+            } else {
+              value2Type = 'reps'
+              const repsStr = templateEx.reps.toString()
+              value2 = parseFloat(repsStr.split('-')[0]) || 10
+            }
+          }
+          
+          if (templateEx.distance_m) {
+            const distanceType = value1Type ? 'value2Type' : 'value1Type'
+            
+            if (distanceType === 'value1Type') {
+              value1Type = 'distance_m'
+              value1 = parseFloat(templateEx.distance_m) || 1000
+            } else {
+              value2Type = 'distance_m'
+              value2 = parseFloat(templateEx.distance_m) || 1000
+            }
+          }
+          
+          if (templateEx.duration_m) {
+            const durationType = value1Type ? 'value2Type' : 'value1Type'
+            
+            if (durationType === 'value1Type') {
+              value1Type = 'duration_m'
+              value1 = parseFloat(templateEx.duration_m) || 5
+            } else {
+              value2Type = 'duration_m'
+              value2 = parseFloat(templateEx.duration_m) || 5
+            }
+          }
+          
+          if (templateEx.calories) {
+            const caloriesType = value1Type ? 'value2Type' : 'value1Type'
+            
+            if (caloriesType === 'value1Type') {
+              value1Type = 'calories'
+              value1 = parseFloat(templateEx.calories) || 200
+            } else {
+              value2Type = 'calories'
+              value2 = parseFloat(templateEx.calories) || 200
+            }
+          }
+        }
+        
+        // If no template values, use defaults based on exercise type
+        if (!value1Type) {
+          value1Type = exerciseType === 'CARDIO' ? 'distance_m' : 'weight_kg'
+          value1 = exerciseType === 'CARDIO' ? 1000 : 75
+        }
+        
+        if (!value2Type) {
+          value2Type = exerciseType === 'CARDIO' ? 'duration_m' : 'reps'
+          value2 = exerciseType === 'CARDIO' ? 5 : 10
+        }
+        
+        return {
+          id: setId,
+          setNumber: setIndex + 1,
+          value1Type: value1Type as any,
+          value1: value1,
+          value2Type: value2Type as any,
+          value2: value2,
+          notes: ''
+        }
+      })
 
       return {
         id: exerciseId,
@@ -168,7 +262,7 @@ export default function NewWorkoutPage() {
         exercise_id: templateEx.exercise_id,
         muscle_groups: templateEx.muscle_groups || [],
         exercise_category: templateEx.category,
-        exercise_type: (templateEx.category === 'cardio' ? 'CARDIO' : 'STRENGTH') as 'STRENGTH' | 'CARDIO'
+        exercise_type: exerciseType as 'STRENGTH' | 'CARDIO'
       }
     })
 
@@ -176,15 +270,42 @@ export default function NewWorkoutPage() {
     setShowTemplateModal(false)
   }
 
-  const createNewSetWithDefaults = (setNumber: number, defaultType1?: string, defaultType2?: string): WorkoutSet => ({
-    id: Date.now().toString() + setNumber,
-    setNumber,
-    value1Type: (defaultType1 as any) || (activityType === 'strength' ? 'weight_kg' : 'distance_m'),
-    value1: 0,
-    value2Type: (defaultType2 as any) || (activityType === 'strength' ? 'reps' : 'duration_m'),
-    value2: 0,
-    notes: ''
-  })
+  const createNewSetWithDefaults = (
+    setNumber: number, 
+    defaultType1?: string, 
+    defaultType2?: string, 
+    exerciseType?: 'STRENGTH' | 'CARDIO'
+  ): WorkoutSet => {
+    // Helper function to get default values based on value type and exercise type
+    const getDefaultValueForType = (valueType: string | undefined, exerciseType?: string): number => {
+      if (!valueType) return 0
+      
+      switch (valueType) {
+        case 'weight_kg':
+          return 75
+        case 'reps':
+          return exerciseType === 'STRENGTH' ? 10 : 12
+        case 'duration_m':
+          return exerciseType === 'CARDIO' ? 5 : 1 // 5 min for cardio, 1 min for others
+        case 'distance_m':
+          return exerciseType === 'CARDIO' ? 5000 : 100 // 5km for cardio, 100m for others
+        case 'calories':
+          return 200
+        default:
+          return 0
+      }
+    }
+
+    return {
+      id: Date.now().toString() + setNumber,
+      setNumber,
+      value1Type: (defaultType1 as any) || (activityType === 'strength' ? 'weight_kg' : 'distance_m'),
+      value1: getDefaultValueForType(defaultType1, exerciseType),
+      value2Type: (defaultType2 as any) || (activityType === 'strength' ? 'reps' : 'duration_m'),
+      value2: getDefaultValueForType(defaultType2, exerciseType),
+      notes: ''
+    }
+  }
 
   const createNewSet = (setNumber: number): WorkoutSet => ({
     id: Date.now().toString() + setNumber,
@@ -221,7 +342,7 @@ export default function NewWorkoutPage() {
         } else {
           // If no existing sets, use defaults
           const newSet = ex.default_value_1_type && ex.default_value_2_type
-            ? createNewSetWithDefaults(newSetNumber, ex.default_value_1_type, ex.default_value_2_type)
+            ? createNewSetWithDefaults(newSetNumber, ex.default_value_1_type, ex.default_value_2_type, ex.exercise_type)
             : createNewSet(newSetNumber)
           
           return {
@@ -283,14 +404,39 @@ export default function NewWorkoutPage() {
   const onValueChange = (exerciseId: string, setId: string, field: 'value1' | 'value2', value: number) => {
     setExercises(exercises.map(ex => {
       if (ex.id === exerciseId) {
+        const updatedSets = ex.sets.map(set => {
+          if (set.id === setId) {
+            return { ...set, [field]: value }
+          }
+          return set
+        })
+        
+        // Auto-populate KGS values across sets if this is the first set and it's a weight field
+        const updatedSet = updatedSets.find(set => set.id === setId)
+        const isFirstSet = updatedSet?.setNumber === 1
+        const isWeightField = (field === 'value1' && updatedSet?.value1Type === 'weight_kg') || 
+                             (field === 'value2' && updatedSet?.value2Type === 'weight_kg')
+        
+        if (isFirstSet && isWeightField && value && value > 0) {
+          // Auto-populate the same weight value to all other sets with the same value type
+          return {
+            ...ex,
+            sets: updatedSets.map(set => {
+              if (set.setNumber > 1) {
+                if (field === 'value1' && set.value1Type === 'weight_kg' && (!set.value1 || set.value1 === 0)) {
+                  return { ...set, value1: value }
+                } else if (field === 'value2' && set.value2Type === 'weight_kg' && (!set.value2 || set.value2 === 0)) {
+                  return { ...set, value2: value }
+                }
+              }
+              return set
+            })
+          }
+        }
+        
         return {
           ...ex,
-          sets: ex.sets.map(set => {
-            if (set.id === setId) {
-              return { ...set, [field]: value }
-            }
-            return set
-          })
+          sets: updatedSets
         }
       }
       return ex

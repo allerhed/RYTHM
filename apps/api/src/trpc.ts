@@ -78,8 +78,9 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   
-  // Set tenant context for RLS (skip for system admin users)
-  if (ctx.user.tenantId !== '00000000-0000-0000-0000-000000000000' && ctx.user.role !== 'system_admin') {
+  // Set tenant context for RLS (skip for system admin users and org_admin users)
+  if (ctx.user.tenantId !== '00000000-0000-0000-0000-000000000000' && 
+      !['system_admin', 'org_admin'].includes(ctx.user.role)) {
     await db.setTenantContext(
       db, // This will be replaced with actual client in real implementation
       ctx.user.tenantId,

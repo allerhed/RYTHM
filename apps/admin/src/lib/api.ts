@@ -425,8 +425,10 @@ class ApiClient {
       'Content-Type': 'application/json',
     }
     
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`
+    // Always get fresh token from localStorage
+    const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null
+    if (token) {
+      headers.Authorization = `Bearer ${token}`
     }
     
     return headers

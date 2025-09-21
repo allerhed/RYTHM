@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { trpc } from '../app/providers'
+import { trpc } from '../lib/trpc'
 
 interface TrainingScoreData {
   selectedWeek: {

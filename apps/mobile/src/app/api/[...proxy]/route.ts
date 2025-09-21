@@ -18,10 +18,11 @@ export async function DELETE(request: NextRequest) {
 
 async function proxyRequest(request: NextRequest, method: string) {
   try {
-    // Use environment variable for API URL, with fallbacks for different environments
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 
-                      process.env.API_URL || 
-                      'https://api.rythm.training';
+    // Use API_URL for server-side requests (container-to-container)
+    // Fall back to NEXT_PUBLIC_API_URL for backwards compatibility
+    const apiBaseUrl = process.env.API_URL || 
+                      process.env.NEXT_PUBLIC_API_URL || 
+                      'http://api:3001';
     
     const url = new URL(request.url);
     

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { trpc } from '../providers'
+import { trpc } from '../../lib/trpc'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
 import { 
   VALUE_TYPE_LABELS, 

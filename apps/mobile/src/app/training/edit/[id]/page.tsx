@@ -4,7 +4,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/Form'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
-import { trpc } from '@/app/providers'
+import { trpc } from '@/lib/trpc'
 
 interface Exercise {
   id: string
@@ -172,6 +172,11 @@ export default function EditWorkoutPage() {
         setNotes(session.notes || '')
         setTrainingLoad(session.training_load || 1)
         setPerceivedExertion(session.perceived_exertion || 1)
+        
+        // Set workout date from session
+        if (session.started_at) {
+          setWorkoutDate(new Date(session.started_at))
+        }
 
         // Convert exercises and sets
         const convertedExercises: Exercise[] = session.exercises.map(dbEx => ({
@@ -361,13 +366,38 @@ export default function EditWorkoutPage() {
   const updateSet = (exerciseId: string, setId: string, field: 'value1' | 'value2' | 'notes', value: number | string) => {
     setExercises(exercises.map(ex => {
       if (ex.id === exerciseId) {
+        const updatedSets = ex.sets.map(set => 
+          set.id === setId 
+            ? { ...set, [field]: value }
+            : set
+        )
+        
+        // Auto-populate KGS values across sets if this is the first set and it's a weight field
+        const updatedSet = updatedSets.find(set => set.id === setId)
+        const isFirstSet = updatedSet?.setNumber === 1
+        const isWeightField = (field === 'value1' && updatedSet?.value1Type === 'weight_kg') || 
+                             (field === 'value2' && updatedSet?.value2Type === 'weight_kg')
+        
+        if (isFirstSet && isWeightField && (field === 'value1' || field === 'value2') && value && Number(value) > 0) {
+          // Auto-populate the same weight value to all other sets with the same value type
+          return {
+            ...ex,
+            sets: updatedSets.map(set => {
+              if (set.setNumber > 1) {
+                if (field === 'value1' && set.value1Type === 'weight_kg' && (!set.value1 || set.value1 === 0)) {
+                  return { ...set, value1: Number(value) }
+                } else if (field === 'value2' && set.value2Type === 'weight_kg' && (!set.value2 || set.value2 === 0)) {
+                  return { ...set, value2: Number(value) }
+                }
+              }
+              return set
+            })
+          }
+        }
+        
         return {
           ...ex,
-          sets: ex.sets.map(set => 
-            set.id === setId 
-              ? { ...set, [field]: value }
-              : set
-          )
+          sets: updatedSets
         }
       }
       return ex
@@ -417,6 +447,7 @@ export default function EditWorkoutPage() {
         name: workoutName,
         category: activityType, // Use the enum value (strength/cardio/hybrid)
         notes,
+        started_at: workoutDate.toISOString(), // Include workout date
         exercises: exercises.map(ex => ({
           exercise_id: ex.exercise_id || ex.id,
           name: ex.name,
@@ -428,9 +459,9 @@ export default function EditWorkoutPage() {
             set_id: set.id,
             set_index: set.setNumber,
             value_1_type: set.value1Type,
-            value_1_numeric: set.value1,
+            value_1_numeric: set.value1 ? Number(set.value1) : null, // Ensure number type
             value_2_type: set.value2Type,
-            value_2_numeric: set.value2,
+            value_2_numeric: set.value2 ? Number(set.value2) : null, // Ensure number type
             notes: set.notes
           }))
         })),
@@ -449,12 +480,27 @@ export default function EditWorkoutPage() {
         body: JSON.stringify(workoutData),
       })
 
+      console.log('📡 Response status:', response.status)
+      console.log('📡 Response ok:', response.ok)
+
       if (response.ok) {
         const savedWorkout = await response.json()
+        console.log('✅ Workout updated successfully:', savedWorkout)
         router.push('/dashboard')
       } else {
-        const error = await response.json()
-        alert(`Failed to update workout: ${error.message || 'Unknown error'}`)
+        const errorText = await response.text()
+        console.error('❌ Update failed - Status:', response.status)
+        console.error('❌ Update failed - Response:', errorText)
+        
+        let errorMessage
+        try {
+          const error = JSON.parse(errorText)
+          errorMessage = error.message || error.error || 'Unknown error'
+        } catch {
+          errorMessage = errorText || `HTTP ${response.status} error`
+        }
+        
+        alert(`Failed to update workout: ${errorMessage}`)
       }
     } catch (error) {
       console.error('Error updating workout:', error)

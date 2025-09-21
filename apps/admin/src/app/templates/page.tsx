@@ -430,7 +430,7 @@ export default function AdminTemplatesPage() {
   const [formData, setFormData] = useState<TemplateFormData>({
     name: '',
     description: '',
-    scope: 'tenant',
+    scope: 'system',
     exercises: []
   })
 
@@ -637,7 +637,7 @@ export default function AdminTemplatesPage() {
     setFormData({
       name: '',
       description: '',
-      scope: 'tenant',
+      scope: 'system',
       exercises: []
     })
     setShowCreateModal(true)
@@ -830,7 +830,7 @@ export default function AdminTemplatesPage() {
       setFormData({
         name: '',
         description: '',
-        scope: 'user' as const,
+        scope: 'system' as const,
         exercises: []
       })
 

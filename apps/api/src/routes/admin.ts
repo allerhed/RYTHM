@@ -472,6 +472,7 @@ export const adminRouter = router({
       name: z.string().min(1),
       muscle_groups: z.array(z.string()).default([]),
       equipment: z.string().optional(),
+      equipment_id: z.string().optional(),
       exercise_category: z.string().default('strength'),
       exercise_type: z.enum(['STRENGTH', 'CARDIO']).default('STRENGTH'),
       default_value_1_type: z.string().default('weight_kg'),
@@ -492,14 +493,15 @@ export const adminRouter = router({
 
       const result = await db.query(`
         INSERT INTO exercise_templates (
-          name, muscle_groups, equipment, exercise_category, exercise_type,
+          name, muscle_groups, equipment, equipment_id, exercise_category, exercise_type,
           default_value_1_type, default_value_2_type, description, instructions
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *
       `, [
         input.name,
         input.muscle_groups,
         input.equipment,
+        input.equipment_id || null,
         input.exercise_category,
         input.exercise_type,
         input.default_value_1_type,

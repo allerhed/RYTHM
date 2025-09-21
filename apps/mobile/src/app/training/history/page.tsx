@@ -42,19 +42,6 @@ function WorkoutHistoryPage() {
   const [loading, setLoading] = useState(true)
   const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([])
 
-  // Get the first day of the current month
-  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
-  const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
-  
-  // Get the start of the calendar (might include days from previous month)
-  const startOfCalendar = new Date(firstDayOfMonth)
-  startOfCalendar.setDate(startOfCalendar.getDate() - firstDayOfMonth.getDay())
-  
-  // Get the end of the calendar (might include days from next month)
-  const endOfCalendar = new Date(lastDayOfMonth)
-  const daysToAdd = 6 - lastDayOfMonth.getDay()
-  endOfCalendar.setDate(endOfCalendar.getDate() + daysToAdd)
-
   useEffect(() => {
     if (!user || !token) return
 
@@ -87,6 +74,23 @@ function WorkoutHistoryPage() {
   }, [user, token, currentDate])
 
   useEffect(() => {
+    // Calculate calendar dates inside the effect to avoid dependency issues
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+    
+    // Get the start of the calendar (might include days from previous month)
+    // Adjust for Monday start: getDay() returns 0=Sunday, 1=Monday, etc.
+    // We want: Monday=0, Tuesday=1, ..., Sunday=6
+    const startOfCalendar = new Date(firstDayOfMonth)
+    const firstDayWeekday = (firstDayOfMonth.getDay() + 6) % 7 // Convert to Monday=0 system
+    startOfCalendar.setDate(startOfCalendar.getDate() - firstDayWeekday)
+    
+    // Get the end of the calendar (might include days from next month)
+    const endOfCalendar = new Date(lastDayOfMonth)
+    const lastDayWeekday = (lastDayOfMonth.getDay() + 6) % 7 // Convert to Monday=0 system
+    const daysToAdd = 6 - lastDayWeekday
+    endOfCalendar.setDate(endOfCalendar.getDate() + daysToAdd)
+
     // Generate calendar days
     const days: CalendarDay[] = []
     const today = new Date()
@@ -114,7 +118,7 @@ function WorkoutHistoryPage() {
     }
     
     setCalendarDays(days)
-  }, [workouts, currentDate, startOfCalendar, endOfCalendar])
+  }, [workouts, currentDate])
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate)

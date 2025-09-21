@@ -210,20 +210,23 @@ router.get('/:id', authenticateToken, async (req, res) => {
 // PUT update session by ID
 router.put('/:id', authenticateToken, async (req, res) => {
   const pool: Pool = req.app.locals.pool
-  console.log('Session update request for session:', req.params.id)
-  console.log('Request body:', JSON.stringify(req.body, null, 2))
+  console.log('🔧 Session update request for session:', req.params.id)
+  console.log('🔧 Request body keys:', Object.keys(req.body))
+  console.log('🔧 Request started_at:', req.body.started_at)
+  console.log('🔧 Request exercises count:', req.body.exercises?.length)
   
   try {
     const { id } = req.params
     const userId = req.user?.userId
     const tenantId = req.user?.tenantId
 
-    console.log('Using user:', userId, 'tenant:', tenantId)
+    console.log('🔧 Using user:', userId, 'tenant:', tenantId)
 
     if (!userId || !tenantId) {
+      console.error('❌ Authentication failed - missing user or tenant')
       return res.status(401).json({ error: 'Authentication required' })
     }
-    const { name, category, notes, exercises, training_load, perceived_exertion } = req.body
+    const { name, category, notes, exercises, training_load, perceived_exertion, started_at } = req.body
 
     // Verify session ownership
     const sessionCheck = await pool.query(
@@ -232,12 +235,18 @@ router.put('/:id', authenticateToken, async (req, res) => {
     )
 
     if (sessionCheck.rows.length === 0) {
+      console.error('❌ Session not found or access denied for:', id)
       return res.status(404).json({ error: 'Session not found or access denied' })
     }
 
+    console.log('✅ Session ownership verified')
+
     // Start transaction using db.transaction
     const result = await db.transaction(async (client: any) => {
+      console.log('🔄 Starting transaction for session update')
+      
       // Update session
+      console.log('📝 Updating session with started_at:', started_at)
       const sessionResult = await client.query(
         `UPDATE sessions 
          SET name = $1,
@@ -245,14 +254,19 @@ router.put('/:id', authenticateToken, async (req, res) => {
              notes = COALESCE($3, notes),
              training_load = $4,
              perceived_exertion = $5,
+             started_at = COALESCE($6, started_at),
              updated_at = NOW()
-         WHERE session_id = $6 AND user_id = $7 AND tenant_id = $8
+         WHERE session_id = $7 AND user_id = $8 AND tenant_id = $9
          RETURNING *`,
-        [name, category, notes, training_load, perceived_exertion, id, userId, tenantId]
+        [name, category, notes, training_load, perceived_exertion, started_at, id, userId, tenantId]
       )
 
+      console.log('✅ Session updated, affected rows:', sessionResult.rowCount)
+
       // Delete existing sets for this session
-      await client.query('DELETE FROM sets WHERE session_id = $1 AND tenant_id = $2', [id, tenantId])
+      console.log('🗑️ Deleting existing sets for session')
+      const deleteResult = await client.query('DELETE FROM sets WHERE session_id = $1 AND tenant_id = $2', [id, tenantId])
+      console.log('✅ Deleted', deleteResult.rowCount, 'existing sets')
 
       // Process exercises and sets if provided
       if (exercises && exercises.length > 0) {
@@ -272,6 +286,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
           let exerciseId = exercise.exercise_id
           
           if (!exerciseId) {
+            console.log('🔍 Exercise ID not provided, searching by name:', exercise.name)
             // Check if exercise exists globally first
             const existingResult = await client.query(
               'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
@@ -280,7 +295,9 @@ router.put('/:id', authenticateToken, async (req, res) => {
             
             if (existingResult.rows.length > 0) {
               exerciseId = existingResult.rows[0].exercise_id
+              console.log('✅ Found existing exercise:', exerciseId)
             } else {
+              console.log('➕ Creating new exercise')
               // Create new exercise in global library
               const exerciseResult = await client.query(
                 `INSERT INTO exercises (name, notes)
@@ -289,37 +306,66 @@ router.put('/:id', authenticateToken, async (req, res) => {
                 [exercise.name || 'Custom Exercise', exercise.notes || '']
               )
               exerciseId = exerciseResult.rows[0].exercise_id
+              console.log('✅ Created new exercise:', exerciseId)
             }
           }
 
           // Add sets for this exercise with incremented timestamps
           if (exercise.sets && exercise.sets.length > 0) {
+            console.log(`📊 Adding ${exercise.sets.length} sets for exercise`)
             for (let i = 0; i < exercise.sets.length; i++) {
               const set = exercise.sets[i]
               
               // Create timestamp that ensures ordering: base + (exerciseIndex * 1000) + (setIndex * 10) milliseconds
               const setTimestamp = new Date(baseTimestamp.getTime() + (exerciseIndex * 1000) + (i * 10))
               
-              await client.query(
-                `INSERT INTO sets (tenant_id, session_id, exercise_id, set_index, 
-                                   value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes, created_at)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-                [
-                  tenantId,
-                  id,
-                  exerciseId,
-                  set.set_index || i + 1,
-                  set.value_1_type || (set as any).value1Type || null,
-                  parseFloat(set.value_1_numeric || (set as any).value1) || 0,
-                  set.value_2_type || (set as any).value2Type || null,
-                  parseFloat(set.value_2_numeric || (set as any).value2) || 0,
-                  set.notes || null,
-                  setTimestamp
-                ]
-              )
+              const value1 = set.value_1_numeric ? Number(set.value_1_numeric) : ((set as any).value1 ? Number((set as any).value1) : null)
+              const value2 = set.value_2_numeric ? Number(set.value_2_numeric) : ((set as any).value2 ? Number((set as any).value2) : null)
+              
+              // Convert 0 values to null to satisfy database constraints
+              // If value is 0 or null, set both type and numeric to null
+              const finalValue1 = value1 === 0 ? null : value1
+              const finalValue2 = value2 === 0 ? null : value2
+              const finalType1 = finalValue1 === null ? null : (set.value_1_type || (set as any).value1Type || null)
+              const finalType2 = finalValue2 === null ? null : (set.value_2_type || (set as any).value2Type || null)
+              
+              console.log(`  Set ${i + 1}: ${finalType1}=${finalValue1}, ${finalType2}=${finalValue2}`)
+              
+              try {
+                await client.query(
+                  `INSERT INTO sets (tenant_id, session_id, exercise_id, set_index, 
+                                     value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes, created_at)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+                  [
+                    tenantId,
+                    id,
+                    exerciseId,
+                    set.set_index || i + 1,
+                    finalType1,
+                    finalValue1,
+                    finalType2,
+                    finalValue2,
+                    set.notes || null,
+                    setTimestamp
+                  ]
+                )
+              } catch (setError) {
+                console.error('❌ Error inserting set:', setError)
+                console.error('Set data:', { 
+                  set_index: set.set_index || i + 1,
+                  value_1_type: set.value_1_type || (set as any).value1Type,
+                  value_1_numeric: value1,
+                  value_2_type: set.value_2_type || (set as any).value2Type,
+                  value_2_numeric: value2
+                })
+                throw setError
+              }
             }
           }
         }
+        console.log('✅ All exercises and sets processed successfully')
+      } else {
+        console.log('ℹ️ No exercises provided in update')
       }
 
       return sessionResult.rows[0]
@@ -423,6 +469,15 @@ router.post('/', authenticateToken, async (req, res) => {
               // Create timestamp that ensures ordering: base + (exerciseIndex * 1000) + (setIndex * 10) milliseconds
               const setTimestamp = new Date(baseTimestamp.getTime() + (exerciseIndex * 1000) + (i * 10))
               
+              // Convert 0 values to null to satisfy database constraints
+              // If value is 0 or null, set both type and numeric to null
+              const value1 = parseFloat(set.value_1_numeric || set.value1) || 0
+              const value2 = parseFloat(set.value_2_numeric || set.value2) || 0
+              const finalValue1 = value1 === 0 ? null : value1
+              const finalValue2 = value2 === 0 ? null : value2
+              const finalType1 = finalValue1 === null ? null : (set.value_1_type || set.value1Type || null)
+              const finalType2 = finalValue2 === null ? null : (set.value_2_type || set.value2Type || null)
+              
               await client.query(
                 `INSERT INTO sets (tenant_id, session_id, exercise_id, set_index, 
                  value_1_type, value_1_numeric, value_2_type, value_2_numeric, notes, created_at)
@@ -430,10 +485,10 @@ router.post('/', authenticateToken, async (req, res) => {
                 [
                   tenantId, sessionId, exerciseId, 
                   set.set_index || set.setNumber || i + 1,
-                  set.value_1_type || set.value1Type || null,
-                  parseFloat(set.value_1_numeric || set.value1) || 0,
-                  set.value_2_type || set.value2Type || null,
-                  parseFloat(set.value_2_numeric || set.value2) || 0,
+                  finalType1,
+                  finalValue1,
+                  finalType2,
+                  finalValue2,
                   set.notes || '',
                   setTimestamp
                 ]

@@ -32,8 +32,7 @@ const EXERCISE_TYPES = [
 ]
 
 const VALUE_TYPES = [
-  'weight_kg', 'weight_lbs', 'reps', 'time_seconds', 'distance_meters',
-  'distance_km', 'distance_miles', 'calories', 'sets', 'other'
+  'weight_kg', 'distance_m', 'duration_m', 'calories', 'reps'
 ]
 
 export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseModalProps) {
@@ -148,14 +147,26 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {exerciseTemplate ? 'Edit Exercise Template' : 'Add New Exercise Template'}
-          </h2>
+      <div className="bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto border border-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-white">
+                {exerciseTemplate ? 'Edit Exercise Template' : 'New Exercise Template'}
+              </h2>
+              <p className="text-sm text-gray-400">
+                {exerciseTemplate ? 'Update the exercise template details' : 'Create a new exercise template for the library'}
+              </p>
+            </div>
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-300 p-2 hover:bg-gray-700 rounded-lg transition-colors duration-200"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -166,54 +177,57 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
         <form onSubmit={handleSubmit} className="modal-form p-6 space-y-6">
           {/* Exercise Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Exercise Template Name *
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 placeholder-gray-400 transition-colors duration-200 ${
+                errors.name ? 'border-red-500' : 'border-gray-600'
               }`}
               placeholder="Enter exercise template name"
             />
-            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+            {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name}</p>}
           </div>
 
           {/* Exercise Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Exercise Type
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Exercise Type *
             </label>
-            <select
-              value={formData.exercise_type}
-              onChange={(e) => setFormData(prev => ({ 
-                ...prev, 
-                exercise_type: e.target.value as 'STRENGTH' | 'CARDIO' 
-              }))}
-              className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {EXERCISE_TYPES.map(type => (
-                <option key={type.value} value={type.value}>
+            <div className="grid grid-cols-2 gap-3">
+              {EXERCISE_TYPES.map((type) => (
+                <button
+                  key={type.value}
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, exercise_type: type.value as 'STRENGTH' | 'CARDIO' }))}
+                  className={`px-4 py-3 border rounded-lg font-medium transition-all duration-200 ${
+                    formData.exercise_type === type.value
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-blue-500 shadow-lg'
+                      : 'border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700 hover:border-gray-500'
+                  }`}
+                  disabled={isLoading}
+                >
                   {type.label}
-                </option>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
           {/* Exercise Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Category
             </label>
             <select
               value={formData.exercise_category}
               onChange={(e) => setFormData(prev => ({ ...prev, exercise_category: e.target.value }))}
-              className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
             >
               {EXERCISE_CATEGORIES.map(category => (
-                <option key={category} value={category}>
+                <option key={category} value={category} className="bg-gray-700 text-gray-100">
                   {category.charAt(0).toUpperCase() + category.slice(1)}
                 </option>
               ))}
@@ -222,32 +236,33 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
 
           {/* Muscle Groups */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Muscle Groups *
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto border border-gray-600 rounded-lg p-4 bg-gray-750">
               {MUSCLE_GROUPS.map(muscleGroup => (
-                <label key={muscleGroup} className="flex items-center">
+                <label key={muscleGroup} className="flex items-center space-x-2 text-sm">
                   <input
                     type="checkbox"
                     checked={formData.muscle_groups.includes(muscleGroup)}
                     onChange={() => handleMuscleGroupToggle(muscleGroup)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-2 bg-gray-700"
+                    disabled={isLoading}
                   />
-                  <span className="ml-2 text-sm text-gray-700 capitalize">
+                  <span className="text-gray-300 capitalize">
                     {muscleGroup}
                   </span>
                 </label>
               ))}
             </div>
             {errors.muscle_groups && (
-              <p className="mt-1 text-sm text-red-600">{errors.muscle_groups}</p>
+              <p className="mt-1 text-sm text-red-400">{errors.muscle_groups}</p>
             )}
           </div>
 
           {/* Equipment */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Equipment
             </label>
             <select
@@ -260,25 +275,31 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
                   equipment: selectedEquipment?.name || ''
                 }))
               }}
-              className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loadingEquipment}
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
+              disabled={loadingEquipment || isLoading}
             >
-              <option value="">Select equipment</option>
+              <option value="" className="bg-gray-700 text-gray-100">Select equipment (optional)</option>
               {equipmentOptions.map((equipment: Equipment) => (
-                <option key={equipment.equipment_id} value={equipment.equipment_id}>
+                <option key={equipment.equipment_id} value={equipment.equipment_id} className="bg-gray-700 text-gray-100">
                   {equipment.name} ({equipment.category})
                 </option>
               ))}
             </select>
             {loadingEquipment && (
-              <p className="mt-1 text-sm text-gray-500">Loading equipment options...</p>
+              <p className="mt-1 text-sm text-gray-400 flex items-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading equipment options...
+              </p>
             )}
           </div>
 
           {/* Default Value Types */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Primary Value Type
               </label>
               <select
@@ -287,17 +308,18 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
                   ...prev, 
                   default_value_1_type: e.target.value 
                 }))}
-                className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
+                disabled={isLoading}
               >
                 {VALUE_TYPES.map(type => (
-                  <option key={type} value={type}>
+                  <option key={type} value={type} className="bg-gray-700 text-gray-100">
                     {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Secondary Value Type
               </label>
               <select
@@ -306,10 +328,11 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
                   ...prev, 
                   default_value_2_type: e.target.value 
                 }))}
-                className="dropdown-fix w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
+                disabled={isLoading}
               >
                 {VALUE_TYPES.map(type => (
-                  <option key={type} value={type}>
+                  <option key={type} value={type} className="bg-gray-700 text-gray-100">
                     {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </option>
                 ))}
@@ -319,47 +342,65 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Description
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={3}
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 placeholder-gray-400 resize-none transition-colors duration-200"
               placeholder="Brief description of the exercise"
+              disabled={isLoading}
             />
           </div>
 
           {/* Instructions */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Instructions
             </label>
             <textarea
               value={formData.instructions}
               onChange={(e) => setFormData(prev => ({ ...prev, instructions: e.target.value }))}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 placeholder-gray-400 resize-none transition-colors duration-200"
               placeholder="Detailed instructions on how to perform the exercise"
+              disabled={isLoading}
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-700">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+              disabled={isLoading}
+              className="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:text-white hover:bg-gray-700 hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg transition-all duration-200 flex items-center space-x-2"
             >
-              {isLoading ? 'Saving...' : exerciseTemplate ? 'Update Template' : 'Create Template'}
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={exerciseTemplate ? "M5 13l4 4L19 7" : "M12 6v6m0 0v6m0-6h6m-6 0H6"} />
+                  </svg>
+                  {exerciseTemplate ? 'Update Template' : 'Create Template'}
+                </>
+              )}
             </button>
           </div>
         </form>
