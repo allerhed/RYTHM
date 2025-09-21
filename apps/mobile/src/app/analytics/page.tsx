@@ -73,7 +73,7 @@ function AnalyticsPage() {
   }, [])
 
   // Use tRPC queries to fetch data from server
-  const trainingLoadQuery = trpc.analytics.trainingLoadChart.useQuery(undefined, {
+  const trainingLoadQuery = trpc.stats.trainingLoadChart.useQuery(undefined, {
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
     onSuccess: (data) => {
@@ -84,7 +84,7 @@ function AnalyticsPage() {
     }
   })
 
-  const summaryQuery = trpc.analytics.analyticsSummary.useQuery(undefined, {
+  const summaryQuery = trpc.stats.analyticsSummary.useQuery(undefined, {
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
     onError: (error) => {
@@ -92,7 +92,7 @@ function AnalyticsPage() {
     }
   })
 
-  const categoryBreakdownQuery = trpc.analytics.categoryBreakdown.useQuery(undefined, {
+  const categoryBreakdownQuery = trpc.stats.categoryBreakdown.useQuery(undefined, {
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
     onError: (error) => {

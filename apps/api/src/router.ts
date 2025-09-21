@@ -13,7 +13,7 @@ export const appRouter = router({
   auth: authRouter,
   sessions: sessionsRouter,
   sets: setsRouter,
-  analytics: analyticsRouter,
+  stats: analyticsRouter,
   users: usersRouter,
   admin: adminRouter,
   exerciseTemplates: exerciseTemplatesRouter,
