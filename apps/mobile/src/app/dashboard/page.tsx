@@ -63,7 +63,7 @@ function DashboardPage() {
   })
 
   // Fetch recent activity data
-  const { data: recentActivity = [], isLoading: activityLoading, error: activityError } = trpc.sessions.recentActivity.useQuery({
+  const { data: recentActivity = [], isLoading: activityLoading, error: activityError } = trpc.workoutSessions.recentActivity.useQuery({
     limit: 5
   }, {
     enabled: !!user,

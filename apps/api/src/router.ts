@@ -10,15 +10,15 @@ import { workoutTemplatesRouter } from './routes/workoutTemplates';
 import { equipmentRouter } from './routes/equipment';
 
 export const appRouter = router({
-  auth: authRouter,
-  sessions: sessionsRouter,
-  sets: setsRouter,
-  stats: analyticsRouter,
-  users: usersRouter,
-  admin: adminRouter,
+  authentication: authRouter,
+  workoutSessions: sessionsRouter,
+  workoutSets: setsRouter,
+  statistics: analyticsRouter,
+  userProfiles: usersRouter,
+  administration: adminRouter,
   exerciseTemplates: exerciseTemplatesRouter,
   workoutTemplates: workoutTemplatesRouter,
-  equipment: equipmentRouter,
+  gymEquipment: equipmentRouter,
 });
 
 export type AppRouter = typeof appRouter;

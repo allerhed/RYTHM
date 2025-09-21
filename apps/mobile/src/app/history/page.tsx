@@ -16,7 +16,7 @@ export default function HistoryPage() {
   const offset = (currentPage - 1) * pageSize
 
   // Fetch user's recent sessions with pagination
-  const { data: recentSessions = [], isLoading, error } = trpc.sessions.list.useQuery({
+  const { data: recentSessions = [], isLoading, error } = trpc.workoutSessions.list.useQuery({
     category: selectedFilter === 'all' ? undefined : selectedFilter,
     offset,
     limit: pageSize
