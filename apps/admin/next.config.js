@@ -12,10 +12,12 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   env: {
-    API_URL: process.env.API_URL || 'http://localhost:3001',
+    API_URL: process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 
+      (process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://api.rythm.training'),
   },
   async rewrites() {
-    const apiUrl = process.env.API_URL || 'http://localhost:3001'
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 
+      (process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://api.rythm.training')
     return [
       {
         source: '/api/:path*',
