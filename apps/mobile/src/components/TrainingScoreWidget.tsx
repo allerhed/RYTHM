@@ -95,7 +95,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
   // Prepare the week parameter for the API
   const weekParam = selectedWeekStart ? selectedWeekStart.toISOString().split('T')[0] : undefined
   
-  const trainingScoreQuery = trpc.statistics.trainingScore.useQuery(
+  const trainingScoreQuery = trpc.statistics.getTrainingScore.useQuery(
     weekParam ? { weekStart: weekParam } : undefined,
     {
       retry: 2,

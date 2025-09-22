@@ -3,7 +3,7 @@ import { router, protectedProcedure, coachProcedure } from '../trpc';
 import { AnalyticsFilters } from '@rythm/shared';
 
 export const analyticsRouter = router({
-  trainingVolume: protectedProcedure
+  getTrainingVolume: protectedProcedure
     .input(AnalyticsFilters.extend({
       userId: z.string().uuid().optional(),
     }))
@@ -56,7 +56,7 @@ export const analyticsRouter = router({
       return result.rows;
     }),
 
-  muscleGroupSplit: protectedProcedure
+  getMuscleGroupSplit: protectedProcedure
     .input(AnalyticsFilters.extend({
       userId: z.string().uuid().optional(),
     }))
@@ -105,7 +105,7 @@ export const analyticsRouter = router({
       return result.rows;
     }),
 
-  personalRecords: protectedProcedure
+  getPersonalRecords: protectedProcedure
     .input(z.object({
       userId: z.string().uuid().optional(),
       exerciseId: z.string().uuid().optional(),
@@ -145,7 +145,7 @@ export const analyticsRouter = router({
       return result.rows;
     }),
 
-  sessionSummary: protectedProcedure
+  getSessionSummary: protectedProcedure
     .input(AnalyticsFilters.extend({
       userId: z.string().uuid().optional(),
     }))
@@ -216,13 +216,13 @@ export const analyticsRouter = router({
     }),
 
   // Simple test endpoint
-  test: protectedProcedure
+  getTest: protectedProcedure
     .query(async ({ ctx }) => {
       return { message: 'Analytics tRPC is working!', userId: ctx.user.userId };
     }),
 
   // Training Score endpoint
-  trainingScore: protectedProcedure
+  getTrainingScore: protectedProcedure
     .input(z.object({
       weekStart: z.string().optional(), // ISO date string for the Monday of the week
     }).optional())
@@ -326,7 +326,7 @@ export const analyticsRouter = router({
       }
     }),
 
-  trainingLoadChart: protectedProcedure
+  getTrainingLoadChart: protectedProcedure
     .query(async ({ ctx }) => {
       // Helper function to get Monday of a week
       const getMondayOfWeek = (date: Date) => {
@@ -484,7 +484,7 @@ export const analyticsRouter = router({
       }
     }),
 
-  analyticsSummary: protectedProcedure
+  getAnalyticsSummary: protectedProcedure
     .query(async ({ ctx }) => {
       // Fetch all sessions with their sets data for the last 6 months
       const sixMonthsAgo = new Date()
@@ -658,7 +658,7 @@ export const analyticsRouter = router({
       }
     }),
 
-  categoryBreakdown: protectedProcedure
+  getCategoryBreakdown: protectedProcedure
     .query(async ({ ctx }) => {
       // Fetch all sessions for the last 6 months to get both current and previous periods
       const sixMonthsAgo = new Date()

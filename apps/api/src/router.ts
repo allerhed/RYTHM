@@ -15,7 +15,8 @@ export const appRouter = router({
   workoutSets: setsRouter,
   statistics: analyticsRouter,
   userProfiles: usersRouter,
-  administration: adminRouter,
+  users: usersRouter, // Add users mapping for admin UI compatibility
+  admin: adminRouter,
   exerciseTemplates: exerciseTemplatesRouter,
   workoutTemplates: workoutTemplatesRouter,
   gymEquipment: equipmentRouter,
