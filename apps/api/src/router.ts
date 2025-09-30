@@ -20,6 +20,7 @@ export const appRouter = router({
   exerciseTemplates: exerciseTemplatesRouter,
   workoutTemplates: workoutTemplatesRouter,
   gymEquipment: equipmentRouter,
+  equipment: equipmentRouter, // Add equipment mapping for mobile UI compatibility
 });
 
 export type AppRouter = typeof appRouter;
