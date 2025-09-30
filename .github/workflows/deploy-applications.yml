@@ -1,14 +1,6 @@
 name: Deploy Applications
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - 'infra/**'
-      - 'docs/**'
-      - '**.md'
-      - '.github/workflows/deploy-infrastructure.yml'
-      - '.github/workflows/backup-strategy.yml'
   workflow_dispatch:
     inputs:
       environment:

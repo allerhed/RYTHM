@@ -3,6 +3,7 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../contexts/AuthContext'
 import { trpc } from '../../lib/trpc'
+import { PullToRefresh } from '../../components/PullToRefresh'
 
 interface WorkoutSession {
   id: string
@@ -99,6 +100,15 @@ function AnalyticsPage() {
       console.error('Category breakdown query error:', error)
     }
   })
+
+  // Pull-to-refresh handler
+  const handleRefresh = async () => {
+    await Promise.all([
+      trainingLoadQuery.refetch(),
+      summaryQuery.refetch(),
+      categoryBreakdownQuery.refetch()
+    ])
+  }
 
   const loading = trainingLoadQuery.isLoading || summaryQuery.isLoading || categoryBreakdownQuery.isLoading
   const trainingLoadData = trainingLoadQuery.data
@@ -228,7 +238,8 @@ function AnalyticsPage() {
         </div>
       </div>
 
-      <div className="p-4 space-y-6">
+      <PullToRefresh onRefresh={handleRefresh}>
+        <div className="p-4 space-y-6">
         {/* Training Load Widget */}
         <div className="bg-gray-800 rounded-2xl p-6 text-white">
           <h2 className="text-xl font-bold mb-2">Training Load</h2>
@@ -684,6 +695,7 @@ function AnalyticsPage() {
           </div>
         </div>
       </div>
+      </PullToRefresh>
     </div>
   )
 }

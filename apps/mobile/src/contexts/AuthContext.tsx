@@ -18,7 +18,7 @@ interface AuthContextType {
   token: string | null
   isLoading: boolean
   isAuthenticated: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string, keepMeLoggedIn?: boolean) => Promise<void>
   register: (data: RegisterData) => Promise<void>
   logout: () => void
   refreshToken: () => Promise<void>
@@ -110,8 +110,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [])
 
-  const login = async (email: string, password: string): Promise<void> => {
-    console.log('🔑 AuthContext.login called with email:', email)
+  const login = async (email: string, password: string, keepMeLoggedIn: boolean = false): Promise<void> => {
+    console.log('🔑 AuthContext.login called with email:', email, 'keepMeLoggedIn:', keepMeLoggedIn)
     setIsLoading(true)
     
     try {
@@ -124,7 +124,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, keepMeLoggedIn }),
       })
 
       console.log('📡 API response status:', response.status, response.statusText)

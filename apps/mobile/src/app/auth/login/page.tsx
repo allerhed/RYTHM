@@ -11,6 +11,7 @@ export default function LoginPage() {
   const { login, isLoading: authLoading } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; message: string } | null>(null)
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
@@ -45,7 +46,7 @@ export default function LoginPage() {
     setLoading(true)
     
     try {
-      await login(email, password)
+      await login(email, password, rememberMe)
       setToast({ type: 'success', message: 'Welcome back! Redirecting...' })
       
       // Redirect to dashboard after successful login
@@ -148,10 +149,12 @@ export default function LoginPage() {
                 <label className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
                   />
                   <span className="ml-2 text-gray-600 dark:text-gray-400">
-                    Remember me
+                    Keep me logged in (4 weeks)
                   </span>
                 </label>
                 

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { trpc } from '../../lib/trpc'
 import { CalendarIcon, ClockIcon, PlayIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
+import { PullToRefresh } from '../../components/PullToRefresh'
 
 export default function HistoryPage() {
   const router = useRouter()
@@ -16,7 +17,7 @@ export default function HistoryPage() {
   const offset = (currentPage - 1) * pageSize
 
   // Fetch user's recent sessions with pagination
-  const { data: recentSessions = [], isLoading, error } = trpc.workoutSessions.list.useQuery({
+  const { data: recentSessions = [], isLoading, error, refetch } = trpc.workoutSessions.list.useQuery({
     category: selectedFilter === 'all' ? undefined : selectedFilter,
     offset,
     limit: pageSize
@@ -24,6 +25,11 @@ export default function HistoryPage() {
     enabled: !!user,
     retry: 2
   })
+
+  // Pull-to-refresh handler
+  const handleRefresh = async () => {
+    await refetch()
+  }
 
   // For now, use approximate count based on returned data
   const totalCount = recentSessions.length === pageSize ? (currentPage * pageSize) + 1 : (currentPage - 1) * pageSize + recentSessions.length
@@ -147,8 +153,9 @@ export default function HistoryPage() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <PullToRefresh onRefresh={handleRefresh}>
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isLoading ? (
           <div className="flex justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -287,6 +294,7 @@ export default function HistoryPage() {
           </>
         )}
       </div>
+      </PullToRefresh>
     </div>
   )
 }

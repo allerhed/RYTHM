@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { Header } from '../../components/Navigation'
 import { Button } from '../../components/Form'
 import { useAuth, withAuth } from '../../contexts/AuthContext'
+import { PullToRefresh } from '../../components/PullToRefresh'
 
 interface ProfileData {
   firstName: string
@@ -62,6 +63,11 @@ function ProfilePage() {
       loadProfile()
     }
   }, [])
+
+  // Pull-to-refresh handler
+  const handleRefresh = async () => {
+    await fetchProfile()
+  }
 
   // Update profile data when user changes
   React.useEffect(() => {
@@ -272,8 +278,9 @@ function ProfilePage() {
         </div>
       )}
 
-      {/* Main content */}
-      <div className="px-4 py-6">
+      <PullToRefresh onRefresh={handleRefresh}>
+        {/* Main content */}
+        <div className="px-4 py-6">
         <div className="max-w-2xl mx-auto">
           {/* Profile Picture Section */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
@@ -550,6 +557,7 @@ function ProfilePage() {
           </div>
         </div>
       </div>
+      </PullToRefresh>
     </div>
   )
 }

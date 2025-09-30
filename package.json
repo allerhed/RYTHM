@@ -28,6 +28,7 @@
     "stop": "docker-compose -f docker-compose.prod.yml down",
     "db:migrate": "docker-compose exec api npm run db:migrate --workspace=@rythm/db",
     "db:seed": "docker-compose exec api npm run db:seed --workspace=@rythm/db",
+    "populate-test-data": "node scripts/populate-test-data.js",
     "generate-test-data": "./scripts/generate-test-data.sh",
     "verify-test-data": "node scripts/verify-test-data.js"
   },
@@ -41,6 +42,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "bcryptjs": "^3.0.2"
+    "bcryptjs": "^3.0.2",
+    "pg": "^8.11.3"
   }
 }

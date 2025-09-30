@@ -15,6 +15,7 @@ const registerSchema = z.object({
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string(),
+  keepMeLoggedIn: z.boolean().optional().default(false),
 });
 
 export const authRouter = router({
@@ -87,7 +88,7 @@ export const authRouter = router({
   login: publicProcedure
     .input(loginSchema)
     .mutation(async ({ input, ctx }) => {
-      const { email, password } = input;
+      const { email, password, keepMeLoggedIn } = input;
 
       // Find user
       const result = await ctx.db.query(
@@ -114,7 +115,9 @@ export const authRouter = router({
         });
       }
 
-      // Generate JWT
+      // Generate JWT with extended expiry if keepMeLoggedIn is true
+      // 4 weeks = 28 days if keepMeLoggedIn, otherwise 7 days
+      const expiresIn = keepMeLoggedIn ? '28d' : '7d';
       const token = jwt.sign(
         {
           userId: user.user_id,
@@ -123,7 +126,7 @@ export const authRouter = router({
           email: user.email,
         },
         process.env.JWT_SECRET || 'your-secret-key',
-        { expiresIn: '7d' }
+        { expiresIn }
       );
 
       return {

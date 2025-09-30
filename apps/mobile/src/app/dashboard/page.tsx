@@ -8,6 +8,7 @@ import { useAuth, withAuth } from '../../contexts/AuthContext'
 import { TrainingScoreWidget } from '../../components/TrainingScoreWidget'
 import { PencilIcon, EyeIcon } from '@heroicons/react/24/outline'
 import { trpc } from '../../lib/trpc'
+import { PullToRefresh } from '../../components/PullToRefresh'
 
 // Utility function to format relative time
 const formatRelativeTime = (timestamp: string | Date) => {
@@ -63,12 +64,20 @@ function DashboardPage() {
   })
 
   // Fetch recent activity data
-  const { data: recentActivity = [], isLoading: activityLoading, error: activityError } = trpc.workoutSessions.recentActivity.useQuery({
+  const { data: recentActivity = [], isLoading: activityLoading, error: activityError, refetch: refetchActivity } = trpc.workoutSessions.recentActivity.useQuery({
     limit: 5
   }, {
     enabled: !!user,
     retry: 2
   })
+
+  // Pull-to-refresh handler
+  const handleRefresh = async () => {
+    await Promise.all([
+      fetchProfile(),
+      refetchActivity()
+    ])
+  }
 
   // Helper functions for week navigation
   const getMondayOfWeek = (date: Date) => {
@@ -377,8 +386,9 @@ function DashboardPage() {
       </div>
 
       {/* Main content */}
-      <div className="px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+      <PullToRefresh onRefresh={handleRefresh}>
+        <div className="px-4 py-8">
+          <div className="max-w-4xl mx-auto">
           {/* Welcome section */}
           <div className="mb-8">
             <div className="flex items-center space-x-4 mb-4">
@@ -895,6 +905,7 @@ function DashboardPage() {
           </Card>
         </div>
       </div>
+      </PullToRefresh>
 
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (

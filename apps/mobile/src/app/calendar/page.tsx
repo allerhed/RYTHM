@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { PullToRefresh } from '../../components/PullToRefresh'
 
 interface WorkoutSession {
   id: string
@@ -42,34 +43,39 @@ function CalendarPage() {
   const [loading, setLoading] = useState(true)
   const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([])
 
-  useEffect(() => {
+  const fetchWorkouts = async () => {
     if (!user || !token) return
 
-    const fetchWorkouts = async () => {
-      try {
-        setLoading(true)
-        
-        // Fetch workouts for the entire month range
-        const response = await fetch('/api/sessions', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          setWorkouts(data.sessions || [])
-        } else {
-          console.error('Failed to fetch workouts')
+    try {
+      setLoading(true)
+      
+      // Fetch workouts for the entire month range
+      const response = await fetch('/api/sessions', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      } catch (error) {
-        console.error('Error fetching workouts:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
+      })
 
+      if (response.ok) {
+        const data = await response.json()
+        setWorkouts(data.sessions || [])
+      } else {
+        console.error('Failed to fetch workouts')
+      }
+    } catch (error) {
+      console.error('Error fetching workouts:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Pull-to-refresh handler
+  const handleRefresh = async () => {
+    await fetchWorkouts()
+  }
+
+  useEffect(() => {
     fetchWorkouts()
   }, [user, token, currentDate])
 
@@ -222,8 +228,9 @@ function CalendarPage() {
         </div>
       </div>
 
-      {/* Calendar Grid */}
-      <div className="p-4">
+      <PullToRefresh onRefresh={handleRefresh}>
+        {/* Calendar Grid */}
+        <div className="p-4">
         <div className="bg-gray-800 rounded-lg p-1">
           <div className="grid grid-cols-7 gap-px">
             {calendarDays.map((day, index) => {
@@ -363,6 +370,7 @@ function CalendarPage() {
           </div>
         </div>
       </div>
+      </PullToRefresh>
     </div>
   )
 }

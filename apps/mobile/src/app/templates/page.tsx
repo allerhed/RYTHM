@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { trpc } from '../../lib/trpc'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
+import { PullToRefresh } from '../../components/PullToRefresh'
 import { 
   VALUE_TYPE_LABELS, 
   VALUE_TYPE_UNITS, 
@@ -152,6 +153,11 @@ export default function TemplatesPage() {
   }, {
     enabled: !!user
   })
+
+  // Pull-to-refresh handler
+  const handleRefresh = async () => {
+    await refetch()
+  }
 
   // Mutations
   const createTemplate = trpc.workoutTemplates.create.useMutation({
@@ -429,8 +435,9 @@ export default function TemplatesPage() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <PullToRefresh onRefresh={handleRefresh}>
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isLoading ? (
           <div className="flex justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -549,7 +556,8 @@ export default function TemplatesPage() {
             ))}
           </div>
         )}
-      </div>
+        </div>
+      </PullToRefresh>
 
       {/* Create/Edit Modal */}
       {showCreateModal && (
