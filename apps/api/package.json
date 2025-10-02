@@ -12,6 +12,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.24.0",
     "@rythm/db": "1.1.0",
     "@rythm/shared": "1.1.0",
     "@trpc/client": "^10.45.0",

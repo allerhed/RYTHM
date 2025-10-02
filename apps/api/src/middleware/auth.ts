@@ -30,3 +30,19 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     next()
   })
 }
+
+export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+  const user = req.user as AuthUser | undefined
+
+  if (!user) {
+    return res.status(401).json({ error: 'Authentication required' })
+  }
+
+  // Allow system_admin for now, can be restricted further if needed
+  const adminRoles = ['system_admin', 'org_admin']
+  if (!adminRoles.includes(user.role)) {
+    return res.status(403).json({ error: 'Admin access required' })
+  }
+
+  next()
+}

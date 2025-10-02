@@ -101,6 +101,16 @@ const navigation = [
       </svg>
     )
   },
+  { 
+    name: 'Backups', 
+    href: '/backups', 
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+      </svg>
+    ),
+    adminOnly: true
+  },
 ]
 
 export function AdminLayout({ children }: AdminLayoutProps) {
@@ -149,7 +159,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               </div>
               <nav className="mt-6 px-4">
                 <div className="space-y-1">
-                  {navigation.map((item) => {
+                  {navigation
+                    .filter((item) => !('adminOnly' in item) || user?.role === 'system_admin')
+                    .map((item) => {
                     const isActive = pathname === item.href
                     return (
                       <Link
@@ -196,7 +208,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <li>
                 <p className="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider">Main Menu</p>
                 <ul className="mt-2 space-y-1">
-                  {navigation.map((item) => {
+                  {navigation
+                    .filter((item) => !('adminOnly' in item) || user?.role === 'system_admin')
+                    .map((item) => {
                     const isActive = pathname === item.href
                     return (
                       <li key={item.name}>
