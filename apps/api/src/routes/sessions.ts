@@ -52,38 +52,47 @@ export const sessionsRouter = router({
       userId: z.string().uuid().optional(), // For coaches to view athlete sessions
     }))
     .query(async ({ input, ctx }) => {
-      const { category, limit, offset, userId } = input;
-      
-      // Determine target user (own sessions or athlete sessions for coaches)
-      const targetUserId = userId && ['coach', 'tenant_admin', 'org_admin'].includes(ctx.user.role) 
-        ? userId 
-        : ctx.user.userId;
+      try {
+        const { category, limit, offset, userId } = input;
+        
+        console.log('📋 Sessions list query:', { category, limit, offset, userId, tenantId: ctx.user.tenantId, requestUserId: ctx.user.userId });
+        
+        // Determine target user (own sessions or athlete sessions for coaches)
+        const targetUserId = userId && ['coach', 'tenant_admin', 'org_admin'].includes(ctx.user.role) 
+          ? userId 
+          : ctx.user.userId;
 
-      let query = `
-        SELECT s.session_id, s.user_id, s.program_id, s.category, s.notes, 
-               s.started_at, s.completed_at, s.created_at,
-               u.first_name, u.last_name, u.email,
-               p.name as program_name
-        FROM sessions s
-        JOIN users u ON s.user_id = u.user_id
-        LEFT JOIN programs p ON s.program_id = p.program_id
-        WHERE s.tenant_id = $1 AND s.user_id = $2
-      `;
-      
-      const params = [ctx.user.tenantId, targetUserId];
-      let paramIndex = 3;
+        let query = `
+          SELECT s.session_id, s.user_id, s.program_id, s.category, s.notes, 
+                 s.started_at, s.completed_at, s.created_at,
+                 u.first_name, u.last_name, u.email,
+                 p.name as program_name
+          FROM sessions s
+          JOIN users u ON s.user_id = u.user_id
+          LEFT JOIN programs p ON s.program_id = p.program_id
+          WHERE s.tenant_id = $1 AND s.user_id = $2
+        `;
+        
+        const params = [ctx.user.tenantId, targetUserId];
+        let paramIndex = 3;
 
-      if (category) {
-        query += ` AND s.category = $${paramIndex}`;
-        params.push(category);
-        paramIndex++;
+        if (category) {
+          query += ` AND s.category = $${paramIndex}`;
+          params.push(category);
+          paramIndex++;
+        }
+
+        query += ` ORDER BY s.started_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+        params.push(limit.toString(), offset.toString());
+
+        console.log('📋 Executing query with params:', params);
+        const result = await ctx.db.query(query, params);
+        console.log('📋 Query returned', result.rows.length, 'rows');
+        return result.rows;
+      } catch (error) {
+        console.error('❌ Error in sessions.list:', error);
+        throw error;
       }
-
-      query += ` ORDER BY s.started_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-      params.push(limit.toString(), offset.toString());
-
-      const result = await ctx.db.query(query, params);
-      return result.rows;
     }),
 
   count: protectedProcedure
