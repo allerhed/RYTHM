@@ -285,8 +285,24 @@ router.put('/:id', authenticateToken, async (req, res) => {
           // Find or create exercise
           let exerciseId = exercise.exercise_id
           
+          // Always verify the exercise exists in the database
+          if (exerciseId) {
+            console.log('🔍 Verifying exercise ID exists:', exerciseId)
+            const verifyResult = await client.query(
+              'SELECT exercise_id FROM exercises WHERE exercise_id = $1',
+              [exerciseId]
+            )
+            
+            if (verifyResult.rows.length === 0) {
+              console.log('⚠️ Exercise ID not found in database, will create new exercise')
+              exerciseId = null // Reset to trigger creation below
+            } else {
+              console.log('✅ Exercise ID verified:', exerciseId)
+            }
+          }
+          
           if (!exerciseId) {
-            console.log('🔍 Exercise ID not provided, searching by name:', exercise.name)
+            console.log('🔍 Exercise ID not provided or invalid, searching by name:', exercise.name)
             // Check if exercise exists globally first
             const existingResult = await client.query(
               'SELECT exercise_id FROM exercises WHERE LOWER(name) = LOWER($1)',
@@ -295,7 +311,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
             
             if (existingResult.rows.length > 0) {
               exerciseId = existingResult.rows[0].exercise_id
-              console.log('✅ Found existing exercise:', exerciseId)
+              console.log('✅ Found existing exercise by name:', exerciseId)
             } else {
               console.log('➕ Creating new exercise')
               // Create new exercise in global library
