@@ -402,17 +402,25 @@ export default function NewWorkoutPage() {
   }
 
   const onValueChange = (exerciseId: string, setId: string, field: 'value1' | 'value2', value: number) => {
+    // Simple update without auto-populate
     setExercises(exercises.map(ex => {
       if (ex.id === exerciseId) {
-        const updatedSets = ex.sets.map(set => {
-          if (set.id === setId) {
-            return { ...set, [field]: value }
-          }
-          return set
-        })
-        
-        // Auto-populate KGS values across sets if this is the first set and it's a weight field
-        const updatedSet = updatedSets.find(set => set.id === setId)
+        return {
+          ...ex,
+          sets: ex.sets.map(set => 
+            set.id === setId ? { ...set, [field]: value } : set
+          )
+        }
+      }
+      return ex
+    }))
+  }
+
+  const onValueBlur = (exerciseId: string, setId: string, field: 'value1' | 'value2', value: number) => {
+    // Auto-populate KGS values across sets if this is the first set and it's a weight field
+    setExercises(exercises.map(ex => {
+      if (ex.id === exerciseId) {
+        const updatedSet = ex.sets.find(set => set.id === setId)
         const isFirstSet = updatedSet?.setNumber === 1
         const isWeightField = (field === 'value1' && updatedSet?.value1Type === 'weight_kg') || 
                              (field === 'value2' && updatedSet?.value2Type === 'weight_kg')
@@ -421,7 +429,7 @@ export default function NewWorkoutPage() {
           // Auto-populate the same weight value to all other sets with the same value type
           return {
             ...ex,
-            sets: updatedSets.map(set => {
+            sets: ex.sets.map(set => {
               if (set.setNumber > 1) {
                 if (field === 'value1' && set.value1Type === 'weight_kg' && (!set.value1 || set.value1 === 0)) {
                   return { ...set, value1: value }
@@ -432,11 +440,6 @@ export default function NewWorkoutPage() {
               return set
             })
           }
-        }
-        
-        return {
-          ...ex,
-          sets: updatedSets
         }
       }
       return ex
@@ -717,7 +720,8 @@ export default function NewWorkoutPage() {
               onRemoveExercise={() => removeExercise(exercise.id)}
               onMoveUp={() => moveExerciseUp(exercise.id)}
               onMoveDown={() => moveExerciseDown(exercise.id)}
-              onValueChange={(setId, field, value) => onValueChange(exercise.id, setId, field, value)}
+              onValueChange={(exerciseId: string, setId: string, field: 'value1' | 'value2', value: number) => onValueChange(exerciseId, setId, field, value)}
+              onValueBlur={(exerciseId: string, setId: string, field: 'value1' | 'value2', value: number) => onValueBlur(exerciseId, setId, field, value)}
               onValueTypeChange={(exerciseId, setId, field, type) => onValueTypeChange(exerciseId, setId, field, type)}
               activeDropdown={activeDropdown}
               setActiveDropdown={setActiveDropdown}
@@ -825,6 +829,7 @@ function ExerciseCard({
   onMoveUp,
   onMoveDown,
   onValueChange, 
+  onValueBlur,
   onValueTypeChange,
   activeDropdown,
   setActiveDropdown
@@ -837,7 +842,8 @@ function ExerciseCard({
   onRemoveExercise: () => void
   onMoveUp: () => void
   onMoveDown: () => void
-  onValueChange: (setId: string, field: 'value1' | 'value2', value: number) => void
+  onValueChange: (exerciseId: string, setId: string, field: 'value1' | 'value2', value: number) => void
+  onValueBlur: (exerciseId: string, setId: string, field: 'value1' | 'value2', value: number) => void
   onValueTypeChange: (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => void
   activeDropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null
   setActiveDropdown: (dropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null) => void
@@ -900,7 +906,8 @@ function ExerciseCard({
             key={`${exercise.id}-${set.id}-${set.value1Type}-${set.value2Type}-${index}`}
             set={set}
             exerciseId={exercise.id}
-            onValueChange={onValueChange}
+            onValueChange={(setId, field, value) => onValueChange(exercise.id, setId, field, value)}
+            onValueBlur={(setId, field, value) => onValueBlur(exercise.id, setId, field, value)}
             onValueTypeChange={(exerciseId, setId, field, type) => onValueTypeChange(exerciseId, setId, field, type)}
             onRemoveSet={onRemoveSet}
             isOnlySet={exercise.sets.length === 1}
@@ -924,6 +931,7 @@ function SetRow({
   set, 
   exerciseId,
   onValueChange, 
+  onValueBlur,
   onValueTypeChange, 
   onRemoveSet, 
   isOnlySet,
@@ -933,6 +941,7 @@ function SetRow({
   set: WorkoutSet
   exerciseId: string
   onValueChange: (setId: string, field: 'value1' | 'value2', value: number) => void
+  onValueBlur: (setId: string, field: 'value1' | 'value2', value: number) => void
   onValueTypeChange: (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => void
   onRemoveSet: (setId: string) => void
   isOnlySet: boolean
@@ -963,6 +972,7 @@ function SetRow({
           type="number"
           value={set.value1 || ''}
           onChange={(e) => onValueChange(set.id, 'value1', Number(e.target.value))}
+          onBlur={(e) => onValueBlur(set.id, 'value1', Number(e.target.value))}
           className="w-full text-center py-2 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-medium focus:ring-1 focus:ring-lime-500 focus:border-lime-500"
           placeholder="0"
         />
@@ -1003,6 +1013,7 @@ function SetRow({
           type="number"
           value={set.value2 || ''}
           onChange={(e) => onValueChange(set.id, 'value2', Number(e.target.value))}
+          onBlur={(e) => onValueBlur(set.id, 'value2', Number(e.target.value))}
           className="w-full text-center py-2 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-medium focus:ring-1 focus:ring-lime-500 focus:border-lime-500"
           placeholder="0"
         />

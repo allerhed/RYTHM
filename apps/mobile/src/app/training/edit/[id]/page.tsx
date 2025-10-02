@@ -364,25 +364,34 @@ export default function EditWorkoutPage() {
   }
 
   const updateSet = (exerciseId: string, setId: string, field: 'value1' | 'value2' | 'notes', value: number | string) => {
+    // Simple update without auto-populate
     setExercises(exercises.map(ex => {
       if (ex.id === exerciseId) {
-        const updatedSets = ex.sets.map(set => 
-          set.id === setId 
-            ? { ...set, [field]: value }
-            : set
-        )
-        
-        // Auto-populate KGS values across sets if this is the first set and it's a weight field
-        const updatedSet = updatedSets.find(set => set.id === setId)
+        return {
+          ...ex,
+          sets: ex.sets.map(set => 
+            set.id === setId ? { ...set, [field]: value } : set
+          )
+        }
+      }
+      return ex
+    }))
+  }
+
+  const updateSetBlur = (exerciseId: string, setId: string, field: 'value1' | 'value2', value: number) => {
+    // Auto-populate KGS values across sets if this is the first set and it's a weight field
+    setExercises(exercises.map(ex => {
+      if (ex.id === exerciseId) {
+        const updatedSet = ex.sets.find(set => set.id === setId)
         const isFirstSet = updatedSet?.setNumber === 1
         const isWeightField = (field === 'value1' && updatedSet?.value1Type === 'weight_kg') || 
                              (field === 'value2' && updatedSet?.value2Type === 'weight_kg')
         
-        if (isFirstSet && isWeightField && (field === 'value1' || field === 'value2') && value && Number(value) > 0) {
+        if (isFirstSet && isWeightField && value && Number(value) > 0) {
           // Auto-populate the same weight value to all other sets with the same value type
           return {
             ...ex,
-            sets: updatedSets.map(set => {
+            sets: ex.sets.map(set => {
               if (set.setNumber > 1) {
                 if (field === 'value1' && set.value1Type === 'weight_kg' && (!set.value1 || set.value1 === 0)) {
                   return { ...set, value1: Number(value) }
@@ -393,11 +402,6 @@ export default function EditWorkoutPage() {
               return set
             })
           }
-        }
-        
-        return {
-          ...ex,
-          sets: updatedSets
         }
       }
       return ex
@@ -716,6 +720,7 @@ export default function EditWorkoutPage() {
               onAddSet={() => addSetToExercise(exercise.id)}
               onRemoveSet={(setId) => removeSetFromExercise(exercise.id, setId)}
               onUpdateSet={(setId, field, value) => updateSet(exercise.id, setId, field, value)}
+              onUpdateSetBlur={(setId, field, value) => updateSetBlur(exercise.id, setId, field as 'value1' | 'value2', value as number)}
               onRemoveExercise={() => removeExercise(exercise.id)}
               onMoveUp={() => moveExerciseUp(index)}
               onMoveDown={() => moveExerciseDown(index)}
@@ -984,6 +989,7 @@ function ExerciseCard({
   onAddSet, 
   onRemoveSet, 
   onUpdateSet, 
+  onUpdateSetBlur,
   onRemoveExercise,
   onMoveUp,
   onMoveDown,
@@ -997,6 +1003,7 @@ function ExerciseCard({
   onAddSet: () => void
   onRemoveSet: (setId: string) => void
   onUpdateSet: (setId: string, field: 'value1' | 'value2' | 'notes', value: number | string) => void
+  onUpdateSetBlur: (setId: string, field: 'value1' | 'value2', value: number) => void
   onRemoveExercise: () => void
   onMoveUp: () => void
   onMoveDown: () => void
@@ -1067,6 +1074,7 @@ function ExerciseCard({
             set={set}
             exerciseId={exercise.id}
             onUpdateSet={onUpdateSet}
+            onUpdateSetBlur={onUpdateSetBlur}
             onRemoveSet={onRemoveSet}
             isOnlySet={exercise.sets.length === 1}
             onValueTypeChange={onValueTypeChange}
@@ -1091,6 +1099,7 @@ function SetRow({
   set, 
   exerciseId,
   onUpdateSet, 
+  onUpdateSetBlur,
   onRemoveSet, 
   isOnlySet,
   onValueTypeChange,
@@ -1100,6 +1109,7 @@ function SetRow({
   set: WorkoutSet
   exerciseId: string
   onUpdateSet: (setId: string, field: 'value1' | 'value2' | 'notes', value: number | string) => void
+  onUpdateSetBlur: (setId: string, field: 'value1' | 'value2', value: number) => void
   onRemoveSet: (setId: string) => void
   isOnlySet: boolean
   onValueTypeChange: (exerciseId: string, setId: string, field: 'value1Type' | 'value2Type', type: string) => void
@@ -1135,6 +1145,7 @@ function SetRow({
           type="number"
           value={set.value1 ? Math.round(set.value1).toString() : ''}
           onChange={(e) => onUpdateSet(set.id, 'value1', parseInt(e.target.value) || 0)}
+          onBlur={(e) => onUpdateSetBlur(set.id, 'value1', parseInt(e.target.value) || 0)}
           className="w-full px-3 py-2 text-center text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-transparent"
           placeholder="0"
         />
@@ -1183,6 +1194,7 @@ function SetRow({
           type="number"
           value={set.value2 ? Math.round(set.value2).toString() : ''}
           onChange={(e) => onUpdateSet(set.id, 'value2', parseInt(e.target.value) || 0)}
+          onBlur={(e) => onUpdateSetBlur(set.id, 'value2', parseInt(e.target.value) || 0)}
           className="w-full px-3 py-2 text-center text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-transparent"
           placeholder="0"
         />
