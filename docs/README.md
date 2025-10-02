@@ -2,12 +2,23 @@
 
 Welcome to the RYTHM platform documentation. This guide will help you understand, develop, deploy, and use the RYTHM hybrid training application.
 
+## ⚡ Quick Start
+
+**New to RYTHM?** Start here: **[Quick Start Guide](QUICK_START.md)**
+
+This guide covers:
+- URLs for production and development
+- Common commands for daily tasks
+- Quick troubleshooting tips
+- Default credentials
+
 ## 📚 Documentation Structure
 
 ### Getting Started
 - **[Installation Guide](getting-started/installation.md)** - Set up your development environment
 - **[Development Guide](getting-started/development.md)** - Build and run the application
 - **[Docker Guide](getting-started/docker-guide.md)** - Understanding the containerized environment
+- **[Auto-Restart Guide](getting-started/auto-restart.md)** - Service restart configuration
 
 ### Architecture
 - **[System Overview](architecture/overview.md)** - High-level architecture and design decisions
@@ -27,6 +38,9 @@ Welcome to the RYTHM platform documentation. This guide will help you understand
 
 ### Deployment
 - **[Azure Setup](deployment/azure-setup.md)** - Deploying to Azure Container Apps
+- **[Azure Resources](deployment/azure-resources.md)** - Resource names and URLs
+- **[Production URLs](deployment/PRODUCTION_URLS.md)** - Live application URLs
+- **[DNS Setup](deployment/DNS_SETUP.md)** - Custom domain configuration
 - **[Production Configuration](deployment/production.md)** - Environment variables and scaling
 - **[Troubleshooting](deployment/troubleshooting.md)** - Common issues and debugging
 
@@ -34,14 +48,18 @@ Welcome to the RYTHM platform documentation. This guide will help you understand
 - **[Pull to Refresh](features/pull-to-refresh.md)** - Mobile gesture implementation
 - **[Training Load System](features/training-load.md)** - Calculating training scores
 - **[Hybrid Training](features/hybrid-training.md)** - Combined strength and cardio workouts
+- **[Date & Duration Pickers](features/DATE_DURATION_PICKERS.md)** - Time input components
+- **[Import/Export System](features/IMPORT_EXPORT_SYSTEM.md)** - Data portability
+- **[Workout View Page](features/VIEW_WORKOUT_PAGE.md)** - Session detail views
 
 ## 🚀 Quick Links
 
 ### For Developers
-1. [Set up your environment](getting-started/installation.md)
-2. [Start the development server](getting-started/development.md)
-3. [Understand the architecture](architecture/overview.md)
-4. [Review API endpoints](api/endpoints.md)
+1. **[Quick Start Guide](QUICK_START.md)** - Commands and URLs you need daily
+2. [Set up your environment](getting-started/installation.md)
+3. [Start the development server](getting-started/development.md)
+4. [Understand the architecture](architecture/overview.md)
+5. [Review API endpoints](api/endpoints.md)
 
 ### For Administrators
 1. [Access the admin interface](user-guides/admin-interface.md)

@@ -273,6 +273,9 @@ For comprehensive documentation, see the **[Documentation Hub](docs/README.md)**
 
 ### Quick Links
 
+- **[⚡ Quick Start Guide](docs/QUICK_START.md)** - Essential commands and URLs
+- **[📋 Product Requirements](prd.md)** - Product vision and requirements
+
 - **Getting Started**
   - [Installation Guide](docs/getting-started/installation.md) - Set up your development environment
   - [Development Guide](docs/getting-started/development.md) - Build and run the application
