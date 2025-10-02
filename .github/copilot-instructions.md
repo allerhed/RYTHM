@@ -140,6 +140,14 @@ docker-compose.yml   # Local development environmentdocker-compose.yml   # Local
 
 - **Security**: Parameterized queries; never string‑concatenate SQL. Deny‑by‑default CORS; rate‑limit auth routes.- **Security**: Parameterized queries; never string‑concatenate SQL. Deny‑by‑default CORS; rate‑limit auth routes.
 
+- **Email Logging**: **CRITICAL** - ALL emails MUST be logged to the database. Always use `EmailService` from `apps/api/src/services/EmailService.ts`. Never send emails directly via Azure SDK. Every email send must include:
+  - `emailType`: One of 'backup_notification', 'password_reset', 'workout_reminder', 'admin_alert', 'generic'
+  - `tenantId`: The tenant context (if applicable)
+  - `userId`: The user context (if applicable)
+  - `metadata`: Relevant context data (e.g., backupId, resetToken, alertType)
+  - Example: `await emailService.sendBackupNotification({ to, tenantId, tenantName, backupId, status, size, duration })`
+  - The service automatically creates email_logs entries with status tracking (pending → sent/failed)
+
 - **Azure Deployment**: Every function must be containerizable and stateless for Azure Container Apps.- **Azure Deployment**: Every function must be containerizable and stateless for Azure Container Apps.
 
 - **Environment Variables**: Use Azure Key Vault for secrets, Container App environment variables for configuration.- **Environment Variables**: Use Azure Key Vault for secrets, Container App environment variables for configuration.
@@ -634,17 +642,16 @@ describe('pace', () => {  });
 
 ## 12) Common Anti‑patterns (Ask Copilot to avoid)
 
-- Disabling RLS or using `SECURITY DEFINER` without review.---
-
+- Disabling RLS or using `SECURITY DEFINER` without review.
 - Mixing validation, business logic, and IO in the same function.
-
-- Returning DB shapes directly to clients (no DTO mapping).## 13) Quick Stubs (Copilot seeds)
-
+- Returning DB shapes directly to clients (no DTO mapping).
 - Missing health check endpoints in Azure Container Apps.
+- Hardcoding secrets in environment variables instead of Key Vault.
+- Ignoring container security best practices (running as root, large images).
+- **Sending emails directly via Azure SDK** - Always use EmailService to ensure database logging.
+- **Skipping email metadata** - Every email must include emailType, tenantId (if applicable), userId (if applicable), and relevant metadata.
 
-- Hardcoding secrets in environment variables instead of Key Vault.**Zod session schema**
-
-- Ignoring container security best practices (running as root, large images).```ts
+---
 
 export const SessionCreate = z.object({
 
