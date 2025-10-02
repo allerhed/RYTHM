@@ -25,7 +25,7 @@ export default function BackupsPage() {
       setLoading(true)
       setError(null)
       
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('admin_token')
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/backups`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -61,7 +61,7 @@ export default function BackupsPage() {
       setCreating(true)
       setError(null)
 
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('admin_token')
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/backups`, {
         method: 'POST',
         headers: {
@@ -97,7 +97,7 @@ export default function BackupsPage() {
       setRestoring(filename)
       setError(null)
 
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('admin_token')
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/backups/${filename}/restore`, {
         method: 'POST',
         headers: {
@@ -129,7 +129,7 @@ export default function BackupsPage() {
       setDeleting(filename)
       setError(null)
 
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('admin_token')
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/backups/${filename}`, {
         method: 'DELETE',
         headers: {
@@ -152,7 +152,7 @@ export default function BackupsPage() {
   }
 
   const handleDownloadBackup = (filename: string) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('admin_token')
     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/backups/${filename}/download`
     
     // Create temporary link to trigger download
