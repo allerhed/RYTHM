@@ -2,16 +2,32 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { trpc } from '../../../lib/trpc'
 import { Input, Button } from '../../../components/Form'
 import { Toast } from '../../../components/Feedback'
 
 export default function ForgotPasswordPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [toast, setToast] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; message: string } | null>(null)
   const [error, setError] = useState('')
+
+  const requestPasswordReset = trpc.authentication.requestPasswordReset.useMutation({
+    onSuccess: () => {
+      setSubmitted(true)
+      setToast({ 
+        type: 'success', 
+        message: 'Password reset link sent! Check your email.' 
+      })
+    },
+    onError: (error: any) => {
+      setToast({ 
+        type: 'error', 
+        message: error.message || 'Failed to send reset email. Please try again.' 
+      })
+    }
+  })
 
   const validateEmail = (email: string) => {
     if (!email) {
@@ -33,38 +49,8 @@ export default function ForgotPasswordPage() {
       return
     }
     
-    setLoading(true)
     setError('')
-    
-    try {
-      const response = await fetch('/api/trpc/auth.requestPasswordReset', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to send reset email')
-      }
-
-      setSubmitted(true)
-      setToast({ 
-        type: 'success', 
-        message: 'Password reset link sent! Check your email.' 
-      })
-    } catch (error: any) {
-      console.error('Request password reset error:', error)
-      setToast({ 
-        type: 'error', 
-        message: error.message || 'Failed to send reset email. Please try again.' 
-      })
-    } finally {
-      setLoading(false)
-    }
+    requestPasswordReset.mutate({ email })
   }
 
   if (submitted) {
@@ -216,10 +202,10 @@ export default function ForgotPasswordPage() {
                 type="submit"
                 variant="primary"
                 size="lg"
-                loading={loading}
+                loading={requestPasswordReset.isLoading}
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
-                {loading ? 'Sending...' : 'Send Reset Link'}
+                {requestPasswordReset.isLoading ? 'Sending...' : 'Send Reset Link'}
               </Button>
             </form>
           </div>

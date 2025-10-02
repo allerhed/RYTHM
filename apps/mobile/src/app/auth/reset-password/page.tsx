@@ -2,55 +2,50 @@
 import React, { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { trpc } from '../../../lib/trpc'
 import { Input, Button } from '../../../components/Form'
 import { Toast } from '../../../components/Feedback'
 
 function ResetPasswordContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const token = searchParams.get('token')
+  const token = searchParams.get('token') || ''
   
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [verifying, setVerifying] = useState(true)
-  const [tokenValid, setTokenValid] = useState(false)
-  const [email, setEmail] = useState('')
   const [success, setSuccess] = useState(false)
   const [toast, setToast] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; message: string } | null>(null)
   const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({})
 
-  useEffect(() => {
-    if (!token) {
-      setToast({ type: 'error', message: 'Invalid reset link' })
-      setVerifying(false)
-      return
-    }
-
-    // Verify token
-    const verifyToken = async () => {
-      try {
-        const response = await fetch(`/api/trpc/auth.verifyResetToken?input=${encodeURIComponent(JSON.stringify({ token }))}`)
-        const data = await response.json()
-
-        if (response.ok && data.result?.data) {
-          setTokenValid(true)
-          setEmail(data.result.data.email)
-        } else {
-          setToast({ type: 'error', message: 'This reset link is invalid or has expired' })
-          setTokenValid(false)
-        }
-      } catch (error) {
-        console.error('Token verification error:', error)
-        setToast({ type: 'error', message: 'Failed to verify reset link' })
-        setTokenValid(false)
-      } finally {
-        setVerifying(false)
+  const verifyToken = trpc.authentication.verifyResetToken.useQuery(
+    { token },
+    { 
+      enabled: !!token,
+      retry: false,
+      onError: () => {
+        setToast({ type: 'error', message: 'This reset link is invalid or has expired' })
       }
     }
+  )
 
-    verifyToken()
-  }, [token])
+  const resetPassword = trpc.authentication.resetPassword.useMutation({
+    onSuccess: () => {
+      setSuccess(true)
+      setToast({ 
+        type: 'success', 
+        message: 'Password reset successfully! Redirecting to login...' 
+      })
+      setTimeout(() => {
+        router.push('/auth/login')
+      }, 2000)
+    },
+    onError: (error: any) => {
+      setToast({ 
+        type: 'error', 
+        message: error.message || 'Failed to reset password. Please try again.' 
+      })
+    }
+  })
 
   const validateForm = () => {
     const newErrors: { password?: string; confirmPassword?: string } = {}
@@ -81,47 +76,13 @@ function ResetPasswordContent() {
       return
     }
     
-    setLoading(true)
-    
-    try {
-      const response = await fetch('/api/trpc/auth.resetPassword', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          token,
-          newPassword: password,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to reset password')
-      }
-
-      setSuccess(true)
-      setToast({ 
-        type: 'success', 
-        message: 'Password reset successfully! Redirecting to login...' 
-      })
-      
-      setTimeout(() => {
-        router.push('/auth/login')
-      }, 2000)
-    } catch (error: any) {
-      console.error('Reset password error:', error)
-      setToast({ 
-        type: 'error', 
-        message: error.message || 'Failed to reset password. Please try again.' 
-      })
-    } finally {
-      setLoading(false)
-    }
+    resetPassword.mutate({ 
+      token,
+      newPassword: password,
+    })
   }
 
-  if (verifying) {
+  if (verifyToken.isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center">
         <div className="text-center">
@@ -132,7 +93,7 @@ function ResetPasswordContent() {
     )
   }
 
-  if (!tokenValid) {
+  if (verifyToken.isError || !verifyToken.data) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
         <header className="safe-area-top px-6 pt-4">
@@ -249,7 +210,7 @@ function ResetPasswordContent() {
               Create New Password
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-lg">
-              for <strong>{email}</strong>
+              for <strong>{verifyToken.data?.email || 'your account'}</strong>
             </p>
           </div>
 
@@ -296,10 +257,11 @@ function ResetPasswordContent() {
                 type="submit"
                 variant="primary"
                 size="lg"
-                loading={loading}
+                loading={resetPassword.isLoading}
+                disabled={success}
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
-                {loading ? 'Resetting Password...' : 'Reset Password'}
+                {resetPassword.isLoading ? 'Resetting Password...' : 'Reset Password'}
               </Button>
             </form>
           </div>
