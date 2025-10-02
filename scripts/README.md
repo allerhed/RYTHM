@@ -1,6 +1,66 @@
-# Test Data Generation for RYTHM Workout App
+# Scripts Directory
 
-This directory contains scripts to generate realistic test data for the RYTHM workout application.
+This directory contains utility scripts for development, deployment, and data management.
+
+## Directory Structure
+
+```
+scripts/
+├── dev/          # Development and testing utilities
+├── data/         # Data files and seed data
+├── start.sh      # Start development environment
+├── stop.sh       # Stop development environment
+├── status.sh     # Check service status
+└── run-migrations*.sh  # Database migration scripts
+```
+
+## Development Scripts (`dev/`)
+
+### Testing & Development Utilities
+- **`test-new-fields.sh`** - Test new database fields
+- **`test-pickers.sh`** - Test UI picker components
+- **`test-session-update.js`** - Test session update functionality
+- **`login-admin.js`** - Admin login helper script
+
+### Workout Generation
+- **`generate_workouts.py`** - Generate workout templates
+- **`generate_todays_workouts.py`** - Generate daily workout suggestions
+
+### Other Files
+- **`cookies.txt`** - Cookie storage for testing
+
+## Data Files (`data/`)
+
+- **`rythm_exercise_library.csv`** - Complete exercise library with templates
+  - Contains 98 exercises (68 strength, 30 cardio)
+  - Used for seeding the exercise templates database
+
+## Core Scripts (Root Level)
+
+### Environment Management
+```bash
+# Start all services with Docker Compose
+./scripts/start.sh
+
+# Stop all services
+./scripts/stop.sh
+
+# Check service status
+./scripts/status.sh
+```
+
+### Database Migrations
+```bash
+# Run migrations (multiple variants available)
+./scripts/run-migrations.sh        # Standard migration script
+./scripts/run-migrations-local.sh  # For local PostgreSQL
+./scripts/run-migrations-docker.sh # For Docker containers
+./scripts/run-migrations.ps1       # PowerShell version for Windows
+```
+
+---
+
+## Test Data Generation
 
 ## Quick Start
 

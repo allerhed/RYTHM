@@ -274,7 +274,8 @@ For comprehensive documentation, see the **[Documentation Hub](docs/README.md)**
 ### Quick Links
 
 - **[⚡ Quick Start Guide](docs/QUICK_START.md)** - Essential commands and URLs
-- **[📋 Product Requirements](prd.md)** - Product vision and requirements
+- **[📋 Product Requirements](docs/PROJECT_REQUIREMENTS.md)** - Product vision and requirements
+- **[🗄️ Database Backup System](docs/features/DATABASE_BACKUP_SYSTEM.md)** - Backup and restore documentation
 
 - **Getting Started**
   - [Installation Guide](docs/getting-started/installation.md) - Set up your development environment
@@ -305,8 +306,32 @@ For comprehensive documentation, see the **[Documentation Hub](docs/README.md)**
   - [Pull to Refresh](docs/features/pull-to-refresh.md) - Mobile gestures
   - [Training Load](docs/features/training-load.md) - Score calculation
   - [Hybrid Training](docs/features/hybrid-training.md) - Combined workouts
+  - [Database Backups](docs/features/DATABASE_BACKUP_SYSTEM.md) - Automated backup system
+
+### Project Structure
+
+```
+RYTHM/
+├── apps/              # Application code
+│   ├── api/          # Express + tRPC API
+│   ├── mobile/       # Next.js PWA
+│   └── admin/        # Admin dashboard
+├── packages/         # Shared packages
+│   ├── db/          # Database migrations & client
+│   └── shared/      # Shared types & utilities
+├── docs/            # Documentation
+│   ├── features/    # Feature documentation
+│   ├── api/         # API reference
+│   └── deployment/  # Deployment guides
+├── scripts/         # Build and development scripts
+│   ├── dev/         # Development utilities
+│   └── data/        # Data files and seeds
+├── infra/           # Infrastructure as Code (Azure Bicep)
+└── archive/         # Historical documentation
+```
 
 ### Other Resources
 
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
 - **[Archive](archive/)** - Legacy documentation and implementation reports
+- **[Design Inspiration](docs/design-inspiration/)** - UI/UX design references
