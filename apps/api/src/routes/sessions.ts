@@ -68,8 +68,8 @@ export const sessionsRouter = router({
                  u.first_name, u.last_name, u.email,
                  p.name as program_name
           FROM sessions s
-          JOIN users u ON s.user_id = u.user_id
-          LEFT JOIN programs p ON s.program_id = p.program_id
+          JOIN users u ON s.user_id = u.user_id AND u.tenant_id = $1
+          LEFT JOIN programs p ON s.program_id = p.program_id AND p.tenant_id = $1
           WHERE s.tenant_id = $1 AND s.user_id = $2
         `;
         
