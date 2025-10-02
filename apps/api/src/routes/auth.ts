@@ -3,6 +3,8 @@ import { router, publicProcedure } from '../trpc';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { TRPCError } from '@trpc/server';
+import crypto from 'crypto';
+import { EmailService } from '../services/EmailService';
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -167,5 +169,139 @@ export const authRouter = router({
           message: 'Invalid token',
         });
       }
+    }),
+
+  requestPasswordReset: publicProcedure
+    .input(z.object({ email: z.string().email() }))
+    .mutation(async ({ input, ctx }) => {
+      const { email } = input;
+
+      // Find user
+      const result = await ctx.db.query(
+        'SELECT user_id, tenant_id, email, first_name, last_name FROM users WHERE email = $1',
+        [email]
+      );
+
+      // Always return success to prevent email enumeration
+      if (result.rows.length === 0) {
+        return { success: true, message: 'If an account exists with this email, a password reset link has been sent.' };
+      }
+
+      const user = result.rows[0];
+
+      // Generate reset token
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenHash = await bcrypt.hash(resetToken, 10);
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+      // Store reset token
+      await ctx.db.query(
+        `UPDATE users 
+         SET reset_token_hash = $1, reset_token_expires = $2, updated_at = NOW() 
+         WHERE user_id = $3`,
+        [resetTokenHash, expiresAt, user.user_id]
+      );
+
+      // Send password reset email
+      const emailService = new EmailService();
+      const resetUrl = `${process.env.FRONTEND_URL || 'https://app.rythm.training'}/auth/reset-password`;
+      
+      await emailService.sendPasswordReset({
+        userEmail: user.email,
+        userId: user.user_id,
+        tenantId: user.tenant_id,
+        userName: `${user.first_name} ${user.last_name}`,
+        resetToken,
+        resetUrl,
+        expiresInHours: 1,
+      });
+
+      return { 
+        success: true, 
+        message: 'If an account exists with this email, a password reset link has been sent.' 
+      };
+    }),
+
+  verifyResetToken: publicProcedure
+    .input(z.object({ token: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { token } = input;
+
+      // Find user with non-expired token
+      const result = await ctx.db.query(
+        `SELECT user_id, email, reset_token_hash, reset_token_expires 
+         FROM users 
+         WHERE reset_token_hash IS NOT NULL 
+         AND reset_token_expires > NOW()`,
+        []
+      );
+
+      // Check each user's token hash
+      for (const user of result.rows) {
+        const isValid = await bcrypt.compare(token, user.reset_token_hash);
+        if (isValid) {
+          return { valid: true, email: user.email };
+        }
+      }
+
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Invalid or expired reset token',
+      });
+    }),
+
+  resetPassword: publicProcedure
+    .input(z.object({ 
+      token: z.string(),
+      newPassword: z.string().min(8),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { token, newPassword } = input;
+
+      // Find user with non-expired token
+      const result = await ctx.db.query(
+        `SELECT user_id, email, reset_token_hash, reset_token_expires 
+         FROM users 
+         WHERE reset_token_hash IS NOT NULL 
+         AND reset_token_expires > NOW()`,
+        []
+      );
+
+      let userId: string | null = null;
+
+      // Check each user's token hash
+      for (const user of result.rows) {
+        const isValid = await bcrypt.compare(token, user.reset_token_hash);
+        if (isValid) {
+          userId = user.user_id;
+          break;
+        }
+      }
+
+      if (!userId) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Invalid or expired reset token',
+        });
+      }
+
+      // Hash new password
+      const passwordHash = await bcrypt.hash(newPassword, 12);
+
+      // Update password and clear reset token
+      await ctx.db.query(
+        `UPDATE users 
+         SET password_hash = $1, 
+             reset_token_hash = NULL, 
+             reset_token_expires = NULL,
+             updated_at = NOW() 
+         WHERE user_id = $2`,
+        [passwordHash, userId]
+      );
+
+      return { 
+        success: true, 
+        message: 'Password has been reset successfully. You can now log in with your new password.' 
+      };
     }),
 });

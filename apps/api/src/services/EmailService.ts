@@ -340,8 +340,8 @@ This is an automated notification from RYTHM Training Platform.
    * Send password reset email with secure token
    * Includes expiration time and reset link
    */
-  async sendPasswordReset(params: PasswordResetParams): Promise<{ success: boolean; error?: string }> {
-    const { userEmail, userName, resetToken, resetUrl, expiresInHours = 1 } = params;
+  async sendPasswordReset(params: PasswordResetParams & { userId?: string; tenantId?: string }): Promise<{ success: boolean; error?: string }> {
+    const { userEmail, userName, resetToken, resetUrl, expiresInHours = 1, userId, tenantId } = params;
 
     const subject = '🔐 Reset Your RYTHM Password';
 
@@ -420,6 +420,13 @@ RYTHM Training Platform
       subject,
       plainText,
       html,
+      emailType: 'password_reset',
+      userId,
+      tenantId,
+      metadata: {
+        resetToken,
+        expiresInHours,
+      },
     });
   }
 
