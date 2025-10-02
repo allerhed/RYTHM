@@ -12,6 +12,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@azure/communication-email": "^1.0.0",
+    "@azure/core-auth": "^1.10.1",
     "@azure/storage-blob": "^12.24.0",
     "@rythm/db": "1.1.0",
     "@rythm/shared": "1.1.0",

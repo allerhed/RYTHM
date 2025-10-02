@@ -11,6 +11,7 @@
 
 import { Router, Request, Response } from 'express';
 import { backupService } from '../services/backup.service';
+import { emailService } from '../services/EmailService';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
 
 const router = Router();
@@ -24,9 +25,24 @@ router.use(requireAdmin);
  * Create a new database backup
  */
 router.post('/', async (req: Request, res: Response) => {
+  const startTime = Date.now();
+  let backup: any = null;
+  
   try {
     console.log('Creating database backup...');
-    const backup = await backupService.createBackup();
+    backup = await backupService.createBackup();
+    const duration = Date.now() - startTime;
+    
+    // Send success notification email (don't block response)
+    if (emailService.isReady() && (req as any).user?.email) {
+      emailService.sendBackupNotification({
+        adminEmail: (req as any).user.email,
+        backupId: backup.filename,
+        status: 'success',
+        size: backup.size,
+        duration,
+      }).catch(err => console.error('Failed to send backup notification:', err));
+    }
     
     res.status(201).json({
       success: true,
@@ -35,6 +51,19 @@ router.post('/', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Backup creation error:', error);
+    const duration = Date.now() - startTime;
+    
+    // Send failure notification email (don't block response)
+    if (emailService.isReady() && (req as any).user?.email) {
+      emailService.sendBackupNotification({
+        adminEmail: (req as any).user.email,
+        backupId: backup?.filename || `failed-${Date.now()}`,
+        status: 'failure',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        duration,
+      }).catch(err => console.error('Failed to send backup notification:', err));
+    }
+    
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create backup',
