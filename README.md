@@ -267,12 +267,43 @@ npm run dev:clean
 npm run dev
 ```
 
-## 📝 Additional Documentation
+## 📝 Documentation
 
-- `RELEASE_NOTES_0.9.md` - Complete version 0.9 release notes and features
-- `API_DOCUMENTATION_0.9.md` - API endpoints and authentication guide
-- `ADMIN_GUIDE_0.9.md` - Comprehensive admin interface documentation
-- `ARCHITECTURE_0.9.md` - System architecture and component overview
-- `DEBUG_GUIDE.md` - Debugging and troubleshooting
-- `APPLICATION_FIXED.md` - Application fixes and improvements
-- `TRAINING_LOAD_IMPLEMENTATION.md` - Training load system details
+For comprehensive documentation, see the **[Documentation Hub](docs/README.md)**.
+
+### Quick Links
+
+- **Getting Started**
+  - [Installation Guide](docs/getting-started/installation.md) - Set up your development environment
+  - [Development Guide](docs/getting-started/development.md) - Build and run the application
+  - [Docker Guide](docs/getting-started/docker-guide.md) - Understanding Docker setup
+
+- **Architecture**
+  - [System Overview](docs/architecture/overview.md) - High-level architecture
+  - [Database Design](docs/architecture/database.md) - Schema and RLS policies
+  - [API Design](docs/architecture/api-design.md) - tRPC endpoints
+  - [Security](docs/architecture/security.md) - Authentication and authorization
+
+- **User Guides**
+  - [Mobile App](docs/user-guides/mobile-app.md) - Using the RYTHM PWA
+  - [Admin Interface](docs/user-guides/admin-interface.md) - Managing templates and users
+
+- **API Reference**
+  - [Authentication](docs/api/authentication.md) - JWT tokens and sessions
+  - [Endpoints](docs/api/endpoints.md) - Complete API reference
+  - [Schemas](docs/api/schemas.md) - Data models
+
+- **Deployment**
+  - [Azure Setup](docs/deployment/azure-setup.md) - Deploying to Azure
+  - [Production Configuration](docs/deployment/production.md) - Environment setup
+  - [Troubleshooting](docs/deployment/troubleshooting.md) - Common issues
+
+- **Features**
+  - [Pull to Refresh](docs/features/pull-to-refresh.md) - Mobile gestures
+  - [Training Load](docs/features/training-load.md) - Score calculation
+  - [Hybrid Training](docs/features/hybrid-training.md) - Combined workouts
+
+### Other Resources
+
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
+- **[Archive](archive/)** - Legacy documentation and implementation reports
