@@ -13,6 +13,9 @@
  */
 
 import { EmailClient, KnownEmailSendStatus, EmailMessage } from '@azure/communication-email';
+import { db } from '@rythm/db';
+
+type EmailType = 'backup_notification' | 'password_reset' | 'workout_reminder' | 'admin_alert' | 'generic';
 
 interface EmailConfig {
   connectionString: string;
@@ -26,6 +29,10 @@ interface SendEmailParams {
   plainText: string;
   html?: string;
   replyTo?: string;
+  emailType?: EmailType;
+  tenantId?: string;
+  userId?: string;
+  metadata?: Record<string, any>;
 }
 
 interface BackupNotificationParams {
@@ -94,10 +101,14 @@ export class EmailService {
   /**
    * Generic email sending method
    * Handles polling and status checking for email delivery
+   * Logs all emails to database for audit trail
    */
   async sendEmail(params: SendEmailParams): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const emailLogId = await this.createEmailLog(params);
+    
     if (!this.isConfigured) {
       console.warn('EmailService: Not configured. Skipping email send.');
+      await this.updateEmailLogStatus(emailLogId, 'failed', 'Email service not configured');
       return { success: false, error: 'Email service not configured' };
     }
 
@@ -138,17 +149,81 @@ export class EmailService {
 
       if (result?.status === KnownEmailSendStatus.Succeeded) {
         console.log(`✅ Email sent successfully (ID: ${result.id})`);
+        await this.updateEmailLogStatus(emailLogId, 'sent', undefined, result.id);
         return { success: true, messageId: result.id };
       } else if (result?.error) {
         console.error(`❌ Email failed: ${result.error.message}`);
+        await this.updateEmailLogStatus(emailLogId, 'failed', result.error.message);
         return { success: false, error: result.error.message };
       } else {
         console.warn(`⚠️ Email status unknown after ${elapsedTime}ms`);
+        await this.updateEmailLogStatus(emailLogId, 'failed', 'Email send timeout or unknown status');
         return { success: false, error: 'Email send timeout or unknown status' };
       }
     } catch (error: any) {
       console.error('❌ Email send error:', error);
+      await this.updateEmailLogStatus(emailLogId, 'failed', error.message || 'Unknown error');
       return { success: false, error: error.message || 'Unknown error' };
+    }
+  }
+
+  /**
+   * Create email log entry in database
+   */
+  private async createEmailLog(params: SendEmailParams): Promise<string> {
+    try {
+      const result = await db.query(
+        `INSERT INTO email_logs (
+          tenant_id, user_id, email_type, status,
+          to_address, from_address, reply_to_address,
+          subject, plain_text_body, html_body, metadata
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        RETURNING email_log_id`,
+        [
+          params.tenantId || null,
+          params.userId || null,
+          params.emailType || 'generic',
+          'pending',
+          params.to,
+          this.senderAddress,
+          params.replyTo || null,
+          params.subject,
+          params.plainText,
+          params.html || null,
+          JSON.stringify(params.metadata || {}),
+        ]
+      );
+      return result.rows[0].email_log_id;
+    } catch (error) {
+      console.error('Failed to create email log:', error);
+      // Return a dummy ID if logging fails (don't block email sending)
+      return '00000000-0000-0000-0000-000000000000';
+    }
+  }
+
+  /**
+   * Update email log status after sending attempt
+   */
+  private async updateEmailLogStatus(
+    emailLogId: string,
+    status: 'pending' | 'sent' | 'failed' | 'delivered' | 'bounced',
+    errorMessage?: string,
+    messageId?: string
+  ): Promise<void> {
+    try {
+      await db.query(
+        `UPDATE email_logs 
+         SET status = $1, 
+             error_message = $2, 
+             message_id = $3,
+             sent_at = CASE WHEN $1 = 'sent' THEN NOW() ELSE sent_at END,
+             updated_at = NOW()
+         WHERE email_log_id = $4`,
+        [status, errorMessage || null, messageId || null, emailLogId]
+      );
+    } catch (error) {
+      console.error('Failed to update email log:', error);
+      // Don't throw - logging failure shouldn't break email sending
     }
   }
 
@@ -250,6 +325,14 @@ This is an automated notification from RYTHM Training Platform.
       subject,
       plainText,
       html,
+      emailType: 'backup_notification',
+      metadata: {
+        backupId,
+        status,
+        size,
+        duration,
+        tenantName,
+      },
     });
   }
 
@@ -428,6 +511,12 @@ RYTHM Training Platform
       subject,
       plainText,
       html,
+      emailType: 'workout_reminder',
+      metadata: {
+        sessionName,
+        scheduledTime: scheduledTime.toISOString(),
+        exerciseCount,
+      },
     });
   }
 
@@ -524,6 +613,12 @@ Please investigate and take appropriate action if needed.
       subject: fullSubject,
       plainText,
       html,
+      emailType: 'admin_alert',
+      metadata: {
+        alertType,
+        severity,
+        details,
+      },
     });
   }
 

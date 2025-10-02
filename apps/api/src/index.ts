@@ -13,6 +13,7 @@ import { db } from '@rythm/db';
 import exerciseRoutes from './routes/exercises';
 import sessionsRoutes from './routes/sessions-rest';
 import backupRoutes from './routes/backups';
+import emailLogsRoutes from './routes/email-logs';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -504,6 +505,9 @@ app.use('/api/sessions', sessionsRoutes);
 
 // Backup API routes (admin only)
 app.use('/api/backups', backupRoutes);
+
+// Email logs API routes (admin only)
+app.use('/api/email-logs', emailLogsRoutes);
 
 // tRPC API routes
 app.use('/api/trpc', createExpressMiddleware({
