@@ -14,6 +14,7 @@ import exerciseRoutes from './routes/exercises';
 import sessionsRoutes from './routes/sessions-rest';
 import backupRoutes from './routes/backups';
 import emailLogsRoutes from './routes/email-logs';
+import { backupScheduler } from './services/BackupScheduler';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -540,6 +541,9 @@ app.listen(port, () => {
   console.log(`🚀 RYTHM API server running on port ${port}`);
   console.log(`📊 Health check: http://localhost:${port}/health`);
   console.log(`🔌 tRPC endpoint: http://localhost:${port}/api/trpc`);
+  
+  // Initialize backup scheduler
+  backupScheduler.start();
 });
 
 export default app;
