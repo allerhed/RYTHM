@@ -31,6 +31,38 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   })
 }
 
+/**
+ * Authentication middleware that accepts token from header OR query parameter
+ * Used for download endpoints where browser redirects don't support custom headers
+ */
+export const authenticateTokenFlexible = (req: Request, res: Response, next: NextFunction) => {
+  // Try to get token from Authorization header first
+  const authHeader = req.headers['authorization']
+  let token = authHeader && authHeader.split(' ')[1] // Bearer TOKEN
+  
+  // Fallback to query parameter for file downloads
+  if (!token && req.query.token) {
+    token = req.query.token as string
+  }
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token required' })
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid or expired token' })
+    }
+    
+    // Ensure tenant_id is available for backward compatibility
+    const authUser = user as any
+    authUser.tenant_id = authUser.tenantId
+    
+    req.user = authUser
+    next()
+  })
+}
+
 export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
   const user = req.user as AuthUser | undefined
 

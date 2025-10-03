@@ -12,19 +12,15 @@
 import { Router, Request, Response } from 'express';
 import { backupService } from '../services/backup.service';
 import { emailService } from '../services/EmailService';
-import { authenticateToken, requireAdmin } from '../middleware/auth';
+import { authenticateToken, authenticateTokenFlexible, requireAdmin } from '../middleware/auth';
 
 const router = Router();
-
-// Middleware: All backup routes require authentication and admin role
-router.use(authenticateToken);
-router.use(requireAdmin);
 
 /**
  * POST /api/backups
  * Create a new database backup
  */
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   const startTime = Date.now();
   let backup: any = null;
   
@@ -75,7 +71,7 @@ router.post('/', async (req: Request, res: Response) => {
  * GET /api/backups
  * List all available backups
  */
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const backups = await backupService.listBackups();
     
@@ -97,7 +93,7 @@ router.get('/', async (req: Request, res: Response) => {
  * POST /api/backups/:filename/restore
  * Restore database from a backup
  */
-router.post('/:filename/restore', async (req: Request, res: Response) => {
+router.post('/:filename/restore', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { filename } = req.params;
     
@@ -131,7 +127,7 @@ router.post('/:filename/restore', async (req: Request, res: Response) => {
  * DELETE /api/backups/:filename
  * Delete a backup
  */
-router.delete('/:filename', async (req: Request, res: Response) => {
+router.delete('/:filename', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { filename } = req.params;
     
@@ -161,8 +157,9 @@ router.delete('/:filename', async (req: Request, res: Response) => {
 /**
  * GET /api/backups/:filename/download
  * Download a backup file
+ * Note: Uses authenticateTokenFlexible to support token in query parameter for browser downloads
  */
-router.get('/:filename/download', async (req: Request, res: Response) => {
+router.get('/:filename/download', authenticateTokenFlexible, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { filename } = req.params;
     
