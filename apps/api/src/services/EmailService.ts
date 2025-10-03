@@ -213,10 +213,10 @@ export class EmailService {
     try {
       await db.query(
         `UPDATE email_logs 
-         SET status = $1, 
+         SET status = $1::email_status, 
              error_message = $2, 
              message_id = $3,
-             sent_at = CASE WHEN $1 = 'sent' THEN NOW() ELSE sent_at END,
+             sent_at = CASE WHEN $1::email_status = 'sent' THEN NOW() ELSE sent_at END,
              updated_at = NOW()
          WHERE email_log_id = $4`,
         [status, errorMessage || null, messageId || null, emailLogId]
