@@ -43,6 +43,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# Install PostgreSQL client tools for pg_dump
+RUN apk add --no-cache postgresql15-client
+
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 apiuser
