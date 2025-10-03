@@ -11,14 +11,26 @@ interface Backup {
   url: string
 }
 
+interface BackupSchedule {
+  schedule_id: string
+  enabled: boolean
+  schedule_time: string
+  retention_days: number
+  last_run_at: string | null
+  next_run_at: string | null
+  updated_at: string
+}
+
 export default function BackupsPage() {
   const { user } = useAuth()
   const [backups, setBackups] = useState<Backup[]>([])
+  const [schedule, setSchedule] = useState<BackupSchedule | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
   const [restoring, setRestoring] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [savingSchedule, setSavingSchedule] = useState(false)
 
   const fetchBackups = async () => {
     try {
@@ -26,18 +38,32 @@ export default function BackupsPage() {
       setError(null)
       
       const token = localStorage.getItem('admin_token')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/backups`, {
+      
+      // Fetch backups
+      const backupsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/backups`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       })
 
-      if (!response.ok) {
+      if (!backupsResponse.ok) {
         throw new Error('Failed to fetch backups')
       }
 
-      const data = await response.json()
-      setBackups(data.data || [])
+      const backupsData = await backupsResponse.json()
+      setBackups(backupsData.data || [])
+      
+      // Fetch schedule
+      const scheduleResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/backups/schedule/config`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      if (scheduleResponse.ok) {
+        const scheduleData = await scheduleResponse.json()
+        setSchedule(scheduleData.data)
+      }
     } catch (err) {
       console.error('Fetch backups error:', err)
       setError(err instanceof Error ? err.message : 'Failed to load backups')
@@ -168,6 +194,36 @@ export default function BackupsPage() {
     document.body.removeChild(link)
   }
 
+  const handleToggleSchedule = async (enabled: boolean) => {
+    try {
+      setSavingSchedule(true)
+      setError(null)
+
+      const token = localStorage.getItem('admin_token')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/backups/schedule/config`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ enabled }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update backup schedule')
+      }
+
+      const data = await response.json()
+      setSchedule(data.data)
+    } catch (err) {
+      console.error('Update schedule error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to update backup schedule')
+    } finally {
+      setSavingSchedule(false)
+    }
+  }
+
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 Bytes'
     const k = 1024
@@ -240,10 +296,87 @@ export default function BackupsPage() {
             </svg>
             <div>
               <p className="font-medium mb-1">Automatic Retention Policy</p>
-              <p className="text-sm text-blue-300">Backups older than 10 days are automatically deleted. Manual backups can be downloaded before deletion.</p>
+              <p className="text-sm text-blue-300">Backups older than {schedule?.retention_days || 30} days are automatically deleted. Manual backups can be downloaded before deletion.</p>
             </div>
           </div>
         </div>
+
+        {/* Scheduled Backups Configuration */}
+        {schedule && (
+          <div className="rounded-2xl bg-gray-800 border border-gray-700 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-white">Automated Daily Backups</h2>
+                <p className="text-gray-400 mt-1 text-sm">Configure automatic database backups at a scheduled time</p>
+              </div>
+              <button
+                onClick={() => handleToggleSchedule(!schedule.enabled)}
+                disabled={savingSchedule}
+                className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
+                  schedule.enabled ? 'bg-blue-600' : 'bg-gray-600'
+                } ${savingSchedule ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              >
+                <span
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                    schedule.enabled ? 'translate-x-9' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+                <div className="flex items-center space-x-2 mb-2">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm text-gray-400">Schedule Time (UTC)</span>
+                </div>
+                <p className="text-2xl font-bold text-white">{schedule.schedule_time.substring(0, 5)}</p>
+              </div>
+
+              <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+                <div className="flex items-center space-x-2 mb-2">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-sm text-gray-400">Retention Period</span>
+                </div>
+                <p className="text-2xl font-bold text-white">{schedule.retention_days} days</p>
+              </div>
+
+              <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+                <div className="flex items-center space-x-2 mb-2">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm text-gray-400">Last Backup</span>
+                </div>
+                <p className="text-lg font-semibold text-white">
+                  {schedule.last_run_at ? formatDate(schedule.last_run_at) : 'Never'}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-lg bg-gray-900/50 border border-gray-700 p-4">
+              <div className="flex items-start space-x-3">
+                <svg className={`w-5 h-5 flex-shrink-0 mt-0.5 ${schedule.enabled ? 'text-green-500' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={schedule.enabled ? "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" : "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"} />
+                </svg>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-white">
+                    {schedule.enabled ? 'Automated backups are enabled' : 'Automated backups are disabled'}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {schedule.enabled 
+                      ? `Daily backups will run at ${schedule.schedule_time.substring(0, 5)} UTC and be retained for ${schedule.retention_days} days`
+                      : 'Enable automated backups to create daily database backups automatically'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (

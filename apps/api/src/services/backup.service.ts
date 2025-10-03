@@ -37,7 +37,7 @@ interface BackupSchedule {
 export class BackupService {
   private containerClient: ContainerClient;
   private tempDir: string;
-  private readonly RETENTION_DAYS = 10;
+  private readonly RETENTION_DAYS = 30;
 
   constructor() {
     const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;

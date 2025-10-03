@@ -8,7 +8,7 @@ interface AdminLayoutProps {
   children: React.ReactNode
 }
 
-const navigation = [
+const mainNavigation = [
   { 
     name: 'Dashboard', 
     href: '/dashboard', 
@@ -91,16 +91,9 @@ const navigation = [
       </svg>
     )
   },
-  { 
-    name: 'Settings', 
-    href: '/settings', 
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    )
-  },
+]
+
+const bottomNavigation = [
   { 
     name: 'Backups', 
     href: '/backups', 
@@ -120,6 +113,16 @@ const navigation = [
       </svg>
     ),
     adminOnly: true
+  },
+  { 
+    name: 'Settings', 
+    href: '/settings', 
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    )
   },
 ]
 
@@ -169,7 +172,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               </div>
               <nav className="mt-6 px-4">
                 <div className="space-y-1">
-                  {navigation
+                  {[...mainNavigation, ...bottomNavigation]
                     .filter((item) => !('adminOnly' in item) || user?.role === 'system_admin')
                     .map((item) => {
                     const isActive = pathname === item.href
@@ -218,7 +221,34 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <li>
                 <p className="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider">Main Menu</p>
                 <ul className="mt-2 space-y-1">
-                  {navigation
+                  {mainNavigation
+                    .filter((item) => !('adminOnly' in item) || user?.role === 'system_admin')
+                    .map((item) => {
+                    const isActive = pathname === item.href
+                    return (
+                      <li key={item.name}>
+                        <Link
+                          href={item.href}
+                          className={`group flex gap-x-4 rounded-xl p-3 text-sm leading-6 font-semibold transition-all duration-200 ${
+                            isActive
+                              ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                              : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                          }`}
+                        >
+                          <span className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
+                            {item.icon}
+                          </span>
+                          <span className="truncate">{item.name}</span>
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </li>
+              <li className="mt-auto">
+                <p className="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider">System</p>
+                <ul className="mt-2 space-y-1">
+                  {bottomNavigation
                     .filter((item) => !('adminOnly' in item) || user?.role === 'system_admin')
                     .map((item) => {
                     const isActive = pathname === item.href

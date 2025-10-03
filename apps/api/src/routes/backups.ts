@@ -13,6 +13,7 @@ import { Router, Request, Response } from 'express';
 import { backupService } from '../services/backup.service';
 import { emailService } from '../services/EmailService';
 import { authenticateToken, authenticateTokenFlexible, requireAdmin } from '../middleware/auth';
+import { db } from '@rythm/db';
 
 const router = Router();
 
@@ -188,6 +189,104 @@ router.get('/:filename/download', authenticateTokenFlexible, requireAdmin, async
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Failed to download backup',
+    });
+  }
+});
+
+/**
+ * GET /api/backups/schedule
+ * Get backup schedule configuration
+ */
+router.get('/schedule/config', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const result = await db.query(
+      'SELECT * FROM backup_schedule LIMIT 1'
+    );
+
+    if (result.rows.length === 0) {
+      // Create default configuration if none exists
+      const createResult = await db.query(
+        `INSERT INTO backup_schedule (enabled, schedule_time, retention_days)
+         VALUES (FALSE, '02:00:00', 30)
+         RETURNING *`
+      );
+      return res.json({
+        success: true,
+        data: createResult.rows[0],
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Get backup schedule error:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get backup schedule',
+    });
+  }
+});
+
+/**
+ * PUT /api/backups/schedule
+ * Update backup schedule configuration
+ */
+router.put('/schedule/config', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { enabled, schedule_time, retention_days } = req.body;
+
+    // Validate inputs
+    if (typeof enabled !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        error: 'enabled must be a boolean',
+      });
+    }
+
+    if (schedule_time && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(schedule_time)) {
+      return res.status(400).json({
+        success: false,
+        error: 'schedule_time must be in HH:MM:SS format',
+      });
+    }
+
+    if (retention_days && (retention_days < 1 || retention_days > 90)) {
+      return res.status(400).json({
+        success: false,
+        error: 'retention_days must be between 1 and 90',
+      });
+    }
+
+    // Update configuration
+    const result = await db.query(
+      `UPDATE backup_schedule 
+       SET enabled = $1,
+           schedule_time = COALESCE($2, schedule_time),
+           retention_days = COALESCE($3, retention_days),
+           updated_at = NOW()
+       RETURNING *`,
+      [enabled, schedule_time || null, retention_days || null]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Backup schedule not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Backup schedule updated successfully',
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Update backup schedule error:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to update backup schedule',
     });
   }
 });
