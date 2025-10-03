@@ -75,10 +75,18 @@ router.get('/', authenticateToken, requireAdmin, async (req: Request, res: Respo
   try {
     const backups = await backupService.listBackups();
     
+    // Map to frontend format (name instead of filename for consistency)
+    const formattedBackups = backups.map(backup => ({
+      name: backup.filename,
+      size: backup.size,
+      createdAt: backup.timestamp.toISOString(),
+      url: `/api/backups/${backup.filename}/download`,
+    }));
+    
     res.json({
       success: true,
-      data: backups,
-      count: backups.length,
+      data: formattedBackups,
+      count: formattedBackups.length,
     });
   } catch (error) {
     console.error('List backups error:', error);
