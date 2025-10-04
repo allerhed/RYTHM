@@ -8,17 +8,17 @@ export const sessionsRouter = router({
     .input(CreateSessionRequest)
     .mutation(async ({ input, ctx }) => {
       const sessionId = uuidv4();
-      const { category, program_id, notes } = input;
+      const { category, notes } = input;
       const started_at = (input as any).started_at; // Temporary cast until packages rebuild
 
       // Use provided started_at or default to NOW()
       const result = await ctx.db.query(
-        `INSERT INTO sessions (session_id, tenant_id, user_id, program_id, category, notes, started_at)
-         VALUES ($1, $2, $3, $4, $5, $6, ${started_at ? '$7' : 'NOW()'})
-         RETURNING session_id, tenant_id, user_id, program_id, category, notes, started_at, created_at`,
+        `INSERT INTO sessions (session_id, tenant_id, user_id, category, notes, started_at)
+         VALUES ($1, $2, $3, $4, $5, ${started_at ? '$6' : 'NOW()'})
+         RETURNING session_id, tenant_id, user_id, category, notes, started_at, created_at`,
         started_at 
-          ? [sessionId, ctx.user.tenantId, ctx.user.userId, program_id || null, category, notes || null, new Date(started_at).toISOString()]
-          : [sessionId, ctx.user.tenantId, ctx.user.userId, program_id || null, category, notes || null]
+          ? [sessionId, ctx.user.tenantId, ctx.user.userId, category, notes || null, new Date(started_at).toISOString()]
+          : [sessionId, ctx.user.tenantId, ctx.user.userId, category, notes || null]
       );
 
       return result.rows[0];
@@ -63,13 +63,11 @@ export const sessionsRouter = router({
           : ctx.user.userId;
 
         let query = `
-          SELECT s.session_id, s.user_id, s.program_id, s.category, s.notes, 
+          SELECT s.session_id, s.user_id, s.category, s.notes, 
                  s.started_at, s.completed_at, s.created_at,
-                 u.first_name, u.last_name, u.email,
-                 p.name as program_name
+                 u.first_name, u.last_name, u.email
           FROM sessions s
           JOIN users u ON s.user_id = u.user_id AND u.tenant_id = $1
-          LEFT JOIN programs p ON s.program_id = p.program_id AND p.tenant_id = $1
           WHERE s.tenant_id = $1 AND s.user_id = $2
         `;
         
@@ -133,14 +131,13 @@ export const sessionsRouter = router({
       const { sessionId } = input;
 
       const result = await ctx.db.query(
-        `SELECT s.*, u.first_name, u.last_name, p.name as program_name,
+        `SELECT s.*, u.first_name, u.last_name,
                 COUNT(st.set_id) as total_sets
          FROM sessions s
          JOIN users u ON s.user_id = u.user_id
-         LEFT JOIN programs p ON s.program_id = p.program_id
          LEFT JOIN sets st ON s.session_id = st.session_id
          WHERE s.session_id = $1 AND s.tenant_id = $2
-         GROUP BY s.session_id, u.user_id, u.first_name, u.last_name, p.name`,
+         GROUP BY s.session_id, u.user_id, u.first_name, u.last_name`,
         [sessionId, ctx.user.tenantId]
       );
 

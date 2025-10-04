@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { 
   MoonIcon, 
   SunIcon, 
@@ -23,7 +23,7 @@ interface SettingItem {
   action?: () => void
 }
 
-export default function SettingsPage() {
+function SettingsPage() {
   const { user } = useAuth()
   const [darkMode, setDarkMode] = useState(false)
   const [notifications, setNotifications] = useState(true)
@@ -269,3 +269,5 @@ export default function SettingsPage() {
     </div>
   )
 }
+
+export default withAuth(SettingsPage)

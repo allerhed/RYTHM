@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { trpc } from '../../lib/trpc'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
 import { PullToRefresh } from '../../components/PullToRefresh'
@@ -105,7 +105,7 @@ const getExerciseValueDisplay = (exercise: TemplateExercise): string => {
   return parts.length > 0 ? parts.join(' × ') : 'No values set'
 }
 
-export default function TemplatesPage() {
+function TemplatesPage() {
   const router = useRouter()
   const { user, token } = useAuth()
   
@@ -1129,3 +1129,5 @@ function AddExerciseModal({
     </div>
   )
 }
+
+export default withAuth(TemplatesPage)

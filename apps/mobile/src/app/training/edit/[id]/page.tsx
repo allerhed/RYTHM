@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/Form'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
 import { trpc } from '@/lib/trpc'
@@ -102,7 +102,7 @@ const PERCEIVED_EXERTION_LABELS = [
   { value: 10, label: 'Max Effort' }
 ]
 
-export default function EditWorkoutPage() {
+function EditWorkoutPage() {
   const router = useRouter()
   const params = useParams()
   const { user, token } = useAuth()
@@ -1469,3 +1469,5 @@ function ExerciseModal({
     </div>
   )
 }
+
+export default withAuth(EditWorkoutPage)

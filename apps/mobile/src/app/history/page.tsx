@@ -1,12 +1,12 @@
 'use client'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { trpc } from '../../lib/trpc'
 import { CalendarIcon, ClockIcon, PlayIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import { PullToRefresh } from '../../components/PullToRefresh'
 
-export default function HistoryPage() {
+function HistoryPage() {
   const router = useRouter()
   const { user } = useAuth()
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'strength' | 'cardio'>('all')
@@ -105,9 +105,9 @@ export default function HistoryPage() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             Please log in to view your workout history
           </h1>
-        </div>
       </div>
-    )
+    </div>
+  )
   }
 
   return (
@@ -298,3 +298,5 @@ export default function HistoryPage() {
     </div>
   )
 }
+
+export default withAuth(HistoryPage)

@@ -93,7 +93,6 @@ export const SessionSchema = z.object({
   session_id: z.string().uuid(),
   tenant_id: z.string().uuid(),
   user_id: z.string().uuid(),
-  program_id: z.string().uuid().optional(),
   started_at: z.date(),
   completed_at: z.date().optional(),
   category: SessionCategory,
@@ -132,7 +131,6 @@ export const ProgramSchema = z.object({
 // API schemas for requests/responses
 export const CreateSessionRequest = z.object({
   category: SessionCategory,
-  program_id: z.string().uuid().optional(),
   notes: z.string().optional(),
   started_at: z.string().datetime().optional(), // ISO datetime string for custom workout date
 });

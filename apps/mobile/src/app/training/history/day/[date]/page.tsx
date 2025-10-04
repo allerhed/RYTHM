@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { EyeIcon, PencilIcon } from '@heroicons/react/24/outline'
 
 interface WorkoutSession {
@@ -41,7 +41,7 @@ function formatDuration(seconds: number | null) {
   return `${minutes}m`
 }
 
-export default function DayViewPage() {
+function DayViewPage() {
   const router = useRouter()
   const params = useParams()
   const { user, token } = useAuth()
@@ -396,4 +396,4 @@ export default function DayViewPage() {
   )
 }
 
-// Removed duplicate export
+export default withAuth(DayViewPage)
