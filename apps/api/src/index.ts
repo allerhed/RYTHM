@@ -519,13 +519,8 @@ app.use('/api/trpc', createExpressMiddleware({
   },
 }));
 
-// Catch-all route for API versioning
-app.all('/api/*', (req, res) => {
-  res.status(404).json({ 
-    error: 'API route not found',
-    availableRoutes: ['/api/trpc']
-  });
-});
+// Note: Catch-all route removed to prevent interfering with REST endpoints
+// 404 handling is done by Express automatically for unmatched routes
 
 // Error handling middleware
 app.use((err: any, req: any, res: any, next: any) => {
