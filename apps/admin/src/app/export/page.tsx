@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { AdminLayout } from '@/components/AdminLayout'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { apiClient } from '@/lib/api'
 
 interface ExportJob {
@@ -46,7 +46,7 @@ interface Tenant {
   created_at: string
 }
 
-export default function ExportPage() {
+function ExportPage() {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState<'export' | 'import' | 'backups'>('export')
   const [selectedTenant, setSelectedTenant] = useState<string>('')
@@ -1129,3 +1129,5 @@ export default function ExportPage() {
     </AdminLayout>
   )
 }
+
+export default withAuth(ExportPage)

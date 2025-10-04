@@ -7,6 +7,7 @@ import Link from 'next/link'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
@@ -18,7 +19,7 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      await login(email, password)
+      await login(email, password, keepLoggedIn)
       router.push('/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
@@ -121,13 +122,15 @@ export default function LoginPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
-                  id="remember-me"
-                  name="remember-me"
+                  id="keep-logged-in"
+                  name="keep-logged-in"
                   type="checkbox"
+                  checked={keepLoggedIn}
+                  onChange={(e) => setKeepLoggedIn(e.target.checked)}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 bg-gray-700 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-400">
-                  Remember me
+                <label htmlFor="keep-logged-in" className="ml-2 block text-sm text-gray-400">
+                  Keep me logged in (28 days)
                 </label>
               </div>
 

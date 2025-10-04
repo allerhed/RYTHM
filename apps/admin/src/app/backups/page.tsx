@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { AdminLayout } from '@/components/AdminLayout'
 
 interface Backup {
@@ -21,7 +21,7 @@ interface BackupSchedule {
   updated_at: string
 }
 
-export default function BackupsPage() {
+function BackupsPage() {
   const { user } = useAuth()
   const [backups, setBackups] = useState<Backup[]>([])
   const [schedule, setSchedule] = useState<BackupSchedule | null>(null)
@@ -504,3 +504,5 @@ export default function BackupsPage() {
     </AdminLayout>
   )
 }
+
+export default withAuth(BackupsPage)

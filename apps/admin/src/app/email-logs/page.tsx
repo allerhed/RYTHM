@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { AdminLayout } from '@/components/AdminLayout'
 
 interface EmailLog {
@@ -28,7 +28,7 @@ interface EmailLogDetails extends EmailLog {
   updated_at: string
 }
 
-export default function EmailLogsPage() {
+function EmailLogsPage() {
   const { user } = useAuth()
   const [emails, setEmails] = useState<EmailLog[]>([])
   const [selectedEmail, setSelectedEmail] = useState<EmailLogDetails | null>(null)
@@ -450,3 +450,5 @@ export default function EmailLogsPage() {
     </AdminLayout>
   )
 }
+
+export default withAuth(EmailLogsPage)

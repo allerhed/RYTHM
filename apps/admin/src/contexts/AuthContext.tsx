@@ -14,7 +14,7 @@ interface AdminUser {
 interface AuthContextType {
   user: AdminUser | null
   isLoading: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string, keepLoggedIn?: boolean) => Promise<void>
   logout: () => void
   isAuthenticated: boolean
 }
@@ -29,19 +29,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check for existing token on mount
     const token = localStorage.getItem('admin_token')
     const userData = localStorage.getItem('admin_user')
+    const tokenExpiry = localStorage.getItem('admin_token_expiry')
     
-    if (token && userData) {
+    if (token && userData && tokenExpiry) {
       try {
-        setUser(JSON.parse(userData))
+        const expiryDate = new Date(tokenExpiry)
+        const now = new Date()
+        
+        // Check if token has expired
+        if (now > expiryDate) {
+          // Token expired, clear storage
+          localStorage.removeItem('admin_token')
+          localStorage.removeItem('admin_user')
+          localStorage.removeItem('admin_token_expiry')
+        } else {
+          // Token still valid
+          setUser(JSON.parse(userData))
+        }
       } catch (error) {
         localStorage.removeItem('admin_token')
         localStorage.removeItem('admin_user')
+        localStorage.removeItem('admin_token_expiry')
       }
     }
     setIsLoading(false)
   }, [])
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, keepLoggedIn = false) => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.rythm.training'
       const response = await fetch(`${apiUrl}/api/auth/login`, {
@@ -59,9 +73,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await response.json()
       
-      // Store token and user data with consistent keys
+      // Calculate token expiry: 28 days if keepLoggedIn, otherwise 7 days
+      const expiryDays = keepLoggedIn ? 28 : 7
+      const expiryDate = new Date()
+      expiryDate.setDate(expiryDate.getDate() + expiryDays)
+      
+      // Store token, user data, and expiry with consistent keys
       localStorage.setItem('admin_token', data.token)
       localStorage.setItem('admin_user', JSON.stringify(data.user))
+      localStorage.setItem('admin_token_expiry', expiryDate.toISOString())
       setUser(data.user)
     } catch (error) {
       console.error('Login error:', error)
@@ -72,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     localStorage.removeItem('admin_token')
     localStorage.removeItem('admin_user')
+    localStorage.removeItem('admin_token_expiry')
     setUser(null)
   }
 

@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { AdminLayout } from '@/components/AdminLayout'
 import { StatsCard } from '@/components/StatsCard'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
@@ -403,7 +403,7 @@ function SortableExerciseItem({
   )
 }
 
-export default function AdminTemplatesPage() {
+function AdminTemplatesPage() {
   const { user } = useAuth()
   
   // State management
@@ -1561,3 +1561,4 @@ export default function AdminTemplatesPage() {
     </AdminLayout>
   )
 }
+export default withAuth(AdminTemplatesPage)

@@ -1,8 +1,9 @@
 'use client'
 import { useState } from 'react'
+import { withAuth } from '@/contexts/AuthContext'
 import { AdminLayout } from '@/components/AdminLayout'
 
-export default function SettingsPage() {
+function SettingsPage() {
   const [notifications, setNotifications] = useState(true)
   const [emailAlerts, setEmailAlerts] = useState(false)
   const [darkMode, setDarkMode] = useState(true)
@@ -202,3 +203,5 @@ export default function SettingsPage() {
     </AdminLayout>
   )
 }
+
+export default withAuth(SettingsPage)

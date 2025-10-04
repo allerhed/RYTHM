@@ -1,13 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { AdminLayout } from '@/components/AdminLayout'
 import { StatsCard } from '@/components/StatsCard'
 import { RecentActivity } from '@/components/RecentActivity'
 import { apiClient } from '@/lib/api'
 import type { AnalyticsDashboard, PerformanceMetrics, EquipmentStats, ExerciseTemplateStats, TenantAnalytics, WorkoutSessionStats } from '@/lib/api'
 
-export default function DashboardPage() {
+function DashboardPage() {
   const { user } = useAuth()
   const [dashboard, setDashboard] = useState<AnalyticsDashboard | null>(null)
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics | null>(null)
@@ -314,3 +314,5 @@ export default function DashboardPage() {
     </AdminLayout>
   )
 }
+
+export default withAuth(DashboardPage)
