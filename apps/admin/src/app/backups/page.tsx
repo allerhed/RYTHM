@@ -200,7 +200,12 @@ export default function BackupsPage() {
       setError(null)
 
       const token = localStorage.getItem('admin_token')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/backups/schedule/config`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      const url = `${apiUrl}/api/backups/schedule/config`
+      
+      console.log('🔄 Updating backup schedule:', { enabled, url })
+
+      const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -209,15 +214,19 @@ export default function BackupsPage() {
         body: JSON.stringify({ enabled }),
       })
 
+      console.log('📡 Response status:', response.status)
+
       if (!response.ok) {
         const errorData = await response.json()
+        console.error('❌ API error:', errorData)
         throw new Error(errorData.error || 'Failed to update backup schedule')
       }
 
       const data = await response.json()
+      console.log('✅ Schedule updated:', data.data)
       setSchedule(data.data)
     } catch (err) {
-      console.error('Update schedule error:', err)
+      console.error('❌ Update schedule error:', err)
       setError(err instanceof Error ? err.message : 'Failed to update backup schedule')
     } finally {
       setSavingSchedule(false)
