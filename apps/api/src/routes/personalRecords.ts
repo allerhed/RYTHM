@@ -74,7 +74,7 @@ export const personalRecordsRouter = router({
             pr.category,
             pr.current_value_numeric,
             pr.current_value_unit,
-            pr.current_date,
+            pr.current_achieved_date,
             pr.notes,
             pr.created_at,
             pr.updated_at,
@@ -96,7 +96,7 @@ export const personalRecordsRouter = router({
 
         query += `
           GROUP BY pr.pr_id, et.name
-          ORDER BY pr.current_date DESC
+          ORDER BY pr.current_achieved_date DESC
           LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}
         `;
 
@@ -112,7 +112,7 @@ export const personalRecordsRouter = router({
           category: row.category,
           currentValue: row.current_value_numeric,
           currentUnit: row.current_value_unit,
-          currentDate: row.current_date,
+          currentDate: row.current_achieved_date,
           notes: row.notes,
           recordCount: parseInt(row.record_count),
           createdAt: row.created_at,
@@ -152,7 +152,7 @@ export const personalRecordsRouter = router({
             pr.category,
             pr.current_value_numeric,
             pr.current_value_unit,
-            pr.current_date,
+            pr.current_achieved_date,
             pr.notes,
             pr.created_at,
             pr.updated_at
@@ -195,7 +195,7 @@ export const personalRecordsRouter = router({
           category: pr.category,
           currentValue: pr.current_value_numeric,
           currentUnit: pr.current_value_unit,
-          currentDate: pr.current_date,
+          currentDate: pr.current_achieved_date,
           notes: pr.notes,
           createdAt: pr.created_at,
           updatedAt: pr.updated_at,
@@ -238,7 +238,7 @@ export const personalRecordsRouter = router({
           const prResult = await client.query(
             `INSERT INTO personal_records (
               user_id, tenant_id, exercise_template_id, metric_name, category,
-              current_value_numeric, current_value_unit, current_date, notes
+              current_value_numeric, current_value_unit, current_achieved_date, notes
             )
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING pr_id`,
@@ -296,7 +296,7 @@ export const personalRecordsRouter = router({
         await db.transaction(async (client: any) => {
           // Verify PR exists and belongs to user
           const prCheck = await client.query(
-            `SELECT current_value_numeric, current_date
+            `SELECT current_value_numeric, current_achieved_date
              FROM personal_records
              WHERE pr_id = $1 AND user_id = $2 AND tenant_id = $3`,
             [input.prId, userId, tenantId]
@@ -319,7 +319,7 @@ export const personalRecordsRouter = router({
           );
 
           // Update current PR if this is the most recent date
-          const currentDate = new Date(prCheck.rows[0].current_date);
+          const currentDate = new Date(prCheck.rows[0].current_achieved_date);
           const newDate = new Date(input.achievedDate);
 
           if (newDate >= currentDate) {
@@ -327,7 +327,7 @@ export const personalRecordsRouter = router({
               `UPDATE personal_records
                SET current_value_numeric = $1,
                    current_value_unit = $2,
-                   current_date = $3
+                   current_achieved_date = $3
                WHERE pr_id = $4`,
               [input.valueNumeric, input.valueUnit, input.achievedDate, input.prId]
             );
@@ -468,11 +468,11 @@ export const personalRecordsRouter = router({
 
           // If this was the current record, update PR with the latest remaining record
           const prResult = await client.query(
-            `SELECT current_date FROM personal_records WHERE pr_id = $1`,
+            `SELECT current_achieved_date FROM personal_records WHERE pr_id = $1`,
             [pr_id]
           );
 
-          if (new Date(prResult.rows[0].current_date).getTime() === new Date(achieved_date).getTime()) {
+          if (new Date(prResult.rows[0].current_achieved_date).getTime() === new Date(achieved_date).getTime()) {
             const latestResult = await client.query(
               `SELECT value_numeric, value_unit, achieved_date
                FROM pr_history
@@ -488,7 +488,7 @@ export const personalRecordsRouter = router({
                 `UPDATE personal_records
                  SET current_value_numeric = $1,
                      current_value_unit = $2,
-                     current_date = $3
+                     current_achieved_date = $3
                  WHERE pr_id = $4`,
                 [latest.value_numeric, latest.value_unit, latest.achieved_date, pr_id]
               );

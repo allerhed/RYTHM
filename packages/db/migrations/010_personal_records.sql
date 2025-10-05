@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS personal_records (
     -- Current best value (denormalized for quick access)
     current_value_numeric DECIMAL(10,2), -- e.g., 150.00 kg, 29.05 minutes
     current_value_unit VARCHAR(20), -- e.g., 'kg', 'lbs', 'minutes', 'seconds'
-    current_date TIMESTAMPTZ NOT NULL,
+    current_achieved_date DATE NOT NULL,
     
     -- Metadata
     notes TEXT,
@@ -84,7 +84,7 @@ COMMENT ON TABLE pr_history IS 'Historical tracking of personal record progressi
 
 COMMENT ON COLUMN personal_records.metric_name IS 'Type of PR being tracked (e.g., 1RM, 5km, max reps)';
 COMMENT ON COLUMN personal_records.current_value_numeric IS 'Current best value for this PR';
-COMMENT ON COLUMN personal_records.current_date IS 'Date when current PR was achieved';
+COMMENT ON COLUMN personal_records.current_achieved_date IS 'Date when the current PR was achieved';
 
 COMMENT ON COLUMN pr_history.achieved_date IS 'When this specific record was achieved';
 COMMENT ON COLUMN pr_history.session_id IS 'Optional link to workout session where PR was achieved';

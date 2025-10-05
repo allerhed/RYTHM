@@ -1,259 +1,302 @@
-'use client';
+'use client'
 
-/**
- * Personal Records List Page
- * 
- * Features:
- * - List view of all personal records
- * - Filter by category (all, strength, cardio)
- * - Display exercise name, metric, current value/unit, date
- * - Category badge for visual identification
- * - Navigation to detail page
- * - Pull to refresh
- * - Pagination support
- */
+import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth, withAuth } from '@/contexts/AuthContext'
+import { trpc } from '../../lib/trpc'
+import { TrophyIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@heroicons/react/24/outline'
+import { PullToRefresh } from '../../components/PullToRefresh'
+import Link from 'next/link'
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { trpc } from '../../lib/trpc';
-import Link from 'next/link';
-import { PullToRefresh } from '../../components/PullToRefresh';
-import { Header } from '../../components/Navigation';
+function PersonalRecordsPage() {
+  const router = useRouter()
+  const { user } = useAuth()
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'strength' | 'cardio'>('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
 
-type CategoryFilter = 'all' | 'strength' | 'cardio';
+  // Calculate offset for pagination
+  const offset = (currentPage - 1) * pageSize
 
-export default function PersonalRecordsPage() {
-  const router = useRouter();
-  const [selectedFilter, setSelectedFilter] = useState<CategoryFilter>('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 20;
-
-  // Calculate offset based on current page
-  const offset = (currentPage - 1) * pageSize;
-
-  // Fetch PRs with filtering
-  const { data: prs, isLoading, error, refetch } = trpc.personalRecords.list.useQuery({
+  // Fetch user's PRs with pagination
+  const { data: prs = [], isLoading, error, refetch } = trpc.personalRecords.list.useQuery({
     category: selectedFilter === 'all' ? undefined : selectedFilter,
     offset,
-    limit: pageSize,
-  });
+    limit: pageSize
+  }, {
+    enabled: !!user,
+    retry: 2
+  })
+
+  // Pull-to-refresh handler
+  const handleRefresh = async () => {
+    await refetch()
+  }
+
+  // For now, use approximate count based on returned data
+  const totalCount = prs.length === pageSize ? (currentPage * pageSize) + 1 : (currentPage - 1) * pageSize + prs.length
+  const totalPages = totalCount ? Math.ceil(totalCount / pageSize) : 0
 
   // Reset to page 1 when filter changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedFilter]);
+  const handleFilterChange = (filter: 'all' | 'strength' | 'cardio') => {
+    setSelectedFilter(filter)
+    setCurrentPage(1)
+  }
 
-  const formatDate = (date: Date) => {
+  // Pagination handlers
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+    }
+  }
+
+  const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
+      weekday: 'short',
       year: 'numeric',
-    });
-  };
+      month: 'short',
+      day: 'numeric'
+    })
+  }
 
-  const getCategoryBadgeClass = (category: string) => {
+  const getCategoryColor = (category: string) => {
     switch (category) {
       case 'strength':
-        return 'bg-blue-500 text-white';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
       case 'cardio':
-        return 'bg-green-500 text-white';
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
       default:
-        return 'bg-gray-500 text-white';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
     }
-  };
+  }
 
-  const handleRefresh = async () => {
-    await refetch();
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((prev) => prev + 1);
-  };
-
-  const handlePreviousPage = () => {
-    setCurrentPage((prev) => Math.max(1, prev - 1));
-  };
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+            Please log in to view your personal records
+          </h1>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header title="Personal Records - PR's" />
-
-      <div className="pt-16 pb-20">
-        <PullToRefresh onRefresh={handleRefresh}>
-          {/* Filter buttons */}
-          <div className="bg-white border-b border-gray-200 px-4 py-3 sticky top-16 z-10">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setSelectedFilter('all')}
-                className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  selectedFilter === 'all'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setSelectedFilter('strength')}
-                className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  selectedFilter === 'strength'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Strength
-              </button>
-              <button
-                onClick={() => setSelectedFilter('cardio')}
-                className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  selectedFilter === 'cardio'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Cardio
-              </button>
-            </div>
-          </div>
-
-          {/* Add PR button */}
-          <div className="px-4 py-3 bg-white border-b border-gray-200">
-            <Link href="/prs/new">
-              <button className="w-full bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
-                + Add Personal Record
-              </button>
-            </Link>
-          </div>
-
-          {/* Loading state */}
-          {isLoading && (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-            </div>
-          )}
-
-          {/* Error state */}
-          {error && (
-            <div className="mx-4 mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-800 font-medium">Error loading personal records</p>
-              <p className="text-red-600 text-sm mt-1">{error.message}</p>
-            </div>
-          )}
-
-          {/* Empty state */}
-          {!isLoading && !error && prs && prs.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 px-4">
-              <div className="text-gray-400 mb-4">
-                <svg
-                  className="w-16 h-16"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                  Personal Records - PR's
+                </h1>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  Track your personal bests and achievements
+                </p>
               </div>
-              <p className="text-gray-600 font-medium mb-1">No personal records yet</p>
-              <p className="text-gray-500 text-sm text-center mb-4">
-                Start tracking your progress by adding your first PR
-              </p>
               <Link href="/prs/new">
-                <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
-                  Add Your First PR
+                <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  <PlusIcon className="h-5 w-5 mr-2" />
+                  Add PR
                 </button>
               </Link>
             </div>
+
+            {/* Filter Tabs */}
+            <div className="mt-6">
+              <nav className="flex space-x-8">
+                {[
+                  { key: 'all', label: 'All Records' },
+                  { key: 'strength', label: 'Strength' },
+                  { key: 'cardio', label: 'Cardio' }
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => handleFilterChange(tab.key as any)}
+                    className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      selectedFilter === tab.key
+                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <PullToRefresh onRefresh={handleRefresh}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
           )}
 
-          {/* PR list */}
-          {!isLoading && !error && prs && prs.length > 0 && (
-            <div className="divide-y divide-gray-200">
+          {/* Error State */}
+          {error && (
+            <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+                    Error loading personal records
+                  </h3>
+                  <p className="mt-2 text-sm text-red-700 dark:text-red-300">
+                    {error.message}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!isLoading && !error && prs.length === 0 && (
+            <div className="text-center py-12">
+              <TrophyIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                No personal records
+              </h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Get started by adding your first PR
+              </p>
+              <div className="mt-6">
+                <Link href="/prs/new">
+                  <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <PlusIcon className="h-5 w-5 mr-2" />
+                    Add Personal Record
+                  </button>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* PR List */}
+          {!isLoading && !error && prs.length > 0 && (
+            <div className="space-y-4">
               {prs.map((pr) => (
                 <Link key={pr.prId} href={`/prs/${pr.prId}`}>
-                  <div className="bg-white px-4 py-4 hover:bg-gray-50 transition-colors cursor-pointer">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900">{pr.exerciseName}</h3>
-                        <p className="text-sm text-gray-600 mt-0.5">{pr.metricName}</p>
-                      </div>
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${getCategoryBadgeClass(
-                          pr.category
-                        )}`}
-                      >
-                        {pr.category}
-                      </span>
-                    </div>
-
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <p className="text-2xl font-bold text-indigo-600">
-                          {pr.currentValue} {pr.currentUnit}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {formatDate(pr.currentDate)}
-                        </p>
-                      </div>
-
-                      {pr.recordCount > 1 && (
-                        <div className="text-right">
-                          <p className="text-sm text-gray-600">
-                            {pr.recordCount} records
+                  <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer">
+                    <div className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-3">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
+                              {pr.exerciseName}
+                            </h3>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(pr.category)}`}>
+                              {pr.category}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            {pr.metricName}
                           </p>
                         </div>
+                      </div>
+                      
+                      <div className="mt-4 flex items-end justify-between">
+                        <div>
+                          <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                            {pr.currentValue} {pr.currentUnit}
+                          </div>
+                          <div className="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <span>{formatDate(pr.currentDate)}</span>
+                            {pr.recordCount > 1 && (
+                              <span className="ml-4">
+                                {pr.recordCount} records
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {pr.notes && (
+                        <p className="mt-3 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                          {pr.notes}
+                        </p>
                       )}
                     </div>
-
-                    {pr.notes && (
-                      <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                        {pr.notes}
-                      </p>
-                    )}
                   </div>
                 </Link>
               ))}
             </div>
           )}
 
-          {/* Pagination controls */}
-          {!isLoading && !error && prs && prs.length > 0 && (
-            <div className="bg-white border-t border-gray-200 px-4 py-4 flex items-center justify-between">
-              <button
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  currentPage === 1
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Previous
-              </button>
-
-              <span className="text-sm text-gray-600">
-                Page {currentPage}
-              </span>
-
-              <button
-                onClick={handleNextPage}
-                disabled={prs.length < pageSize}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  prs.length < pageSize
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Next
-              </button>
+          {/* Pagination */}
+          {!isLoading && !error && prs.length > 0 && (
+            <div className="mt-8 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-6">
+              <div className="flex-1 flex justify-between sm:hidden">
+                <button
+                  onClick={goToPrevPage}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={goToNextPage}
+                  disabled={prs.length < pageSize}
+                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    Page <span className="font-medium">{currentPage}</span>
+                    {totalPages > 0 && (
+                      <>
+                        {' '}of <span className="font-medium">{totalPages}</span>
+                      </>
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <button
+                      onClick={goToPrevPage}
+                      disabled={currentPage === 1}
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span className="sr-only">Previous</span>
+                      <ChevronLeftIcon className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={goToNextPage}
+                      disabled={prs.length < pageSize}
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span className="sr-only">Next</span>
+                      <ChevronRightIcon className="h-5 w-5" />
+                    </button>
+                  </nav>
+                </div>
+              </div>
             </div>
           )}
-        </PullToRefresh>
-      </div>
+        </div>
+      </PullToRefresh>
     </div>
-  );
+  )
 }
+
+export default withAuth(PersonalRecordsPage)
