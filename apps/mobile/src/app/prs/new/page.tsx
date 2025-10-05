@@ -46,7 +46,7 @@ export default function NewPRPage() {
   });
 
   const selectedExercise = exercises?.find(
-    (ex) => ex.templateId === templateId
+    (ex) => ex.template_id === templateId
   );
 
   const filteredExercises = exercises?.filter((ex) =>
@@ -93,10 +93,10 @@ export default function NewPRPage() {
     setExerciseSearch('');
 
     // Auto-set category based on exercise
-    const exercise = exercises?.find((ex) => ex.templateId === exerciseId);
-    if (exercise?.exerciseCategory === 'strength') {
+    const exercise = exercises?.find((ex) => ex.template_id === exerciseId);
+    if (exercise?.exercise_category === 'strength') {
       setCategory('strength');
-    } else if (exercise?.exerciseCategory === 'cardio') {
+    } else if (exercise?.exercise_category === 'cardio') {
       setCategory('cardio');
     }
   };
@@ -146,14 +146,14 @@ export default function NewPRPage() {
                   ) : filteredExercises && filteredExercises.length > 0 ? (
                     filteredExercises.map((ex) => (
                       <button
-                        key={ex.templateId}
+                        key={ex.template_id}
                         type="button"
-                        onClick={() => handleExerciseSelect(ex.templateId)}
+                        onClick={() => handleExerciseSelect(ex.template_id)}
                         className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                       >
                         <div className="font-medium text-gray-900">{ex.name}</div>
                         <div className="text-sm text-gray-500 capitalize">
-                          {ex.exerciseCategory}
+                          {ex.exercise_category}
                         </div>
                       </button>
                     ))
