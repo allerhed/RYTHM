@@ -20,7 +20,7 @@ import { TRPCError } from '@trpc/server';
 const prCategorySchema = z.enum(['strength', 'cardio']);
 
 const createPRSchema = z.object({
-  exerciseTemplateId: z.string().uuid(),
+  templateId: z.string().uuid(),
   metricName: z.string().min(1).max(100),
   category: prCategorySchema,
   valueNumeric: z.number().positive(),
@@ -68,7 +68,7 @@ export const personalRecordsRouter = router({
         let query = `
           SELECT 
             pr.pr_id,
-            pr.exercise_template_id,
+            pr.template_id,
             et.name as exercise_name,
             pr.metric_name,
             pr.category,
@@ -80,7 +80,7 @@ export const personalRecordsRouter = router({
             pr.updated_at,
             COUNT(ph.history_id) as record_count
           FROM personal_records pr
-          JOIN exercise_templates et ON pr.exercise_template_id = et.exercise_template_id
+          JOIN exercise_templates et ON pr.template_id = et.template_id
           LEFT JOIN pr_history ph ON pr.pr_id = ph.pr_id
           WHERE pr.user_id = $1 AND pr.tenant_id = $2
         `;
@@ -106,7 +106,7 @@ export const personalRecordsRouter = router({
 
         return result.rows.map(row => ({
           prId: row.pr_id,
-          exerciseTemplateId: row.exercise_template_id,
+          templateId: row.template_id,
           exerciseName: row.exercise_name,
           metricName: row.metric_name,
           category: row.category,
@@ -146,7 +146,7 @@ export const personalRecordsRouter = router({
         const prResult = await db.query(
           `SELECT 
             pr.pr_id,
-            pr.exercise_template_id,
+            pr.template_id,
             et.name as exercise_name,
             pr.metric_name,
             pr.category,
@@ -157,7 +157,7 @@ export const personalRecordsRouter = router({
             pr.created_at,
             pr.updated_at
           FROM personal_records pr
-          JOIN exercise_templates et ON pr.exercise_template_id = et.exercise_template_id
+          JOIN exercise_templates et ON pr.template_id = et.template_id
           WHERE pr.pr_id = $1 AND pr.user_id = $2 AND pr.tenant_id = $3`,
           [prId, userId, tenantId]
         );
@@ -189,7 +189,7 @@ export const personalRecordsRouter = router({
 
         return {
           prId: pr.pr_id,
-          exerciseTemplateId: pr.exercise_template_id,
+          templateId: pr.template_id,
           exerciseName: pr.exercise_name,
           metricName: pr.metric_name,
           category: pr.category,
@@ -237,7 +237,7 @@ export const personalRecordsRouter = router({
           // Create PR
           const prResult = await client.query(
             `INSERT INTO personal_records (
-              user_id, tenant_id, exercise_template_id, metric_name, category,
+              user_id, tenant_id, template_id, metric_name, category,
               current_value_numeric, current_value_unit, current_achieved_date, notes
             )
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -245,7 +245,7 @@ export const personalRecordsRouter = router({
             [
               userId,
               tenantId,
-              input.exerciseTemplateId,
+              input.templateId,
               input.metricName,
               input.category,
               input.valueNumeric,

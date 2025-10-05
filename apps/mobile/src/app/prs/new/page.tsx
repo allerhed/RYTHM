@@ -19,7 +19,7 @@ import { Header } from '../../../components/Navigation';
 
 export default function NewPRPage() {
   const router = useRouter();
-  const [exerciseTemplateId, setExerciseTemplateId] = useState('');
+  const [templateId, setExerciseTemplateId] = useState('');
   const [metricName, setMetricName] = useState('');
   const [category, setCategory] = useState<'strength' | 'cardio'>('strength');
   const [valueNumeric, setValueNumeric] = useState('');
@@ -46,7 +46,7 @@ export default function NewPRPage() {
   });
 
   const selectedExercise = exercises?.find(
-    (ex) => ex.exerciseTemplateId === exerciseTemplateId
+    (ex) => ex.templateId === templateId
   );
 
   const filteredExercises = exercises?.filter((ex) =>
@@ -56,7 +56,7 @@ export default function NewPRPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!exerciseTemplateId) {
+    if (!templateId) {
       alert('Please select an exercise');
       return;
     }
@@ -77,7 +77,7 @@ export default function NewPRPage() {
     }
 
     createPR.mutate({
-      exerciseTemplateId,
+      templateId,
       metricName: metricName.trim(),
       category,
       valueNumeric: parseFloat(valueNumeric),
@@ -93,7 +93,7 @@ export default function NewPRPage() {
     setExerciseSearch('');
 
     // Auto-set category based on exercise
-    const exercise = exercises?.find((ex) => ex.exerciseTemplateId === exerciseId);
+    const exercise = exercises?.find((ex) => ex.templateId === exerciseId);
     if (exercise?.exerciseCategory === 'strength') {
       setCategory('strength');
     } else if (exercise?.exerciseCategory === 'cardio') {
@@ -146,9 +146,9 @@ export default function NewPRPage() {
                   ) : filteredExercises && filteredExercises.length > 0 ? (
                     filteredExercises.map((ex) => (
                       <button
-                        key={ex.exerciseTemplateId}
+                        key={ex.templateId}
                         type="button"
-                        onClick={() => handleExerciseSelect(ex.exerciseTemplateId)}
+                        onClick={() => handleExerciseSelect(ex.templateId)}
                         className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                       >
                         <div className="font-medium text-gray-900">{ex.name}</div>

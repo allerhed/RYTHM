@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS personal_records (
     pr_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     tenant_id UUID NOT NULL REFERENCES tenants(tenant_id) ON DELETE CASCADE,
-    exercise_template_id UUID NOT NULL REFERENCES exercise_templates(exercise_template_id) ON DELETE CASCADE,
+    template_id UUID NOT NULL REFERENCES exercise_templates(template_id) ON DELETE CASCADE,
     
     -- PR identification
     metric_name VARCHAR(100) NOT NULL, -- e.g., '1RM', '3RM', '1km', '5km', 'max reps'
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS pr_history (
 -- Indexes for performance
 CREATE INDEX idx_personal_records_user ON personal_records(user_id);
 CREATE INDEX idx_personal_records_tenant ON personal_records(tenant_id);
-CREATE INDEX idx_personal_records_exercise ON personal_records(exercise_template_id);
+CREATE INDEX idx_personal_records_exercise ON personal_records(template_id);
 CREATE INDEX idx_personal_records_category ON personal_records(category);
 CREATE INDEX idx_personal_records_user_category ON personal_records(user_id, category);
 
