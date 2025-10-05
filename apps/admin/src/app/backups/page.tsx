@@ -9,6 +9,10 @@ interface Backup {
   size: number
   createdAt: string
   url: string
+  type?: 'manual' | 'scheduled' | 'unknown'
+  status?: 'started' | 'completed' | 'failed'
+  duration_seconds?: number
+  initiated_by?: string
 }
 
 interface BackupSchedule {
@@ -252,6 +256,16 @@ function BackupsPage() {
     })
   }
 
+  const isBackupToday = (dateString: string) => {
+    const backupDate = new Date(dateString)
+    const today = new Date()
+    return (
+      backupDate.getUTCFullYear() === today.getUTCFullYear() &&
+      backupDate.getUTCMonth() === today.getUTCMonth() &&
+      backupDate.getUTCDate() === today.getUTCDate()
+    )
+  }
+
   if (!user || user.role !== 'system_admin') {
     return (
       <AdminLayout>
@@ -332,6 +346,43 @@ function BackupsPage() {
                 />
               </button>
             </div>
+
+            {/* Last Backup Status - Prominent Display */}
+            {schedule.last_run_at && (
+              <div className={`mb-4 rounded-xl p-4 border ${
+                isBackupToday(schedule.last_run_at)
+                  ? 'bg-green-900/20 border-green-500/30'
+                  : 'bg-yellow-900/20 border-yellow-500/30'
+              }`}>
+                <div className="flex items-center space-x-3">
+                  {isBackupToday(schedule.last_run_at) ? (
+                    <>
+                      <svg className="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div>
+                        <p className="text-green-400 font-semibold">✅ Today's automated backup completed successfully</p>
+                        <p className="text-green-300 text-sm mt-1">
+                          Last backup: {formatDate(schedule.last_run_at)}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-6 h-6 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <div>
+                        <p className="text-yellow-400 font-semibold">⚠️ No backup has run today yet</p>
+                        <p className="text-yellow-300 text-sm mt-1">
+                          Last backup: {formatDate(schedule.last_run_at)}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
@@ -422,8 +473,11 @@ function BackupsPage() {
                 <thead className="bg-gray-900/50 border-b border-gray-700">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Backup Name</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Type</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Size</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Duration</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Created</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-400">Initiated By</th>
                     <th className="px-6 py-4 text-right text-sm font-medium text-gray-400">Actions</th>
                   </tr>
                 </thead>
@@ -438,8 +492,35 @@ function BackupsPage() {
                           <span className="text-white font-mono text-sm">{backup.name}</span>
                         </div>
                       </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          backup.type === 'scheduled' 
+                            ? 'bg-blue-900/50 text-blue-400 border border-blue-500/30'
+                            : backup.type === 'manual'
+                            ? 'bg-purple-900/50 text-purple-400 border border-purple-500/30'
+                            : 'bg-gray-700 text-gray-400'
+                        }`}>
+                          {backup.type === 'scheduled' && (
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          )}
+                          {backup.type === 'manual' && (
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          )}
+                          {backup.type || 'unknown'}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 text-gray-300">{formatBytes(backup.size)}</td>
+                      <td className="px-6 py-4 text-gray-300">
+                        {backup.duration_seconds ? `${backup.duration_seconds}s` : '-'}
+                      </td>
                       <td className="px-6 py-4 text-gray-300">{formatDate(backup.createdAt)}</td>
+                      <td className="px-6 py-4 text-gray-300 text-sm">
+                        {backup.initiated_by || (backup.type === 'scheduled' ? 'System' : '-')}
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end space-x-2">
                           <button

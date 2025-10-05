@@ -27,7 +27,8 @@ router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Resp
   
   try {
     console.log('Creating database backup...');
-    backup = await backupService.createBackup();
+    const userId = (req as any).user?.userId;
+    backup = await backupService.createBackup({ userId, type: 'manual' });
     const duration = Date.now() - startTime;
     
     // Send success notification email (don't block response)
@@ -70,19 +71,58 @@ router.post('/', authenticateToken, requireAdmin, async (req: Request, res: Resp
 
 /**
  * GET /api/backups
- * List all available backups
+ * List all available backups with history information
  */
 router.get('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
+    // Fetch backups from blob storage
     const backups = await backupService.listBackups();
     
-    // Map to frontend format (name instead of filename for consistency)
-    const formattedBackups = backups.map(backup => ({
-      name: backup.filename,
-      size: backup.size,
-      createdAt: backup.timestamp.toISOString(),
-      url: `/api/backups/${backup.filename}/download`,
-    }));
+    // Fetch backup history
+    const historyResult = await db.query(`
+      SELECT 
+        bh.backup_filename,
+        bh.backup_type,
+        bh.status,
+        bh.file_size_bytes,
+        bh.duration_seconds,
+        bh.error_message,
+        bh.started_at,
+        bh.completed_at,
+        u.email as initiated_by_email
+      FROM backup_history bh
+      LEFT JOIN users u ON bh.initiated_by_user_id = u.user_id
+      ORDER BY bh.started_at DESC
+    `);
+
+    // Create a map of history by filename
+    const historyMap = new Map();
+    for (const row of historyResult.rows) {
+      historyMap.set(row.backup_filename, {
+        type: row.backup_type,
+        status: row.status,
+        duration_seconds: row.duration_seconds,
+        error_message: row.error_message,
+        started_at: row.started_at,
+        completed_at: row.completed_at,
+        initiated_by: row.initiated_by_email,
+      });
+    }
+    
+    // Map to frontend format with history information
+    const formattedBackups = backups.map(backup => {
+      const history = historyMap.get(backup.filename);
+      return {
+        name: backup.filename,
+        size: backup.size,
+        createdAt: backup.timestamp.toISOString(),
+        url: `/api/backups/${backup.filename}/download`,
+        type: history?.type || 'unknown',
+        status: history?.status || 'completed',
+        duration_seconds: history?.duration_seconds,
+        initiated_by: history?.initiated_by,
+      };
+    });
     
     res.json({
       success: true,

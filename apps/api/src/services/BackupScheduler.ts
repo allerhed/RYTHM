@@ -134,7 +134,7 @@ class BackupScheduler {
       console.log('📦 Creating scheduled database backup...');
 
       // Create the backup
-      const backup = await backupService.createBackup();
+      const backup = await backupService.createBackup({ type: 'scheduled' });
 
       // Calculate next run time (24 hours from now)
       const nextRun = new Date();

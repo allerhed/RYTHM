@@ -17,6 +17,7 @@ import { BlobServiceClient, ContainerClient } from '@azure/storage-blob';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { db } from '@rythm/db';
 
 const execAsync = promisify(exec);
 
@@ -60,12 +61,23 @@ export class BackupService {
   /**
    * Create a new database backup
    */
-  async createBackup(): Promise<BackupMetadata> {
+  async createBackup(options?: { userId?: string; type?: 'manual' | 'scheduled' }): Promise<BackupMetadata> {
     const timestamp = new Date();
     const filename = `rythm-backup-${timestamp.toISOString().replace(/[:.]/g, '-')}.sql`;
     const tempFilePath = path.join(this.tempDir, filename);
+    const startTime = Date.now();
+    let historyId: string | null = null;
 
     try {
+      // Log backup start to history
+      const historyResult = await db.query(
+        `INSERT INTO backup_history (backup_filename, backup_type, status, initiated_by_user_id, started_at)
+         VALUES ($1, $2, 'started', $3, NOW())
+         RETURNING history_id`,
+        [filename, options?.type || 'manual', options?.userId || null]
+      );
+      historyId = historyResult.rows[0].history_id;
+
       // Get database connection details
       const dbConfig = this.getDatabaseConfig();
 
@@ -92,6 +104,18 @@ export class BackupService {
       // Clean up old backups
       await this.cleanupOldBackups();
 
+      const duration = Math.round((Date.now() - startTime) / 1000);
+
+      // Update history with success
+      if (historyId) {
+        await db.query(
+          `UPDATE backup_history 
+           SET status = 'completed', file_size_bytes = $1, duration_seconds = $2, completed_at = NOW()
+           WHERE history_id = $3`,
+          [fileSizeInBytes, duration, historyId]
+        );
+      }
+
       return {
         filename,
         timestamp,
@@ -105,6 +129,18 @@ export class BackupService {
       // Clean up temp file if it exists
       if (fs.existsSync(tempFilePath)) {
         fs.unlinkSync(tempFilePath);
+      }
+
+      const duration = Math.round((Date.now() - startTime) / 1000);
+
+      // Update history with failure
+      if (historyId) {
+        await db.query(
+          `UPDATE backup_history 
+           SET status = 'failed', duration_seconds = $1, error_message = $2, completed_at = NOW()
+           WHERE history_id = $3`,
+          [duration, error instanceof Error ? error.message : 'Unknown error', historyId]
+        );
       }
 
       throw new Error(`Backup failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
