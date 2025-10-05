@@ -94,21 +94,13 @@ function PersonalRecordsPage() {
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                  Personal Records - PR's
-                </h1>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  Track your personal bests and achievements
-                </p>
-              </div>
-              <Link href="/prs/new">
-                <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  <PlusIcon className="h-5 w-5 mr-2" />
-                  Add PR
-                </button>
-              </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                Personal Records - PR's
+              </h1>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Track your personal bests and achievements
+              </p>
             </div>
 
             {/* Filter Tabs */}
@@ -293,6 +285,16 @@ function PersonalRecordsPage() {
               </div>
             </div>
           )}
+
+          {/* Add PR Button - Fixed at bottom */}
+          <div className="mt-8">
+            <Link href="/prs/new">
+              <button className="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                <PlusIcon className="h-5 w-5 mr-2" />
+                Add Personal Record
+              </button>
+            </Link>
+          </div>
         </div>
       </PullToRefresh>
     </div>
