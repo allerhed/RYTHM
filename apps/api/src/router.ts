@@ -8,6 +8,7 @@ import { adminRouter } from './routes/admin';
 import { exerciseTemplatesRouter } from './routes/exerciseTemplates';
 import { workoutTemplatesRouter } from './routes/workoutTemplates';
 import { equipmentRouter } from './routes/equipment';
+import { personalRecordsRouter } from './routes/personalRecords';
 
 export const appRouter = router({
   authentication: authRouter,
@@ -21,6 +22,7 @@ export const appRouter = router({
   workoutTemplates: workoutTemplatesRouter,
   gymEquipment: equipmentRouter,
   equipment: equipmentRouter, // Add equipment mapping for mobile UI compatibility
+  personalRecords: personalRecordsRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -14,7 +14,8 @@ import {
   Bars3Icon,
   CalendarIcon,
   ClipboardDocumentIcon,
-  PlusCircleIcon
+  PlusCircleIcon,
+  TrophyIcon
 } from '@heroicons/react/24/outline'
 
 interface NavigationItem {
@@ -42,6 +43,12 @@ const navigationItems: NavigationItem[] = [
     href: '/calendar',
     icon: CalendarIcon,
     description: 'Training calendar and schedule'
+  },
+  {
+    name: "Personal Records - PR's",
+    href: '/prs',
+    icon: TrophyIcon,
+    description: 'Track your personal records'
   },
   {
     name: 'Templates',
