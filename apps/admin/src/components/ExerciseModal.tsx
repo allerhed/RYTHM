@@ -78,7 +78,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
         name: exerciseTemplate.name,
         muscle_groups: exerciseTemplate.muscle_groups,
         equipment: exerciseTemplate.equipment || '',
-        equipment_id: '', // Will be populated based on equipment lookup
+        equipment_id: exerciseTemplate.equipment_id || '',
         exercise_category: exerciseTemplate.exercise_category,
         exercise_type: exerciseTemplate.exercise_type,
         default_value_1_type: exerciseTemplate.default_value_1_type,

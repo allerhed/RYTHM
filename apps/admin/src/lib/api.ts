@@ -58,6 +58,7 @@ interface ExerciseTemplate {
   name: string
   muscle_groups: string[]
   equipment?: string
+  equipment_id?: string
   exercise_category: string
   exercise_type: 'STRENGTH' | 'CARDIO'
   default_value_1_type: string

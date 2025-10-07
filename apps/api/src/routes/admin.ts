@@ -528,7 +528,9 @@ export const adminRouter = router({
       instructions: z.string().optional(),
     }))
     .mutation(async ({ input }) => {
+      console.log('🔧 updateExerciseTemplate called with input:', JSON.stringify(input, null, 2));
       const { template_id, ...updateData } = input;
+      console.log('📝 Update data:', JSON.stringify(updateData, null, 2));
 
       // If name is being updated, check for conflicts
       if (updateData.name) {
