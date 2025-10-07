@@ -472,7 +472,7 @@ class ApiClient {
     const response = await fetch(`${this.baseUrl}/api/trpc/users.createUser`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify(userData),
+      body: JSON.stringify({ json: userData }),
     })
     
     const result = await this.handleResponse(response)
@@ -483,7 +483,7 @@ class ApiClient {
     const response = await fetch(`${this.baseUrl}/api/trpc/users.updateUser`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify({ id, ...userData }),
+      body: JSON.stringify({ json: { id, ...userData } }),
     })
     
     const result = await this.handleResponse(response)
@@ -494,7 +494,7 @@ class ApiClient {
     const response = await fetch(`${this.baseUrl}/api/trpc/users.deleteUser`, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ json: { id } }),
     })
     
     const result = await this.handleResponse(response)
@@ -535,7 +535,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.createTenant`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(organizationData),
+        body: JSON.stringify({ json: organizationData }),
       })
       
       const result = await this.handleResponse(response)
@@ -546,7 +546,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.updateTenant`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(organizationData),
+        body: JSON.stringify({ json: organizationData }),
       })
       
       const result = await this.handleResponse(response)
@@ -557,7 +557,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.deleteTenant`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify({ tenant_id }),
+        body: JSON.stringify({ json: { tenant_id } }),
       })
       
       const result = await this.handleResponse(response)
@@ -598,7 +598,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.createExerciseTemplate`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(exerciseTemplateData),
+        body: JSON.stringify({ json: exerciseTemplateData }),
       })
       
       const result = await this.handleResponse(response)
@@ -609,7 +609,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.updateExerciseTemplate`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(exerciseTemplateData),
+        body: JSON.stringify({ json: exerciseTemplateData }),
       })
       
       const result = await this.handleResponse(response)
@@ -620,7 +620,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.deleteExerciseTemplate`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(params),
+        body: JSON.stringify({ json: params }),
       })
       
       const result = await this.handleResponse(response)
@@ -706,7 +706,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/workoutTemplates.create`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(data),
+        body: JSON.stringify({ json: data }),
       })
       
       const result = await this.handleResponse(response)
@@ -717,7 +717,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/workoutTemplates.update`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(data),
+        body: JSON.stringify({ json: data }),
       })
       
       const result = await this.handleResponse(response)
@@ -728,7 +728,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/workoutTemplates.delete`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify({ templateId }),
+        body: JSON.stringify({ json: { templateId } }),
       })
       
       const result = await this.handleResponse(response)
@@ -790,7 +790,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.createEquipment`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(equipmentData),
+        body: JSON.stringify({ json: equipmentData }),
       })
       
       const result = await this.handleResponse(response)
@@ -801,7 +801,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.updateEquipment`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(equipmentData),
+        body: JSON.stringify({ json: equipmentData }),
       })
       
       const result = await this.handleResponse(response)
@@ -812,7 +812,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.deleteEquipment`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify({ equipment_id }),
+        body: JSON.stringify({ json: { equipment_id } }),
       })
       
       const result = await this.handleResponse(response)
@@ -833,7 +833,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.exportTenant`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(params),
+        body: JSON.stringify({ json: params }),
       })
       
       const result = await this.handleResponse(response)
@@ -846,7 +846,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.exportGlobalData`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(params),
+        body: JSON.stringify({ json: params }),
       })
       
       const result = await this.handleResponse(response)
@@ -861,7 +861,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.exportAll`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(params),
+        body: JSON.stringify({ json: params }),
       })
       
       const result = await this.handleResponse(response)
@@ -878,7 +878,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.importTenant`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(params),
+        body: JSON.stringify({ json: params }),
       })
       
       const result = await this.handleResponse(response)
@@ -895,7 +895,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.importGlobalData`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(params),
+        body: JSON.stringify({ json: params }),
       })
       
       const result = await this.handleResponse(response)
@@ -930,7 +930,7 @@ class ApiClient {
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.restoreFromBackup`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(params),
+        body: JSON.stringify({ json: params }),
       })
       
       const result = await this.handleResponse(response)
