@@ -40,3 +40,4 @@ logs
 *.db
 *.sqlite
 logs/
+*.tsbuildinfo
