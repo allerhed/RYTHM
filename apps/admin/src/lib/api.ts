@@ -440,7 +440,32 @@ class ApiClient {
   private async handleResponse(response: Response) {
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Unknown error' }))
-      throw new Error(error.message || `HTTP ${response.status}`)
+      
+      // Extract tRPC error details including Zod validation errors
+      let errorMessage = `HTTP ${response.status}`
+      
+      if (error.error?.message) {
+        errorMessage = error.error.message
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      // Include Zod validation errors if present
+      if (error.error?.data?.zodError) {
+        const zodError = error.error.data.zodError
+        console.error('Zod validation error:', zodError)
+        
+        // Format field errors for display
+        if (zodError.fieldErrors) {
+          const fieldErrors = Object.entries(zodError.fieldErrors)
+            .map(([field, errors]) => `${field}: ${(errors as string[]).join(', ')}`)
+            .join('; ')
+          errorMessage += ` - Validation errors: ${fieldErrors}`
+        }
+      }
+      
+      console.error('API Error Response:', error)
+      throw new Error(errorMessage)
     }
     return response.json()
   }

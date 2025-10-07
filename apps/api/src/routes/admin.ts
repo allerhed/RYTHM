@@ -519,7 +519,7 @@ export const adminRouter = router({
       name: z.string().optional(),
       muscle_groups: z.array(z.string()).optional(),
       equipment: z.string().optional(),
-      equipment_id: z.string().optional(),
+      equipment_id: z.string().optional().nullable(),
       exercise_category: z.string().optional(),
       exercise_type: z.enum(['STRENGTH', 'CARDIO']).optional(),
       default_value_1_type: z.string().optional(),
@@ -548,7 +548,8 @@ export const adminRouter = router({
       const params: any[] = [template_id];
 
       Object.entries(updateData).forEach(([key, value]) => {
-        if (value !== undefined) {
+        // Skip undefined values and empty strings for optional fields
+        if (value !== undefined && value !== '') {
           params.push(value);
           setClauses.push(`${key} = $${params.length}`);
         }
