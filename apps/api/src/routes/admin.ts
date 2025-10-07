@@ -519,6 +519,7 @@ export const adminRouter = router({
       name: z.string().optional(),
       muscle_groups: z.array(z.string()).optional(),
       equipment: z.string().optional(),
+      equipment_id: z.string().optional(),
       exercise_category: z.string().optional(),
       exercise_type: z.enum(['STRENGTH', 'CARDIO']).optional(),
       default_value_1_type: z.string().optional(),
