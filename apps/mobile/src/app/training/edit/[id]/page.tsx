@@ -123,8 +123,6 @@ function EditWorkoutPage() {
   const [activityType, setActivityType] = useState<'strength' | 'cardio' | 'hybrid'>('strength')
   const [workoutDate, setWorkoutDate] = useState(new Date())
   const [duration, setDuration] = useState('1:00:00')
-  const [showDatePicker, setShowDatePicker] = useState(false)
-  const [showTimePicker, setShowTimePicker] = useState(false)
 
   // Exercise library states
   const [templates, setTemplates] = useState<ExerciseTemplate[]>([])
@@ -633,23 +631,24 @@ function EditWorkoutPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Date
                 </label>
-                <button
-                  onClick={() => setShowDatePicker(true)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-left bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  {workoutDate.toLocaleDateString('sv-SE')}
-                </button>
+                <input
+                  type="date"
+                  value={workoutDate.toISOString().split('T')[0]}
+                  onChange={(e) => setWorkoutDate(new Date(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-lime-500 focus:border-transparent"
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Duration
                 </label>
-                <button
-                  onClick={() => setShowTimePicker(true)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-left bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  {duration}
-                </button>
+                <input
+                  type="time"
+                  value={duration.substring(0, 5)}
+                  onChange={(e) => setDuration(e.target.value + ':00')}
+                  step="60"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-lime-500 focus:border-transparent"
+                />
               </div>
             </div>
           </div>
@@ -774,25 +773,7 @@ function EditWorkoutPage() {
         />
       )}
 
-      {/* Date Picker Modal */}
-      {showDatePicker && (
-        <DatePickerModal
-          selectedDate={workoutDate}
-          onClose={() => setShowDatePicker(false)}
-          onDateSelect={(date: Date) => {
-            setWorkoutDate(date)
-            setShowDatePicker(false)
-          }}
-        />
-      )}
-
-      {/* Time Picker Modal */}
-      {showTimePicker && (
-        <TimePickerModal
-          duration={duration}
-          onClose={() => setShowTimePicker(false)}
-          onDurationSelect={(newDuration: string) => {
-            setDuration(newDuration)
+      {/* Date and time pickers now use native HTML5 inputs - no modals needed */}
             setShowTimePicker(false)
           }}
         />
