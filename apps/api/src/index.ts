@@ -138,6 +138,7 @@ app.post('/api/auth/register', async (req, res) => {
         firstName: result.first_name,
         lastName: result.last_name,
         tenantId: result.tenant_id,
+        avatarUrl: result.user_id ? `/api/auth/avatar/${result.user_id}` : null, // Use database-served avatar
       },
     });
 
@@ -198,6 +199,7 @@ app.post('/api/auth/login', async (req, res) => {
         firstName: user.first_name,
         lastName: user.last_name,
         tenantId: user.tenant_id,
+        avatarUrl: user.user_id ? `/api/auth/avatar/${user.user_id}` : null, // Use database-served avatar
       },
     });
 
@@ -248,7 +250,7 @@ app.get('/api/auth/profile', authenticateToken, async (req: any, res) => {
       firstName: user.first_name,
       lastName: user.last_name,
       tenantId: user.tenant_id,
-      avatarUrl: user.avatar_url,
+      avatarUrl: user.user_id ? `/api/auth/avatar/${user.user_id}` : null, // Use database-served avatar
     });
 
   } catch (error: any) {
@@ -292,7 +294,7 @@ app.put('/api/auth/profile', authenticateToken, async (req: any, res) => {
         lastName: user.last_name,
         tenantId: user.tenant_id,
         about: user.about,
-        avatarUrl: user.avatar_url,
+        avatarUrl: user.user_id ? `/api/auth/avatar/${user.user_id}` : null, // Use database-served avatar
       }
     });
 
@@ -407,55 +409,34 @@ app.put('/api/auth/avatar', authenticateToken, avatarUpload.single('avatar'), as
 
     console.log('File uploaded successfully:', {
       filename: req.file.filename,
-      path: req.file.path,
       size: req.file.size,
       mimetype: req.file.mimetype
     });
 
-    // Verify file was actually written to disk
-    if (!fs.existsSync(req.file.path)) {
-      console.error('File was not written to disk:', req.file.path);
-      return res.status(500).json({ error: 'File upload failed - file not saved' });
+    // Read file buffer and convert to base64 for database storage
+    const fileBuffer = fs.readFileSync(req.file.path);
+    const base64Data = fileBuffer.toString('base64');
+    const contentType = req.file.mimetype;
+
+    // Clean up temporary file
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
     }
 
-    // Generate avatar URL (relative path for serving static files)
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
-    console.log('Generated avatar URL:', avatarUrl);
+    console.log('Converted to base64, size:', base64Data.length, 'content type:', contentType);
 
-    // Get current avatar to delete old file later
-    const currentUserResult = await db.query(
-      'SELECT avatar_url FROM users WHERE user_id = $1',
-      [userId]
-    );
-
-    // Update user's avatar URL in database
+    // Update user's avatar data in database (persistent across deployments)
     const result = await db.query(
       `UPDATE users 
-       SET avatar_url = $1 
-       WHERE user_id = $2 
-       RETURNING user_id, tenant_id, email, role, first_name, last_name, avatar_url`,
-      [avatarUrl, userId]
+       SET avatar_data = $1,
+           avatar_content_type = $2
+       WHERE user_id = $3 
+       RETURNING user_id, tenant_id, email, role, first_name, last_name`,
+      [base64Data, contentType, userId]
     );
 
     if (result.rows.length === 0) {
-      // Clean up uploaded file if user not found
-      if (fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
-      }
       return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Delete old avatar file if it exists
-    if (currentUserResult.rows[0]?.avatar_url) {
-      const oldAvatarPath = path.join(__dirname, '../public', currentUserResult.rows[0].avatar_url);
-      if (fs.existsSync(oldAvatarPath)) {
-        try {
-          fs.unlinkSync(oldAvatarPath);
-          console.log('Deleted old avatar file:', oldAvatarPath);
-        } catch (error) {
-          console.error('Failed to delete old avatar file:', error);
-        }
-      }
     }
 
     const user = result.rows[0];
@@ -470,7 +451,7 @@ app.put('/api/auth/avatar', authenticateToken, avatarUpload.single('avatar'), as
         firstName: user.first_name,
         lastName: user.last_name,
         tenantId: user.tenant_id,
-        avatarUrl: user.avatar_url,
+        avatarUrl: `/api/auth/avatar/${user.user_id}`, // New API endpoint for serving images
       },
     });
 
@@ -491,7 +472,40 @@ app.put('/api/auth/avatar', authenticateToken, avatarUpload.single('avatar'), as
   }
 });
 
-// Serve static files (avatars) with proper headers
+// GET endpoint to serve avatars from database (persistent across deployments)
+app.get('/api/auth/avatar/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const result = await db.query(
+      'SELECT avatar_data, avatar_content_type FROM users WHERE user_id = $1',
+      [userId]
+    );
+
+    if (result.rows.length === 0 || !result.rows[0].avatar_data) {
+      return res.status(404).json({ error: 'Avatar not found' });
+    }
+
+    const { avatar_data, avatar_content_type } = result.rows[0];
+
+    // Convert base64 to buffer
+    const imageBuffer = Buffer.from(avatar_data, 'base64');
+
+    // Set appropriate headers
+    res.setHeader('Content-Type', avatar_content_type || 'image/jpeg');
+    res.setHeader('Content-Length', imageBuffer.length);
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    res.send(imageBuffer);
+  } catch (error: any) {
+    console.error('Avatar retrieval error:', error);
+    res.status(500).json({ error: 'Failed to retrieve avatar' });
+  }
+});
+
+// Serve static files (avatars) with proper headers - DEPRECATED: Use database storage instead
 app.use('/uploads', (req, res, next) => {
   res.header('Cross-Origin-Resource-Policy', 'cross-origin');
   res.header('Access-Control-Allow-Origin', '*');
