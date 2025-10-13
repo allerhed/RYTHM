@@ -138,7 +138,7 @@ app.post('/api/auth/register', async (req, res) => {
         firstName: result.first_name,
         lastName: result.last_name,
         tenantId: result.tenant_id,
-        avatarUrl: result.user_id ? `/api/auth/avatar/${result.user_id}` : null, // Use database-served avatar
+        avatarUrl: result.user_id ? `/auth/avatar/${result.user_id}` : null, // Frontend proxy adds /api prefix
       },
     });
 
@@ -199,7 +199,7 @@ app.post('/api/auth/login', async (req, res) => {
         firstName: user.first_name,
         lastName: user.last_name,
         tenantId: user.tenant_id,
-        avatarUrl: user.user_id ? `/api/auth/avatar/${user.user_id}` : null, // Use database-served avatar
+        avatarUrl: user.user_id ? `/auth/avatar/${user.user_id}` : null, // Frontend proxy adds /api prefix
       },
     });
 
@@ -250,7 +250,7 @@ app.get('/api/auth/profile', authenticateToken, async (req: any, res) => {
       firstName: user.first_name,
       lastName: user.last_name,
       tenantId: user.tenant_id,
-      avatarUrl: user.user_id ? `/api/auth/avatar/${user.user_id}` : null, // Use database-served avatar
+      avatarUrl: user.user_id ? `/auth/avatar/${user.user_id}` : null, // Frontend proxy adds /api prefix
     });
 
   } catch (error: any) {
@@ -294,7 +294,7 @@ app.put('/api/auth/profile', authenticateToken, async (req: any, res) => {
         lastName: user.last_name,
         tenantId: user.tenant_id,
         about: user.about,
-        avatarUrl: user.user_id ? `/api/auth/avatar/${user.user_id}` : null, // Use database-served avatar
+        avatarUrl: user.user_id ? `/auth/avatar/${user.user_id}` : null, // Frontend proxy adds /api prefix
       }
     });
 
@@ -451,7 +451,7 @@ app.put('/api/auth/avatar', authenticateToken, avatarUpload.single('avatar'), as
         firstName: user.first_name,
         lastName: user.last_name,
         tenantId: user.tenant_id,
-        avatarUrl: `/api/auth/avatar/${user.user_id}`, // New API endpoint for serving images
+        avatarUrl: `/auth/avatar/${user.user_id}`, // Frontend proxy adds /api prefix
       },
     });
 
