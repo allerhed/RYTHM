@@ -32,15 +32,14 @@ export const workoutTemplatesRouter = router({
         FROM workout_templates wt
         LEFT JOIN users u ON wt.created_by = u.user_id
         WHERE wt.is_active = true
-        AND wt.tenant_id = $1
         AND (
-          -- User's own templates
-          (wt.scope = 'user' AND wt.user_id = $2)
+          -- User's own templates (in their tenant)
+          (wt.scope = 'user' AND wt.user_id = $2 AND wt.tenant_id = $1)
           OR
           -- Tenant templates for user's tenant
-          (wt.scope = 'tenant')
+          (wt.scope = 'tenant' AND wt.tenant_id = $1)
           OR
-          -- System templates (visible to all)
+          -- System templates (visible to all, regardless of tenant)
           (wt.scope = 'system')
         )
       `;
@@ -99,10 +98,9 @@ export const workoutTemplatesRouter = router({
         SELECT COUNT(*) as total
         FROM workout_templates wt
         WHERE wt.is_active = true
-        AND wt.tenant_id = $1
         AND (
-          (wt.scope = 'user' AND wt.user_id = $2)
-          OR (wt.scope = 'tenant')
+          (wt.scope = 'user' AND wt.user_id = $2 AND wt.tenant_id = $1)
+          OR (wt.scope = 'tenant' AND wt.tenant_id = $1)
           OR (wt.scope = 'system')
         )
       `;
