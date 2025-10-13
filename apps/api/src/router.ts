@@ -9,6 +9,7 @@ import { exerciseTemplatesRouter } from './routes/exerciseTemplates';
 import { workoutTemplatesRouter } from './routes/workoutTemplates';
 import { equipmentRouter } from './routes/equipment';
 import { personalRecordsRouter } from './routes/personalRecords';
+import { hyroxRouter } from './routes/hyrox';
 
 export const appRouter = router({
   authentication: authRouter,
@@ -23,6 +24,7 @@ export const appRouter = router({
   gymEquipment: equipmentRouter,
   equipment: equipmentRouter, // Add equipment mapping for mobile UI compatibility
   personalRecords: personalRecordsRouter,
+  hyrox: hyroxRouter, // Hyrox race tracking
 });
 
 export type AppRouter = typeof appRouter;
