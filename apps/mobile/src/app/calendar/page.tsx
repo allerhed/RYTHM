@@ -85,12 +85,16 @@ function CalendarPage() {
     const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
     
     // Get the start of the calendar (might include days from previous month)
+    // Adjust for Monday start: getDay() returns 0=Sunday, 1=Monday, etc.
+    // We want: Monday=0, Tuesday=1, ..., Sunday=6
     const startOfCalendar = new Date(firstDayOfMonth)
-    startOfCalendar.setDate(startOfCalendar.getDate() - firstDayOfMonth.getDay())
+    const firstDayWeekday = (firstDayOfMonth.getDay() + 6) % 7 // Convert to Monday=0 system
+    startOfCalendar.setDate(startOfCalendar.getDate() - firstDayWeekday)
     
     // Get the end of the calendar (might include days from next month)
     const endOfCalendar = new Date(lastDayOfMonth)
-    const daysToAdd = 6 - lastDayOfMonth.getDay()
+    const lastDayWeekday = (lastDayOfMonth.getDay() + 6) % 7 // Convert to Monday=0 system
+    const daysToAdd = 6 - lastDayWeekday
     endOfCalendar.setDate(endOfCalendar.getDate() + daysToAdd)
 
     // Generate calendar days
