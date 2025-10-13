@@ -1,137 +1,271 @@
-# RY## 🌐 Production Access
+# RYTHM - Hybrid Training Platform# RY## 🌐 Production Access
 
-### **Live Applications**
+
+
+A comprehensive multi-tenant fitness tracking platform with mobile PWA, admin interface, and enterprise-grade features for athletes, coaches, and fitness organizations.### **Live Applications**
+
 - **Mobile App**: `https://rythm.training` - Main fitness tracking application for end users
-- **Admin App**: `https://admin.rythm.training` - Administrative interface for system management
+
+## 🌐 Production Access- **Admin App**: `https://admin.rythm.training` - Administrative interface for system management
+
 - **API Backend**: `https://api.rythm.training` - Backend API serving both applications.9
 
-A comprehensive hybrid training mobile web app (PWA) with multi-tenant support, real-time analytics, and enterprise-grade admin functionality designed for athletes, coaches, and fitness organizations.
+- **Mobile App**: https://rythm.training - Fitness tracking for end users
+
+- **Admin App**: https://admin.rythm.training - System management interfaceA comprehensive hybrid training mobile web app (PWA) with multi-tenant support, real-time analytics, and enterprise-grade admin functionality designed for athletes, coaches, and fitness organizations.
+
+- **API Backend**: https://api.rythm.training - Backend API
 
 ## � Production Access
 
+## 🎯 Key Features
+
 ### **Live Applications**
-- **Mobile App**: `https://rythm.training` - Main fitness tracking application for end users
-- **Admin App**: `https://admin.rythm.training` - Administrative interface for system management
-- **API Backend**: Internal API serving both applications
 
-## �🎯 Features
+- **Multi-tenant Architecture** with Row Level Security- **Mobile App**: `https://rythm.training` - Main fitness tracking application for end users
 
-### ✅ **Version 0.9 - Current Release**
-- **Multi-tenant Architecture**: Secure tenant isolation with Row Level Security (RLS)
+- **Advanced Workout Tracking** (strength, cardio, hybrid)- **Admin App**: `https://admin.rythm.training` - Administrative interface for system management
+
+- **Flexible Set Logging** with configurable metrics- **API Backend**: Internal API serving both applications
+
+- **Template System** (user/tenant/system scoped)
+
+- **Training Analytics** and personal records## �🎯 Features
+
+- **Admin Dashboard** with full CRUD operations
+
+- **Mobile-First PWA** with offline support### ✅ **Version 0.9 - Current Release**
+
+- **Role-Based Access Control** (5 permission levels)- **Multi-tenant Architecture**: Secure tenant isolation with Row Level Security (RLS)
+
 - **Advanced Admin Interface**: Complete workout template management with CRUD operations
-- **User Authentication**: JWT-based auth with granular role management (athlete, coach, tenant_admin, org_admin, system_admin)
+
+## 🚀 Quick Start- **User Authentication**: JWT-based auth with granular role management (athlete, coach, tenant_admin, org_admin, system_admin)
+
 - **Enhanced Template System**: System-wide, tenant-scoped, and user-scoped workout templates
-- **Profile Management**: Complete user profiles with avatar upload and bio
-- **Session Tracking**: Log workouts with categories (strength, cardio, hybrid)
-- **Flexible Set Logging**: Two configurable value fields (weight, distance, duration, calories, reps)
+
+### Prerequisites- **Profile Management**: Complete user profiles with avatar upload and bio
+
+- Docker and Docker Compose- **Session Tracking**: Log workouts with categories (strength, cardio, hybrid)
+
+- **No Node.js required** - runs in containers- **Flexible Set Logging**: Two configurable value fields (weight, distance, duration, calories, reps)
+
 - **Exercise Management**: Global exercise library with templates and custom exercises
-- **Template Access Control**: Role-based permissions for creating, editing, and deleting templates
+
+### Start Development- **Template Access Control**: Role-based permissions for creating, editing, and deleting templates
+
 - **Training Analytics**: Basic volume tracking and session history
-- **Mobile-First PWA**: Responsive design optimized for mobile devices
-- **Docker Development**: Complete containerized development environment
+
+```bash- **Mobile-First PWA**: Responsive design optimized for mobile devices
+
+# Start all services- **Docker Development**: Complete containerized development environment
+
+npm run dev
 
 ### 🆕 **New in v0.9**
-- **Admin Template Management**: Full CRUD operations for workout templates
-- **Delete Functionality**: Safe template deletion with confirmation modals
-- **System Template Access**: Universal access to system-scoped templates across all tenants
-- **Enhanced Permissions**: Granular admin permissions (system_admin, org_admin, tenant_admin)
-- **Improved Error Handling**: Comprehensive error messages and loading states
+
+# Access the applications- **Admin Template Management**: Full CRUD operations for workout templates
+
+# Mobile: http://localhost:3000- **Delete Functionality**: Safe template deletion with confirmation modals
+
+# Admin:  http://localhost:3002- **System Template Access**: Universal access to system-scoped templates across all tenants
+
+# API:    http://localhost:3001- **Enhanced Permissions**: Granular admin permissions (system_admin, org_admin, tenant_admin)
+
+```- **Improved Error Handling**: Comprehensive error messages and loading states
+
 - **Exercise Template Integration**: Real-time exercise template creation and management
-- **Cross-Service Authentication**: Seamless authentication between admin and API services
 
-## 🚀 Quick Start
+### Useful Commands- **Cross-Service Authentication**: Seamless authentication between admin and API services
 
-### Prerequisites
-- Docker and Docker Compose
-- **No Node.js installation required** - everything runs in containers
 
-### Local Development Environment
 
-**⚠️ DOCKER-ONLY DEVELOPMENT: This project runs exclusively in Docker containers**
+```bash## 🚀 Quick Start
 
-The development environment uses Docker Compose with:
+npm run dev:logs        # View all logs
+
+npm run dev:status      # Check service status### Prerequisites
+
+npm run dev:restart     # Restart all services- Docker and Docker Compose
+
+npm run dev:down        # Stop all services- **No Node.js installation required** - everything runs in containers
+
+npm run dev:clean       # Clean everything
+
+```### Local Development Environment
+
+
+
+## 📚 Documentation**⚠️ DOCKER-ONLY DEVELOPMENT: This project runs exclusively in Docker containers**
+
+
+
+**Complete documentation available at [docs/INDEX.md](docs/INDEX.md)**The development environment uses Docker Compose with:
+
 - Containerized PostgreSQL database with persistent storage
-- API server with hot reload via volume mounting
-- Frontend with Next.js development server and hot reload
-- Proper container networking between all services
-- Volume mounting for instant code changes without rebuilds
 
-#### Starting the Development Environment
+### Quick Links- API server with hot reload via volume mounting
+
+- Frontend with Next.js development server and hot reload
+
+- **[Quick Start Guide](docs/QUICK_START.md)** - Essential setup- Proper container networking between all services
+
+- **[Azure Deployment](docs/AZURE_SETUP.md)** - Production deployment- Volume mounting for instant code changes without rebuilds
+
+- **[API Documentation](docs/api/)** - Complete API reference
+
+- **[User Guides](docs/user-guides/)** - End-user documentation#### Starting the Development Environment
+
+- **[Architecture](docs/architecture/)** - System design
 
 1. **Ensure Docker is running**
-   ```bash
+
+## 🏗️ Project Structure   ```bash
+
    # Start Docker Desktop if not already running
-   open -a Docker
-   ```
 
-2. **Start the complete development environment**
-   ```bash
-   npm run dev
-   ```
-   
-   Or manually:
-   ```bash
-   ./scripts/start.sh
-   ```
+```   open -a Docker
 
-3. **Verify all services are running**
-   ```bash
-   npm run dev:status
-   ```
+RYTHM/   ```
+
+├── apps/              # Applications
+
+│   ├── api/          # Express + tRPC API2. **Start the complete development environment**
+
+│   ├── mobile/       # Next.js PWA   ```bash
+
+│   └── admin/        # Admin dashboard   npm run dev
+
+├── packages/         # Shared packages   ```
+
+│   ├── db/          # Database & migrations   
+
+│   └── shared/      # Shared types   Or manually:
+
+├── docs/            # Documentation   ```bash
+
+│   ├── INDEX.md     # Documentation hub   ./scripts/start.sh
+
+│   ├── features/    # Feature docs   ```
+
+│   ├── fixes/       # Bug fix logs
+
+│   └── implementations/  # Implementation details3. **Verify all services are running**
+
+├── scripts/         # Build scripts   ```bash
+
+├── infra/           # Azure Bicep IaC   npm run dev:status
+
+└── docker-compose.yml  # Local development   ```
+
+```
 
 #### Access Points
 
+## 🔧 Development
+
 - **Frontend Application**: http://localhost:3000
-- **Dashboard**: http://localhost:3000/dashboard
+
+### Container Management- **Dashboard**: http://localhost:3000/dashboard
+
 - **Analytics**: http://localhost:3000/analytics
-- **Admin Interface**: http://localhost:3002 (admin@rythm.app / admin123)
-- **API Health Check**: http://localhost:3001/health
-- **Database**: PostgreSQL on localhost:5432
 
-#### Managing the Development Environment
+```bash- **Admin Interface**: http://localhost:3002 (admin@rythm.app / admin123)
 
-```bash
-# View logs from all services
-npm run dev:logs
+# View specific logs- **API Health Check**: http://localhost:3001/health
 
-# View logs from specific service
-npm run dev:logs:api      # API server logs
-npm run dev:logs:mobile   # Frontend logs
-npm run dev:logs:admin    # Admin interface logs
+npm run dev:logs:api- **Database**: PostgreSQL on localhost:5432
+
+npm run dev:logs:mobile
+
+npm run dev:logs:admin#### Managing the Development Environment
+
+
+
+# Restart specific service```bash
+
+npm run dev:restart:api# View logs from all services
+
+npm run dev:restart:mobilenpm run dev:logs
+
+
+
+# Shell access# View logs from specific service
+
+npm run dev:shell:apinpm run dev:logs:api      # API server logs
+
+npm run dev:shell:dbnpm run dev:logs:mobile   # Frontend logs
+
+```npm run dev:logs:admin    # Admin interface logs
+
 npm run dev:logs:db       # Database logs
 
-# Stop all services
-npm run dev:down
+### Database
 
-# Restart all services
+# Stop all services
+
+```bashnpm run dev:down
+
+# Run migrations
+
+npm run db:migrate# Restart all services
+
 npm run dev:restart
 
-# Restart specific service
-npm run dev:restart:api
+# Database shell
+
+npm run dev:shell:db# Restart specific service
+
+```npm run dev:restart:api
+
 npm run dev:restart:mobile
-npm run dev:restart:admin
 
-# Rebuild and restart (after Dockerfile changes)
-npm run dev:build
-npm run dev:up
+## 🎓 Admin Accessnpm run dev:restart:admin
 
-# Check service status
+
+
+- **URL**: http://localhost:3002# Rebuild and restart (after Dockerfile changes)
+
+- **Admin**: admin@rythm.app / admin123npm run dev:build
+
+- **Orchestrator**: orchestrator@rythm.app / Password123npm run dev:up
+
+
+
+## 📝 Contributing# Check service status
+
 npm run dev:status
 
-# Get shell access
-npm run dev:shell:api     # API container shell
-npm run dev:shell:mobile  # Mobile container shell
-npm run dev:shell:db      # Database shell (psql)
+1. All features documented in `docs/implementations/`
 
-# Clean everything (removes volumes and containers)
+2. All fixes documented in `docs/fixes/`# Get shell access
+
+3. Follow existing code patternsnpm run dev:shell:api     # API container shell
+
+4. Test in Docker containersnpm run dev:shell:mobile  # Mobile container shell
+
+5. Update documentationnpm run dev:shell:db      # Database shell (psql)
+
+
+
+## 📄 License# Clean everything (removes volumes and containers)
+
 npm run dev:clean
-```
 
-#### Why Docker-Only Development?
+Proprietary - All rights reserved```
 
-- **Zero Local Dependencies**: No need to install Node.js, PostgreSQL, or other tools
-- **Consistent Environment**: Identical setup across all development machines
-- **Instant Hot Reload**: Volume mounting provides instant code changes without rebuilds
+
+
+## 🔗 Resources#### Why Docker-Only Development?
+
+
+
+- [Changelog](CHANGELOG.md) - Version history- **Zero Local Dependencies**: No need to install Node.js, PostgreSQL, or other tools
+
+- [Documentation Index](docs/INDEX.md) - Complete docs- **Consistent Environment**: Identical setup across all development machines
+
+- [Project Requirements](docs/PROJECT_REQUIREMENTS.md) - Product vision- **Instant Hot Reload**: Volume mounting provides instant code changes without rebuilds
+
 - **Isolated Database**: PostgreSQL runs in container with persistent data volumes
 - **Perfect Networking**: Container networking matches production deployment
 - **Easy Reset**: Clean slate development environment with one command
