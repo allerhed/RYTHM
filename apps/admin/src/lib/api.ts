@@ -645,11 +645,16 @@ class ApiClient {
     },
 
     deleteExerciseTemplate: async (params: { template_id: string }): Promise<{ success: boolean }> => {
+      console.log('🗑️ deleteExerciseTemplate called with params:', params);
+      
       const response = await fetch(`${this.baseUrl}/api/trpc/admin.deleteExerciseTemplate`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify({ json: params }),
       })
+      
+      console.log('📤 Request sent to:', `${this.baseUrl}/api/trpc/admin.deleteExerciseTemplate`);
+      console.log('📦 Request body:', JSON.stringify({ json: params }));
       
       const result = await this.handleResponse(response)
       return result.result.data

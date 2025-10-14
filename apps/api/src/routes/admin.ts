@@ -581,6 +581,8 @@ export const adminRouter = router({
       template_id: z.string(),
     }))
     .mutation(async ({ input }) => {
+      console.log('🗑️ deleteExerciseTemplate called with input:', JSON.stringify(input, null, 2));
+      
       // Hard delete for exercise templates since they don't have is_active field
       const result = await db.query(`
         DELETE FROM exercise_templates 
@@ -592,6 +594,7 @@ export const adminRouter = router({
         throw new Error('Exercise template not found');
       }
 
+      console.log('✅ Exercise template deleted successfully:', result.rows[0]);
       return { success: true };
     }),
 
