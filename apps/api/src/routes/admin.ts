@@ -580,8 +580,12 @@ export const adminRouter = router({
     .input(z.object({
       template_id: z.string(),
     }))
-    .mutation(async ({ input }) => {
-      console.log('🗑️ deleteExerciseTemplate called with input:', JSON.stringify(input, null, 2));
+    .mutation(async ({ input, ctx }) => {
+      console.log('🗑️ deleteExerciseTemplate called');
+      console.log('📥 Full input object:', input);
+      console.log('📥 Input keys:', Object.keys(input || {}));
+      console.log('📥 template_id value:', input?.template_id);
+      console.log('📥 Context user:', ctx.user);
       
       // Hard delete for exercise templates since they don't have is_active field
       const result = await db.query(`

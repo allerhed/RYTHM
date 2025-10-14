@@ -525,6 +525,18 @@ app.use('/api/backups', backupRoutes);
 app.use('/api/email-logs', emailLogsRoutes);
 
 // tRPC API routes
+// Add debugging middleware for tRPC requests
+app.use('/api/trpc', (req, res, next) => {
+  if (req.path.includes('deleteExerciseTemplate')) {
+    console.log('🔍 Raw tRPC request to deleteExerciseTemplate');
+    console.log('📥 Request method:', req.method);
+    console.log('📥 Request path:', req.path);
+    console.log('📥 Request body:', JSON.stringify(req.body, null, 2));
+    console.log('📥 Content-Type:', req.headers['content-type']);
+  }
+  next();
+});
+
 app.use('/api/trpc', createExpressMiddleware({
   router: appRouter,
   createContext,
