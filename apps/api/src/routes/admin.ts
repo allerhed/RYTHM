@@ -577,16 +577,20 @@ export const adminRouter = router({
     }),
 
     deleteExerciseTemplate: adminProcedure
-      .input(z.object({
-        template_id: z.string(),
-      }))
+      .input(
+        z.union([
+          z.object({ template_id: z.string() }),
+          z.object({ json: z.object({ template_id: z.string() }) }),
+        ]).transform((payload) => ({
+          template_id: 'json' in payload ? payload.json.template_id : payload.template_id,
+        }))
+      )
       .mutation(async ({ input, ctx }) => {
         console.log('🗑️ deleteExerciseTemplate called');
         console.log('📥 Full input object:', input);
-        console.log('📥 Input keys:', Object.keys(input || {}));
-        console.log('📥 template_id value:', input?.template_id);
+        console.log('📥 template_id value:', input.template_id);
         console.log('📥 Context user:', ctx.user);
-        
+
         // Hard delete for exercise templates since they don't have is_active field
         const result = await db.query(`
           DELETE FROM exercise_templates 
@@ -594,13 +598,13 @@ export const adminRouter = router({
           RETURNING *
         `, [input.template_id]);
 
-      if (result.rows.length === 0) {
-        throw new Error('Exercise template not found');
-      }
+        if (result.rows.length === 0) {
+          throw new Error('Exercise template not found');
+        }
 
-      console.log('✅ Exercise template deleted successfully:', result.rows[0]);
-      return { success: true };
-    }),
+        console.log('✅ Exercise template deleted successfully:', result.rows[0]);
+        return { success: true };
+      }),
 
   // Analytics endpoints
   getAnalyticsDashboard: adminProcedure
