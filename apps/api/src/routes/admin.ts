@@ -577,22 +577,22 @@ export const adminRouter = router({
     }),
 
     deleteExerciseTemplate: adminProcedure
-    .input(z.object({
-      template_id: z.string(),
-    }))
-    .mutation(async ({ input, ctx }) => {
-      console.log('🗑️ deleteExerciseTemplate called');
-      console.log('📥 Full input object:', input);
-      console.log('📥 Input keys:', Object.keys(input || {}));
-      console.log('📥 template_id value:', input?.template_id);
-      console.log('📥 Context user:', ctx.user);
-      
-      // Hard delete for exercise templates since they don't have is_active field
-      const result = await db.query(`
-        DELETE FROM exercise_templates 
-        WHERE template_id = $1
-        RETURNING *
-      `, [input.template_id]);
+      .input(z.object({
+        template_id: z.string(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        console.log('🗑️ deleteExerciseTemplate called');
+        console.log('📥 Full input object:', input);
+        console.log('📥 Input keys:', Object.keys(input || {}));
+        console.log('📥 template_id value:', input?.template_id);
+        console.log('📥 Context user:', ctx.user);
+        
+        // Hard delete for exercise templates since they don't have is_active field
+        const result = await db.query(`
+          DELETE FROM exercise_templates 
+          WHERE template_id = $1
+          RETURNING *
+        `, [input.template_id]);
 
       if (result.rows.length === 0) {
         throw new Error('Exercise template not found');
