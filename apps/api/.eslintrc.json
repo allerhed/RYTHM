@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "root": true,
+  "rules": {
+    "indent": ["error", 2, {
+      "MemberExpression": 1,
+      "CallExpression": {"arguments": 1}
+    }],
+    "@typescript-eslint/indent": ["error", 2, {
+      "MemberExpression": 1,
+      "CallExpression": {"arguments": 1}
+    }]
+  }
+}
