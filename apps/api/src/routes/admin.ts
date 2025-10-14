@@ -20,6 +20,10 @@ const updateExerciseTemplateInputSchema = z.object({
   instructions: z.string().optional().nullable(),
 });
 
+const deleteEquipmentInputSchema = z.object({
+  equipment_id: z.string().uuid(),
+});
+
 export const adminRouter = router({
   // Validate admin credentials endpoint
   validate: publicProcedure
@@ -1407,9 +1411,14 @@ export const adminRouter = router({
     }),
 
   deleteEquipment: adminProcedure
-    .input(z.object({
-      equipment_id: z.string().uuid(),
-    }))
+    .input(
+      z.union([
+        deleteEquipmentInputSchema,
+        z.object({ json: deleteEquipmentInputSchema }),
+      ]).transform((payload) => (
+        'json' in payload ? payload.json : payload
+      ))
+    )
     .mutation(async ({ input }) => {
       // Check if equipment is being used
       const [exerciseUsage, templateUsage] = await Promise.all([
