@@ -514,19 +514,38 @@ export const adminRouter = router({
     }),
 
   updateExerciseTemplate: adminProcedure
-    .input(z.object({
-      template_id: z.string(),
-      name: z.string().optional(),
-      muscle_groups: z.array(z.string()).optional(),
-      equipment: z.string().optional(),
-      equipment_id: z.string().optional().nullable(),
-      exercise_category: z.string().optional(),
-      exercise_type: z.enum(['STRENGTH', 'CARDIO']).optional(),
-      default_value_1_type: z.string().optional(),
-      default_value_2_type: z.string().optional(),
-      description: z.string().optional(),
-      instructions: z.string().optional(),
-    }))
+    .input(
+      z.union([
+        z.object({
+          template_id: z.string(),
+          name: z.string().optional(),
+          muscle_groups: z.array(z.string()).optional(),
+          equipment: z.string().optional(),
+          equipment_id: z.string().optional().nullable(),
+          exercise_category: z.string().optional(),
+          exercise_type: z.enum(['STRENGTH', 'CARDIO']).optional(),
+          default_value_1_type: z.string().optional(),
+          default_value_2_type: z.string().optional(),
+          description: z.string().optional(),
+          instructions: z.string().optional(),
+        }),
+        z.object({
+          json: z.object({
+            template_id: z.string(),
+            name: z.string().optional(),
+            muscle_groups: z.array(z.string()).optional(),
+            equipment: z.string().optional(),
+            equipment_id: z.string().optional().nullable(),
+            exercise_category: z.string().optional(),
+            exercise_type: z.enum(['STRENGTH', 'CARDIO']).optional(),
+            default_value_1_type: z.string().optional(),
+            default_value_2_type: z.string().optional(),
+            description: z.string().optional(),
+            instructions: z.string().optional(),
+          }),
+        }),
+      ]).transform((payload) => ('json' in payload ? payload.json : payload))
+    )
     .mutation(async ({ input }) => {
       console.log('🔧 updateExerciseTemplate called with input:', JSON.stringify(input, null, 2));
       const { template_id, ...updateData } = input;
