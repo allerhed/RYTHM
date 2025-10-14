@@ -100,6 +100,7 @@ export default function ExercisesPage() {
       setSortField(field);
       setSortDirection('asc');
     }
+    setCurrentPage(1);
   };
 
   const loadExerciseTemplates = async () => {
@@ -232,7 +233,10 @@ export default function ExercisesPage() {
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setCurrentPage(1);
+                  setSearchTerm(e.target.value);
+                }}
                 placeholder="Search exercises..."
                 className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
               />
@@ -242,7 +246,10 @@ export default function ExercisesPage() {
               <label className="text-sm font-medium text-gray-300">Category:</label>
               <select
                 value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
+                onChange={(e) => {
+                  setCurrentPage(1);
+                  setCategoryFilter(e.target.value);
+                }}
                 className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">All Categories</option>
@@ -257,7 +264,10 @@ export default function ExercisesPage() {
               <label className="text-sm font-medium text-gray-300">Type:</label>
               <select
                 value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
+                onChange={(e) => {
+                  setCurrentPage(1);
+                  setTypeFilter(e.target.value);
+                }}
                 className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">All Types</option>
