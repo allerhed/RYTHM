@@ -877,6 +877,20 @@ docker/
 ## 2) Azure-Ready Coding Conventions
 - **TypeScript**: `"strict": true`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`.
 - **Validation**: Zod schemas mirror DB constraints. Parse at the edge (request/response).
+- **tRPC payloads**: The admin web currently calls tRPC endpoints via manual `fetch` wrappers that submit bodies as `{ json: ... }`. All new `.input()` definitions must tolerate both the wrapped and raw payload shapes and normalize to a single schema before the resolver runs. Prefer a union + transform pattern (see `docs/TRPC_CODING_STANDARDS.md` for more context):
+
+  ```ts
+  const payload = z.object({ templateId: z.string().uuid() });
+
+  .input(
+    z.union([
+      z.object({ json: payload }).transform(({ json }) => json),
+      payload,
+    ])
+  )
+  ```
+
+  Keep the resolver signature scoped to the normalized `payload` type so downstream logic never sees the wrapper.
 - **Errors**: Never throw raw; wrap in typed error objects and map to HTTP problem details.
 - **Auth**: JWT (short‑lived access + rotating refresh). User → Tenant scoping via `tenant_id` in claims; verify against DB on each request for write operations.
 - **Database**: PostgreSQL 15+. **RLS enabled** on all tenant tables; use policies by `tenant_id`. Prefer SQL migrations for RLS (clear diffing). ORM is acceptable for models.

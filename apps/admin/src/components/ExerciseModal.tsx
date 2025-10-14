@@ -82,7 +82,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
         exercise_category: exerciseTemplate.exercise_category,
         exercise_type: exerciseTemplate.exercise_type,
         default_value_1_type: exerciseTemplate.default_value_1_type,
-        default_value_2_type: exerciseTemplate.default_value_2_type,
+        default_value_2_type: exerciseTemplate.default_value_2_type || '',
         description: exerciseTemplate.description || '',
         instructions: exerciseTemplate.instructions || ''
       })

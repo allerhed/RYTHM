@@ -6,6 +6,20 @@ import { db, dataExporter, dataImporter } from '@rythm/db';
 // Admin tenant ID
 const ADMIN_TENANT_ID = '00000000-0000-0000-0000-000000000000';
 
+const updateExerciseTemplateInputSchema = z.object({
+  template_id: z.string(),
+  name: z.string().optional(),
+  muscle_groups: z.array(z.string()).optional(),
+  equipment: z.string().optional().nullable(),
+  equipment_id: z.string().nullable().optional(),
+  exercise_category: z.string().optional(),
+  exercise_type: z.enum(['STRENGTH', 'CARDIO']).optional(),
+  default_value_1_type: z.string().optional(),
+  default_value_2_type: z.string().nullable().optional(),
+  description: z.string().optional().nullable(),
+  instructions: z.string().optional().nullable(),
+});
+
 export const adminRouter = router({
   // Validate admin credentials endpoint
   validate: publicProcedure
@@ -516,35 +530,23 @@ export const adminRouter = router({
   updateExerciseTemplate: adminProcedure
     .input(
       z.union([
-        z.object({
-          template_id: z.string(),
-          name: z.string().optional(),
-          muscle_groups: z.array(z.string()).optional(),
-          equipment: z.string().optional(),
-          equipment_id: z.string().optional().nullable(),
-          exercise_category: z.string().optional(),
-          exercise_type: z.enum(['STRENGTH', 'CARDIO']).optional(),
-          default_value_1_type: z.string().optional(),
-          default_value_2_type: z.string().optional(),
-          description: z.string().optional(),
-          instructions: z.string().optional(),
-        }),
-        z.object({
-          json: z.object({
-            template_id: z.string(),
-            name: z.string().optional(),
-            muscle_groups: z.array(z.string()).optional(),
-            equipment: z.string().optional(),
-            equipment_id: z.string().optional().nullable(),
-            exercise_category: z.string().optional(),
-            exercise_type: z.enum(['STRENGTH', 'CARDIO']).optional(),
-            default_value_1_type: z.string().optional(),
-            default_value_2_type: z.string().optional(),
-            description: z.string().optional(),
-            instructions: z.string().optional(),
-          }),
-        }),
-      ]).transform((payload) => ('json' in payload ? payload.json : payload))
+        updateExerciseTemplateInputSchema,
+        z.object({ json: updateExerciseTemplateInputSchema }),
+      ])
+        .transform((payload) => ('json' in payload ? payload.json : payload))
+        .transform((payload) => {
+          const sanitized = { ...payload } as z.infer<typeof updateExerciseTemplateInputSchema>;
+
+          if (sanitized.equipment_id === '') {
+            sanitized.equipment_id = null;
+          }
+
+          if (sanitized.default_value_2_type === '') {
+            sanitized.default_value_2_type = null;
+          }
+
+          return sanitized;
+        })
     )
     .mutation(async ({ input }) => {
       console.log('🔧 updateExerciseTemplate called with input:', JSON.stringify(input, null, 2));

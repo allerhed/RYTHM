@@ -141,6 +141,42 @@ After creating a new tRPC endpoint, always test:
 - [ ] Client receives proper types for input/output
 - [ ] Zod validation errors include field names (not "undefined")
 
+## Handling Fetch JSON Payload Wrappers
+
+### Why This Matters
+
+The admin web (and any future custom `fetch` callers) submits tRPC requests as `{"json": { ...payload }}`. When the server-side procedure expects only the raw payload, tRPC will report that every field is missing. Every new `.input()` definition must therefore accept **both** the wrapped and raw shapes and normalize to the plain payload before the resolver executes.
+
+### Recommended Pattern
+
+```typescript
+const payload = z.object({
+  templateId: z.string().uuid(),
+});
+
+export const adminRouter = router({
+  deleteExerciseTemplate: adminProcedure
+    .input(
+      z.union([
+        z.object({ json: payload }).transform(({ json }) => json),
+        payload,
+      ])
+    )
+    .mutation(async ({ input }) => {
+      // `input` is the normalized payload
+      await db.deleteExerciseTemplate({ templateId: input.templateId });
+      return { success: true };
+    }),
+});
+```
+
+### Key Takeaways
+
+- Keep the resolver signature typed to the normalized payload.
+- Apply the union+transform pattern anywhere manual `fetch` wrappers may call the procedure.
+- If a client evolves to send only the raw payload, the server code remains valid.
+- Document any deviations in `.github/copilot-instructions.md` so future contributors understand the contract.
+
 ## Real-World Example: The Bug That Was Fixed
 
 **Before (broken)**:
@@ -178,7 +214,7 @@ deleteExerciseTemplate: adminProcedure
 {
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "[typescript]": {
+**Last Updated**: January 13, 2026  
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
