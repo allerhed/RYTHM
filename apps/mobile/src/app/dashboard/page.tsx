@@ -536,7 +536,7 @@ function DashboardPage() {
           />
 
           {/* Selected Date Workouts */}
-          <Card className="p-6 mb-8">
+          <Card className="p-6 mb-8 mt-8">
             <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 text-center">
                   {(() => {
