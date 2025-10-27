@@ -776,14 +776,12 @@ export const analyticsRouter = router({
       previousWeekEnd.setHours(23, 59, 59, 999)
 
       // Query for selected week total kg (weight * reps)
+      // Weight is in either value_1 or value_2, multiply by reps
       const selectedWeekQuery = `
         SELECT 
           COALESCE(SUM(
             CASE 
               WHEN st.value_1_type = 'weight_kg' AND st.reps IS NOT NULL THEN st.value_1_numeric * st.reps
-              ELSE 0
-            END +
-            CASE 
               WHEN st.value_2_type = 'weight_kg' AND st.reps IS NOT NULL THEN st.value_2_numeric * st.reps
               ELSE 0
             END
@@ -801,9 +799,6 @@ export const analyticsRouter = router({
           COALESCE(SUM(
             CASE 
               WHEN st.value_1_type = 'weight_kg' AND st.reps IS NOT NULL THEN st.value_1_numeric * st.reps
-              ELSE 0
-            END +
-            CASE 
               WHEN st.value_2_type = 'weight_kg' AND st.reps IS NOT NULL THEN st.value_2_numeric * st.reps
               ELSE 0
             END
