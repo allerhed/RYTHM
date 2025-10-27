@@ -775,17 +775,16 @@ export const analyticsRouter = router({
       previousWeekEnd.setDate(previousWeekEnd.getDate() + 6)
       previousWeekEnd.setHours(23, 59, 59, 999)
 
-      // Query for selected week total kg (weight * reps)
-      // Weight is in either value_1 or value_2, multiply by reps
+      // Query for selected week total weight (in kg, multiplied by reps)
       const selectedWeekQuery = `
         SELECT 
           COALESCE(SUM(
             CASE 
-              WHEN st.value_1_type = 'weight_kg' AND st.reps IS NOT NULL THEN st.value_1_numeric * st.reps
-              WHEN st.value_2_type = 'weight_kg' AND st.reps IS NOT NULL THEN st.value_2_numeric * st.reps
+              WHEN st.value_1_type = 'weight_kg' THEN st.value_1_numeric * COALESCE(st.reps, 1)
+              WHEN st.value_2_type = 'weight_kg' THEN st.value_2_numeric * COALESCE(st.reps, 1)
               ELSE 0
             END
-          ), 0) as total_kg
+          ), 0) as total_weight
         FROM sets st
         JOIN sessions s ON s.session_id = st.session_id
         WHERE s.user_id = $1 
@@ -793,16 +792,16 @@ export const analyticsRouter = router({
           AND s.started_at <= $3
       `
 
-      // Query for previous week total kg
+      // Query for previous week total weight
       const previousWeekQuery = `
         SELECT 
           COALESCE(SUM(
             CASE 
-              WHEN st.value_1_type = 'weight_kg' AND st.reps IS NOT NULL THEN st.value_1_numeric * st.reps
-              WHEN st.value_2_type = 'weight_kg' AND st.reps IS NOT NULL THEN st.value_2_numeric * st.reps
+              WHEN st.value_1_type = 'weight_kg' THEN st.value_1_numeric * COALESCE(st.reps, 1)
+              WHEN st.value_2_type = 'weight_kg' THEN st.value_2_numeric * COALESCE(st.reps, 1)
               ELSE 0
             END
-          ), 0) as total_kg
+          ), 0) as total_weight
         FROM sets st
         JOIN sessions s ON s.session_id = st.session_id
         WHERE s.user_id = $1 
@@ -815,12 +814,12 @@ export const analyticsRouter = router({
         ctx.db.query(previousWeekQuery, [ctx.user.userId, previousWeekStart.toISOString(), previousWeekEnd.toISOString()])
       ])
 
-      const selectedWeekKg = parseFloat(selectedWeekResult.rows[0]?.total_kg || 0)
-      const previousWeekKg = parseFloat(previousWeekResult.rows[0]?.total_kg || 0)
+      const selectedWeekWeight = parseFloat(selectedWeekResult.rows[0]?.total_weight || 0)
+      const previousWeekWeight = parseFloat(previousWeekResult.rows[0]?.total_weight || 0)
 
       return {
-        selectedWeek: selectedWeekKg,
-        previousWeek: previousWeekKg,
+        selectedWeek: selectedWeekWeight,
+        previousWeek: previousWeekWeight,
         weekStart: selectedWeekStart.toISOString()
       }
     }),
