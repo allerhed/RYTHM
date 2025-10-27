@@ -925,7 +925,7 @@ export const analyticsRouter = router({
 
       // Get last 10 completed sessions that have this exercise (matching by name)
       const query = `
-        SELECT DISTINCT
+        SELECT
           s.session_id,
           s.started_at,
           s.category,
