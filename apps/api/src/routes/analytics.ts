@@ -776,19 +776,15 @@ export const analyticsRouter = router({
       previousWeekEnd.setHours(23, 59, 59, 999)
 
       // Query for selected week total kg (weight * reps)
-      // Note: A set can have weight in BOTH value_1 and value_2, so we sum them separately
+      // Note: A set can have weight in BOTH value_1 and value_2, so we sum them together
       const selectedWeekQuery = `
         SELECT 
-          COALESCE(
-            SUM(
-              CASE WHEN st.value_1_type = 'weight_kg' AND st.reps IS NOT NULL 
-              THEN st.value_1_numeric * st.reps ELSE 0 END
-            ) +
-            SUM(
-              CASE WHEN st.value_2_type = 'weight_kg' AND st.reps IS NOT NULL 
-              THEN st.value_2_numeric * st.reps ELSE 0 END
-            )
-          , 0) as total_kg
+          COALESCE(SUM(
+            (CASE WHEN st.value_1_type = 'weight_kg' AND st.reps IS NOT NULL 
+              THEN st.value_1_numeric * st.reps ELSE 0 END) +
+            (CASE WHEN st.value_2_type = 'weight_kg' AND st.reps IS NOT NULL 
+              THEN st.value_2_numeric * st.reps ELSE 0 END)
+          ), 0) as total_kg
         FROM sets st
         JOIN sessions s ON s.session_id = st.session_id
         WHERE s.user_id = $1 
@@ -799,16 +795,12 @@ export const analyticsRouter = router({
       // Query for previous week total kg
       const previousWeekQuery = `
         SELECT 
-          COALESCE(
-            SUM(
-              CASE WHEN st.value_1_type = 'weight_kg' AND st.reps IS NOT NULL 
-              THEN st.value_1_numeric * st.reps ELSE 0 END
-            ) +
-            SUM(
-              CASE WHEN st.value_2_type = 'weight_kg' AND st.reps IS NOT NULL 
-              THEN st.value_2_numeric * st.reps ELSE 0 END
-            )
-          , 0) as total_kg
+          COALESCE(SUM(
+            (CASE WHEN st.value_1_type = 'weight_kg' AND st.reps IS NOT NULL 
+              THEN st.value_1_numeric * st.reps ELSE 0 END) +
+            (CASE WHEN st.value_2_type = 'weight_kg' AND st.reps IS NOT NULL 
+              THEN st.value_2_numeric * st.reps ELSE 0 END)
+          ), 0) as total_kg
         FROM sets st
         JOIN sessions s ON s.session_id = st.session_id
         WHERE s.user_id = $1 
