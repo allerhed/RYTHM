@@ -4,6 +4,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/Form'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
+import { ExerciseHistoryModal } from '@/components/ExerciseHistoryModal'
 import { trpc } from '@/lib/trpc'
 
 interface Exercise {
@@ -13,6 +14,7 @@ interface Exercise {
   sets: WorkoutSet[]
   // Database fields
   exercise_id?: string
+  template_id?: string
   muscle_groups?: string[]
   equipment?: string
   equipment_id?: string
@@ -177,16 +179,18 @@ function EditWorkoutPage() {
         }
 
         // Convert exercises and sets
-        const convertedExercises: Exercise[] = session.exercises.map(dbEx => ({
+        const convertedExercises: Exercise[] = session.exercises.map((dbEx: any) => ({
           id: dbEx.exercise_id,
           name: dbEx.name,
           notes: '',
           exercise_id: dbEx.exercise_id,
+          // Try to find template_id by matching exercise name with templates
+          template_id: templates.find((t: any) => t.name === dbEx.name)?.template_id,
           muscle_groups: dbEx.muscle_groups,
           equipment: dbEx.equipment,
           exercise_category: dbEx.exercise_category,
           exercise_type: dbEx.exercise_type || undefined,
-          sets: dbEx.sets.map(dbSet => ({
+          sets: dbEx.sets.map((dbSet: any) => ({
             id: dbSet.set_id,
             setNumber: dbSet.set_index,
             value1Type: dbSet.value_1_type as any,
@@ -774,12 +778,6 @@ function EditWorkoutPage() {
           loading={loading}
         />
       )}
-
-      {/* Date and time pickers now use native HTML5 inputs - no modals needed */}
-            setShowTimePicker(false)
-          }}
-        />
-      )}
     </div>
   )
 }
@@ -994,12 +992,26 @@ function ExerciseCard({
   activeDropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null
   setActiveDropdown: (dropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null) => void
 }) {
+  const [showHistory, setShowHistory] = useState(false)
   return (
     <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
       {/* Exercise Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1">
-          <h3 className="font-semibold text-white">{exercise.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-white">{exercise.name}</h3>
+            {exercise.template_id && (
+              <button
+                onClick={() => setShowHistory(true)}
+                className="p-1 text-gray-400 hover:text-lime-600 transition-colors"
+                title="View exercise history"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            )}
+          </div>
           {exercise.muscle_groups && (
             <p className="text-sm text-gray-400">
               {exercise.muscle_groups.join(', ')}
@@ -1073,6 +1085,15 @@ function ExerciseCard({
           + Add Set
         </button>
       </div>
+
+      {/* Exercise History Modal */}
+      {showHistory && exercise.template_id && (
+        <ExerciseHistoryModal
+          exerciseTemplateId={exercise.template_id}
+          exerciseName={exercise.name}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/Form'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
+import { ExerciseHistoryModal } from '@/components/ExerciseHistoryModal'
 import { trpc } from '@/lib/trpc'
 
 interface Exercise {
@@ -13,6 +14,7 @@ interface Exercise {
   sets: WorkoutSet[]
   // Database fields
   exercise_id?: string
+  template_id?: string
   muscle_groups?: string[]
   equipment?: string
   equipment_id?: string
@@ -126,6 +128,7 @@ function NewWorkoutPage() {
         name: template.name,
         notes: '',
         sets: [createNewSetWithDefaults(1, template.default_value_1_type, template.default_value_2_type, template.exercise_type)],
+        template_id: template.template_id,
         muscle_groups: template.muscle_groups,
         equipment: template.equipment,
         exercise_category: template.exercise_category,
@@ -827,11 +830,26 @@ function ExerciseCard({
   activeDropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null
   setActiveDropdown: (dropdown: {exerciseId: string, setId: string, field: 'value1' | 'value2'} | null) => void
 }) {
+  const [showHistory, setShowHistory] = useState(false)
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1">
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100">{exercise.name}</h3>
+          <div className="flex items-center space-x-2">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{exercise.name}</h3>
+            {exercise.template_id && (
+              <button
+                onClick={() => setShowHistory(true)}
+                className="p-1 text-gray-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
+                title="View exercise history"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            )}
+          </div>
           {exercise.muscle_groups && (
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {exercise.muscle_groups.join(', ')}
@@ -902,6 +920,15 @@ function ExerciseCard({
           + Add Set
         </button>
       </div>
+
+      {/* Exercise History Modal */}
+      {showHistory && exercise.template_id && (
+        <ExerciseHistoryModal
+          exerciseTemplateId={exercise.template_id}
+          exerciseName={exercise.name}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
     </div>
   )
 }

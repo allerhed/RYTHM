@@ -902,4 +902,53 @@ export const analyticsRouter = router({
         weekStart: selectedWeekStart.toISOString()
       }
     }),
+
+  // Exercise history endpoint - get last 10 workouts with this exercise
+  getExerciseHistory: protectedProcedure
+    .input(z.object({
+      exerciseTemplateId: z.string().uuid(),
+    }))
+    .query(async ({ input, ctx }) => {
+      const { exerciseTemplateId } = input;
+
+      // Get last 10 completed sessions that have this exercise
+      const query = `
+        SELECT DISTINCT
+          s.session_id,
+          s.started_at,
+          s.category,
+          se.exercise_name,
+          json_agg(
+            json_build_object(
+              'set_id', st.set_id,
+              'reps', st.reps,
+              'value_1_type', st.value_1_type,
+              'value_1_numeric', st.value_1_numeric,
+              'value_2_type', st.value_2_type,
+              'value_2_numeric', st.value_2_numeric,
+              'rpe', st.rpe,
+              'order_index', st.order_index
+            ) ORDER BY st.order_index
+          ) as sets
+        FROM sessions s
+        JOIN session_exercises se ON se.session_id = s.session_id
+        JOIN sets st ON st.session_exercise_id = se.session_exercise_id
+        WHERE s.user_id = $1
+          AND se.exercise_template_id = $2
+          AND s.completed_at IS NOT NULL
+        GROUP BY s.session_id, s.started_at, s.category, se.exercise_name
+        ORDER BY s.started_at DESC
+        LIMIT 10
+      `;
+
+      const result = await ctx.db.query(query, [ctx.user.userId, exerciseTemplateId]);
+
+      return result.rows.map(row => ({
+        sessionId: row.session_id,
+        startedAt: row.started_at,
+        category: row.category,
+        exerciseName: row.exercise_name,
+        sets: row.sets
+      }));
+    }),
 });
