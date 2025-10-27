@@ -907,29 +907,36 @@ export const analyticsRouter = router({
   getExerciseHistory: protectedProcedure
     .input(z.object({
       exerciseTemplateId: z.string().uuid(),
+      exerciseName: z.string().optional(), // Optional: client can pass the name directly
     }))
     .query(async ({ input, ctx }) => {
-      const { exerciseTemplateId } = input;
+      const { exerciseTemplateId, exerciseName: providedName } = input;
 
       console.log('🔍 getExerciseHistory called:', { 
         exerciseTemplateId, 
+        providedName,
         userId: ctx.user.userId, 
         tenantId: ctx.user.tenantId 
       });
 
-      // First, get the exercise name from the template
-      const templateResult = await ctx.db.query(
-        'SELECT name FROM exercise_templates WHERE template_id = $1',
-        [exerciseTemplateId]
-      );
+      // Use provided name or look up the template name
+      let exerciseName = providedName;
+      
+      if (!exerciseName) {
+        const templateResult = await ctx.db.query(
+          'SELECT name FROM exercise_templates WHERE template_id = $1',
+          [exerciseTemplateId]
+        );
 
-      if (templateResult.rows.length === 0) {
-        console.log('❌ Template not found:', exerciseTemplateId);
-        return [];
+        if (templateResult.rows.length === 0) {
+          console.log('❌ Template not found:', exerciseTemplateId);
+          return [];
+        }
+
+        exerciseName = templateResult.rows[0].name;
       }
-
-      const templateName = templateResult.rows[0].name;
-      console.log('✅ Template found:', templateName);
+      
+      console.log('✅ Searching for exercise:', exerciseName);
 
       // Debug: Check what exercises exist in the database
       const exercisesCheck = await ctx.db.query(
@@ -968,8 +975,8 @@ export const analyticsRouter = router({
         LIMIT 10
       `;
 
-      console.log('🔎 Searching for exercise name:', templateName);
-      console.log('🔎 Query parameters:', { userId: ctx.user.userId, tenantId: ctx.user.tenantId, exerciseName: templateName });
+      console.log('🔎 Searching for exercise name:', exerciseName);
+      console.log('🔎 Query parameters:', { userId: ctx.user.userId, tenantId: ctx.user.tenantId, exerciseName });
       
       // Debug: Check if ANY sessions have this exercise (without completed_at filter)
       const allSessionsCheck = await ctx.db.query(
@@ -979,14 +986,14 @@ export const analyticsRouter = router({
          JOIN exercises e ON e.exercise_id = st.exercise_id 
          WHERE s.user_id = $1 AND s.tenant_id = $2 AND LOWER(e.name) = LOWER($3)
          LIMIT 5`,
-        [ctx.user.userId, ctx.user.tenantId, templateName]
+        [ctx.user.userId, ctx.user.tenantId, exerciseName]
       );
       console.log('📊 Sessions with this exercise (any status):', allSessionsCheck.rows.length);
       if (allSessionsCheck.rows.length > 0) {
         console.log('  First session:', allSessionsCheck.rows[0]);
       }
       
-      const result = await ctx.db.query(query, [ctx.user.userId, ctx.user.tenantId, templateName]);
+      const result = await ctx.db.query(query, [ctx.user.userId, ctx.user.tenantId, exerciseName]);
       console.log('📊 Query result count (completed only):', result.rows.length);
 
       return result.rows.map(row => ({

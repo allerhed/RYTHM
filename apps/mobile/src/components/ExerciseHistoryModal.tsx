@@ -12,7 +12,8 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
   console.log('ExerciseHistoryModal opened:', { exerciseTemplateId, exerciseName })
   
   const historyQuery = trpc.statistics.getExerciseHistory.useQuery({
-    exerciseTemplateId
+    exerciseTemplateId,
+    exerciseName // Pass the name to avoid template lookup
   })
   
   console.log('History query state:', { 
