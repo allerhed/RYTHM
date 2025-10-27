@@ -744,4 +744,166 @@ export const analyticsRouter = router({
         }
       }
     }),
+
+  // Weekly KG (total weight lifted) endpoint
+  getWeeklyKg: protectedProcedure
+    .input(z.object({
+      weekStart: z.string().optional(), // ISO date string for the Monday of the week
+    }).optional())
+    .query(async ({ input, ctx }) => {
+      // Helper function to get Monday of a week
+      const getMondayOfWeek = (date: Date) => {
+        const d = new Date(date)
+        const day = d.getDay()
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+        return new Date(d.setDate(diff))
+      }
+
+      // Use provided week or default to current week
+      const targetWeekStart = input?.weekStart ? new Date(input.weekStart) : getMondayOfWeek(new Date())
+      
+      // Selected week
+      const selectedWeekStart = new Date(targetWeekStart)
+      const selectedWeekEnd = new Date(selectedWeekStart)
+      selectedWeekEnd.setDate(selectedWeekEnd.getDate() + 6)
+      selectedWeekEnd.setHours(23, 59, 59, 999)
+
+      // Previous week
+      const previousWeekStart = new Date(targetWeekStart)
+      previousWeekStart.setDate(previousWeekStart.getDate() - 7)
+      const previousWeekEnd = new Date(previousWeekStart)
+      previousWeekEnd.setDate(previousWeekEnd.getDate() + 6)
+      previousWeekEnd.setHours(23, 59, 59, 999)
+
+      // Query for selected week total kg (weight * reps)
+      const selectedWeekQuery = `
+        SELECT 
+          COALESCE(SUM(
+            CASE 
+              WHEN st.value_1_type = 'weight_kg' AND st.reps IS NOT NULL 
+              THEN st.value_1_numeric * st.reps
+              WHEN st.value_2_type = 'weight_kg' AND st.reps IS NOT NULL 
+              THEN st.value_2_numeric * st.reps
+              ELSE 0
+            END
+          ), 0) as total_kg
+        FROM sets st
+        JOIN sessions s ON s.session_id = st.session_id
+        WHERE s.user_id = $1 
+          AND s.started_at >= $2 
+          AND s.started_at <= $3
+      `
+
+      // Query for previous week total kg
+      const previousWeekQuery = `
+        SELECT 
+          COALESCE(SUM(
+            CASE 
+              WHEN st.value_1_type = 'weight_kg' AND st.reps IS NOT NULL 
+              THEN st.value_1_numeric * st.reps
+              WHEN st.value_2_type = 'weight_kg' AND st.reps IS NOT NULL 
+              THEN st.value_2_numeric * st.reps
+              ELSE 0
+            END
+          ), 0) as total_kg
+        FROM sets st
+        JOIN sessions s ON s.session_id = st.session_id
+        WHERE s.user_id = $1 
+          AND s.started_at >= $2 
+          AND s.started_at <= $3
+      `
+
+      const [selectedWeekResult, previousWeekResult] = await Promise.all([
+        ctx.db.query(selectedWeekQuery, [ctx.user.userId, selectedWeekStart.toISOString(), selectedWeekEnd.toISOString()]),
+        ctx.db.query(previousWeekQuery, [ctx.user.userId, previousWeekStart.toISOString(), previousWeekEnd.toISOString()])
+      ])
+
+      const selectedWeekKg = parseFloat(selectedWeekResult.rows[0]?.total_kg || 0)
+      const previousWeekKg = parseFloat(previousWeekResult.rows[0]?.total_kg || 0)
+
+      return {
+        selectedWeek: selectedWeekKg,
+        previousWeek: previousWeekKg,
+        weekStart: selectedWeekStart.toISOString()
+      }
+    }),
+
+  // Weekly KM (total distance) endpoint
+  getWeeklyKm: protectedProcedure
+    .input(z.object({
+      weekStart: z.string().optional(), // ISO date string for the Monday of the week
+    }).optional())
+    .query(async ({ input, ctx }) => {
+      // Helper function to get Monday of a week
+      const getMondayOfWeek = (date: Date) => {
+        const d = new Date(date)
+        const day = d.getDay()
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+        return new Date(d.setDate(diff))
+      }
+
+      // Use provided week or default to current week
+      const targetWeekStart = input?.weekStart ? new Date(input.weekStart) : getMondayOfWeek(new Date())
+      
+      // Selected week
+      const selectedWeekStart = new Date(targetWeekStart)
+      const selectedWeekEnd = new Date(selectedWeekStart)
+      selectedWeekEnd.setDate(selectedWeekEnd.getDate() + 6)
+      selectedWeekEnd.setHours(23, 59, 59, 999)
+
+      // Previous week
+      const previousWeekStart = new Date(targetWeekStart)
+      previousWeekStart.setDate(previousWeekStart.getDate() - 7)
+      const previousWeekEnd = new Date(previousWeekStart)
+      previousWeekEnd.setDate(previousWeekEnd.getDate() + 6)
+      previousWeekEnd.setHours(23, 59, 59, 999)
+
+      // Query for selected week total distance in meters
+      const selectedWeekQuery = `
+        SELECT 
+          COALESCE(SUM(
+            CASE 
+              WHEN st.value_1_type = 'distance_m' THEN st.value_1_numeric
+              WHEN st.value_2_type = 'distance_m' THEN st.value_2_numeric
+              ELSE 0
+            END
+          ), 0) as total_distance
+        FROM sets st
+        JOIN sessions s ON s.session_id = st.session_id
+        WHERE s.user_id = $1 
+          AND s.started_at >= $2 
+          AND s.started_at <= $3
+      `
+
+      // Query for previous week total distance
+      const previousWeekQuery = `
+        SELECT 
+          COALESCE(SUM(
+            CASE 
+              WHEN st.value_1_type = 'distance_m' THEN st.value_1_numeric
+              WHEN st.value_2_type = 'distance_m' THEN st.value_2_numeric
+              ELSE 0
+            END
+          ), 0) as total_distance
+        FROM sets st
+        JOIN sessions s ON s.session_id = st.session_id
+        WHERE s.user_id = $1 
+          AND s.started_at >= $2 
+          AND s.started_at <= $3
+      `
+
+      const [selectedWeekResult, previousWeekResult] = await Promise.all([
+        ctx.db.query(selectedWeekQuery, [ctx.user.userId, selectedWeekStart.toISOString(), selectedWeekEnd.toISOString()]),
+        ctx.db.query(previousWeekQuery, [ctx.user.userId, previousWeekStart.toISOString(), previousWeekEnd.toISOString()])
+      ])
+
+      const selectedWeekDistance = parseFloat(selectedWeekResult.rows[0]?.total_distance || 0)
+      const previousWeekDistance = parseFloat(previousWeekResult.rows[0]?.total_distance || 0)
+
+      return {
+        selectedWeek: selectedWeekDistance, // in meters
+        previousWeek: previousWeekDistance, // in meters
+        weekStart: selectedWeekStart.toISOString()
+      }
+    }),
 });

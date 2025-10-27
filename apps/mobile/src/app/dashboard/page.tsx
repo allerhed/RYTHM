@@ -6,6 +6,8 @@ import { Button } from '../../components/Form'
 import { Avatar } from '../../components/Avatar'
 import { useAuth, withAuth } from '../../contexts/AuthContext'
 import { TrainingScoreWidget } from '../../components/TrainingScoreWidget'
+import { WeeklyKgWidget } from '../../components/WeeklyKgWidget'
+import { WeeklyKmWidget } from '../../components/WeeklyKmWidget'
 import { PencilIcon, EyeIcon } from '@heroicons/react/24/outline'
 import { trpc } from '../../lib/trpc'
 import { PullToRefresh } from '../../components/PullToRefresh'
@@ -77,6 +79,48 @@ function DashboardPage() {
       fetchProfile(),
       refetchActivity()
     ])
+    // Trigger workout refetch by updating a dependency
+    const fetchWorkouts = async () => {
+      if (!user) return
+      
+      setLoading(true)
+      try {
+        let dateToFetch: Date
+        
+        const currentWeekStart = getCurrentWeekStart()
+        const isCurrentWeekSelected = selectedWeekStart.getTime() === currentWeekStart.getTime()
+        
+        if (isCurrentWeekSelected) {
+          dateToFetch = new Date(selectedWeekStart)
+          dateToFetch.setDate(dateToFetch.getDate() + selectedDayIndex)
+        } else {
+          dateToFetch = new Date(selectedWeekStart)
+          dateToFetch.setDate(dateToFetch.getDate() + selectedDayIndex)
+        }
+
+        const localDate = `${dateToFetch.getFullYear()}-${String(dateToFetch.getMonth() + 1).padStart(2, '0')}-${String(dateToFetch.getDate()).padStart(2, '0')}`
+        
+        const response = await fetch(`/api/sessions?date=${localDate}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+          }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          setTodaysWorkouts(data.sessions || [])
+        } else {
+          setTodaysWorkouts([])
+        }
+      } catch (error) {
+        console.error('Error fetching workouts:', error)
+        setTodaysWorkouts([])
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    await fetchWorkouts()
   }
 
   // Helper functions for week navigation
@@ -492,6 +536,15 @@ function DashboardPage() {
             onViewAnalytics={() => router.push('/analytics')} 
             selectedWeekStart={selectedWeekStart}
           />
+
+          {/* Weekly Stats Grid - Total KG and KM */}
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            {/* Total KG Widget */}
+            <WeeklyKgWidget selectedWeekStart={selectedWeekStart} />
+            
+            {/* Total KM Widget */}
+            <WeeklyKmWidget selectedWeekStart={selectedWeekStart} />
+          </div>
 
           {/* Selected Date Workouts */}
           <Card className="p-6 mb-8">
