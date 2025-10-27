@@ -969,8 +969,25 @@ export const analyticsRouter = router({
       `;
 
       console.log('🔎 Searching for exercise name:', templateName);
+      console.log('🔎 Query parameters:', { userId: ctx.user.userId, tenantId: ctx.user.tenantId, exerciseName: templateName });
+      
+      // Debug: Check if ANY sessions have this exercise (without completed_at filter)
+      const allSessionsCheck = await ctx.db.query(
+        `SELECT s.session_id, s.completed_at, e.name 
+         FROM sessions s 
+         JOIN sets st ON st.session_id = s.session_id 
+         JOIN exercises e ON e.exercise_id = st.exercise_id 
+         WHERE s.user_id = $1 AND s.tenant_id = $2 AND LOWER(e.name) = LOWER($3)
+         LIMIT 5`,
+        [ctx.user.userId, ctx.user.tenantId, templateName]
+      );
+      console.log('📊 Sessions with this exercise (any status):', allSessionsCheck.rows.length);
+      if (allSessionsCheck.rows.length > 0) {
+        console.log('  First session:', allSessionsCheck.rows[0]);
+      }
+      
       const result = await ctx.db.query(query, [ctx.user.userId, ctx.user.tenantId, templateName]);
-      console.log('📊 Query result count:', result.rows.length);
+      console.log('📊 Query result count (completed only):', result.rows.length);
 
       return result.rows.map(row => ({
         sessionId: row.session_id,
