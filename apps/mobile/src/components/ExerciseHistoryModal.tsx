@@ -23,20 +23,39 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
     error: historyQuery.error 
   })
 
+  const getColumnLabel = (type: string | null) => {
+    if (!type) return '-'
+    
+    switch (type) {
+      case 'weight_kg':
+        return 'KGS'
+      case 'distance_m':
+        return 'DISTANCE'
+      case 'duration_m':
+        return 'DURATION'
+      case 'calories':
+        return 'CALORIES'
+      case 'reps':
+        return 'REPS'
+      default:
+        return type.toUpperCase()
+    }
+  }
+
   const formatValue = (type: string | null, value: number | null) => {
     if (!type || value === null) return '-'
     
     switch (type) {
       case 'weight_kg':
-        return `${value} kg`
+        return `${value}`
       case 'distance_m':
-        return `${(value / 1000).toFixed(2)} km`
+        return `${(value / 1000).toFixed(2)}`
       case 'duration_m':
-        return `${value} min`
+        return `${value}`
       case 'calories':
-        return `${value} cal`
+        return `${value}`
       case 'reps':
-        return `${value} reps`
+        return `${value}`
       default:
         return value.toString()
     }
@@ -132,13 +151,10 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
                             Set
                           </th>
                           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Value 1
+                            {getColumnLabel(session.sets[0]?.value_1_type)}
                           </th>
                           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Value 2
-                          </th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Reps
+                            {getColumnLabel(session.sets[0]?.value_2_type)}
                           </th>
                         </tr>
                       </thead>
@@ -153,9 +169,6 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
                             </td>
                             <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                               {formatValue(set.value_2_type, set.value_2_numeric)}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                              {set.reps || '-'}
                             </td>
                           </tr>
                         ))}
