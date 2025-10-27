@@ -961,7 +961,7 @@ export const analyticsRouter = router({
         JOIN exercises e ON e.exercise_id = st.exercise_id
         WHERE s.user_id = $1
           AND s.tenant_id = $2
-          AND e.name = $3
+          AND LOWER(e.name) = LOWER($3)
           AND s.completed_at IS NOT NULL
         GROUP BY s.session_id, s.started_at, s.category, e.name
         ORDER BY s.started_at DESC
