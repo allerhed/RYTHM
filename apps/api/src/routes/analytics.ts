@@ -911,6 +911,12 @@ export const analyticsRouter = router({
     .query(async ({ input, ctx }) => {
       const { exerciseTemplateId } = input;
 
+      console.log('🔍 getExerciseHistory called:', { 
+        exerciseTemplateId, 
+        userId: ctx.user.userId, 
+        tenantId: ctx.user.tenantId 
+      });
+
       // First, get the exercise name from the template
       const templateResult = await ctx.db.query(
         'SELECT name FROM exercise_templates WHERE template_id = $1',
@@ -918,10 +924,19 @@ export const analyticsRouter = router({
       );
 
       if (templateResult.rows.length === 0) {
+        console.log('❌ Template not found:', exerciseTemplateId);
         return [];
       }
 
       const templateName = templateResult.rows[0].name;
+      console.log('✅ Template found:', templateName);
+
+      // Debug: Check what exercises exist in the database
+      const exercisesCheck = await ctx.db.query(
+        'SELECT DISTINCT e.name FROM exercises e JOIN sets st ON e.exercise_id = st.exercise_id JOIN sessions s ON st.session_id = s.session_id WHERE s.user_id = $1 AND s.tenant_id = $2 LIMIT 20',
+        [ctx.user.userId, ctx.user.tenantId]
+      );
+      console.log('📋 User exercises in DB:', exercisesCheck.rows.map(r => r.name));
 
       // Get last 10 completed sessions that have this exercise (matching by name)
       const query = `
@@ -953,7 +968,9 @@ export const analyticsRouter = router({
         LIMIT 10
       `;
 
+      console.log('🔎 Searching for exercise name:', templateName);
       const result = await ctx.db.query(query, [ctx.user.userId, ctx.user.tenantId, templateName]);
+      console.log('📊 Query result count:', result.rows.length);
 
       return result.rows.map(row => ({
         sessionId: row.session_id,
