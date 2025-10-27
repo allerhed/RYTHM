@@ -945,7 +945,7 @@ export const analyticsRouter = router({
       );
       console.log('📋 User exercises in DB:', exercisesCheck.rows.map(r => r.name));
 
-      // Get last 10 completed sessions that have this exercise (matching by name)
+      // Get last 10 sessions that have this exercise (any status, as long as they have sets logged)
       const query = `
         SELECT
           s.session_id,
@@ -969,7 +969,7 @@ export const analyticsRouter = router({
         WHERE s.user_id = $1
           AND s.tenant_id = $2
           AND LOWER(e.name) = LOWER($3)
-          AND s.completed_at IS NOT NULL
+          AND s.started_at < NOW()
         GROUP BY s.session_id, s.started_at, s.category, e.name
         ORDER BY s.started_at DESC
         LIMIT 10
@@ -978,23 +978,28 @@ export const analyticsRouter = router({
       console.log('🔎 Searching for exercise name:', exerciseName);
       console.log('🔎 Query parameters:', { userId: ctx.user.userId, tenantId: ctx.user.tenantId, exerciseName });
       
-      // Debug: Check if ANY sessions have this exercise (without completed_at filter)
+      // Debug: Check if ANY sessions have this exercise
       const allSessionsCheck = await ctx.db.query(
-        `SELECT s.session_id, s.completed_at, e.name 
+        `SELECT s.session_id, s.completed_at, s.started_at, e.name 
          FROM sessions s 
          JOIN sets st ON st.session_id = s.session_id 
          JOIN exercises e ON e.exercise_id = st.exercise_id 
          WHERE s.user_id = $1 AND s.tenant_id = $2 AND LOWER(e.name) = LOWER($3)
+         ORDER BY s.started_at DESC
          LIMIT 5`,
         [ctx.user.userId, ctx.user.tenantId, exerciseName]
       );
-      console.log('📊 Sessions with this exercise (any status):', allSessionsCheck.rows.length);
+      console.log('📊 Sessions with this exercise (all):', allSessionsCheck.rows.length);
       if (allSessionsCheck.rows.length > 0) {
-        console.log('  First session:', allSessionsCheck.rows[0]);
+        console.log('  Sessions found:', allSessionsCheck.rows.map(r => ({ 
+          session_id: r.session_id, 
+          started_at: r.started_at,
+          completed: !!r.completed_at 
+        })));
       }
       
       const result = await ctx.db.query(query, [ctx.user.userId, ctx.user.tenantId, exerciseName]);
-      console.log('📊 Query result count (completed only):', result.rows.length);
+      console.log('📊 Query result count (before today):', result.rows.length);
 
       return result.rows.map(row => ({
         sessionId: row.session_id,
