@@ -363,12 +363,6 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
             )}
           </div>
         </div>
-
-        {/* Category Badge */}
-        <div className={`${categoryDetails.bgColor} ${categoryDetails.color} p-3 rounded-lg text-center`}>
-          <div className="font-semibold">{data.selectedWeek.score.category}</div>
-          <div className="text-sm opacity-80">{categoryDetails.range}</div>
-        </div>
       </div>
 
       {/* Info Modal */}
