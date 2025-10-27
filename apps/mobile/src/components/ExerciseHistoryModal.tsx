@@ -9,8 +9,17 @@ interface ExerciseHistoryModalProps {
 }
 
 export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose }: ExerciseHistoryModalProps) {
+  console.log('ExerciseHistoryModal opened:', { exerciseTemplateId, exerciseName })
+  
   const historyQuery = trpc.statistics.getExerciseHistory.useQuery({
     exerciseTemplateId
+  })
+  
+  console.log('History query state:', { 
+    isLoading: historyQuery.isLoading, 
+    isError: historyQuery.isError, 
+    data: historyQuery.data,
+    error: historyQuery.error 
   })
 
   const formatValue = (type: string | null, value: number | null) => {

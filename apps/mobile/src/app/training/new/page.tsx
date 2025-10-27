@@ -838,17 +838,22 @@ function ExerciseCard({
         <div className="flex-1">
           <div className="flex items-center space-x-2">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100">{exercise.name}</h3>
-            {exercise.template_id && (
-              <button
-                onClick={() => setShowHistory(true)}
-                className="p-1 text-gray-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
-                title="View exercise history"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </button>
-            )}
+            <button
+              onClick={() => {
+                console.log('History button clicked:', { name: exercise.name, template_id: exercise.template_id })
+                if (!exercise.template_id) {
+                  alert(`No template_id for ${exercise.name}`)
+                  return
+                }
+                setShowHistory(true)
+              }}
+              className="p-1 text-gray-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
+              title="View exercise history"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
           </div>
           {exercise.muscle_groups && (
             <p className="text-sm text-gray-500 dark:text-gray-400">
