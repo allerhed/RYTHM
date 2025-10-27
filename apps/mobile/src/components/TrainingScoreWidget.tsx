@@ -102,6 +102,22 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
       staleTime: 5 * 60 * 1000, // 5 minutes
     }
   )
+  
+  const weeklyKgQuery = trpc.statistics.getWeeklyKg.useQuery(
+    weekParam ? { weekStart: weekParam } : undefined,
+    {
+      retry: 2,
+      staleTime: 5 * 60 * 1000,
+    }
+  )
+  
+  const weeklyKmQuery = trpc.statistics.getWeeklyKm.useQuery(
+    weekParam ? { weekStart: weekParam } : undefined,
+    {
+      retry: 2,
+      staleTime: 5 * 60 * 1000,
+    }
+  )
 
   if (trainingScoreQuery.isLoading) {
     return (
@@ -248,6 +264,103 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
               </div>
               <div className="text-xs text-gray-400 dark:text-gray-500">Previous week load</div>
             </div>
+          </div>
+        </div>
+
+        {/* Weekly KG and KM Stats */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          {/* Weekly KG Widget */}
+          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <div className="flex items-center space-x-2 mb-2">
+              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+              </svg>
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Selected Week</span>
+            </div>
+            {weeklyKgQuery.isLoading ? (
+              <div className="animate-pulse">
+                <div className="h-8 bg-gray-200 dark:bg-gray-600 rounded w-20 mb-1"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-32"></div>
+              </div>
+            ) : weeklyKgQuery.isError ? (
+              <div className="text-sm text-red-600 dark:text-red-400">Error loading</div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {Math.round(weeklyKgQuery.data?.selectedWeek || 0)} Kg
+                </div>
+                <div className="text-xs text-gray-400 dark:text-gray-500 mb-2">Selected week</div>
+                <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-500 dark:text-gray-400">Previous Week</span>
+                    {(() => {
+                      const current = weeklyKgQuery.data?.selectedWeek || 0
+                      const previous = weeklyKgQuery.data?.previousWeek || 0
+                      const change = previous > 0 ? ((current - previous) / previous) * 100 : 0
+                      return (
+                        <span className={`font-medium ${
+                          change > 0 ? 'text-green-600 dark:text-green-400' : 
+                          change < 0 ? 'text-red-600 dark:text-red-400' : 
+                          'text-gray-600 dark:text-gray-400'
+                        }`}>
+                          {change > 0 ? '+' : ''}{change.toFixed(1)}%
+                        </span>
+                      )
+                    })()}
+                  </div>
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-1">
+                    {Math.round(weeklyKgQuery.data?.previousWeek || 0)} Kg
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Weekly KM Widget */}
+          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <div className="flex items-center space-x-2 mb-2">
+              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Selected Week</span>
+            </div>
+            {weeklyKmQuery.isLoading ? (
+              <div className="animate-pulse">
+                <div className="h-8 bg-gray-200 dark:bg-gray-600 rounded w-20 mb-1"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-32"></div>
+              </div>
+            ) : weeklyKmQuery.isError ? (
+              <div className="text-sm text-red-600 dark:text-red-400">Error loading</div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {((weeklyKmQuery.data?.selectedWeek || 0) / 1000).toFixed(1)} Km
+                </div>
+                <div className="text-xs text-gray-400 dark:text-gray-500 mb-2">Selected week</div>
+                <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-500 dark:text-gray-400">Previous Week</span>
+                    {(() => {
+                      const current = weeklyKmQuery.data?.selectedWeek || 0
+                      const previous = weeklyKmQuery.data?.previousWeek || 0
+                      const change = previous > 0 ? ((current - previous) / previous) * 100 : 0
+                      return (
+                        <span className={`font-medium ${
+                          change > 0 ? 'text-green-600 dark:text-green-400' : 
+                          change < 0 ? 'text-red-600 dark:text-red-400' : 
+                          'text-gray-600 dark:text-gray-400'
+                        }`}>
+                          {change > 0 ? '+' : ''}{change.toFixed(1)}%
+                        </span>
+                      )
+                    })()}
+                  </div>
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-1">
+                    {((weeklyKmQuery.data?.previousWeek || 0) / 1000).toFixed(1)} Km
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 

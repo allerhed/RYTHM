@@ -6,8 +6,6 @@ import { Button } from '../../components/Form'
 import { Avatar } from '../../components/Avatar'
 import { useAuth, withAuth } from '../../contexts/AuthContext'
 import { TrainingScoreWidget } from '../../components/TrainingScoreWidget'
-import { WeeklyKgWidget } from '../../components/WeeklyKgWidget'
-import { WeeklyKmWidget } from '../../components/WeeklyKmWidget'
 import { PencilIcon, EyeIcon } from '@heroicons/react/24/outline'
 import { trpc } from '../../lib/trpc'
 import { PullToRefresh } from '../../components/PullToRefresh'
@@ -536,15 +534,6 @@ function DashboardPage() {
             onViewAnalytics={() => router.push('/analytics')} 
             selectedWeekStart={selectedWeekStart}
           />
-
-          {/* Weekly Stats Grid - Total KG and KM */}
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            {/* Total KG Widget */}
-            <WeeklyKgWidget selectedWeekStart={selectedWeekStart} />
-            
-            {/* Total KM Widget */}
-            <WeeklyKmWidget selectedWeekStart={selectedWeekStart} />
-          </div>
 
           {/* Selected Date Workouts */}
           <Card className="p-6 mb-8">
