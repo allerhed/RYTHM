@@ -130,9 +130,6 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
                           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Reps
                           </th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            RPE
-                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -149,9 +146,6 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
                             </td>
                             <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                               {set.reps || '-'}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                              {set.rpe || '-'}
                             </td>
                           </tr>
                         ))}

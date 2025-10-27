@@ -911,13 +911,25 @@ export const analyticsRouter = router({
     .query(async ({ input, ctx }) => {
       const { exerciseTemplateId } = input;
 
-      // Get last 10 completed sessions that have this exercise
+      // First, get the exercise name from the template
+      const templateResult = await ctx.db.query(
+        'SELECT name FROM exercise_templates WHERE template_id = $1',
+        [exerciseTemplateId]
+      );
+
+      if (templateResult.rows.length === 0) {
+        return [];
+      }
+
+      const templateName = templateResult.rows[0].name;
+
+      // Get last 10 completed sessions that have this exercise (matching by name)
       const query = `
         SELECT DISTINCT
           s.session_id,
           s.started_at,
           s.category,
-          se.exercise_name,
+          e.name as exercise_name,
           json_agg(
             json_build_object(
               'set_id', st.set_id,
@@ -926,22 +938,22 @@ export const analyticsRouter = router({
               'value_1_numeric', st.value_1_numeric,
               'value_2_type', st.value_2_type,
               'value_2_numeric', st.value_2_numeric,
-              'rpe', st.rpe,
-              'order_index', st.order_index
-            ) ORDER BY st.order_index
+              'set_index', st.set_index
+            ) ORDER BY st.set_index
           ) as sets
         FROM sessions s
-        JOIN session_exercises se ON se.session_id = s.session_id
-        JOIN sets st ON st.session_exercise_id = se.session_exercise_id
+        JOIN sets st ON st.session_id = s.session_id
+        JOIN exercises e ON e.exercise_id = st.exercise_id
         WHERE s.user_id = $1
-          AND se.exercise_template_id = $2
+          AND s.tenant_id = $2
+          AND e.name = $3
           AND s.completed_at IS NOT NULL
-        GROUP BY s.session_id, s.started_at, s.category, se.exercise_name
+        GROUP BY s.session_id, s.started_at, s.category, e.name
         ORDER BY s.started_at DESC
         LIMIT 10
       `;
 
-      const result = await ctx.db.query(query, [ctx.user.userId, exerciseTemplateId]);
+      const result = await ctx.db.query(query, [ctx.user.userId, ctx.user.tenantId, templateName]);
 
       return result.rows.map(row => ({
         sessionId: row.session_id,
