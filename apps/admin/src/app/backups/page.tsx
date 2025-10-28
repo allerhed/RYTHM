@@ -326,7 +326,7 @@ function BackupsPage() {
 
         {/* Scheduled Backups Configuration */}
         {schedule && (
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 border border-gray-700 p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-xl font-bold text-white">Automated Daily Backups</h2>
@@ -451,7 +451,7 @@ function BackupsPage() {
         )}
 
         {/* Backups List */}
-        <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323]/50 border border-gray-700 overflow-hidden">
+        <div className="rounded-2xl bg-dark-elevated1 border border-gray-700 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-16">
               <div className="flex flex-col items-center space-y-4">
@@ -483,7 +483,7 @@ function BackupsPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-700">
                   {backups.map((backup) => (
-                    <tr key={backup.name} className="hover:bg-gradient-to-b from-[#1a1a1a] to-[#232323]/30 transition-colors">
+                    <tr key={backup.name} className="hover:bg-dark-elevated0 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
                           <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
