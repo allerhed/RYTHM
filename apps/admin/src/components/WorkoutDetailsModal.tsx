@@ -66,12 +66,12 @@ export function WorkoutDetailsModal({ isOpen, onClose, workout }: WorkoutDetails
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl shadow-2xl border border-gray-700 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-dark-elevated1 rounded-2xl shadow-2xl border border-gray-700 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
-              <div className="h-16 w-16 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg text-white">
+              <div className="icon-accent h-16 w-16 rounded-xl flex items-center justify-center shadow-lg text-white">
                 {getWorkoutIcon(workout.type)}
               </div>
               <div>
@@ -215,7 +215,7 @@ export function WorkoutDetailsModal({ isOpen, onClose, workout }: WorkoutDetails
             >
               Close
             </button>
-            <button className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg">
+            <button className="px-6 py-3 btn-primary rounded-xl transition-all duration-200 shadow-lg">
               Export Data
             </button>
           </div>

@@ -514,9 +514,9 @@ export default function AnalyticsPage() {
                   <div key={equipment.name} className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-semibold ${
-                        index < 2 ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 
-                        index < 4 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 
-                        'bg-gradient-to-r from-gray-500 to-gray-600'
+                        index < 2 ? 'bg-primary' : 
+                        index < 4 ? 'bg-primary-hover' : 
+                        'bg-gray-600'
                       }`}>
                         {index + 1}
                       </div>

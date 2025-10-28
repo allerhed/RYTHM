@@ -147,7 +147,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden" onClick={() => setSidebarOpen(false)}>
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
-          <div className="relative flex w-full max-w-xs flex-1 flex-col bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-2xl">
+          <div className="relative flex w-full max-w-xs flex-1 flex-col bg-dark-elevated1 shadow-2xl">
             <div className="absolute top-0 right-0 -mr-12 pt-2">
               <button
                 type="button"
@@ -164,7 +164,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <div className="h-full overflow-y-auto">
               <div className="flex h-16 shrink-0 items-center px-6 border-b border-gray-700">
                 <div className="flex items-center space-x-3">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
+                  <div className="icon-accent h-8 w-8 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-sm">R</span>
                   </div>
                   <span className="text-xl font-bold text-white">RYTHM</span>
@@ -182,7 +182,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         href={item.href}
                         className={`group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                           isActive
-                            ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg'
+                            ? 'bg-primary text-white shadow-lg'
                             : 'text-gray-300 hover:text-white hover:bg-gray-700'
                         }`}
                         onClick={() => setSidebarOpen(false)}
@@ -203,7 +203,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-80 lg:flex-col">
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl">
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-dark-elevated1 shadow-xl">
           <div className="flex h-16 shrink-0 items-center px-6 border-b border-gray-700">
             <div className="flex items-center space-x-3">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
@@ -307,7 +307,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       <div className="lg:pl-80">
         {/* Mobile header */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-700 bg-gradient-to-b from-[#1a1a1a] to-[#232323] px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 lg:hidden">
+        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-700 bg-dark-elevated1 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 lg:hidden">
           <button
             type="button"
             className="-m-2.5 p-2.5 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-200"
@@ -322,7 +322,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex flex-1 items-center">
               <div className="flex items-center space-x-2">
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
+                <div className="icon-accent h-8 w-8 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">R</span>
                 </div>
                 <span className="text-lg font-bold text-white">RYTHM</span>

@@ -37,7 +37,7 @@ export function MuscleGroupChart({ data, className }: MuscleGroupChartProps) {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] p-3 rounded-lg border border-gray-600 shadow-lg">
+        <div className="bg-dark-elevated1 p-3 rounded-lg border border-gray-600 shadow-lg">
           <p className="text-white font-medium">{data.name}</p>
           <p className="text-orange-400">Sets: {data.value.toLocaleString()}</p>
           <p className="text-orange-400">Users: {data.users.toLocaleString()}</p>
