@@ -2,5 +2,19 @@
   "extends": [
     "next/core-web-vitals",
     "next/typescript"
-  ]
+  ],
+  "rules": {
+    /**
+     * Prevent reintroduction of deprecated gradient utility classes.
+     * All surfaces must use semantic elevation tokens (bg-dark-primary|elevated1|elevated2) or accent colors.
+     * If a developer tries to commit a class containing 'bg-gradient-to-' ESLint will raise an error.
+     */
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "Literal[value=/bg-gradient-to-/]",
+        "message": "Gradient backgrounds are deprecated. Use semantic surfaces: bg-dark-primary, bg-dark-elevated1, bg-dark-elevated2, or accent solid colors."
+      }
+    ]
+  }
 }
