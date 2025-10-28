@@ -84,7 +84,7 @@ function ResetPasswordContent() {
 
   if (verifyToken.isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br bg-dark-primary  flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
           <p className="text-text-secondary">Verifying reset link...</p>
@@ -95,7 +95,7 @@ function ResetPasswordContent() {
 
   if (verifyToken.isError || !verifyToken.data) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+      <div className="min-h-screen bg-gradient-to-br bg-dark-primary ">
         <header className="safe-area-top px-6 pt-4">
           <div className="flex items-center justify-between">
             <button
@@ -138,7 +138,7 @@ function ResetPasswordContent() {
               <Link href="/auth/forgot-password">
                 <Button
                   variant="primary"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600"
+                  className="w-full bg-gradient-to-r from-orange-primary to-orange-hover"
                 >
                   Request New Reset Link
                 </Button>
@@ -161,7 +161,7 @@ function ResetPasswordContent() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br bg-dark-primary  flex items-center justify-center">
         <div className="text-center px-6">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 dark:bg-green-900 rounded-2xl mb-6">
             <span className="text-4xl">✓</span>
@@ -178,7 +178,7 @@ function ResetPasswordContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+    <div className="min-h-screen bg-gradient-to-br bg-dark-primary ">
       <header className="safe-area-top px-6 pt-4">
         <div className="flex items-center justify-between">
           <button
@@ -203,10 +203,10 @@ function ResetPasswordContent() {
       <div className="px-6 py-8">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-6 shadow-lg">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-primary to-orange-hover rounded-2xl mb-6 shadow-lg">
               <span className="text-3xl">🔑</span>
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-primary to-orange-hover bg-clip-text text-transparent mb-3">
               Create New Password
             </h2>
             <p className="text-text-secondary text-lg">
@@ -259,7 +259,7 @@ function ResetPasswordContent() {
                 size="lg"
                 loading={resetPassword.isLoading}
                 disabled={success}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="w-full bg-gradient-to-r from-orange-primary to-orange-hover hover:from-orange-dark hover:to-orange-primary text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 {resetPassword.isLoading ? 'Resetting Password...' : 'Reset Password'}
               </Button>

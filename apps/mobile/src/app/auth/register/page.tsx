@@ -265,7 +265,7 @@ export default function RegisterPage() {
                     type="submit"
                     variant="primary"
                     size="lg"
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    className="w-full bg-gradient-to-r from-orange-primary to-orange-hover hover:from-orange-dark hover:to-orange-primary text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     Continue
                   </Button>
@@ -320,7 +320,7 @@ export default function RegisterPage() {
                       variant="primary"
                       size="lg"
                       loading={loading || authLoading}
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                      className="w-full bg-gradient-to-r from-orange-primary to-orange-hover hover:from-orange-dark hover:to-orange-primary text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                     >
                       {loading || authLoading ? 'Creating Account...' : 'Create Account'}
                     </Button>
