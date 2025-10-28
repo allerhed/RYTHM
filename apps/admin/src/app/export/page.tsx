@@ -473,7 +473,7 @@ function ExportPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Export Configuration */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-gray-700 p-6">
+              <div className="bg-dark-elevated1 rounded-xl border border-gray-700 p-6">
                 <h2 className="text-xl font-semibold text-white mb-6">Export Configuration</h2>
                 
                 {/* Export Type */}
@@ -627,7 +627,7 @@ function ExportPage() {
                     <button
                       onClick={() => handleExport()}
                       disabled={loading || (exportType === 'tenant' && !selectedTenant)}
-                      className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 shadow-lg"
+                      className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed py-3 px-4 rounded-lg"
                     >
                       {loading ? 'Starting Export...' : 'Start Export'}
                     </button>
@@ -638,7 +638,7 @@ function ExportPage() {
 
             {/* Export Jobs Status */}
             <div className="space-y-6">
-              <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-gray-700 p-6">
+              <div className="bg-dark-elevated1 rounded-xl border border-gray-700 p-6">
                 <h2 className="text-xl font-semibold text-white mb-4">Export Jobs</h2>
                 
                 {jobs.length === 0 ? (
