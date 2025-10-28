@@ -600,7 +600,7 @@ function NewWorkoutPage() {
                 type="text"
                 value={workoutName}
                 onChange={(e) => setWorkoutName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
 
@@ -616,7 +616,7 @@ function NewWorkoutPage() {
                     onClick={() => setActivityType(type.toLowerCase() as any)}
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                       activityType === type.toLowerCase()
-                        ? 'bg-lime-400 text-black'
+                        ? 'bg-orange-primary text-black'
                         : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
@@ -636,7 +636,7 @@ function NewWorkoutPage() {
                   type="date"
                   value={workoutDate.toISOString().split('T')[0]}
                   onChange={(e) => setWorkoutDate(new Date(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-lime-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -650,7 +650,7 @@ function NewWorkoutPage() {
                   min="01:00"
                   max="10:00"
                   step="60"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-lime-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -667,7 +667,7 @@ function NewWorkoutPage() {
             value={trainingLoad || ''}
             onChange={(e) => setTrainingLoad(e.target.value ? parseInt(e.target.value) : null)}
             placeholder="Enter training load (optional)"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Subjective measure of workout intensity (e.g., 1-100)
@@ -684,10 +684,10 @@ function NewWorkoutPage() {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lime-400 text-xs">
+              <div className="text-orange-primary text-xs">
                 {PERCEIVED_EXERTION_LABELS[perceivedExertion - 1]?.label}
               </div>
-              <div className="text-lime-400 text-xs">{perceivedExertion}/10</div>
+              <div className="text-orange-primary text-xs">{perceivedExertion}/10</div>
             </div>
           </div>
 
@@ -699,9 +699,9 @@ function NewWorkoutPage() {
               max="10"
               value={perceivedExertion}
               onChange={(e) => setPerceivedExertion(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider-lime"
+              className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider-orange"
               style={{
-                backgroundImage: `linear-gradient(to right, #84cc16 0%, #84cc16 ${(perceivedExertion - 1) * 11.11}%, #d1d5db ${(perceivedExertion - 1) * 11.11}%, #d1d5db 100%)`
+                backgroundImage: `linear-gradient(to right, #FF8C42 0%, #FF8C42 ${(perceivedExertion - 1) * 11.11}%, #d1d5db ${(perceivedExertion - 1) * 11.11}%, #d1d5db 100%)`
               }}
             />
             <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
@@ -736,14 +736,14 @@ function NewWorkoutPage() {
           <div className="space-y-2">
             <button
               onClick={() => setShowExerciseModal(true)}
-              className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-lime-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
+              className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-orange-primary hover:text-orange-primary dark:hover:text-orange-primary transition-colors"
             >
               + Add Exercise
             </button>
             
             <button
               onClick={() => setShowTemplateModal(true)}
-              className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-lime-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
+              className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-orange-primary hover:text-orange-primary dark:hover:text-orange-primary transition-colors"
             >
               + Add from Template
             </button>
@@ -761,7 +761,7 @@ function NewWorkoutPage() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add any notes about your workout..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary resize-none"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary resize-none"
             rows={3}
           />
         </div>
@@ -791,7 +791,7 @@ function NewWorkoutPage() {
         <div className="max-w-md mx-auto">
           <button
             onClick={handleSaveWorkout}
-            className="w-full bg-lime-400 text-black px-6 py-4 rounded-lg hover:bg-lime-500 transition-colors font-semibold text-lg shadow-lg"
+            className="w-full bg-orange-primary text-black px-6 py-4 rounded-lg hover:bg-orange-hover transition-colors font-semibold text-lg shadow-lg"
           >
             Save Workout
           </button>
@@ -847,7 +847,7 @@ function ExerciseCard({
                 }
                 setShowHistory(true)
               }}
-              className="p-1 text-gray-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
+              className="p-1 text-gray-400 hover:text-orange-primary dark:hover:text-orange-primary transition-colors"
               title="View exercise history"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -920,7 +920,7 @@ function ExerciseCard({
         
         <button
           onClick={onAddSet}
-          className="w-full py-2 text-lime-600 dark:text-lime-400 hover:text-lime-700 dark:hover:text-lime-300 font-medium"
+          className="w-full py-2 text-orange-primary dark:text-orange-primary hover:text-orange-hover dark:hover:text-orange-light font-medium"
         >
           + Add Set
         </button>
@@ -984,7 +984,7 @@ function SetRow({
           value={set.value1 || ''}
           onChange={(e) => onValueChange(set.id, 'value1', Number(e.target.value))}
           onBlur={(e) => onValueBlur(set.id, 'value1', Number(e.target.value))}
-          className="w-full text-center py-2 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-medium focus:ring-1 focus:ring-lime-500 focus:border-lime-500"
+          className="w-full text-center py-2 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-medium focus:ring-1 focus:ring-orange-primary focus:border-orange-primary"
           placeholder="0"
         />
         
@@ -1025,7 +1025,7 @@ function SetRow({
           value={set.value2 || ''}
           onChange={(e) => onValueChange(set.id, 'value2', Number(e.target.value))}
           onBlur={(e) => onValueBlur(set.id, 'value2', Number(e.target.value))}
-          className="w-full text-center py-2 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-medium focus:ring-1 focus:ring-lime-500 focus:border-lime-500"
+          className="w-full text-center py-2 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-medium focus:ring-1 focus:ring-orange-primary focus:border-orange-primary"
           placeholder="0"
         />
         
@@ -1109,7 +1109,7 @@ function DatePickerModal({
             type="date"
             value={formatDateForInput(currentDate)}
             onChange={(e) => handleDateChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
           />
         </div>
 
@@ -1123,7 +1123,7 @@ function DatePickerModal({
           </button>
           <button
             onClick={() => onDateSelect(currentDate)}
-            className="flex-1 px-4 py-2 bg-lime-400 text-black rounded-lg hover:bg-lime-500 font-medium"
+            className="flex-1 px-4 py-2 bg-orange-primary text-black rounded-lg hover:bg-orange-hover font-medium"
           >
             Select
           </button>
@@ -1190,7 +1190,7 @@ function TimePickerModal({
                 max="23"
                 value={hours}
                 onChange={(e) => setHours(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
             <div className="text-center">
@@ -1203,7 +1203,7 @@ function TimePickerModal({
                 max="59"
                 value={minutes}
                 onChange={(e) => setMinutes(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
             <div className="text-center">
@@ -1216,7 +1216,7 @@ function TimePickerModal({
                 max="59"
                 value={seconds}
                 onChange={(e) => setSeconds(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
           </div>
@@ -1237,7 +1237,7 @@ function TimePickerModal({
           </button>
           <button
             onClick={handleSelect}
-            className="flex-1 px-4 py-2 bg-lime-400 text-black rounded-lg hover:bg-lime-500 font-medium"
+            className="flex-1 px-4 py-2 bg-orange-primary text-black rounded-lg hover:bg-orange-hover font-medium"
           >
             Set Duration
           </button>
