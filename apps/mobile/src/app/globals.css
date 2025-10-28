@@ -69,6 +69,18 @@
   --text-tertiary: #555555;
 }
 
+/* Semantic helper classes (aligned with admin app) */
+.bg-dark-elevated0 { background: var(--dark-secondary); }
+.bg-dark-elevated1 { background: var(--dark-card); }
+.bg-dark-elevated { background: var(--dark-elevated); }
+.bg-primary { background: var(--orange-primary); }
+.bg-primary-hover { background: var(--orange-hover); }
+.text-primary { color: var(--orange-primary); }
+.icon-accent { background: var(--orange-primary); color: #fff; }
+.badge-primary { background: var(--orange-primary); color: #fff; border-radius: 9999px; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 600; }
+.badge-secondary { background: var(--dark-card); color: var(--text-secondary); border: 1px solid var(--dark-border); border-radius: 9999px; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 600; }
+.accent-bar { height: 4px; background: linear-gradient(90deg,var(--orange-primary),var(--orange-hover)); border-radius: 2px; }
+
 /* Respect user motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
