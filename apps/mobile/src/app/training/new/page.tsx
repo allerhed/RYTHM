@@ -616,7 +616,7 @@ function NewWorkoutPage() {
                     onClick={() => setActivityType(type.toLowerCase() as any)}
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                       activityType === type.toLowerCase()
-                        ? 'bg-orange-primary text-black'
+                        ? 'bg-orange-primary text-white'
                         : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
@@ -791,7 +791,7 @@ function NewWorkoutPage() {
         <div className="max-w-md mx-auto">
           <button
             onClick={handleSaveWorkout}
-            className="w-full bg-orange-primary text-black px-6 py-4 rounded-lg hover:bg-orange-hover transition-colors font-semibold text-lg shadow-lg"
+            className="w-full bg-orange-primary text-white px-6 py-4 rounded-lg hover:bg-orange-hover transition-colors font-semibold text-lg shadow-lg"
           >
             Save Workout
           </button>
@@ -1123,7 +1123,7 @@ function DatePickerModal({
           </button>
           <button
             onClick={() => onDateSelect(currentDate)}
-            className="flex-1 px-4 py-2 bg-orange-primary text-black rounded-lg hover:bg-orange-hover font-medium"
+            className="flex-1 px-4 py-2 bg-orange-primary text-white rounded-lg hover:bg-orange-hover font-medium"
           >
             Select
           </button>
@@ -1237,7 +1237,7 @@ function TimePickerModal({
           </button>
           <button
             onClick={handleSelect}
-            className="flex-1 px-4 py-2 bg-orange-primary text-black rounded-lg hover:bg-orange-hover font-medium"
+            className="flex-1 px-4 py-2 bg-orange-primary text-white rounded-lg hover:bg-orange-hover font-medium"
           >
             Set Duration
           </button>
