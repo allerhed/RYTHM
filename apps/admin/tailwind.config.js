@@ -8,6 +8,37 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Dark theme colors
+        'dark-primary': '#0F0F0F',
+        'dark-secondary': '#1A1A1A',
+        'dark-card': '#232323',
+        'dark-border': '#2A2A2A',
+        'dark-elevated': '#2D2D2D',
+        
+        // Orange accent
+        orange: {
+          50: '#FFF5ED',
+          100: '#FFE6D5',
+          200: '#FFCBAA',
+          300: '#FFB47A',
+          400: '#FF9D5C',
+          500: '#FF8C42',
+          600: '#FF7A1C',
+          700: '#E67A30',
+          800: '#CC5F1A',
+          900: '#994714',
+          primary: '#FF8C42',
+          hover: '#FF9D5C',
+          dark: '#E67A30',
+          light: '#FFB47A',
+        },
+        
+        // Text colors
+        'text-primary': '#FFFFFF',
+        'text-secondary': '#A0A0A0',
+        'text-tertiary': '#666666',
+        
+        // Legacy colors (keeping for compatibility)
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
