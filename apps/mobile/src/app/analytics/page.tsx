@@ -271,16 +271,16 @@ function AnalyticsPage() {
                     <div key={index} className="flex flex-col items-center space-y-2 ml-1">
                       <div className="flex flex-col-reverse items-center">
                         <div
-                          className="w-6 bg-orange-primary rounded-sm transition-all duration-500"
-                          style={{ height: `${cardioHeight}px` }}
+                          className="w-6 rounded-sm transition-all duration-500"
+                          style={{ backgroundColor: '#E97400', height: `${cardioHeight}px` }}
                         />
                         <div
-                          className="w-6 bg-purple-500 rounded-sm transition-all duration-500"
-                          style={{ height: `${strengthHeight}px` }}
+                          className="w-6 rounded-sm transition-all duration-500"
+                          style={{ backgroundColor: '#1F1F1F', height: `${strengthHeight}px` }}
                         />
                         <div
-                          className="w-6 bg-orange-500 rounded-sm transition-all duration-500"
-                          style={{ height: `${hybridHeight}px` }}
+                          className="w-6 rounded-sm transition-all duration-500"
+                          style={{ backgroundColor: '#E0E0E0', height: `${hybridHeight}px` }}
                         />
                       </div>
                       <span className="text-xs text-gray-300 transform rotate-45 origin-bottom-left mt-2">
@@ -296,15 +296,15 @@ function AnalyticsPage() {
           {/* Legend */}
           <div className="flex space-x-4 mb-6">
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-orange-primary rounded"></div>
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: '#E97400' }}></div>
               <span className="text-sm">Cardio</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-purple-500 rounded"></div>
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1F1F1F' }}></div>
               <span className="text-sm">Strength</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-orange-500 rounded"></div>
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: '#E0E0E0' }}></div>
               <span className="text-sm">Hybrid</span>
             </div>
           </div>
@@ -373,15 +373,15 @@ function AnalyticsPage() {
                     <div className="text-sm text-gray-400 mb-2">Training Type Breakdown (Last 3 months)</div>
                     <div className="grid grid-cols-3 gap-2">
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-orange-primary rounded-full"></div>
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#E97400' }}></div>
                         <span className="text-sm text-gray-300">Cardio {cardioPercent}%</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#1F1F1F' }}></div>
                         <span className="text-sm text-gray-300">Strength {strengthPercent}%</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#E0E0E0' }}></div>
                         <span className="text-sm text-gray-300">Hybrid {hybridPercent}%</span>
                       </div>
                     </div>
@@ -466,7 +466,7 @@ function AnalyticsPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#1F1F1F' }}></div>
                   <span className="text-sm font-medium text-white">Strength</span>
                 </div>
                 <div className="text-right">
@@ -482,8 +482,9 @@ function AnalyticsPage() {
                 {/* Current period bar */}
                 <div className="w-full h-4 bg-gray-700 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-purple-500 rounded-full transition-all duration-500"
+                    className="h-full rounded-full transition-all duration-500"
                     style={{ 
+                      backgroundColor: '#1F1F1F',
                       width: `${Math.max(categoryData.currentPeriod.total > 0 ? (categoryData.currentPeriod.strength / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
                     }}
                   />
@@ -491,8 +492,9 @@ function AnalyticsPage() {
                 {/* Previous period bar */}
                 <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-purple-300 rounded-full transition-all duration-500"
+                    className="h-full rounded-full transition-all duration-500"
                     style={{ 
+                      backgroundColor: '#4A4A4A',
                       width: `${Math.max(categoryData.previousPeriod.total > 0 ? (categoryData.previousPeriod.strength / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
                     }}
                   />
@@ -508,7 +510,7 @@ function AnalyticsPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-orange-primary rounded-full"></div>
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#E97400' }}></div>
                   <span className="text-sm font-medium text-white">Cardio</span>
                 </div>
                 <div className="text-right">
@@ -524,8 +526,9 @@ function AnalyticsPage() {
                 {/* Current period bar */}
                 <div className="w-full h-4 bg-gray-700 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-orange-primary rounded-full transition-all duration-500"
+                    className="h-full rounded-full transition-all duration-500"
                     style={{ 
+                      backgroundColor: '#E97400',
                       width: `${Math.max(categoryData.currentPeriod.total > 0 ? (categoryData.currentPeriod.cardio / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
                     }}
                   />
@@ -533,8 +536,9 @@ function AnalyticsPage() {
                 {/* Previous period bar */}
                 <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-teal-300 rounded-full transition-all duration-500"
+                    className="h-full rounded-full transition-all duration-500"
                     style={{ 
+                      backgroundColor: '#FF9E32',
                       width: `${Math.max(categoryData.previousPeriod.total > 0 ? (categoryData.previousPeriod.cardio / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
                     }}
                   />
@@ -550,7 +554,7 @@ function AnalyticsPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#E0E0E0' }}></div>
                   <span className="text-sm font-medium text-white">Hybrid</span>
                 </div>
                 <div className="text-right">
@@ -566,8 +570,9 @@ function AnalyticsPage() {
                 {/* Current period bar */}
                 <div className="w-full h-4 bg-gray-700 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-orange-500 rounded-full transition-all duration-500"
+                    className="h-full rounded-full transition-all duration-500"
                     style={{ 
+                      backgroundColor: '#E0E0E0',
                       width: `${Math.max(categoryData.currentPeriod.total > 0 ? (categoryData.currentPeriod.hybrid / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
                     }}
                   />
@@ -575,8 +580,9 @@ function AnalyticsPage() {
                 {/* Previous period bar */}
                 <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-orange-300 rounded-full transition-all duration-500"
+                    className="h-full rounded-full transition-all duration-500"
                     style={{ 
+                      backgroundColor: '#F0F0F0',
                       width: `${Math.max(categoryData.previousPeriod.total > 0 ? (categoryData.previousPeriod.hybrid / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
                     }}
                   />

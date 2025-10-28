@@ -19,6 +19,11 @@ bg-dark-elevated1    // Primary cards, panels, modals
 bg-dark-elevated2    // Nested surfaces, headers within modals
 bg-dark-elevated0    // Form inputs, subtle containers
 
+// Category Colors (Training Types - Use These Consistently)
+#E97400               // Cardio (Burnt Orange - matches brand primary)
+#1F1F1F               // Strength (Iron Grey - dark neutral)
+#E0E0E0               // Hybrid (Smoke - light grey)
+
 // Text Hierarchy (Always Use These)
 text-text-primary    // Headings, primary content
 text-text-secondary  // Supporting labels, descriptions
@@ -33,6 +38,11 @@ border-dark-border   // Standard borders for cards/inputs
 // Buttons (DO NOT compose manually)
 <button className="btn-primary">Save</button>     // Burnt orange, primary action
 <button className="btn-secondary">Cancel</button> // Neutral surface action
+
+// Category Badges/Indicators (Use inline styles with hex colors)
+<span style={{ backgroundColor: '#E97400' }}>Cardio</span>
+<span style={{ backgroundColor: '#1F1F1F' }}>Strength</span>
+<span style={{ backgroundColor: '#E0E0E0', color: '#000' }}>Hybrid</span>
 
 // Badges/Tags
 <span className="badge-primary">strength</span>   // Highlighted category
@@ -54,6 +64,11 @@ className="bg-gradient-to-b from-[#1a1a1a] to-[#232323]"
 
 // DO NOT USE raw Tailwind grays
 className="bg-gray-800 text-gray-400 hover:bg-gray-700"
+
+// DO NOT USE random colors for categories
+className="bg-purple-500"  // Wrong for strength
+className="bg-teal-300"    // Wrong for cardio
+className="bg-orange-500"  // Wrong for hybrid
 ```
 
 **✅ CORRECT (Use Semantic Classes):**
@@ -63,6 +78,11 @@ className="bg-gray-800 text-gray-400 hover:bg-gray-700"
   <h3 className="text-text-primary">Title</h3>
   <p className="text-text-secondary">Supporting text</p>
 </div>
+
+// Category Indicators (Charts, Badges, Stats)
+<div className="w-4 h-4 rounded" style={{ backgroundColor: '#E97400' }}>Cardio</div>
+<div className="w-4 h-4 rounded" style={{ backgroundColor: '#1F1F1F' }}>Strength</div>
+<div className="w-4 h-4 rounded" style={{ backgroundColor: '#E0E0E0' }}>Hybrid</div>
 
 // Modals
 <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4">
