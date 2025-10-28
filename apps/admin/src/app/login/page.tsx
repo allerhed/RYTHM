@@ -41,7 +41,7 @@ export default function LoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Logo */}
         <div className="flex justify-center">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-2xl">
+          <div className="icon-accent h-16 w-16 rounded-2xl flex items-center justify-center shadow-2xl">
             <span className="text-white font-bold text-2xl">R</span>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-2xl border border-gray-700 py-8 px-6 sm:px-10">
+        <div className="rounded-2xl bg-dark-elevated1 shadow-2xl border border-gray-700 py-8 px-6 sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="rounded-xl bg-red-900/20 border border-red-500/30 p-4">
@@ -145,7 +145,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                className="group relative w-full flex justify-center py-3 px-4 btn-primary rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
               >
                 {loading ? (
                   <div className="flex items-center">
