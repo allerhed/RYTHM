@@ -1,3 +1,114 @@
+# RYTHM UI Generation Guidelines
+
+> **Critical:** All UI code MUST follow the semantic theme system. Gradient utilities are deprecated and will fail ESLint validation.
+
+## 0) RYTHM Semantic Theme (Required Foundation)
+
+### Design System Principles
+- **Single source of truth:** CSS variables defined in `globals.css` (both admin & mobile)
+- **No raw hex colors:** Use semantic variables and helper classes exclusively
+- **Elevation-based surfaces:** Dark backgrounds differentiate via elevation scale, not gradients
+- **Accessible contrast:** Follow text tier hierarchy (primary/secondary/tertiary)
+- **Burnt orange accents:** Highlight actions and interactive elements
+
+### Core Surface Classes (Required)
+```tsx
+// Background Surfaces (Elevation Scale)
+bg-dark-primary      // Page background
+bg-dark-elevated1    // Primary cards, panels, modals
+bg-dark-elevated2    // Nested surfaces, headers within modals
+bg-dark-elevated0    // Form inputs, subtle containers
+
+// Text Hierarchy (Always Use These)
+text-text-primary    // Headings, primary content
+text-text-secondary  // Supporting labels, descriptions
+text-text-tertiary   // Subtle metadata, placeholders
+
+// Borders & Dividers
+border-dark-border   // Standard borders for cards/inputs
+```
+
+### Component Helper Classes (Required)
+```tsx
+// Buttons (DO NOT compose manually)
+<button className="btn-primary">Save</button>     // Burnt orange, primary action
+<button className="btn-secondary">Cancel</button> // Neutral surface action
+
+// Badges/Tags
+<span className="badge-primary">strength</span>   // Highlighted category
+<span className="badge-secondary">draft</span>    // Subdued status
+
+// Icon Containers
+<div className="icon-accent">{icon}</div>         // Circular with accent ring
+
+// Accent Elements
+<div className="accent-bar" />                    // Thin orange separator/emphasis
+```
+
+### Migration Patterns (Required)
+
+**❌ DEPRECATED (Will Fail ESLint):**
+```tsx
+// DO NOT USE gradients
+className="bg-gradient-to-b from-[#1a1a1a] to-[#232323]"
+
+// DO NOT USE raw Tailwind grays
+className="bg-gray-800 text-gray-400 hover:bg-gray-700"
+```
+
+**✅ CORRECT (Use Semantic Classes):**
+```tsx
+// Cards & Panels
+<div className="bg-dark-elevated1 border border-dark-border rounded-lg p-4">
+  <h3 className="text-text-primary">Title</h3>
+  <p className="text-text-secondary">Supporting text</p>
+</div>
+
+// Modals
+<div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4">
+  <div className="bg-dark-elevated1 border border-dark-border rounded-lg shadow-xl p-6">
+    <h2 className="text-text-primary mb-4">Modal Title</h2>
+    <button className="btn-primary w-full">Confirm</button>
+  </div>
+</div>
+
+// Form Inputs
+<input 
+  className="w-full px-3 py-2 border border-dark-border bg-dark-elevated0 
+             text-text-primary focus:ring-2 focus:ring-orange-accent"
+/>
+
+// Interactive Lists
+<button className="w-full p-3 hover:bg-dark-elevated1 transition-colors">
+  <span className="text-text-primary">Item Title</span>
+  <span className="text-text-tertiary">Metadata</span>
+</button>
+```
+
+### Anti-Patterns (FORBIDDEN)
+- ❌ `bg-gradient-to-*` anywhere in components
+- ❌ Raw hex colors: `from-[#hex]` or `text-[#hex]`
+- ❌ Random Tailwind grays: `bg-gray-800`, `text-gray-400`
+- ❌ Inline styles for standard palette usage
+- ❌ Missing focus states on interactive elements
+- ❌ Composing buttons manually instead of using `.btn-primary`/`.btn-secondary`
+
+### Enforcement
+- **ESLint rule active:** Gradient utilities cause build failures
+- **Pre-merge checklist:**
+  - [ ] No gradient utilities in modified files
+  - [ ] No raw hex colors outside token definitions
+  - [ ] Semantic text classes used (text-text-*)
+  - [ ] Buttons use helper classes (btn-primary/btn-secondary)
+  - [ ] Focus styles present on interactive elements
+  - [ ] Dark surfaces use elevation scale
+
+### Reference Documentation
+- Full guide: `docs/SEMANTIC_THEME.md`
+- Contributing standards: `CONTRIBUTING.md`
+
+---
+
 ### 1) Navigation that's obvious, not mysterious
 
 - **Top‑level structure:** Keep primary navigation to **3--5 destinations**; if you have more, demote extras into search, a drawer, or contextual links. Bottom nav/tab bars excel on phones for reach and predictability. [Material Design](https://m3.material.io/components/navigation-bar/guidelines?utm_source=chatgpt.com)
@@ -69,6 +180,17 @@
 
 ## Quick implementation checklist (copy for your PR template)
 
+### RYTHM Theme Compliance (Required First)
+- ✅ No gradient utilities (`bg-gradient-to-*`) in any modified files
+- ✅ No raw hex colors outside CSS variable definitions
+- ✅ Semantic text classes used: `text-text-primary/secondary/tertiary`
+- ✅ Buttons use helper classes: `btn-primary` or `btn-secondary`
+- ✅ Surfaces use elevation scale: `bg-dark-elevated0/1/2`
+- ✅ Focus states present on all interactive elements
+- ✅ ESLint passes without theme-related errors
+- ✅ Borders use `border-dark-border` not raw grays
+
+### Universal Mobile/Web Standards
 - Primary nav has **3--5** destinations; search is easy to find. [Material Design](https://m3.material.io/components/navigation-bar/guidelines?utm_source=chatgpt.com)
 - Tap targets: **≥ 44 pt (iOS)** / **48 dp (Android)** / **≥ 24 px** with spacing on the web. [Apple Developer](https://developer.apple.com/design/tips/)[Material Design](https://m3.material.io/foundations/designing/structure?utm_source=chatgpt.com)[W3C](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html?utm_source=chatgpt.com)
 - Text contrast: **AA (4.5:1 / 3:1 large)**; focus styles visible. [W3C](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html?utm_source=chatgpt.com)
