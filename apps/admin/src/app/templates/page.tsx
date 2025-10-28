@@ -1072,7 +1072,7 @@ function AdminTemplatesPage() {
             value={templates?.length?.toString() || '0'}
             change="+8%"
             changeType="positive"
-            gradient="from-blue-500 to-blue-600"
+            accent="primary"
             icon={
               <ClipboardDocumentIcon className="w-6 h-6" />
             }
@@ -1082,7 +1082,7 @@ function AdminTemplatesPage() {
             value={templates?.filter(t => t.scope !== 'user')?.length?.toString() || '0'}
             change="+12%"
             changeType="positive"
-            gradient="from-green-500 to-emerald-600"
+            accent="primary"
             icon={
               <CheckIcon className="w-6 h-6" />
             }
@@ -1092,7 +1092,7 @@ function AdminTemplatesPage() {
             value={templates?.reduce((sum, t) => sum + (t.exercise_count || 0), 0)?.toString() || '0'}
             change="+15%"
             changeType="positive"
-            gradient="from-purple-500 to-pink-600"
+            accent="primary"
             icon={
               <SparklesIcon className="w-6 h-6" />
             }
@@ -1102,7 +1102,7 @@ function AdminTemplatesPage() {
             value={Math.round(templates?.reduce((sum, t) => sum + (t.exercise_count || 0), 0) / Math.max(templates?.length || 1, 1))?.toString() || '0'}
             change="+2%"
             changeType="positive"
-            gradient="from-orange-500 to-red-600"
+            accent="primary"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
