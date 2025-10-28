@@ -15,7 +15,7 @@ const navigation = [
 export function BottomNavigation({ currentPath }: BottomNavProps) {
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 safe-area-bottom"
+      className="fixed bottom-0 left-0 right-0 bg-dark-secondary border-t border-dark-border safe-area-bottom z-50"
       role="navigation"
       aria-label="Bottom navigation"
     >
@@ -26,10 +26,10 @@ export function BottomNavigation({ currentPath }: BottomNavProps) {
             <Link
               key={item.name}
               href={item.href}
-              className={`nav-item flex-col ${
+              className={`nav-item flex-col transition-colors ${
                 isActive 
-                  ? 'text-primary-600 dark:text-primary-400' 
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                  ? 'text-orange-primary' 
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
               aria-label={item.ariaLabel}
               aria-current={isActive ? 'page' : undefined}
@@ -64,19 +64,19 @@ interface HeaderProps {
 
 export function Header({ title, showBack = false, onBack, actions, showUserAvatar = false, user }: HeaderProps) {
   return (
-    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 safe-area-top">
+    <header className="bg-dark-secondary border-b border-dark-border safe-area-top">
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center">
           {showBack && (
             <button
               onClick={onBack}
-              className="nav-item mr-2 -ml-2"
+              className="nav-item mr-2 -ml-2 text-orange-primary hover:bg-dark-card"
               aria-label="Go back"
             >
               <span aria-hidden="true">←</span>
             </button>
           )}
-          <h1 className="text-heading font-semibold text-gray-900 dark:text-gray-100">
+          <h1 className="text-xl font-bold text-text-primary">
             {title}
           </h1>
         </div>

@@ -5,22 +5,38 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: 'media', // Respect system preference
+  darkMode: 'class', // Use class-based dark mode
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+        // New dark theme colors from mockup
+        'dark': {
+          'primary': '#0F0F0F',
+          'secondary': '#1A1A1A',
+          'card': '#232323',
+          'border': '#2A2A2A',
+          'elevated': '#2D2D2D',
         },
+        // Orange accent (primary action color)
+        'orange': {
+          'primary': '#FF8C42',
+          'hover': '#FF9D5C',
+          'dark': '#E67A30',
+          'light': '#FFB47A',
+        },
+        // Gold/yellow for icons and highlights
+        'gold': {
+          '500': '#D4AF37',
+          '400': '#E5C158',
+          '600': '#B8941F',
+        },
+        // Text colors
+        'text': {
+          'primary': '#FFFFFF',
+          'secondary': '#A0A0A0',
+          'tertiary': '#666666',
+        },
+        // Keep category colors for workout types
         strength: {
           500: '#dc2626',
           600: '#b91c1c',
@@ -30,8 +46,8 @@ module.exports = {
           600: '#047857',
         },
         hybrid: {
-          500: '#d97706',
-          600: '#b45309',
+          500: '#FF8C42', // Use orange for hybrid
+          600: '#E67A30',
         },
       },
       spacing: {
@@ -69,6 +85,18 @@ module.exports = {
       borderRadius: {
         'mobile': '0.5rem',
         'mobile-lg': '0.75rem',
+        'card': '1.25rem', // 20px
+        'button': '1.5625rem', // 25px for fully rounded buttons
+        'xl': '1rem',
+        '2xl': '1.5rem',
+        '3xl': '2rem',
+      },
+      boxShadow: {
+        'mobile': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        'mobile-lg': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        'card': '0 4px 20px rgba(0, 0, 0, 0.4)',
+        'card-hover': '0 6px 30px rgba(255, 140, 66, 0.2)',
+        'glow-orange': '0 0 20px rgba(255, 140, 66, 0.3)',
       },
     },
   },

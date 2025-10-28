@@ -16,28 +16,28 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className="space-y-2">
         <label 
           htmlFor={inputId} 
-          className="block text-body font-medium text-gray-700 dark:text-gray-300"
+          className="block text-sm font-semibold text-text-primary"
         >
           {label}
           {props.required && (
-            <span className="text-error ml-1" aria-label="required">*</span>
+            <span className="text-red-500 ml-1" aria-label="required">*</span>
           )}
         </label>
         <input
           ref={ref}
           id={inputId}
-          className={`input w-full ${error ? 'border-error focus:border-error focus:ring-error' : ''} ${className}`}
+          className={`input w-full bg-dark-card border-dark-border text-text-primary placeholder-text-tertiary ${error ? 'border-red-500 focus:border-red-500' : 'focus:border-orange-primary'} ${className}`}
           aria-invalid={!!error}
           aria-describedby={[errorId, helperId].filter(Boolean).join(' ')}
           {...props}
         />
         {error && (
-          <p id={errorId} className="text-caption text-error" role="alert">
+          <p id={errorId} className="text-sm text-red-400" role="alert">
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p id={helperId} className="text-caption text-gray-600 dark:text-gray-400">
+          <p id={helperId} className="text-sm text-text-secondary">
             {helperText}
           </p>
         )}
@@ -107,29 +107,29 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       <div className="space-y-2">
         <label 
           htmlFor={selectId} 
-          className="block text-body font-medium text-gray-700 dark:text-gray-300"
+          className="block text-sm font-semibold text-text-primary"
         >
           {label}
           {props.required && (
-            <span className="text-error ml-1" aria-label="required">*</span>
+            <span className="text-red-500 ml-1" aria-label="required">*</span>
           )}
         </label>
         <select
           ref={ref}
           id={selectId}
-          className={`input w-full ${error ? 'border-error focus:border-error focus:ring-error' : ''} ${className}`}
+          className={`input w-full bg-dark-card border-dark-border text-text-primary ${error ? 'border-red-500 focus:border-red-500' : 'focus:border-orange-primary'} ${className}`}
           aria-invalid={!!error}
           aria-describedby={errorId}
           {...props}
         >
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option key={option.value} value={option.value} className="bg-dark-card text-text-primary">
               {option.label}
             </option>
           ))}
         </select>
         {error && (
-          <p id={errorId} className="text-caption text-error" role="alert">
+          <p id={errorId} className="text-sm text-red-400" role="alert">
             {error}
           </p>
         )}

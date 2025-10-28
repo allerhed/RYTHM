@@ -19,10 +19,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#2563eb' },
-    { media: '(prefers-color-scheme: dark)', color: '#3b82f6' }
-  ],
+  themeColor: '#0F0F0F', // Dark theme primary background
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5, // Allow zooming for accessibility
@@ -36,16 +33,19 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full dark">
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
-        <meta name="color-scheme" content="light dark" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <meta name="color-scheme" content="dark" />
         {/* Prevent browser extension interference */}
         <meta httpEquiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval'; object-src 'none';" />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
-      <body className="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <body className="h-full bg-dark-primary text-text-primary">
         <Providers>
           <HamburgerMenu />
           <main className="h-full min-h-screen">

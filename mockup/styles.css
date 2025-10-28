@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-dark-primary text-text-primary font-sans;
+  }
+}
+
+@layer components {
+  /* Button styles matching ui-1.jpeg */
+  .btn-primary {
+    @apply bg-orange-primary hover:bg-orange-hover active:bg-orange-dark 
+           text-white font-semibold py-3 px-8 rounded-button 
+           transition-all duration-200 shadow-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-dark-card hover:bg-dark-border 
+           text-text-primary font-medium py-3 px-8 rounded-button 
+           border border-dark-border transition-all duration-200;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-dark-card rounded-card p-6 shadow-card 
+           hover:shadow-card-hover transition-shadow duration-300;
+  }
+
+  .card-header {
+    @apply bg-dark-secondary rounded-card p-8 shadow-card;
+  }
+
+  /* Icon containers (orange/gold circles from ui-1.jpeg) */
+  .icon-circle {
+    @apply w-16 h-16 rounded-full bg-dark-border 
+           flex items-center justify-center
+           border-2 border-orange-primary/30;
+  }
+
+  .icon-circle svg {
+    @apply w-8 h-8 text-orange-primary;
+  }
+
+  /* Stats/metrics display */
+  .stat-value {
+    @apply text-4xl font-bold text-text-primary;
+  }
+
+  .stat-label {
+    @apply text-sm text-text-secondary uppercase tracking-wide;
+  }
+
+  /* List item styles (from ui-2.jpeg) */
+  .list-item {
+    @apply bg-dark-card rounded-2xl p-4 mb-3 
+           flex items-center justify-between
+           hover:bg-dark-border transition-colors duration-200
+           border border-transparent hover:border-orange-primary/20;
+  }
+
+  /* Badge styles */
+  .badge-available {
+    @apply bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-unavailable {
+    @apply bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-orange {
+    @apply bg-orange-primary/20 text-orange-primary px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  /* Star rating */
+  .star-rating {
+    @apply flex items-center gap-1;
+  }
+
+  .star-rating svg {
+    @apply w-4 h-4 text-gold fill-current;
+  }
+}
