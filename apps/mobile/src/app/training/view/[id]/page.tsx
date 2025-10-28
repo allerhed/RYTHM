@@ -181,7 +181,7 @@ function ViewWorkoutPage() {
           </div>
         </div>
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-primary"></div>
         </div>
       </div>
     )
@@ -238,7 +238,7 @@ function ViewWorkoutPage() {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => router.push(`/training/edit/${session.id}`)}
-                className="bg-lime-400 text-black px-4 py-2 rounded-lg hover:bg-lime-500 transition-colors font-medium"
+                className="bg-orange-primary text-white px-4 py-2 rounded-lg hover:bg-orange-hover transition-colors font-medium"
               >
                 Edit
               </button>
@@ -282,7 +282,7 @@ function ViewWorkoutPage() {
                     disabled
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium ${
                       session.category.toLowerCase() === type.toLowerCase()
-                        ? 'bg-lime-400 text-black'
+                        ? 'bg-orange-primary text-white'
                         : 'bg-dark-elevated text-gray-700 dark:text-gray-300'
                     }`}
                   >
@@ -338,13 +338,13 @@ function ViewWorkoutPage() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-lime-400 text-xs">
+                <div className="text-orange-primary text-xs">
                   {session.perceived_exertion <= 2 ? 'Easy' : 
                    session.perceived_exertion <= 4 ? 'Moderate' :
                    session.perceived_exertion <= 6 ? 'Hard' :
                    session.perceived_exertion <= 8 ? 'Very Hard' : 'Max Effort'}
                 </div>
-                <div className="text-lime-400 text-xs">{session.perceived_exertion}/10</div>
+                <div className="text-orange-primary text-xs">{session.perceived_exertion}/10</div>
               </div>
             </div>
 
@@ -352,7 +352,7 @@ function ViewWorkoutPage() {
             <div className="relative">
               <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg">
                 <div 
-                  className="h-2 bg-lime-400 rounded-lg"
+                  className="h-2 bg-orange-primary rounded-lg"
                   style={{ width: `${(session.perceived_exertion - 1) * 11.11}%` }}
                 />
               </div>
@@ -395,7 +395,7 @@ function ViewWorkoutPage() {
                     </h3>
                     <div className="flex items-center space-x-2 mt-1">
                       {exercise.exercise_type && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-lime-100 text-lime-800 dark:bg-lime-900/20 dark:text-lime-400">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-primary">
                           {exercise.exercise_type.toLowerCase()}
                         </span>
                       )}

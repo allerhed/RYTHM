@@ -1399,7 +1399,7 @@ function AddExerciseModal({
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       template.exercise_type === 'STRENGTH' 
                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
-                        : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                        : 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
                     }`}>
                       {template.exercise_type === 'STRENGTH' ? '💪 STR' : '🏃 CAR'}
                     </span>

@@ -163,7 +163,7 @@ function ResetPasswordContent() {
     return (
       <div className="min-h-screen bg-gradient-to-br bg-dark-primary  flex items-center justify-center">
         <div className="text-center px-6">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 dark:bg-green-900 rounded-2xl mb-6">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-orange-100 dark:bg-orange-900 rounded-2xl mb-6">
             <span className="text-4xl">✓</span>
           </div>
           <h2 className="text-3xl font-bold text-text-primary mb-3">

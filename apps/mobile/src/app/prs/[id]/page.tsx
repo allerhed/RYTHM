@@ -63,7 +63,7 @@ export default function PRDetailPage() {
       case 'strength':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
       case 'cardio':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
     }
@@ -255,7 +255,7 @@ export default function PRDetailPage() {
                             <p
                               className={`text-xs font-medium ${
                                 isImprovement 
-                                  ? 'text-green-600 dark:text-green-400' 
+                                  ? 'text-orange-600 dark:text-orange-400' 
                                   : 'text-red-600 dark:text-red-400'
                               }`}
                             >

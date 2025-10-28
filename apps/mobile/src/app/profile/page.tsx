@@ -263,7 +263,7 @@ function ProfilePage() {
       {toast && (
         <div className={`fixed top-20 left-4 right-4 z-50 p-4 rounded-lg border ${
           toast.type === 'success' 
-            ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200'
+            ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700 text-orange-800 dark:text-orange-200'
             : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200'
         }`}>
           <div className="flex items-center justify-between">

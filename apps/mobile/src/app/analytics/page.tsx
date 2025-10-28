@@ -184,7 +184,7 @@ function AnalyticsPage() {
           </div>
         </div>
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-primary"></div>
         </div>
       </div>
     )
@@ -420,7 +420,7 @@ function AnalyticsPage() {
                     <div key={index} className="flex flex-col items-center space-y-2 ml-1">
                       <div className="flex flex-col-reverse items-center">
                         <div
-                          className="w-6 bg-lime-500 rounded-sm transition-all duration-500"
+                          className="w-6 bg-orange-primary rounded-sm transition-all duration-500"
                           style={{ height: `${timeHeight}px` }}
                         />
                       </div>
@@ -437,7 +437,7 @@ function AnalyticsPage() {
           {/* Legend */}
           <div className="flex space-x-4 mb-6">
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-lime-500 rounded"></div>
+              <div className="w-4 h-4 bg-orange-primary rounded"></div>
               <span className="text-sm">Activity Time</span>
             </div>
           </div>
@@ -618,7 +618,7 @@ function AnalyticsPage() {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lg font-semibold text-green-600 dark:text-green-400">
+              <div className="text-lg font-semibold text-orange-600 dark:text-orange-400">
                 {formatChange(summaryData.currentPeriod.totalDistance, summaryData.previousPeriod.totalDistance)}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">

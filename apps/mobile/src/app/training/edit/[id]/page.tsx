@@ -631,7 +631,7 @@ function EditWorkoutPage() {
                     onClick={() => setActivityType(type.toLowerCase() as 'strength' | 'cardio' | 'hybrid')}
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                       activityType === type.toLowerCase()
-                        ? 'bg-lime-400 text-black'
+                        ? 'bg-orange-primary text-white'
                         : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
@@ -699,10 +699,10 @@ function EditWorkoutPage() {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lime-400 text-xs">
+              <div className="text-orange-primary text-xs">
                 {PERCEIVED_EXERTION_LABELS[perceivedExertion - 1]?.label}
               </div>
-              <div className="text-lime-400 text-xs">{perceivedExertion}/10</div>
+              <div className="text-orange-primary text-xs">{perceivedExertion}/10</div>
             </div>
           </div>
 
@@ -751,7 +751,7 @@ function EditWorkoutPage() {
         {/* Add Exercise Button */}
         <button
           onClick={() => setShowExerciseModal(true)}
-          className="w-full py-3 border-2 border-dashed border-gray-600 rounded-lg text-gray-400 hover:border-lime-400 hover:text-lime-400 transition-colors"
+          className="w-full py-3 border-2 border-dashed border-gray-600 rounded-lg text-gray-400 hover:border-orange-primary hover:text-orange-primary transition-colors"
         >
           + Add Exercise
         </button>
@@ -767,7 +767,7 @@ function EditWorkoutPage() {
           <button
             onClick={handleUpdateWorkout}
             disabled={exercises.length === 0 || saving}
-            className="flex-1 py-3 px-4 bg-lime-400 text-black rounded-lg hover:bg-lime-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            className="flex-1 py-3 px-4 bg-orange-primary text-white rounded-lg hover:bg-orange-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
           >
             {saving ? (
               <>
@@ -850,7 +850,7 @@ function DatePickerModal({
           </button>
           <button
             onClick={() => onDateSelect(currentDate)}
-            className="flex-1 px-4 py-2 bg-lime-400 text-black rounded-lg hover:bg-lime-500 font-medium"
+            className="flex-1 px-4 py-2 bg-orange-primary text-white rounded-lg hover:bg-orange-hover font-medium"
           >
             Select
           </button>
@@ -964,7 +964,7 @@ function TimePickerModal({
           </button>
           <button
             onClick={handleSelect}
-            className="flex-1 px-4 py-2 bg-lime-400 text-black rounded-lg hover:bg-lime-500 font-medium"
+            className="flex-1 px-4 py-2 bg-orange-primary text-white rounded-lg hover:bg-orange-hover font-medium"
           >
             Set Duration
           </button>
@@ -1021,7 +1021,7 @@ function ExerciseCard({
                 }
                 setShowHistory(true)
               }}
-              className="p-1 text-gray-400 hover:text-lime-600 transition-colors"
+              className="p-1 text-gray-400 hover:text-orange-hover transition-colors"
               title="View exercise history"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1097,7 +1097,7 @@ function ExerciseCard({
         
         <button
           onClick={onAddSet}
-          className="w-full py-2 text-lime-400 hover:text-lime-300 font-medium"
+          className="w-full py-2 text-orange-primary hover:text-orange-light font-medium"
         >
           + Add Set
         </button>
@@ -1185,7 +1185,7 @@ function SetRow({
                   onValueTypeChange(exerciseId, set.id, 'value1Type', type.value)
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-700 transition-colors cursor-pointer ${
-                  set.value1Type === type.value ? 'bg-gray-700 text-lime-400' : 'text-gray-300'
+                  set.value1Type === type.value ? 'bg-gray-700 text-orange-primary' : 'text-gray-300'
                 }`}
               >
                 {type.label}
@@ -1234,7 +1234,7 @@ function SetRow({
                   onValueTypeChange(exerciseId, set.id, 'value2Type', type.value)
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-700 transition-colors cursor-pointer ${
-                  set.value2Type === type.value ? 'bg-gray-700 text-lime-400' : 'text-gray-300'
+                  set.value2Type === type.value ? 'bg-gray-700 text-orange-primary' : 'text-gray-300'
                 }`}
               >
                 {type.label}
@@ -1440,7 +1440,7 @@ function ExerciseModal({
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       template.exercise_type === 'STRENGTH' 
                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
-                        : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                        : 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
                     }`}>
                       {template.exercise_type === 'STRENGTH' ? '💪 STR' : '🏃 CAR'}
                     </span>
@@ -1463,7 +1463,7 @@ function ExerciseModal({
               <p>No exercises found for "{searchQuery}"</p>
               <button
                 onClick={() => handleAddExercise(searchQuery)}
-                className="mt-2 text-lime-500 hover:text-lime-600 dark:text-lime-400 dark:hover:text-lime-300"
+                className="mt-2 text-orange-primary hover:text-orange-hover dark:text-orange-primary dark:hover:text-orange-light"
               >
                 Create "{searchQuery}" as custom exercise
               </button>
@@ -1473,7 +1473,7 @@ function ExerciseModal({
           {/* Loading State */}
           {loading && (
             <div className="p-4 text-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-lime-500 mx-auto"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-primary mx-auto"></div>
             </div>
           )}
         </div>

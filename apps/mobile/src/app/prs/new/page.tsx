@@ -207,7 +207,7 @@ export default function NewPRPage() {
                 onClick={() => setCategory('cardio')}
                 className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
                   category === 'cardio'
-                    ? 'bg-green-600 text-white'
+                    ? 'bg-orange-primary text-white'
                     : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >

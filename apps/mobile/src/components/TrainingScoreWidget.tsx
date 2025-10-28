@@ -56,9 +56,9 @@ const categoryInfo = {
   'Grinding': {
     range: '401-500 pts',
     description: 'Pushing hard with intense and frequent sessions.',
-    color: 'text-green-600 dark:text-green-400',
-    bgColor: 'bg-green-100 dark:bg-green-900/20',
-    progressColor: 'bg-green-500'
+    color: 'text-orange-600 dark:text-orange-400',
+    bgColor: 'bg-orange-100 dark:bg-orange-900/20',
+    progressColor: 'bg-orange-primary'
   },
   'Locked In': {
     range: '501-600 pts',
@@ -216,7 +216,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
             </span>
             <span className={`text-lg px-3 py-1 rounded-full ${
               data.change.percentage > 0
-                ? 'text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/20' 
+                ? 'text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/20' 
                 : data.change.percentage === 0
                 ? 'text-text-secondary bg-dark-elevated'
                 : 'text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/20'
@@ -299,7 +299,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
                       const change = previous > 0 ? ((current - previous) / previous) * 100 : 0
                       return (
                         <span className={`font-medium ${
-                          change > 0 ? 'text-green-600 dark:text-green-400' : 
+                          change > 0 ? 'text-orange-600 dark:text-orange-400' : 
                           change < 0 ? 'text-red-600 dark:text-red-400' : 
                           'text-text-secondary'
                         }`}>
@@ -346,7 +346,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
                       const change = previous > 0 ? ((current - previous) / previous) * 100 : 0
                       return (
                         <span className={`font-medium ${
-                          change > 0 ? 'text-green-600 dark:text-green-400' : 
+                          change > 0 ? 'text-orange-600 dark:text-orange-400' : 
                           change < 0 ? 'text-red-600 dark:text-red-400' : 
                           'text-text-secondary'
                         }`}>

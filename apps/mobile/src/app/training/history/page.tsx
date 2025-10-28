@@ -23,7 +23,7 @@ interface CalendarDay {
 }
 
 const CATEGORY_COLORS = {
-  strength: 'bg-green-500',
+  strength: 'bg-orange-primary',
   cardio: 'bg-orange-primary', 
   hybrid: 'bg-red-500'
 } as const
@@ -175,7 +175,7 @@ function WorkoutHistoryPage() {
           </div>
         </div>
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-primary"></div>
         </div>
       </div>
     )

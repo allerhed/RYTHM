@@ -99,7 +99,7 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
         <div className="flex-1 overflow-y-auto p-6">
           {historyQuery.isLoading && (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-primary"></div>
             </div>
           )}
 

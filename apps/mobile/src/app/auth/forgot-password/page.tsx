@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
         <div className="px-6 py-8">
           <div className="max-w-md mx-auto">
             <div className="text-center mb-10">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900 rounded-2xl mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 dark:bg-orange-900 rounded-2xl mb-6">
                 <span className="text-3xl">✉️</span>
               </div>
               <h2 className="text-3xl font-bold text-text-primary mb-3">

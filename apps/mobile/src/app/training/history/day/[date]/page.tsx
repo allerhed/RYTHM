@@ -174,7 +174,7 @@ function DayViewPage() {
           </div>
         </div>
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-primary"></div>
         </div>
       </div>
     )
@@ -208,7 +208,7 @@ function DayViewPage() {
               })}
             </p>
             {workouts.length > 0 && (
-              <p className="text-sm text-lime-600 dark:text-lime-400 mt-1">
+              <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
                 {workouts.length} workout{workouts.length !== 1 ? 's' : ''} completed
               </p>
             )}
@@ -233,7 +233,7 @@ function DayViewPage() {
             </p>
             <button
               onClick={handleNewWorkout}
-              className="px-6 py-3 bg-lime-500 text-white rounded-lg hover:bg-lime-600 transition-colors font-medium"
+              className="px-6 py-3 bg-orange-primary text-white rounded-lg hover:bg-orange-hover transition-colors font-medium"
             >
               Log a Workout
             </button>

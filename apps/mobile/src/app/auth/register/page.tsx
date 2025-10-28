@@ -378,8 +378,8 @@ export default function RegisterPage() {
                 <span className="text-xs text-text-secondary font-medium">Smart Analytics</span>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center mb-2">
-                  <span className="text-green-600 dark:text-green-400">💪</span>
+                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-xl flex items-center justify-center mb-2">
+                  <span className="text-orange-600 dark:text-orange-400">💪</span>
                 </div>
                 <span className="text-xs text-text-secondary font-medium">All Training</span>
               </div>

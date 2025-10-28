@@ -24,7 +24,7 @@ interface CalendarDay {
 }
 
 const CATEGORY_COLORS = {
-  strength: 'bg-green-500',
+  strength: 'bg-orange-primary',
   cardio: 'bg-orange-primary', 
   hybrid: 'bg-red-500'
 } as const
@@ -181,7 +181,7 @@ function CalendarPage() {
           </div>
         </div>
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-primary"></div>
         </div>
       </div>
     )
@@ -316,14 +316,14 @@ function CalendarPage() {
               
               return (
                 <>
-                  <div className="bg-gradient-to-r from-lime-50 to-green-50 dark:from-lime-900/20 dark:to-green-900/20 rounded-lg p-4 border border-lime-200 dark:border-lime-800">
-                    <div className="text-2xl font-bold text-lime-700 dark:text-lime-400">
+                  <div className="bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-4 border border-orange-200 dark:border-orange-700">
+                    <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">
                       {totalWorkload}
                     </div>
-                    <div className="text-sm text-lime-600 dark:text-lime-300 font-medium">
+                    <div className="text-sm text-orange-600 dark:text-orange-300 font-medium">
                       Total Workload
                     </div>
-                    <div className="text-xs text-lime-500 dark:text-lime-400 mt-1">
+                    <div className="text-xs text-orange-500 dark:text-orange-400 mt-1">
                       Training Load Points
                     </div>
                   </div>

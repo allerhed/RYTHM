@@ -92,7 +92,7 @@ export function WeeklyKgWidget({ selectedWeekStart }: WeeklyKgWidgetProps) {
         </div>
         <div className={`px-3 py-1 rounded-full text-sm font-medium ${
           percentageChange > 0
-            ? 'text-green-300 bg-green-900/30' 
+            ? 'text-orange-300 bg-orange-900/30' 
             : percentageChange === 0
             ? 'text-slate-300 bg-slate-700/30'
             : 'text-red-300 bg-red-900/30'
