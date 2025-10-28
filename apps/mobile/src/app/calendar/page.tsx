@@ -316,26 +316,26 @@ function CalendarPage() {
               
               return (
                 <>
-                  <div className="bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-4 border border-orange-200 dark:border-orange-700">
-                    <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">
+                  <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-4 border border-dark-border">
+                    <div className="text-2xl font-bold text-orange-primary">
                       {totalWorkload}
                     </div>
-                    <div className="text-sm text-orange-600 dark:text-orange-300 font-medium">
+                    <div className="text-sm text-white font-medium">
                       Total Workload
                     </div>
-                    <div className="text-xs text-orange-500 dark:text-orange-400 mt-1">
+                    <div className="text-xs text-text-secondary mt-1">
                       Training Load Points
                     </div>
                   </div>
                   
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                    <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">
+                  <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-4 border border-dark-border">
+                    <div className="text-2xl font-bold text-orange-primary">
                       {totalHours.toFixed(1)}
                     </div>
-                    <div className="text-sm text-orange-primary dark:text-blue-300 font-medium">
+                    <div className="text-sm text-white font-medium">
                       Hours Trained
                     </div>
-                    <div className="text-xs text-blue-500 dark:text-blue-400 mt-1">
+                    <div className="text-xs text-text-secondary mt-1">
                       Total Duration
                     </div>
                   </div>
