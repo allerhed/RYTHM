@@ -24,6 +24,197 @@ This repository uses a structured approach to AI-assisted development:
 
 ---
 
+## Design System & UI Style Guide
+
+**RYTHM uses a dark theme with orange accents** across all applications (mobile PWA + admin dashboard).
+
+### Color Palette
+
+```typescript
+// Tailwind CSS Configuration
+colors: {
+  // Dark theme backgrounds
+  'dark-primary': '#0F0F0F',    // Main background
+  'dark-secondary': '#1A1A1A',  // Secondary surfaces
+  'dark-card': '#232323',       // Card backgrounds
+  'dark-border': '#2A2A2A',     // Borders and dividers
+  'dark-elevated': '#2D2D2D',   // Elevated elements
+  
+  // Orange accent (primary brand color)
+  orange: {
+    primary: '#FF8C42',   // Main accent color
+    hover: '#FF9D5C',     // Hover states
+    dark: '#E67A30',      // Active/pressed states
+    light: '#FFB47A',     // Subtle highlights
+  },
+  
+  // Text colors
+  'text-primary': '#FFFFFF',    // Primary text
+  'text-secondary': '#A0A0A0',  // Secondary text
+  'text-tertiary': '#666666',   // Tertiary/muted text
+}
+```
+
+### CSS Variables (globals.css)
+
+```css
+:root {
+  /* Dark theme colors */
+  --dark-primary: #0F0F0F;
+  --dark-secondary: #1A1A1A;
+  --dark-card: #232323;
+  --dark-border: #2A2A2A;
+  --dark-elevated: #2D2D2D;
+  
+  /* Orange accent */
+  --orange-primary: #FF8C42;
+  --orange-hover: #FF9D5C;
+  --orange-dark: #E67A30;
+  --orange-light: #FFB47A;
+  
+  /* Text colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --text-tertiary: #666666;
+}
+```
+
+### Component Patterns
+
+#### Card Gradient (Standard Pattern)
+
+```tsx
+// All cards use gradient background from darker top to lighter bottom
+<div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg border border-dark-border">
+  {/* Card content */}
+</div>
+```
+
+#### Buttons (Primary Actions)
+
+```tsx
+// Primary button with orange accent
+<button className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors">
+  Primary Action
+</button>
+
+// Secondary button with dark theme
+<button className="bg-dark-elevated hover:bg-dark-card text-white border border-dark-border px-4 py-2 rounded-lg transition-colors">
+  Secondary Action
+</button>
+```
+
+#### Input Fields
+
+```tsx
+// Form inputs with dark theme
+<input 
+  className="w-full bg-dark-elevated border border-dark-border text-white rounded-lg px-4 py-2 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-colors"
+  placeholder="Enter text..."
+/>
+```
+
+#### Navigation/Tabs
+
+```tsx
+// Active tab with orange indicator
+<button className="px-4 py-2 text-white border-b-2 border-orange-500">
+  Active Tab
+</button>
+
+// Inactive tab
+<button className="px-4 py-2 text-text-secondary hover:text-white border-b-2 border-transparent hover:border-dark-border transition-colors">
+  Inactive Tab
+</button>
+```
+
+### Color Replacement Rules
+
+**When updating existing code or creating new components:**
+
+1. **Replace ALL blue/purple/teal colors** → orange
+   - `bg-blue-600` → `bg-orange-600`
+   - `text-blue-400` → `text-orange-400`
+   - `border-blue-500` → `border-orange-500`
+   - `text-purple-400` → `text-orange-400`
+
+2. **Replace light backgrounds** → dark theme
+   - `bg-white` → `bg-dark-primary`
+   - `bg-gray-50` → `bg-dark-elevated`
+   - `bg-gray-100` → `bg-dark-card`
+   - `bg-gray-200` → `bg-dark-elevated`
+
+3. **Replace borders** → dark borders
+   - `border-gray-200` → `border-dark-border`
+   - `border-gray-300` → `border-dark-border`
+
+4. **Replace text colors** → dark theme text
+   - `text-gray-900` → `text-white`
+   - `text-gray-600` → `text-text-secondary`
+   - `text-gray-400` → `text-text-tertiary`
+
+5. **Replace ALL lime/green colors** → orange
+   - `bg-lime-500` → `bg-orange-500`
+   - `text-green-400` → `text-orange-400`
+   - `border-lime-600` → `border-orange-600`
+
+6. **Card backgrounds** → gradient pattern
+   - `bg-dark-card` → `bg-gradient-to-b from-[#1a1a1a] to-[#232323]`
+   - `bg-gray-800` → `bg-gradient-to-b from-[#1a1a1a] to-[#232323]`
+
+### Focus States
+
+```tsx
+// All interactive elements use orange focus rings
+<element className="focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
+```
+
+### Hover States
+
+```tsx
+// Orange elements darken on hover
+<button className="bg-orange-600 hover:bg-orange-700" />
+
+// Dark elements lighten slightly on hover
+<button className="bg-dark-elevated hover:bg-dark-card" />
+```
+
+### Typography
+
+```css
+/* Primary text on dark backgrounds */
+.text-primary {
+  color: #FFFFFF;
+}
+
+/* Secondary/supporting text */
+.text-secondary {
+  color: #A0A0A0;
+}
+
+/* Tertiary/muted text */
+.text-tertiary {
+  color: #666666;
+}
+```
+
+### Design System Checklist
+
+When creating or updating UI components:
+
+- [ ] Use dark theme backgrounds (`dark-primary`, `dark-card`, `dark-elevated`)
+- [ ] Apply orange accent for primary actions and highlights
+- [ ] Use card gradient pattern (`from-[#1a1a1a] to-[#232323]`)
+- [ ] Replace ALL blue/purple/teal/lime/green with orange
+- [ ] Ensure proper text contrast (white text on dark backgrounds)
+- [ ] Add orange focus rings to interactive elements
+- [ ] Use dark borders (`border-dark-border`)
+- [ ] Test hover states (orange elements darken, dark elements lighten)
+- [ ] Verify accessibility contrast ratios
+- [ ] Maintain consistent spacing and border radius (rounded-lg)
+
+---
+
 ## Agent Capabilities & Workflows
 
 ### 1) Discovery Phase
@@ -239,6 +430,72 @@ export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 export async function createUser(rawInput: unknown) {
   const input = CreateUserSchema.parse(rawInput); // Throws on invalid
   // ... implementation
+}
+```
+
+#### UI Component Example (Dark Theme + Orange Accent)
+
+```tsx
+// RYTHM UI Component Pattern
+export function WorkoutCard({ session }: { session: Session }) {
+  return (
+    <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg border border-dark-border p-6 hover:border-orange-500/50 transition-colors">
+      <h3 className="text-white font-semibold text-lg mb-2">
+        {session.name}
+      </h3>
+      
+      <p className="text-text-secondary text-sm mb-4">
+        {session.category} • {formatDate(session.startedAt)}
+      </p>
+      
+      <div className="flex items-center gap-3">
+        <button className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors focus:ring-2 focus:ring-orange-500">
+          View Details
+        </button>
+        
+        <button className="bg-dark-elevated hover:bg-dark-card text-white border border-dark-border px-4 py-2 rounded-lg transition-colors focus:ring-2 focus:ring-orange-500">
+          Edit
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Form Component with Dark Theme
+export function ExerciseForm() {
+  return (
+    <form className="space-y-4">
+      <div>
+        <label className="block text-white text-sm font-medium mb-2">
+          Exercise Name
+        </label>
+        <input
+          type="text"
+          className="w-full bg-dark-elevated border border-dark-border text-white rounded-lg px-4 py-2 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-colors placeholder:text-text-tertiary"
+          placeholder="Enter exercise name..."
+        />
+      </div>
+      
+      <div>
+        <label className="block text-white text-sm font-medium mb-2">
+          Category
+        </label>
+        <select className="w-full bg-dark-elevated border border-dark-border text-white rounded-lg px-4 py-2 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-colors">
+          <option value="">Select category</option>
+          <option value="strength">Strength</option>
+          <option value="cardio">Cardio</option>
+          <option value="hybrid">Hybrid</option>
+        </select>
+      </div>
+      
+      <button 
+        type="submit"
+        className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg transition-colors focus:ring-2 focus:ring-orange-500 font-medium"
+      >
+        Create Exercise
+      </button>
+    </form>
+  );
 }
 ```
 
@@ -988,21 +1245,37 @@ This document provides a comprehensive framework for AI coding agents working on
 **RYTHM Key Takeaways:**
 
 1. **Always read `.github/copilot-instructions.md` first** — primary source of truth
-2. **RLS is mandatory** — all tenant tables must have RLS enabled with tenant_id policies
-3. **tRPC payload normalization** — use union+transform for admin web compatibility
-4. **Azure-ready containers** — stateless, health checks, multi-stage Dockerfiles
-5. **Domain knowledge** — sessions have categories, sets have two value types, 98 exercise templates
-6. **Email logging** — always use EmailService (never Azure SDK directly)
-7. **Test RLS policies** — integration tests must verify tenant isolation
-8. **Idempotent migrations** — SQL migrations must be transactional and rollback-safe
+2. **Dark theme with orange accents** — use #FF8C42 for all primary actions and highlights
+3. **RLS is mandatory** — all tenant tables must have RLS enabled with tenant_id policies
+4. **tRPC payload normalization** — use union+transform for admin web compatibility
+5. **Azure-ready containers** — stateless, health checks, multi-stage Dockerfiles
+6. **Domain knowledge** — sessions have categories, sets have two value types, 98 exercise templates
+7. **Email logging** — always use EmailService (never Azure SDK directly)
+8. **Test RLS policies** — integration tests must verify tenant isolation
+9. **Idempotent migrations** — SQL migrations must be transactional and rollback-safe
+10. **Card gradients** — all cards use `bg-gradient-to-b from-[#1a1a1a] to-[#232323]`
 
 **Critical RYTHM Patterns:**
 
+- **UI Colors**: Orange (#FF8C42) for accents, dark backgrounds (#0F0F0F, #1A1A1A, #232323)
+- **Card Pattern**: `bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg border border-dark-border`
+- **Button Primary**: `bg-orange-600 hover:bg-orange-700 text-white`
+- **Input Fields**: `bg-dark-elevated border-dark-border text-white focus:border-orange-500 focus:ring-orange-500`
 - **tRPC input**: `z.union([z.object({ json: schema }), schema]).transform(...)`
 - **RLS context**: `SELECT set_config('app.current_tenant_id', $1, false)`
 - **Health checks**: `/health` endpoint required for Azure Container Apps
 - **Logging**: Structured JSON with correlation IDs for Azure Monitor
 - **Commits**: Conventional commits with package scope (`feat(api):`, `fix(mobile):`)
+
+**Design System Rules:**
+
+- Replace ALL blue/purple/teal/lime/green → orange (#FF8C42)
+- Replace light backgrounds (bg-white, bg-gray-50) → dark theme (bg-dark-primary, bg-dark-elevated)
+- Replace borders (border-gray-200) → dark borders (border-dark-border)
+- Replace text (text-gray-900) → white text (text-white, text-text-secondary)
+- All cards use gradient backgrounds (from-[#1a1a1a] to-[#232323])
+- All interactive elements have orange focus rings (focus:ring-orange-500)
+- Hover states: orange darkens, dark elements lighten
 
 **Reference Documents:**
 
