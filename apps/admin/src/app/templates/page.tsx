@@ -1057,7 +1057,7 @@ function AdminTemplatesPage() {
           {(['org_admin', 'tenant_admin', 'system_admin'].includes(user.role)) && (
             <button
               onClick={handleCreateTemplate}
-              className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg"
+              className="px-4 py-2 btn-primary rounded-lg transition-all duration-200 shadow-lg"
             >
               <PlusIcon className="w-4 h-4 mr-2 inline" />
               Create New Template
@@ -1119,14 +1119,14 @@ function AdminTemplatesPage() {
               placeholder="Search templates..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full rounded-lg border-gray-600 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-white placeholder-gray-400 focus:border-orange-500 focus:ring-orange-500"
+              className="block w-full rounded-lg border-gray-600 bg-dark-elevated1 text-white placeholder-gray-400 focus:border-orange-500 focus:ring-orange-500"
             />
           </div>
           <div>
             <select
               value={selectedScope}
               onChange={(e) => setSelectedScope(e.target.value as any)}
-              className="block w-full rounded-lg border-gray-600 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-white focus:border-orange-500 focus:ring-orange-500"
+              className="block w-full rounded-lg border-gray-600 bg-dark-elevated1 text-white focus:border-orange-500 focus:ring-orange-500"
             >
               <option value="all">All Scopes</option>
               <option value="user">Personal Templates</option>
@@ -1183,10 +1183,10 @@ function AdminTemplatesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTemplates.map((template) => (
-              <div key={template.template_id} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
+              <div key={template.template_id} className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg text-white">
+                    <div className="icon-accent h-12 w-12 rounded-xl flex items-center justify-center shadow-lg text-white">
                       {getTemplateIcon(template.scope)}
                     </div>
                     <div>
@@ -1263,9 +1263,9 @@ function AdminTemplatesPage() {
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
               <div className="fixed inset-0 bg-dark-elevated0 bg-opacity-75 transition-opacity" onClick={() => setShowCreateModal(false)} />
               
-              <div className="relative bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-4xl w-full max-h-[90vh] flex flex-col">
+              <div className="relative bg-dark-elevated1 rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-4xl w-full max-h-[90vh] flex flex-col">
                 {/* Modal Header */}
-                <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] px-6 py-4 border-b border-gray-700 flex-shrink-0">
+                <div className="bg-dark-elevated1 px-6 py-4 border-b border-gray-700 flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-medium text-white">
                       {editingTemplate ? 'Edit Template' : 'Create New Template'}
@@ -1280,7 +1280,7 @@ function AdminTemplatesPage() {
                 </div>
 
                 {/* Modal Body */}
-                <div className="flex-1 overflow-y-auto bg-gradient-to-b from-[#1a1a1a] to-[#232323]">
+                <div className="flex-1 overflow-y-auto bg-dark-elevated1">
                   <div className="p-6 space-y-6">
                     {/* Basic Information */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1387,7 +1387,7 @@ function AdminTemplatesPage() {
                 <div className="bg-gray-700 px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 flex-shrink-0">
                   <button
                     onClick={() => setShowCreateModal(false)}
-                    className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-600 text-sm font-medium text-gray-300 bg-gradient-to-b from-[#1a1a1a] to-[#232323] hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                    className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-600 text-sm font-medium text-gray-300 bg-dark-elevated1 hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
                   >
                     Cancel
                   </button>
@@ -1411,8 +1411,8 @@ function AdminTemplatesPage() {
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
               <div className="fixed inset-0 bg-dark-elevated0 bg-opacity-75 transition-opacity" onClick={() => setViewingTemplate(null)} />
               
-              <div className="relative bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-2xl w-full">
-                <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div className="relative bg-dark-elevated1 rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-2xl w-full">
+                <div className="bg-dark-elevated1 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-medium text-white">
                       {viewingTemplate.name}
@@ -1473,7 +1473,7 @@ function AdminTemplatesPage() {
                 <div className="bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                   <button
                     onClick={() => setViewingTemplate(null)}
-                    className="w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 sm:w-auto sm:text-sm"
+                    className="w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-dark-elevated1 text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 sm:w-auto sm:text-sm"
                   >
                     Close
                   </button>
@@ -1489,8 +1489,8 @@ function AdminTemplatesPage() {
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
               <div className="fixed inset-0 bg-dark-elevated0 bg-opacity-75 transition-opacity" onClick={() => !isDeleting && setShowDeleteModal(null)} />
               
-              <div className="relative bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
-                <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div className="relative bg-dark-elevated1 rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
+                <div className="bg-dark-elevated1 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start">
                     <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
                       <ExclamationTriangleIcon className="h-6 w-6 text-red-400" />
@@ -1526,7 +1526,7 @@ function AdminTemplatesPage() {
                       setDeleteError(null)
                     }}
                     disabled={isDeleting}
-                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-dark-elevated1 text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>
