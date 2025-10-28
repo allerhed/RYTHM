@@ -345,11 +345,11 @@ export default function RegisterPage() {
             {step === 2 && (
               <p className="text-sm text-center text-text-secondary leading-relaxed">
                 By creating an account, you agree to our{' '}
-                <Link href="/terms" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors">
+                <Link href="/terms" className="text-orange-primary hover:text-orange-hover dark:hover:text-blue-300 font-medium transition-colors">
                   Terms of Service
                 </Link>
                 {' '}and{' '}
-                <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors">
+                <Link href="/privacy" className="text-orange-primary hover:text-orange-hover dark:hover:text-blue-300 font-medium transition-colors">
                   Privacy Policy
                 </Link>
               </p>
@@ -360,7 +360,7 @@ export default function RegisterPage() {
                 Already training with RYTHM?{' '}
                 <Link 
                   href="/auth/login" 
-                  className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                  className="text-orange-primary font-semibold hover:text-orange-hover dark:hover:text-blue-300 transition-colors"
                 >
                   Sign in here
                 </Link>
@@ -373,7 +373,7 @@ export default function RegisterPage() {
             <div className="mt-8 grid grid-cols-3 gap-4 text-center">
               <div className="flex flex-col items-center">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center mb-2">
-                  <span className="text-blue-600 dark:text-blue-400">📊</span>
+                  <span className="text-orange-primary">📊</span>
                 </div>
                 <span className="text-xs text-text-secondary font-medium">Smart Analytics</span>
               </div>

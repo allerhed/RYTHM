@@ -512,7 +512,7 @@ function DashboardPage() {
                       onClick={() => selectDay(item.dayIndex)}
                       className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
                         isSelected
-                          ? 'bg-teal-500 text-white border-2 border-teal-600' 
+                          ? 'bg-orange-primary text-white border-2 border-teal-600' 
                           : 'bg-dark-elevated text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                       title={item.label}
@@ -520,7 +520,7 @@ function DashboardPage() {
                       {item.day}
                     </button>
                     <div className={`w-2 h-2 rounded-full mt-2 ${
-                      isCurrentDay ? 'bg-teal-500' : 
+                      isCurrentDay ? 'bg-orange-primary' : 
                       isSelected ? 'bg-teal-400' : 'bg-gray-300 dark:bg-gray-600'
                     }`}></div>
                   </div>
@@ -740,7 +740,7 @@ function DashboardPage() {
                       return isToday && (
                         <Button 
                           onClick={() => router.push('/training/new')}
-                          className="bg-teal-500 hover:bg-teal-600 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+                          className="bg-orange-primary hover:bg-teal-600 text-white font-medium px-6 py-2 rounded-lg transition-colors"
                         >
                           Create New Workout
                         </Button>
@@ -777,7 +777,7 @@ function DashboardPage() {
                       {/* Activity Icon */}
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         activity.metadata?.category === 'strength' 
-                          ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                          ? 'bg-blue-100 dark:bg-blue-900/20 text-orange-primary'
                           : activity.metadata?.category === 'cardio'
                           ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
                           : 'bg-dark-elevated text-text-secondary'

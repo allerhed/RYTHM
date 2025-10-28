@@ -30,9 +30,9 @@ export function WeeklyKmWidget({ selectedWeekStart }: WeeklyKmWidgetProps) {
     return (
       <div className="bg-gradient-to-br from-teal-600 to-cyan-700 dark:from-teal-700 dark:to-cyan-800 rounded-xl shadow-lg p-6">
         <div className="animate-pulse">
-          <div className="h-4 bg-teal-500 rounded w-24 mb-4"></div>
-          <div className="h-10 bg-teal-500 rounded w-32 mb-2"></div>
-          <div className="h-3 bg-teal-500 rounded w-20"></div>
+          <div className="h-4 bg-orange-primary rounded w-24 mb-4"></div>
+          <div className="h-10 bg-orange-primary rounded w-32 mb-2"></div>
+          <div className="h-3 bg-orange-primary rounded w-20"></div>
         </div>
       </div>
     )

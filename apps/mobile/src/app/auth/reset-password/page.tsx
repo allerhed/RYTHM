@@ -148,7 +148,7 @@ function ResetPasswordContent() {
             <div className="mt-8 text-center">
               <Link 
                 href="/auth/login" 
-                className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                className="text-orange-primary font-semibold hover:text-orange-hover dark:hover:text-blue-300 transition-colors"
               >
                 ← Back to Sign In
               </Link>
@@ -271,7 +271,7 @@ function ResetPasswordContent() {
               Remember your password?{' '}
               <Link 
                 href="/auth/login" 
-                className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                className="text-orange-primary font-semibold hover:text-orange-hover dark:hover:text-blue-300 transition-colors"
               >
                 Sign In
               </Link>

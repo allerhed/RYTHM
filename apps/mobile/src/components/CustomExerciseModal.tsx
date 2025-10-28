@@ -168,7 +168,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
               type="text"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${
                 errors.name ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="Enter exercise name"
@@ -188,7 +188,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                 ...prev, 
                 exercise_type: e.target.value as 'STRENGTH' | 'CARDIO' 
               }))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
               disabled={loading}
             >
               {EXERCISE_TYPES.map(type => (
@@ -207,7 +207,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
             <select
               value={formData.exercise_category}
               onChange={(e) => setFormData(prev => ({ ...prev, exercise_category: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
               disabled={loading}
             >
               {EXERCISE_CATEGORIES.map(category => (
@@ -230,7 +230,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                     type="checkbox"
                     checked={formData.muscle_groups.includes(muscleGroup)}
                     onChange={() => handleMuscleGroupToggle(muscleGroup)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-300 text-orange-primary focus:ring-orange-primary"
                     disabled={loading}
                   />
                   <span className="text-gray-700 dark:text-gray-300 capitalize">
@@ -257,7 +257,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                   equipment: selectedEquipment?.name || ''
                 }))
               }}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
               disabled={loading || loadingEquipment}
             >
               <option value="">Select equipment</option>
@@ -284,7 +284,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                   ...prev, 
                   default_value_1_type: e.target.value 
                 }))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
                 disabled={loading}
               >
                 {VALUE_TYPES.map(type => (
@@ -304,7 +304,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                   ...prev, 
                   default_value_2_type: e.target.value 
                 }))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
                 disabled={loading}
               >
                 {VALUE_TYPES.map(type => (
@@ -325,7 +325,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
               placeholder="Brief description of the exercise"
               disabled={loading}
             />
@@ -340,7 +340,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
               value={formData.instructions}
               onChange={(e) => setFormData(prev => ({ ...prev, instructions: e.target.value }))}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
               placeholder="Detailed instructions on how to perform the exercise"
               disabled={loading}
             />

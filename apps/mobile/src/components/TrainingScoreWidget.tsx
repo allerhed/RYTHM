@@ -44,7 +44,7 @@ const categoryInfo = {
     description: 'Building consistency with regular training sessions.',
     color: 'text-teal-600 dark:text-teal-400',
     bgColor: 'bg-teal-100 dark:bg-teal-900/20',
-    progressColor: 'bg-teal-500'
+    progressColor: 'bg-orange-primary'
   },
   'Consistent': {
     range: '301-400 pts',
@@ -63,9 +63,9 @@ const categoryInfo = {
   'Locked In': {
     range: '501-600 pts',
     description: 'Maximum dedication with exceptional training volume.',
-    color: 'text-blue-600 dark:text-blue-400',
+    color: 'text-orange-primary',
     bgColor: 'bg-blue-100 dark:bg-blue-900/20',
-    progressColor: 'bg-blue-500'
+    progressColor: 'bg-orange-primary'
   },
   'Maniacal': {
     range: '601+ pts',

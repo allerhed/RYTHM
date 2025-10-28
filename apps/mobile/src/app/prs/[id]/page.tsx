@@ -131,7 +131,7 @@ export default function PRDetailPage() {
 
           <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-4 border border-blue-100 dark:border-blue-800">
             <p className="text-sm text-text-secondary mb-1">Current Record</p>
-            <p className="text-4xl font-bold text-blue-600 dark:text-blue-400">
+            <p className="text-4xl font-bold text-orange-primary">
               {pr.currentValue} {pr.currentUnit}
             </p>
             <p className="text-sm text-text-secondary mt-2">

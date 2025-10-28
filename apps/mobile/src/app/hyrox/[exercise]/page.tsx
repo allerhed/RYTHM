@@ -144,7 +144,7 @@ function ExerciseDetailPage() {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <Link 
             href="/hyrox"
-            className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 mb-6"
+            className="inline-flex items-center text-orange-primary hover:text-orange-hover dark:hover:text-blue-300 mb-6"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Back to Hyrox Tracker
@@ -179,7 +179,7 @@ function ExerciseDetailPage() {
         {/* Back Button */}
         <Link 
           href="/hyrox"
-          className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 mb-6"
+          className="inline-flex items-center text-orange-primary hover:text-orange-hover dark:hover:text-blue-300 mb-6"
         >
           <ArrowLeftIcon className="h-5 w-5 mr-2" />
           Back to Hyrox Tracker
@@ -287,13 +287,13 @@ function ExerciseDetailPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`text-lg font-semibold ${
                         index === 0 
-                          ? 'text-blue-600 dark:text-blue-400' 
+                          ? 'text-orange-primary' 
                           : 'text-text-primary'
                       }`}>
                         {formatTime(record.timeSeconds)}
                       </span>
                       {index === 0 && (
-                        <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
+                        <span className="ml-2 text-xs text-orange-primary">
                           Current Best
                         </span>
                       )}

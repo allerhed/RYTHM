@@ -79,7 +79,7 @@ function DashboardPageExample() {
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="bg-dark-card rounded-lg p-4 shadow">
-                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                <div className="text-3xl font-bold text-orange-primary">
                   {todaysWorkouts.length}
                 </div>
                 <div className="text-sm text-text-secondary mt-1">

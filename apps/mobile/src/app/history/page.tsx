@@ -140,7 +140,7 @@ function HistoryPage() {
                     onClick={() => handleFilterChange(tab.key as any)}
                     className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                       selectedFilter === tab.key
-                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        ? 'border-blue-500 text-orange-primary'
                         : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                     }`}
                   >

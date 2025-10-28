@@ -116,7 +116,7 @@ function PersonalRecordsPage() {
                     onClick={() => handleFilterChange(tab.key as any)}
                     className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                       selectedFilter === tab.key
-                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        ? 'border-blue-500 text-orange-primary'
                         : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                     }`}
                   >
@@ -172,7 +172,7 @@ function PersonalRecordsPage() {
               </p>
               <div className="mt-6">
                 <Link href="/prs/new">
-                  <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary">
                     <PlusIcon className="h-5 w-5 mr-2" />
                     Add Personal Record
                   </button>
@@ -206,7 +206,7 @@ function PersonalRecordsPage() {
                       
                       <div className="mt-4 flex items-end justify-between">
                         <div>
-                          <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                          <div className="text-3xl font-bold text-orange-primary">
                             {pr.currentValue} {pr.currentUnit}
                           </div>
                           <div className="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
@@ -289,7 +289,7 @@ function PersonalRecordsPage() {
           {/* Add PR Button - Fixed at bottom */}
           <div className="mt-8">
             <Link href="/prs/new">
-              <button className="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+              <button className="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary transition-colors">
                 <PlusIcon className="h-5 w-5 mr-2" />
                 Add Personal Record
               </button>

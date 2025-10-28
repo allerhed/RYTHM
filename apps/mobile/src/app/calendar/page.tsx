@@ -25,7 +25,7 @@ interface CalendarDay {
 
 const CATEGORY_COLORS = {
   strength: 'bg-green-500',
-  cardio: 'bg-blue-500', 
+  cardio: 'bg-orange-primary', 
   hybrid: 'bg-red-500'
 } as const
 
@@ -332,7 +332,7 @@ function CalendarPage() {
                     <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">
                       {totalHours.toFixed(1)}
                     </div>
-                    <div className="text-sm text-blue-600 dark:text-blue-300 font-medium">
+                    <div className="text-sm text-orange-primary dark:text-blue-300 font-medium">
                       Hours Trained
                     </div>
                     <div className="text-xs text-blue-500 dark:text-blue-400 mt-1">

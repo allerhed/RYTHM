@@ -24,7 +24,7 @@ interface CalendarDay {
 
 const CATEGORY_COLORS = {
   strength: 'bg-green-500',
-  cardio: 'bg-blue-500', 
+  cardio: 'bg-orange-primary', 
   hybrid: 'bg-red-500'
 } as const
 

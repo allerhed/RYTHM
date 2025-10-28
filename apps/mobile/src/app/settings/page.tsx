@@ -181,7 +181,7 @@ function SettingsPage() {
           {item.type === 'toggle' && (
             <button
               onClick={item.action}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-orange-primary focus:ring-offset-2 ${
                 item.value ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
               }`}
             >
@@ -200,7 +200,7 @@ function SettingsPage() {
                 if (item.id === 'language') setLanguage(e.target.value)
                 if (item.id === 'units') setUnits(e.target.value)
               }}
-              className="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 bg-white dark:bg-gray-700 text-text-primary focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 bg-white dark:bg-gray-700 text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-primary"
             >
               {item.options.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -213,7 +213,7 @@ function SettingsPage() {
           {item.type === 'action' && (
             <button
               onClick={item.action}
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+              className="text-orange-primary hover:text-orange-hover dark:hover:text-blue-300 text-sm font-medium"
             >
               →
             </button>

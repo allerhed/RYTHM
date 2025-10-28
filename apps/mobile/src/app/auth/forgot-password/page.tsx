@@ -89,7 +89,7 @@ export default function ForgotPasswordPage() {
               <p className="text-text-secondary text-lg mb-4">
                 We've sent a password reset link to:
               </p>
-              <p className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-6">
+              <p className="text-lg font-semibold text-orange-primary mb-6">
                 {email}
               </p>
             </div>
@@ -97,15 +97,15 @@ export default function ForgotPasswordPage() {
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
               <div className="space-y-4 text-sm text-text-secondary">
                 <div className="flex items-start space-x-3">
-                  <span className="text-blue-600 dark:text-blue-400 text-lg">1.</span>
+                  <span className="text-orange-primary text-lg">1.</span>
                   <p>Check your inbox (and spam folder) for an email from <strong>info@rythm.training</strong></p>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-blue-600 dark:text-blue-400 text-lg">2.</span>
+                  <span className="text-orange-primary text-lg">2.</span>
                   <p>Click the reset link in the email (valid for 1 hour)</p>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <span className="text-blue-600 dark:text-blue-400 text-lg">3.</span>
+                  <span className="text-orange-primary text-lg">3.</span>
                   <p>Create a new password for your account</p>
                 </div>
               </div>
@@ -127,7 +127,7 @@ export default function ForgotPasswordPage() {
             <div className="mt-8 text-center">
               <Link 
                 href="/auth/login" 
-                className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                className="text-orange-primary font-semibold hover:text-orange-hover dark:hover:text-blue-300 transition-colors"
               >
                 ← Back to Sign In
               </Link>
@@ -215,7 +215,7 @@ export default function ForgotPasswordPage() {
               Remember your password?{' '}
               <Link 
                 href="/auth/login" 
-                className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                className="text-orange-primary font-semibold hover:text-orange-hover dark:hover:text-blue-300 transition-colors"
               >
                 Sign In
               </Link>

@@ -271,7 +271,7 @@ function AnalyticsPage() {
                     <div key={index} className="flex flex-col items-center space-y-2 ml-1">
                       <div className="flex flex-col-reverse items-center">
                         <div
-                          className="w-6 bg-teal-500 rounded-sm transition-all duration-500"
+                          className="w-6 bg-orange-primary rounded-sm transition-all duration-500"
                           style={{ height: `${cardioHeight}px` }}
                         />
                         <div
@@ -296,7 +296,7 @@ function AnalyticsPage() {
           {/* Legend */}
           <div className="flex space-x-4 mb-6">
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-teal-500 rounded"></div>
+              <div className="w-4 h-4 bg-orange-primary rounded"></div>
               <span className="text-sm">Cardio</span>
             </div>
             <div className="flex items-center space-x-2">
@@ -373,7 +373,7 @@ function AnalyticsPage() {
                     <div className="text-sm text-gray-400 mb-2">Training Type Breakdown (Last 3 months)</div>
                     <div className="grid grid-cols-3 gap-2">
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-orange-primary rounded-full"></div>
                         <span className="text-sm text-gray-300">Cardio {cardioPercent}%</span>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -508,7 +508,7 @@ function AnalyticsPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-orange-primary rounded-full"></div>
                   <span className="text-sm font-medium text-white">Cardio</span>
                 </div>
                 <div className="text-right">
@@ -524,7 +524,7 @@ function AnalyticsPage() {
                 {/* Current period bar */}
                 <div className="w-full h-4 bg-gray-700 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-teal-500 rounded-full transition-all duration-500"
+                    className="h-full bg-orange-primary rounded-full transition-all duration-500"
                     style={{ 
                       width: `${Math.max(categoryData.currentPeriod.total > 0 ? (categoryData.currentPeriod.cardio / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
                     }}
@@ -651,7 +651,7 @@ function AnalyticsPage() {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+              <div className="text-lg font-semibold text-orange-primary">
                 {formatChange(summaryData.currentPeriod.totalWeight, summaryData.previousPeriod.totalWeight)}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
