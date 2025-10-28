@@ -130,7 +130,7 @@ function DashboardPage() {
             value={formatNumber(dashboard.activeUsers.value)}
             change={dashboard.activeUsers.change?.value}
             changeType={dashboard.activeUsers.change?.type}
-            gradient="from-blue-500 to-blue-600"
+            gradient="from-orange-500 to-orange-600"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
@@ -152,7 +152,7 @@ function DashboardPage() {
             value={formatNumber(dashboard.totalSessions.value)}
             change={dashboard.totalSessions.change?.value}
             changeType={dashboard.totalSessions.change?.type}
-            gradient="from-purple-500 to-pink-600"
+            gradient="from-orange-500 to-orange-600"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -202,7 +202,7 @@ function DashboardPage() {
             value={formatDuration(dashboard.avgSessionDuration.value)}
             change={dashboard.avgSessionDuration.change?.value}
             changeType={dashboard.avgSessionDuration.change?.type}
-            gradient="from-cyan-500 to-blue-600"
+            gradient="from-orange-500 to-orange-600"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -212,7 +212,7 @@ function DashboardPage() {
           <StatsCard
             title="User Retention"
             value={`${dashboard.retentionRate.value.toFixed(1)}%`}
-            gradient="from-indigo-500 to-purple-600"
+            gradient="from-orange-500 to-orange-600"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />

@@ -190,7 +190,7 @@ export default function ExercisesPage() {
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg flex items-center gap-2"
+            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg flex items-center gap-2"
           >
             <PlusIcon className="w-4 h-4" />
             Add Exercise Template
@@ -203,7 +203,7 @@ export default function ExercisesPage() {
             title="Total Templates"
             value={stats?.totalExerciseTemplates || 0}
             icon={<DumbbellIcon />}
-            gradient="from-blue-500 to-blue-600"
+            gradient="from-orange-500 to-orange-600"
           />
           <StatsCard
             title="Strength Templates"
@@ -221,7 +221,7 @@ export default function ExercisesPage() {
             title="Recent (7d)"
             value={stats?.recentExerciseTemplates || 0}
             icon={<TrendingUpIcon />}
-            gradient="from-purple-500 to-purple-600"
+            gradient="from-orange-500 to-orange-600"
           />
         </div>
 
@@ -300,7 +300,7 @@ export default function ExercisesPage() {
                 onClick={() => handleSort(field)}
                 className={`px-3 py-1 rounded-lg text-sm flex items-center gap-1 transition-colors ${
                   sortField === field 
-                    ? 'bg-blue-500 text-white' 
+                    ? 'bg-orange-500 text-white' 
                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
@@ -332,7 +332,7 @@ export default function ExercisesPage() {
               <div key={exerciseTemplate.template_id} className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg text-white">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg text-white">
                       {exerciseTemplate.exercise_type === 'STRENGTH' ? (
                         <DumbbellIcon className="w-6 h-6" />
                       ) : (
@@ -350,7 +350,7 @@ export default function ExercisesPage() {
                   </div>
                   <span className={`inline-flex px-2 py-1 rounded-lg text-xs font-medium border ${
                     exerciseTemplate.exercise_type === 'STRENGTH' 
-                      ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' 
+                      ? 'bg-orange-500/20 text-blue-400 border-blue-500/30' 
                       : 'bg-green-500/20 text-green-400 border-green-500/30'
                   }`}>
                     {exerciseTemplate.exercise_type}
@@ -385,7 +385,7 @@ export default function ExercisesPage() {
                       {exerciseTemplate.muscle_groups.slice(0, 3).map((group, index) => (
                         <span
                           key={index}
-                          className="inline-flex px-2 py-1 text-xs bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded"
+                          className="inline-flex px-2 py-1 text-xs bg-orange-500/20 text-purple-400 border border-purple-500/30 rounded"
                         >
                           {group}
                         </span>
@@ -417,7 +417,7 @@ export default function ExercisesPage() {
                   <div className="flex space-x-3">
                     <button
                       onClick={() => handleEdit(exerciseTemplate)}
-                      className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors duration-200 text-sm flex items-center justify-center gap-2"
+                      className="flex-1 px-3 py-2 bg-orange-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-sm flex items-center justify-center gap-2"
                     >
                       <PencilIcon className="w-4 h-4" />
                       Edit

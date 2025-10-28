@@ -125,7 +125,7 @@ export default function AnalyticsPage() {
                 onClick={() => setTimeRange(range)}
                 className={`px-3 py-1 text-xs rounded-lg border transition-colors ${
                   timeRange === range
-                    ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                    ? 'bg-orange-500/20 text-blue-400 border-blue-500/30'
                     : 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600'
                 }`}
               >
@@ -144,7 +144,7 @@ export default function AnalyticsPage() {
                 value={formatNumber(dashboard.activeUsers.value)}
                 change={dashboard.activeUsers.change?.value}
                 changeType={dashboard.activeUsers.change?.type}
-                gradient="from-blue-500 to-cyan-600"
+                gradient="from-orange-500 to-orange-600"
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -156,7 +156,7 @@ export default function AnalyticsPage() {
                 value={formatNumber(dashboard.totalSessions.value)}
                 change={dashboard.totalSessions.change?.value}
                 changeType={dashboard.totalSessions.change?.type}
-                gradient="from-purple-500 to-indigo-600"
+                gradient="from-orange-500 to-orange-600"
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -225,11 +225,11 @@ export default function AnalyticsPage() {
               </h3>
               <div className="flex space-x-2 text-xs">
                 <div className="flex items-center space-x-1">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-orange-500"></div>
                   <span className="text-gray-400">Active Users</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-orange-500"></div>
                   <span className="text-gray-400">Sessions</span>
                 </div>
               </div>
@@ -282,9 +282,9 @@ export default function AnalyticsPage() {
                 const total = exerciseAnalytics.categoryBreakdown.reduce((sum, cat) => sum + cat.session_count, 0);
                 const percentage = total > 0 ? (category.session_count / total) * 100 : 0;
                 const categoryInfo = {
-                  strength: { color: 'bg-blue-500', icon: '💪', gradient: 'from-blue-500 to-blue-600' },
+                  strength: { color: 'bg-orange-500', icon: '💪', gradient: 'from-orange-500 to-orange-600' },
                   cardio: { color: 'bg-red-500', icon: '❤️', gradient: 'from-red-500 to-red-600' },
-                  hybrid: { color: 'bg-purple-500', icon: '⚡', gradient: 'from-purple-500 to-purple-600' }
+                  hybrid: { color: 'bg-orange-500', icon: '⚡', gradient: 'from-orange-500 to-orange-600' }
                 }[category.category] || { color: 'bg-gray-500', icon: '🏋️', gradient: 'from-gray-500 to-gray-600' };
 
                 return (
@@ -336,7 +336,7 @@ export default function AnalyticsPage() {
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold ${
                       index === 0 ? 'bg-yellow-500' : 
                       index === 1 ? 'bg-gray-400' : 
-                      index === 2 ? 'bg-orange-600' : 'bg-blue-500'
+                      index === 2 ? 'bg-orange-600' : 'bg-orange-500'
                     }`}>
                       {index + 1}
                     </div>
@@ -367,8 +367,8 @@ export default function AnalyticsPage() {
                 <div key={exercise.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-semibold ${
-                      index < 3 ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 
-                      index < 6 ? 'bg-gradient-to-r from-blue-500 to-cyan-500' : 
+                      index < 3 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 
+                      index < 6 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 
                       'bg-gradient-to-r from-green-500 to-teal-500'
                     }`}>
                       {index + 1}
@@ -399,7 +399,7 @@ export default function AnalyticsPage() {
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-cyan-600 mb-4">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-4">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
@@ -408,7 +408,7 @@ export default function AnalyticsPage() {
                 <p className="text-gray-400 text-sm">Organizations</p>
               </div>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 mb-4">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-4">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                   </svg>
@@ -444,7 +444,7 @@ export default function AnalyticsPage() {
                 <p className="text-gray-400 text-sm">Active (24h)</p>
               </div>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 mb-4">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-4">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
@@ -453,7 +453,7 @@ export default function AnalyticsPage() {
                 <p className="text-gray-400 text-sm">Sessions (24h)</p>
               </div>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 mb-4">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-4">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
@@ -484,7 +484,7 @@ export default function AnalyticsPage() {
                   <p className="text-gray-400 text-sm">Total Equipment</p>
                 </div>
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 mb-3">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-3">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
@@ -519,7 +519,7 @@ export default function AnalyticsPage() {
                     <div className="flex items-center space-x-3">
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-semibold ${
                         index < 2 ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 
-                        index < 4 ? 'bg-gradient-to-r from-blue-500 to-purple-500' : 
+                        index < 4 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 
                         'bg-gradient-to-r from-gray-500 to-gray-600'
                       }`}>
                         {index + 1}
@@ -575,8 +575,8 @@ export default function AnalyticsPage() {
                     <div key={group.muscle_group} className="flex justify-between items-center">
                       <div className="flex items-center space-x-2">
                         <div className={`w-3 h-3 rounded-full ${
-                          index === 0 ? 'bg-blue-500' :
-                          index === 1 ? 'bg-purple-500' :
+                          index === 0 ? 'bg-orange-500' :
+                          index === 1 ? 'bg-orange-500' :
                           index === 2 ? 'bg-green-500' :
                           index === 3 ? 'bg-orange-500' : 'bg-gray-500'
                         }`} />
@@ -592,7 +592,7 @@ export default function AnalyticsPage() {
               <div>
                 <h4 className="text-sm font-semibold text-gray-300 mb-4">Recent Activity</h4>
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 mb-3">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-3">
                     <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>

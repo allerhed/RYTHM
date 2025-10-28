@@ -150,7 +150,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
       <div className="bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto border border-gray-700">
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
@@ -205,7 +205,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
                   onClick={() => setFormData(prev => ({ ...prev, exercise_type: type.value as 'STRENGTH' | 'CARDIO' }))}
                   className={`px-4 py-3 border rounded-lg font-medium transition-all duration-200 ${
                     formData.exercise_type === type.value
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-blue-500 shadow-lg'
+                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-blue-500 shadow-lg'
                       : 'border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700 hover:border-gray-500'
                   }`}
                   disabled={isLoading}
@@ -383,7 +383,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg transition-all duration-200 flex items-center space-x-2"
+              className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg transition-all duration-200 flex items-center space-x-2"
             >
               {isLoading ? (
                 <>

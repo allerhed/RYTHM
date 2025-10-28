@@ -28,7 +28,7 @@ export function WeeklyKmWidget({ selectedWeekStart }: WeeklyKmWidgetProps) {
 
   if (weeklyKmQuery.isLoading) {
     return (
-      <div className="bg-gradient-to-br from-teal-600 to-cyan-700 dark:from-teal-700 dark:to-cyan-800 rounded-xl shadow-lg p-6">
+      <div className="bg-gradient-to-br from-orange-600 to-orange-700 dark:from-teal-700 dark:to-cyan-800 rounded-xl shadow-lg p-6">
         <div className="animate-pulse">
           <div className="h-4 bg-orange-primary rounded w-24 mb-4"></div>
           <div className="h-10 bg-orange-primary rounded w-32 mb-2"></div>
@@ -40,7 +40,7 @@ export function WeeklyKmWidget({ selectedWeekStart }: WeeklyKmWidgetProps) {
 
   if (weeklyKmQuery.isError || !weeklyKmQuery.data) {
     return (
-      <div className="bg-gradient-to-br from-teal-600 to-cyan-700 dark:from-teal-700 dark:to-cyan-800 rounded-xl shadow-lg p-6">
+      <div className="bg-gradient-to-br from-orange-600 to-orange-700 dark:from-teal-700 dark:to-cyan-800 rounded-xl shadow-lg p-6">
         <div className="text-center text-teal-100">
           <svg className="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -62,7 +62,7 @@ export function WeeklyKmWidget({ selectedWeekStart }: WeeklyKmWidgetProps) {
   }
 
   return (
-    <div className="bg-gradient-to-br from-teal-600 to-cyan-700 dark:from-teal-700 dark:to-cyan-800 rounded-xl shadow-lg p-6 border border-teal-500 dark:border-teal-600">
+    <div className="bg-gradient-to-br from-orange-600 to-orange-700 dark:from-teal-700 dark:to-cyan-800 rounded-xl shadow-lg p-6 border border-orange-500 dark:border-orange-600">
       {/* Header */}
       <div className="flex items-center space-x-2 mb-4">
         <svg className="w-5 h-5 text-teal-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@ export function WeeklyKmWidget({ selectedWeekStart }: WeeklyKmWidgetProps) {
       </div>
 
       {/* Comparison */}
-      <div className="flex items-center justify-between pt-4 border-t border-teal-500">
+      <div className="flex items-center justify-between pt-4 border-t border-orange-500">
         <div>
           <div className="text-sm font-medium text-teal-200">Previous Week</div>
           <div className="text-lg font-semibold text-white">

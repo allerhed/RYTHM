@@ -13,7 +13,7 @@ export default function NotFound() {
           <div className="absolute -top-3 -right-3 w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
             <span className="text-2xl">✨</span>
           </div>
-          <div className="absolute -bottom-2 -left-4 w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center shadow-lg animate-pulse" style={{ animationDelay: '1s' }}>
+          <div className="absolute -bottom-2 -left-4 w-8 h-8 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg animate-pulse" style={{ animationDelay: '1s' }}>
             <span className="text-lg">⭐</span>
           </div>
         </div>

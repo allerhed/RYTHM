@@ -165,7 +165,7 @@ function EquipmentModal({ isOpen, onClose, equipment, onSave }: EquipmentModalPr
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50"
               >
                 {isLoading ? 'Saving...' : equipment ? 'Update' : 'Create'}
               </button>
@@ -315,9 +315,9 @@ export default function EquipmentPage() {
   const getCategoryBadge = (category: string) => {
     switch (category) {
       case 'free_weights':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+        return 'bg-orange-500/20 text-blue-400 border-blue-500/30'
       case 'machines':
-        return 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+        return 'bg-orange-500/20 text-purple-400 border-purple-500/30'
       case 'cardio':
         return 'bg-red-500/20 text-red-400 border-red-500/30'
       case 'bodyweight':
@@ -338,7 +338,7 @@ export default function EquipmentPage() {
             <div className="text-gray-400 mb-4">{error}</div>
             <button 
               onClick={fetchData}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
               Try Again
             </button>
@@ -362,7 +362,7 @@ export default function EquipmentPage() {
           </div>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
+            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
           >
             Add Equipment
           </button>
@@ -374,7 +374,7 @@ export default function EquipmentPage() {
             <StatsCard
               title="Total Equipment"
               value={stats.totalEquipment.toString()}
-              gradient="from-blue-500 to-blue-600"
+              gradient="from-orange-500 to-orange-600"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -394,7 +394,7 @@ export default function EquipmentPage() {
             <StatsCard
               title="Categories"
               value={stats.equipmentByCategory.length.toString()}
-              gradient="from-purple-500 to-pink-600"
+              gradient="from-orange-500 to-orange-600"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -487,7 +487,7 @@ export default function EquipmentPage() {
               <div key={item.equipment_id} className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg text-white">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg text-white">
                       {getCategoryIcon(item.category)}
                     </div>
                     <div>
@@ -553,7 +553,7 @@ export default function EquipmentPage() {
                   <div className="flex space-x-3">
                     <button
                       onClick={() => handleEdit(item)}
-                      className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors duration-200 text-sm"
+                      className="flex-1 px-3 py-2 bg-orange-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-sm"
                     >
                       Edit
                     </button>

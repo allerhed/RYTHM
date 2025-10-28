@@ -13,7 +13,7 @@ export default function NotFound404Page() {
           <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
             <span className="text-lg">✨</span>
           </div>
-          <div className="absolute -bottom-1 -left-3 w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+          <div className="absolute -bottom-1 -left-3 w-6 h-6 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
             <span className="text-sm">⭐</span>
           </div>
         </div>
