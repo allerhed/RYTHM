@@ -55,18 +55,18 @@ export function RecentActivity() {
   const getActivityColor = (type: ActivityItem['type']) => {
     switch (type) {
       case 'user_registration':
-        return 'from-green-500 to-emerald-600'
+        return 'bg-green-600'
       case 'tenant_created':
-        return 'from-blue-500 to-indigo-600'
+        return 'bg-blue-600'
       case 'workout_completed':
-        return 'from-purple-500 to-pink-600'
+        return 'bg-purple-600'
       default:
-        return 'from-gray-500 to-gray-600'
+        return 'bg-gray-600'
     }
   }
 
   return (
-    <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+    <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white">
           Recent Activity
@@ -87,7 +87,7 @@ export function RecentActivity() {
                   />
                 )}
                 <div className="relative flex space-x-3">
-                  <div className={`h-8 w-8 rounded-full bg-gradient-to-r ${getActivityColor(activity.type)} flex items-center justify-center shadow-lg`}>
+                  <div className={`h-8 w-8 rounded-full ${getActivityColor(activity.type)} flex items-center justify-center shadow-lg`}>
                     <div className="text-white">
                       {getActivityIcon(activity.type)}
                     </div>

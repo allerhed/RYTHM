@@ -122,10 +122,10 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-32 bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl"></div>
+              <div key={i} className="h-32 bg-dark-elevated1 rounded-2xl"></div>
             ))}
           </div>
-          <div className="h-96 bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl"></div>
+          <div className="h-96 bg-dark-elevated1 rounded-2xl"></div>
         </div>
       </AdminLayout>
     )
@@ -197,7 +197,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
+            <div className="icon-accent h-12 w-12 rounded-xl flex items-center justify-center shadow-lg">
               <span className="text-lg font-bold text-white">
                 {organization.name.charAt(0).toUpperCase()}
               </span>
@@ -221,7 +221,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -231,7 +231,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
                   {organization.user_count || 0}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg">
+              <div className="p-3 rounded-xl bg-blue-600 shadow-lg">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                 </svg>
@@ -239,7 +239,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -249,7 +249,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
                   {organization.session_count || 0}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+              <div className="p-3 rounded-xl bg-green-600 shadow-lg">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
@@ -257,7 +257,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -267,7 +267,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
                   {formatLastActivity(organization.last_activity || null)}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
+              <div className="p-3 rounded-xl bg-purple-600 shadow-lg">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -275,7 +275,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -285,7 +285,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
                   {organization.tenant_id}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-r from-gray-500 to-gray-600 shadow-lg">
+              <div className="p-3 rounded-xl bg-gray-600 shadow-lg">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
@@ -296,7 +296,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
 
         {/* Branding Configuration */}
         {organization.branding && Object.keys(organization.branding).length > 0 && (
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <h2 className="text-xl font-bold text-white mb-4">Branding Configuration</h2>
             <pre className="bg-gray-900 rounded-xl p-4 text-sm text-gray-300 overflow-x-auto">
               {JSON.stringify(organization.branding, null, 2)}
@@ -305,7 +305,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
         )}
 
         {/* Users Table */}
-        <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700">
+        <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700">
           <div className="p-6 border-b border-gray-700">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-white">Users</h2>
@@ -356,7 +356,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
                       <tr key={user.user_id} className="hover:bg-gray-700/50 transition-colors duration-200">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
+                            <div className="icon-accent h-10 w-10 rounded-full flex items-center justify-center">
                               <span className="text-sm font-bold text-white">
                                 {user.first_name ? user.first_name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                               </span>

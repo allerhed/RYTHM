@@ -206,7 +206,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-dark-elevated1 shadow-xl">
           <div className="flex h-16 shrink-0 items-center px-6 border-b border-gray-700">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
+              <div className="icon-accent h-10 w-10 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-lg">R</span>
               </div>
               <div>
@@ -231,7 +231,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           href={item.href}
                           className={`group flex gap-x-4 rounded-xl p-3 text-sm leading-6 font-semibold transition-all duration-200 ${
                             isActive
-                              ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg'
+                              ? 'bg-primary text-white shadow-lg'
                               : 'text-gray-300 hover:text-white hover:bg-gray-700'
                           }`}
                         >
@@ -258,7 +258,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           href={item.href}
                           className={`group flex gap-x-4 rounded-xl p-3 text-sm leading-6 font-semibold transition-all duration-200 ${
                             isActive
-                              ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg'
+                              ? 'bg-primary text-white shadow-lg'
                               : 'text-gray-300 hover:text-white hover:bg-gray-700'
                           }`}
                         >
@@ -277,7 +277,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             {/* User info and logout */}
             <div className="mt-auto mb-4">
               <div className="flex items-center gap-x-4 px-4 py-4 border-t border-gray-700">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
+                <div className="icon-accent h-10 w-10 rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-sm font-bold text-white">
                     {user?.email?.charAt(0).toUpperCase()}
                   </span>
@@ -334,7 +334,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 className="flex items-center p-2 hover:bg-gray-700 rounded-lg transition-colors duration-200"
               >
                 <span className="sr-only">Your profile</span>
-                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
+                <div className="icon-accent h-8 w-8 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium text-white">
                     {user?.email?.charAt(0).toUpperCase()}
                   </span>

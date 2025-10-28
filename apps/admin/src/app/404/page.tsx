@@ -7,20 +7,20 @@ export default function NotFound404Page() {
       <div className="max-w-md w-full text-center space-y-8">
         {/* Unicorn Illustration */}
         <div className="relative">
-          <div className="mx-auto w-32 h-32 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center shadow-2xl">
+          <div className="mx-auto w-32 h-32 icon-accent rounded-full flex items-center justify-center shadow-2xl">
             <div className="text-6xl">🦄</div>
           </div>
-          <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+          <div className="absolute -top-2 -right-2 w-8 h-8 icon-accent rounded-full flex items-center justify-center shadow-lg animate-pulse">
             <span className="text-lg">✨</span>
           </div>
-          <div className="absolute -bottom-1 -left-3 w-6 h-6 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+          <div className="absolute -bottom-1 -left-3 w-6 h-6 icon-accent rounded-full flex items-center justify-center shadow-lg animate-bounce">
             <span className="text-sm">⭐</span>
           </div>
         </div>
 
         {/* Error Code */}
         <div>
-          <h1 className="text-8xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
+          <h1 className="text-8xl font-bold text-primary">
             404
           </h1>
           <h2 className="text-2xl font-bold text-white mt-4">
@@ -41,7 +41,7 @@ export default function NotFound404Page() {
         </div>
 
         {/* Fun Stats */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl border border-gray-700 p-6 space-y-4">
+        <div className="bg-dark-elevated1 rounded-2xl border border-gray-700 p-6 space-y-4">
           <h3 className="text-white font-semibold">🎉 Lost Page Discovery Stats</h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="text-center">
@@ -59,7 +59,7 @@ export default function NotFound404Page() {
         <div className="space-y-4">
           <Link 
             href="/dashboard"
-            className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-semibold rounded-lg hover:from-pink-600 hover:via-purple-600 hover:to-indigo-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="w-full inline-flex items-center justify-center px-6 py-3 btn-primary rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <span className="mr-2">🏠</span>
             Return to Dashboard
@@ -67,7 +67,7 @@ export default function NotFound404Page() {
           
           <Link 
             href="/"
-            className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-gray-300 font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200 border border-gray-700"
+            className="w-full inline-flex items-center justify-center px-6 py-3 bg-dark-elevated1 text-gray-300 font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200 border border-gray-700"
           >
             <span className="mr-2">🔙</span>
             Go Back

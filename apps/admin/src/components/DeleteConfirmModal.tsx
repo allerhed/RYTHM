@@ -43,7 +43,7 @@ export function DeleteConfirmModal({
         <div className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-75" onClick={onClose}></div>
         
         {/* Modal */}
-        <div className="relative transform overflow-hidden rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] border border-gray-700 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+        <div className="relative transform overflow-hidden rounded-2xl bg-dark-elevated1 border border-gray-700 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md">
           {/* Header */}
           <div className="px-6 py-4">
             <div className="flex items-center">
