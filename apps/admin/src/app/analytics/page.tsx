@@ -74,7 +74,7 @@ export default function AnalyticsPage() {
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] h-32"></div>
+                <div className="rounded-2xl bg-dark-elevated1 h-32"></div>
               </div>
             ))}
           </div>
@@ -218,7 +218,7 @@ export default function AnalyticsPage() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Usage Trends Chart */}
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-white">
                 Usage Trends
@@ -241,12 +241,12 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Workouts Logged */}
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               Workouts Logged
             </h3>
             <div className="flex flex-col items-center justify-center h-64">
-              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 mb-6">
+              <div className="icon-accent inline-flex items-center justify-center w-24 h-24 mb-6">
                 <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                 </svg>
@@ -273,7 +273,7 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Session Category Breakdown */}
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               Session Categories
             </h3>
@@ -291,7 +291,7 @@ export default function AnalyticsPage() {
                   <div key={category.category} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${categoryInfo.gradient} flex items-center justify-center text-white text-sm`}>
+                        <div className="icon-accent w-8 h-8 text-sm">
                           {categoryInfo.icon}
                         </div>
                         <span className="text-gray-300 font-medium capitalize">{category.category}</span>
@@ -303,7 +303,7 @@ export default function AnalyticsPage() {
                     </div>
                     <div className="w-full bg-gray-700 rounded-full h-2">
                       <div 
-                        className={`h-2 rounded-full bg-gradient-to-r ${categoryInfo.gradient}`}
+                        className="h-2 rounded-full bg-primary"
                         style={{ width: `${percentage}%` }}
                       ></div>
                     </div>
@@ -325,7 +325,7 @@ export default function AnalyticsPage() {
         {/* Additional Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Top Organizations */}
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               Top Organizations
             </h3>
@@ -358,7 +358,7 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Popular Exercises */}
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               Popular Exercises
             </h3>
@@ -366,11 +366,7 @@ export default function AnalyticsPage() {
               {exerciseAnalytics?.popularExercises.slice(0, 8).map((exercise, index) => (
                 <div key={exercise.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-semibold ${
-                      index < 3 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 
-                      index < 6 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 
-                      'bg-gradient-to-r from-green-500 to-teal-500'
-                    }`}>
+                    <div className="badge-primary w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold">
                       {index + 1}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -393,13 +389,13 @@ export default function AnalyticsPage() {
 
         {/* Performance Insights */}
         {performanceMetrics && (
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               System Overview
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-4">
+                <div className="icon-accent inline-flex items-center justify-center w-16 h-16 mb-4">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
@@ -408,7 +404,7 @@ export default function AnalyticsPage() {
                 <p className="text-gray-400 text-sm">Organizations</p>
               </div>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-4">
+                <div className="inline-flex items-center justify-center icon-accent w-16 h-16 mb-&">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                   </svg>
@@ -417,7 +413,7 @@ export default function AnalyticsPage() {
                 <p className="text-gray-400 text-sm">Total Users</p>
               </div>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-green-500 to-teal-600 mb-4">
+                <div className="inline-flex items-center justify-center icon-accent w-16 h-16 mb-&">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
@@ -426,7 +422,7 @@ export default function AnalyticsPage() {
                 <p className="text-gray-400 text-sm">Total Sessions</p>
               </div>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-red-600 mb-4">
+                <div className="inline-flex items-center justify-center icon-accent w-16 h-16 mb-&">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
@@ -435,7 +431,7 @@ export default function AnalyticsPage() {
                 <p className="text-gray-400 text-sm">Exercises</p>
               </div>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-rose-600 mb-4">
+                <div className="inline-flex items-center justify-center icon-accent w-16 h-16 mb-&">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -444,7 +440,7 @@ export default function AnalyticsPage() {
                 <p className="text-gray-400 text-sm">Active (24h)</p>
               </div>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-4">
+                <div className="inline-flex items-center justify-center icon-accent w-16 h-16 mb-&">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
@@ -453,7 +449,7 @@ export default function AnalyticsPage() {
                 <p className="text-gray-400 text-sm">Sessions (24h)</p>
               </div>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-4">
+                <div className="inline-flex items-center justify-center icon-accent w-16 h-16 mb-&">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
@@ -469,13 +465,13 @@ export default function AnalyticsPage() {
         {equipmentStats && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Equipment Overview */}
-            <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+            <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-white mb-6">
                 Equipment Overview
               </h3>
               <div className="grid grid-cols-2 gap-6">
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 mb-3">
+                  <div className="inline-flex items-center justify-center icon-accent w-12 h-12 mb-3">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -484,7 +480,7 @@ export default function AnalyticsPage() {
                   <p className="text-gray-400 text-sm">Total Equipment</p>
                 </div>
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-3">
+                  <div className="inline-flex items-center justify-center icon-accent w-12 h-12 mb-3">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
@@ -509,7 +505,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Most Used Equipment */}
-            <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+            <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-white mb-6">
                 Most Used Equipment
               </h3>
@@ -549,7 +545,7 @@ export default function AnalyticsPage() {
 
         {/* Exercise Template Analytics */}
         {exerciseTemplateStats && (
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               Exercise Template Insights
             </h3>
@@ -592,7 +588,7 @@ export default function AnalyticsPage() {
               <div>
                 <h4 className="text-sm font-semibold text-gray-300 mb-4">Recent Activity</h4>
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 mb-3">
+                  <div className="inline-flex items-center justify-center icon-accent w-16 h-16 mb-&">
                     <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
