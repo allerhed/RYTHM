@@ -141,17 +141,58 @@ Add focus rings for actionable elements:
 ## 11. How to Extend
 Add new surface or role by defining a variable then mapping to a helper class in `globals.css`. Keep naming consistent (`bg-dark-elevated2`, etc.).
 
-## 12. Checklist Before Merging UI Changes
-- [ ] No gradient utility classes in modified files.
-- [ ] No raw hex colors outside token definitions.
-- [ ] Semantic text classes used.
-- [ ] Buttons focus styles present.
-- [ ] Dark surfaces use elevation scale.
+## 12. Enforcement
 
-## 13. Future Enhancements
-- Light mode tokens.
-- High contrast mode.
-- Theming via user preference (persisted in profile).
+### ESLint Configuration
+The mobile app enforces semantic theme adherence via ESLint:
+
+**`apps/mobile/.eslintrc.json`:**
+```json
+{
+  "rules": {
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "Literal[value=/bg-gradient-to-/]",
+        "message": "Gradient backgrounds are deprecated. Use semantic surfaces: bg-dark-primary, bg-dark-elevated1, bg-dark-elevated2, or accent solid colors."
+      }
+    ]
+  }
+}
+```
+
+This rule **prevents** reintroduction of gradient utility classes by raising an ESLint error when:
+- Any string literal contains `bg-gradient-to-` pattern
+- Attempted during development or in CI/CD pipelines
+
+### Migration Status
+✅ **Complete** (v1.1.0):
+- All mobile pages migrated to semantic surfaces
+- All admin pages using elevation tokens
+- Zero gradient utilities in production code
+- ESLint guard active and enforced
+
+### CI/CD Integration (Recommended)
+Add to GitHub Actions workflow:
+```yaml
+- name: Lint Mobile App
+  run: npm run lint --workspace=apps/mobile
+```
+
+## 13. Checklist Before Merging UI Changes
+- [ ] No gradient utility classes in modified files
+- [ ] No raw hex colors outside token definitions
+- [ ] Semantic text classes used
+- [ ] Buttons have focus styles
+- [ ] Dark surfaces use elevation scale
+- [ ] ESLint passes without warnings
+
+## 14. Future Enhancements
+- Light mode tokens
+- High contrast mode
+- Theming via user preference (persisted in profile)
+- Extend ESLint rules to admin app
+- Add pre-commit hooks for theme validation
 
 ---
 If uncertain about a class, search existing usage or open a PR for review with screenshots.
