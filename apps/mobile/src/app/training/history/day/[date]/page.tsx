@@ -152,7 +152,7 @@ function DayViewPage() {
   }
 
   const handleNewWorkout = () => {
-    router.push('/training/log')
+    router.push('/training/new')
   }
 
   if (loading) {
@@ -219,16 +219,16 @@ function DayViewPage() {
       {/* Content */}
       <div className="p-4">
         {workouts.length === 0 ? (
-          <div className="bg-gray-50 dark:bg-gray-700 p-8 rounded-xl text-center border-2 border-dashed border-gray-300 dark:border-gray-600">
-            <div className="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-dark-card p-8 rounded-xl text-center border-2 border-dashed border-dark-border">
+            <div className="w-16 h-16 bg-dark-elevated rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-semibold text-white mb-2">
               No workouts logged
             </h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
+            <p className="text-text-secondary mb-6">
               You didn't log any workouts on this day.
             </p>
             <button
@@ -241,20 +241,20 @@ function DayViewPage() {
         ) : (
           <div className="space-y-4">
             {workouts.map((workout) => (
-              <div key={workout.id} className="bg-gradient-to-r from-teal-500 to-cyan-600 rounded-xl p-4 text-white shadow-lg">
+              <div key={workout.id} className="bg-dark-card border border-dark-border rounded-xl p-4 shadow-lg">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <div className="w-12 h-12 bg-orange-primary/10 rounded-full flex items-center justify-center">
                       {workout.category === 'strength' ? (
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6 text-orange-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                         </svg>
                       ) : workout.category === 'cardio' ? (
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6 text-orange-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                       ) : (
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6 text-orange-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                       )}
@@ -265,7 +265,7 @@ function DayViewPage() {
                          (workout.category === 'strength' ? 'Strength Training' : 
                           workout.category === 'cardio' ? 'Cardio Workout' : 'Training Session')}
                       </h4>
-                      <p className="text-white/80 text-sm capitalize">
+                      <p className="text-text-secondary text-sm capitalize">
                         {workout.category} • {formatTime(workout.started_at)}
                         {workout.ended_at && ` - ${formatTime(workout.ended_at)}`}
                       </p>
@@ -276,7 +276,7 @@ function DayViewPage() {
                       {workout.duration_seconds ? formatDuration(workout.duration_seconds) : 'N/A'}
                     </div>
                     {workout.perceived_exertion && (
-                      <div className="text-white/80 text-sm">RPE {workout.perceived_exertion}/10</div>
+                      <div className="text-text-secondary text-sm">RPE {workout.perceived_exertion}/10</div>
                     )}
                   </div>
                 </div>
@@ -285,18 +285,18 @@ function DayViewPage() {
                 {workout.exercises && workout.exercises.length > 0 && (
                   <div className="space-y-2 mb-4">
                     {workout.exercises.slice(0, 3).map((exercise, idx) => (
-                      <div key={exercise.exercise_id} className="flex items-center justify-between bg-white/10 rounded-lg p-2 backdrop-blur-sm">
+                      <div key={exercise.exercise_id} className="flex items-center justify-between bg-dark-elevated rounded-lg p-2">
                         <div className="flex items-center space-x-2">
-                          <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                            <span className="text-xs font-bold text-white">{idx + 1}</span>
+                          <div className="w-6 h-6 bg-orange-primary/20 rounded-full flex items-center justify-center">
+                            <span className="text-xs font-bold text-orange-primary">{idx + 1}</span>
                           </div>
                           <span className="text-white font-medium">{exercise.name}</span>
                         </div>
-                        <span className="text-white/80 text-sm">{exercise.set_count} sets</span>
+                        <span className="text-text-secondary text-sm">{exercise.set_count} sets</span>
                       </div>
                     ))}
                     {workout.exercises.length > 3 && (
-                      <div className="text-center text-white/60 text-sm">
+                      <div className="text-center text-text-secondary text-sm">
                         +{workout.exercises.length - 3} more exercises
                       </div>
                     )}
@@ -304,23 +304,23 @@ function DayViewPage() {
                 )}
 
                 {/* Stats Row */}
-                <div className="grid grid-cols-4 gap-3 text-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                <div className="grid grid-cols-4 gap-3 text-center bg-dark-elevated rounded-lg p-3">
                   <div>
-                    <div className="text-xs font-medium text-white/80 mb-1">EXERCISES</div>
+                    <div className="text-xs font-medium text-text-secondary mb-1">EXERCISES</div>
                     <div className="text-lg font-bold text-white">{workout.exercise_count}</div>
                   </div>
                   <div>
-                    <div className="text-xs font-medium text-white/80 mb-1">SETS</div>
+                    <div className="text-xs font-medium text-text-secondary mb-1">SETS</div>
                     <div className="text-lg font-bold text-white">{workout.total_sets}</div>
                   </div>
                   <div>
-                    <div className="text-xs font-medium text-white/80 mb-1">LOAD</div>
+                    <div className="text-xs font-medium text-text-secondary mb-1">LOAD</div>
                     <div className="text-lg font-bold text-white">
                       {workout.training_load || Math.min(workout.total_sets * 2 + workout.exercise_count * 3, 30)}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs font-medium text-white/80 mb-1">RPE</div>
+                    <div className="text-xs font-medium text-text-secondary mb-1">RPE</div>
                     <div className="text-lg font-bold text-white">
                       {workout.perceived_exertion ? `${workout.perceived_exertion}/10` : 'N/A'}
                     </div>
@@ -328,7 +328,7 @@ function DayViewPage() {
                 </div>
                 
                 {workout.notes && (
-                  <div className="mt-3 text-sm text-white/90 italic bg-white/10 rounded-lg p-2 backdrop-blur-sm">
+                  <div className="mt-3 text-sm text-text-secondary italic bg-dark-elevated rounded-lg p-2">
                     "{workout.notes}"
                   </div>
                 )}
@@ -337,21 +337,21 @@ function DayViewPage() {
                 <div className="flex items-center justify-end space-x-2 mt-3">
                   <button 
                     onClick={() => router.push(`/training/view/${workout.id}`)}
-                    className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                    className="p-2 text-text-secondary hover:text-orange-primary hover:bg-dark-elevated rounded-lg transition-colors"
                     title="View workout"
                   >
                     <EyeIcon className="w-5 h-5" />
                   </button>
                   <button 
                     onClick={() => router.push(`/training/edit/${workout.id}`)}
-                    className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                    className="p-2 text-text-secondary hover:text-orange-primary hover:bg-dark-elevated rounded-lg transition-colors"
                     title="Edit workout"
                   >
                     <PencilIcon className="w-5 h-5" />
                   </button>
                   <button 
                     onClick={() => setShowDeleteConfirm(workout.id)}
-                    className="p-2 text-white/80 hover:text-white hover:bg-red-500/20 rounded-lg transition-colors"
+                    className="p-2 text-text-secondary hover:text-red-500 hover:bg-red-500/20 rounded-lg transition-colors"
                     title="Delete workout"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
