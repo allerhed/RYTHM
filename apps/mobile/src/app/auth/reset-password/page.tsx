@@ -84,7 +84,7 @@ function ResetPasswordContent() {
 
   if (verifyToken.isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br bg-dark-primary  flex items-center justify-center">
+      <div className="min-h-screen bg-dark-primary flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
           <p className="text-text-secondary">Verifying reset link...</p>
@@ -95,7 +95,7 @@ function ResetPasswordContent() {
 
   if (verifyToken.isError || !verifyToken.data) {
     return (
-      <div className="min-h-screen bg-gradient-to-br bg-dark-primary ">
+      <div className="min-h-screen bg-dark-primary ">
         <header className="safe-area-top px-6 pt-4">
           <div className="flex items-center justify-between">
             <button
@@ -138,7 +138,7 @@ function ResetPasswordContent() {
               <Link href="/auth/forgot-password">
                 <Button
                   variant="primary"
-                  className="w-full bg-gradient-to-r from-orange-primary to-orange-hover"
+                  className="w-full bg-orange-primary hover:bg-orange-hover text-white"
                 >
                   Request New Reset Link
                 </Button>
@@ -161,7 +161,7 @@ function ResetPasswordContent() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br bg-dark-primary  flex items-center justify-center">
+      <div className="min-h-screen bg-dark-primary flex items-center justify-center">
         <div className="text-center px-6">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-orange-100 dark:bg-orange-900 rounded-2xl mb-6">
             <span className="text-4xl">✓</span>
@@ -178,7 +178,7 @@ function ResetPasswordContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br bg-dark-primary ">
+    <div className="min-h-screen bg-dark-primary ">
       <header className="safe-area-top px-6 pt-4">
         <div className="flex items-center justify-between">
           <button
@@ -203,10 +203,10 @@ function ResetPasswordContent() {
       <div className="px-6 py-8">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-primary to-orange-hover rounded-2xl mb-6 shadow-lg">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-primary rounded-2xl mb-6 shadow-lg">
               <span className="text-3xl">🔑</span>
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-primary to-orange-hover bg-clip-text text-transparent mb-3">
+            <h2 className="text-3xl font-bold text-text-primary mb-3">
               Create New Password
             </h2>
             <p className="text-text-secondary text-lg">
@@ -259,7 +259,7 @@ function ResetPasswordContent() {
                 size="lg"
                 loading={resetPassword.isLoading}
                 disabled={success}
-                className="w-full bg-gradient-to-r from-orange-primary to-orange-hover hover:from-orange-dark hover:to-orange-primary text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="w-full bg-orange-primary hover:bg-orange-hover text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-colors duration-200"
               >
                 {resetPassword.isLoading ? 'Resetting Password...' : 'Reset Password'}
               </Button>
@@ -286,7 +286,7 @@ function ResetPasswordContent() {
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900">
+      <div className="min-h-screen flex items-center justify-center bg-dark-primary">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-text-secondary">Loading...</p>

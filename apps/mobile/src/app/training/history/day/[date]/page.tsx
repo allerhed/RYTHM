@@ -158,7 +158,7 @@ function DayViewPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
+        <div className="bg-dark-elevated1 shadow-sm">
           <div className="px-4 py-3 flex items-center">
             <button
               onClick={() => router.back()}
@@ -182,8 +182,8 @@ function DayViewPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary">
-      {/* Header */}
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border-b border-dark-border">
+      {/* Header: semantic surface (was gradient) */}
+      <div className="bg-dark-elevated1 shadow-sm border-b border-dark-border">
         <div className="px-4 py-4">
           <div className="flex items-center mb-2">
             <button
@@ -219,7 +219,7 @@ function DayViewPage() {
       {/* Content */}
       <div className="p-4">
         {workouts.length === 0 ? (
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] p-8 rounded-xl text-center border-2 border-dashed border-dark-border">
+          <div className="bg-dark-elevated1 p-8 rounded-xl text-center border-2 border-dashed border-dark-border">
             <div className="w-16 h-16 bg-dark-elevated rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -241,7 +241,7 @@ function DayViewPage() {
         ) : (
           <div className="space-y-4">
             {workouts.map((workout) => (
-              <div key={workout.id} className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] border border-dark-border rounded-xl p-4 shadow-lg">
+              <div key={workout.id} className="bg-dark-elevated1 border border-dark-border rounded-xl p-4 shadow-lg">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-orange-primary/10 rounded-full flex items-center justify-center">
@@ -368,7 +368,7 @@ function DayViewPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-6 max-w-sm w-full">
+          <div className="bg-dark-elevated1 rounded-lg p-6 max-w-sm w-full border border-dark-border">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               Delete Workout
             </h3>

@@ -18,7 +18,7 @@ export default function HomePage() {
               priority
             />
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-primary to-orange-hover bg-clip-text text-transparent mb-3">
+          <h1 className="text-5xl font-bold text-orange-primary mb-3">
             RYTHM
           </h1>
           <p className="text-xl text-text-secondary font-medium">
@@ -35,7 +35,7 @@ export default function HomePage() {
           </Link>
           
           <Link href="/auth/login" className="block">
-            <button className="w-full bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-text-primary font-semibold py-4 px-8 rounded-button border border-dark-border hover:border-orange-primary active:scale-98 transition-all duration-200">
+            <button className="w-full bg-dark-elevated1 text-text-primary font-semibold py-4 px-8 rounded-button border border-dark-border hover:border-orange-primary active:scale-98 transition-all duration-200">
               Sign In
             </button>
           </Link>

@@ -161,7 +161,7 @@ function SettingsPage() {
     return (
       <div
         key={item.id}
-        className="flex items-center justify-between p-4 bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg border border-dark-border"
+        className="flex items-center justify-between p-4 bg-dark-elevated1 rounded-lg border border-dark-border"
       >
         <div className="flex items-center space-x-4 flex-1">
           <div className="p-2 bg-dark-elevated rounded-lg">
@@ -238,7 +238,7 @@ function SettingsPage() {
   return (
     <div className="min-h-screen bg-dark-primary pb-20">
       {/* Header */}
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border-b border-dark-border">
+      <div className="bg-dark-elevated2 shadow-sm border-b border-dark-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
             <h1 className="text-3xl font-bold text-text-primary">

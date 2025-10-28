@@ -173,7 +173,8 @@ function CalendarPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
+        {/* Loading Header (Migration: gradient removed) */}
+        <div className="bg-dark-elevated1 shadow-sm border-b border-dark-border">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Calendar
@@ -189,8 +190,8 @@ function CalendarPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary">
-      {/* Header */}
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border-b border-dark-border">
+      {/* Header (Migration: gradient removed) */}
+      <div className="bg-dark-elevated1 shadow-sm border-b border-dark-border">
         <div className="px-4 py-4">
           <div className="flex items-center justify-center mb-4">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -280,7 +281,7 @@ function CalendarPage() {
 
       {/* Legend */}
       <div className="px-4 pb-4">
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-4 shadow-sm">
+        <div className="bg-dark-elevated1 rounded-lg p-4 shadow-sm border border-dark-border">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Legend</h3>
           <div className="flex flex-wrap gap-4">
             {Object.entries(CATEGORY_COLORS).map(([category, colorClass]) => (
@@ -297,7 +298,7 @@ function CalendarPage() {
 
       {/* Summary Stats */}
       <div className="px-4 pb-8">
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-4 shadow-sm">
+        <div className="bg-dark-elevated1 rounded-lg p-4 shadow-sm border border-dark-border">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
             {formatMonthYear(currentDate)} Summary
           </h3>
@@ -316,7 +317,7 @@ function CalendarPage() {
               
               return (
                 <>
-                  <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-4 border border-dark-border">
+                  <div className="bg-dark-elevated1 rounded-lg p-4 border border-dark-border">
                     <div className="text-2xl font-bold text-orange-primary">
                       {totalWorkload}
                     </div>
@@ -328,7 +329,7 @@ function CalendarPage() {
                     </div>
                   </div>
                   
-                  <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-4 border border-dark-border">
+                  <div className="bg-dark-elevated1 rounded-lg p-4 border border-dark-border">
                     <div className="text-2xl font-bold text-orange-primary">
                       {totalHours.toFixed(1)}
                     </div>

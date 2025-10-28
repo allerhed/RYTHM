@@ -203,20 +203,20 @@ function ExerciseDetailPage() {
         </div>
 
         {/* Current Best */}
-        <div className="bg-gradient-to-br from-orange-primary to-orange-hover rounded-xl p-6 mb-8 text-white">
+        <div className="rounded-xl p-6 mb-8 bg-dark-elevated1 border border-dark-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-100 text-sm mb-1">Current Best</p>
-              <p className="text-5xl font-bold">{formatTime(exerciseData.currentTimeSeconds)}</p>
-              <p className="text-blue-100 text-sm mt-2">
+              <p className="text-text-secondary text-sm mb-1 tracking-wide uppercase">Current Best</p>
+              <p className="text-5xl font-bold text-orange-primary">{formatTime(exerciseData.currentTimeSeconds)}</p>
+              <p className="text-text-secondary text-sm mt-2">
                 Achieved on {formatDate(exerciseData.currentAchievedDate)}
               </p>
             </div>
-            <TrophyIcon className="h-20 w-20 text-blue-200" />
+            <TrophyIcon className="h-20 w-20 text-orange-accent" />
           </div>
           {exerciseData.notes && (
-            <div className="mt-4 pt-4 border-t border-blue-400">
-              <p className="text-blue-100 text-sm">{exerciseData.notes}</p>
+            <div className="mt-4 pt-4 border-t border-dark-border">
+              <p className="text-text-secondary text-sm">{exerciseData.notes}</p>
             </div>
           )}
         </div>
@@ -247,7 +247,7 @@ function ExerciseDetailPage() {
         </div>
 
         {/* History */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-dark-border overflow-hidden">
+        <div className="bg-dark-elevated1 rounded-xl border border-dark-border overflow-hidden">
           <div className="px-6 py-4 border-b border-dark-border">
             <h2 className="text-xl font-semibold text-text-primary">
               History ({exerciseData.history.length} attempts)

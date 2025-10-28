@@ -73,7 +73,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="flex items-center justify-center w-10 h-10 bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-dark-border hover:bg-dark-elevated hover:border-orange-primary/30 transition-all"
+            className="flex items-center justify-center w-10 h-10 bg-dark-elevated1 rounded-xl border border-dark-border hover:border-orange-primary/30 transition-all"
           >
             <span className="text-orange-primary">←</span>
           </button>
@@ -96,10 +96,10 @@ export default function LoginPage() {
         <div className="max-w-md mx-auto">
           {/* Logo and Welcome */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-primary to-orange-hover rounded-2xl mb-6 shadow-glow-orange">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-dark-elevated1 border border-dark-border rounded-2xl mb-6">
               <span className="text-2xl font-bold text-white">R</span>
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-primary to-orange-hover bg-clip-text text-transparent mb-3">
+            <h2 className="text-3xl font-bold text-orange-primary mb-3">
               Welcome Back
             </h2>
             <p className="text-text-secondary text-lg">
@@ -108,7 +108,7 @@ export default function LoginPage() {
           </div>
 
           {/* Login form */}
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl p-8 shadow-card border border-dark-border">
+          <div className="bg-dark-elevated1 rounded-2xl p-8 border border-dark-border">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <Input

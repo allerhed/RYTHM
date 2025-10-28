@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br bg-dark-primary ">
+      <div className="min-h-screen bg-dark-primary ">
         <header className="safe-area-top px-6 pt-4">
           <div className="flex items-center justify-between">
             <button
@@ -139,7 +139,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br bg-dark-primary ">
+    <div className="min-h-screen bg-dark-primary ">
       <header className="safe-area-top px-6 pt-4">
         <div className="flex items-center justify-between">
           <button
@@ -164,10 +164,10 @@ export default function ForgotPasswordPage() {
       <div className="px-6 py-8">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-primary to-orange-hover rounded-2xl mb-6 shadow-lg">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-primary rounded-2xl mb-6 shadow-lg">
               <span className="text-3xl">🔐</span>
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-primary to-orange-hover bg-clip-text text-transparent mb-3">
+            <h2 className="text-3xl font-bold text-text-primary mb-3">
               Forgot Password?
             </h2>
             <p className="text-text-secondary text-lg">
@@ -203,7 +203,7 @@ export default function ForgotPasswordPage() {
                 variant="primary"
                 size="lg"
                 loading={requestPasswordReset.isLoading}
-                className="w-full bg-gradient-to-r from-orange-primary to-orange-hover hover:from-orange-dark hover:to-orange-primary text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="w-full bg-orange-primary hover:bg-orange-hover text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-colors duration-200"
               >
                 {requestPasswordReset.isLoading ? 'Sending...' : 'Send Reset Link'}
               </Button>

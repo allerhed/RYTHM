@@ -112,8 +112,8 @@ function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary pb-20">
-      {/* Header */}
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border-b border-dark-border">
+      {/* Header: semantic surface (was gradient) */}
+      <div className="bg-dark-elevated1 shadow-sm border-b border-dark-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
             <div className="flex items-center justify-between">
@@ -140,8 +140,8 @@ function HistoryPage() {
                     onClick={() => handleFilterChange(tab.key as any)}
                     className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                       selectedFilter === tab.key
-                        ? 'border-blue-500 text-orange-primary'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                        ? 'border-orange-primary text-orange-primary'
+                        : 'border-transparent text-text-tertiary hover:text-text-secondary'
                     }`}
                   >
                     {tab.label}
@@ -183,7 +183,7 @@ function HistoryPage() {
                 <div
                   key={session.session_id}
                   onClick={() => router.push(`/training/view/${session.session_id}`)}
-                  className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-6 hover:shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-all cursor-pointer"
+                  className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-6 hover:shadow-md hover:bg-dark-elevated2 transition-all cursor-pointer"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -242,7 +242,7 @@ function HistoryPage() {
                   <button
                     onClick={goToPrevPage}
                     disabled={currentPage === 1}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-gradient-to-b from-[#1a1a1a] to-[#232323] hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn-secondary inline-flex items-center px-3 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ChevronLeftIcon className="h-4 w-4 mr-1" />
                     Previous
@@ -268,9 +268,10 @@ function HistoryPage() {
                             onClick={() => goToPage(i)}
                             className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                               i === currentPage
-                                ? 'bg-blue-600 text-white border border-blue-600'
-                                : 'text-gray-700 dark:text-gray-300 bg-gradient-to-b from-[#1a1a1a] to-[#232323] border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                ? 'btn-primary cursor-default'
+                                : 'btn-secondary'
                             }`}
+                            disabled={i === currentPage}
                           >
                             {i}
                           </button>
@@ -283,7 +284,7 @@ function HistoryPage() {
                   <button
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-gradient-to-b from-[#1a1a1a] to-[#232323] hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn-secondary inline-flex items-center px-3 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next
                     <ChevronRightIcon className="h-4 w-4 ml-1" />

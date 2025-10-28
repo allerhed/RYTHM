@@ -159,7 +159,7 @@ function AnalyticsPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
+        <div className="bg-dark-elevated2 shadow-sm border-b border-dark-border">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -176,7 +176,7 @@ function AnalyticsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
+        <div className="bg-dark-elevated2 shadow-sm border-b border-dark-border">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -193,7 +193,7 @@ function AnalyticsPage() {
   if (trainingLoadQuery.error || summaryQuery.error || categoryBreakdownQuery.error) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
+        <div className="bg-dark-elevated2 shadow-sm border-b border-dark-border">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -211,7 +211,7 @@ function AnalyticsPage() {
   if (!hasValidData) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
+        <div className="bg-dark-elevated2 shadow-sm border-b border-dark-border">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -228,7 +228,7 @@ function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-dark-primary">
       {/* Header */}
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border-b border-dark-border">
+      <div className="bg-dark-elevated2 shadow-sm border-b border-dark-border">
         <div className="px-4 py-4">
           <div className="flex items-center justify-center mb-4">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -344,13 +344,13 @@ function AnalyticsPage() {
                   {/* Progress bars comparing current vs previous 3-month periods */}
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-4 h-4 bg-gradient-to-r from-teal-400 to-purple-500 rounded"></div>
+                      <div className="w-4 h-4 bg-orange-primary rounded"></div>
                       <span className="text-sm text-gray-300 flex-1">Last 3 months</span>
                       <span className="text-lg font-bold">{summaryData.currentPeriod.trainingLoad.toLocaleString()}</span>
                     </div>
                     <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-gradient-to-r from-teal-400 to-purple-500 rounded-full transition-all duration-500"
+                        className="h-full bg-orange-primary rounded-full transition-all duration-500"
                         style={{ width: `${currentWidth}%` }}
                       />
                     </div>
@@ -605,7 +605,7 @@ function AnalyticsPage() {
         </div>
 
         {/* Total Distance Widget */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl p-6 shadow-sm">
+        <div className="bg-dark-elevated1 rounded-2xl p-6 shadow-sm border border-dark-border">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Total Distance</h2>
           
           <div className="flex items-center justify-between mb-4">
@@ -638,7 +638,7 @@ function AnalyticsPage() {
         </div>
 
         {/* Total Weight Widget */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl p-6 shadow-sm">
+        <div className="bg-dark-elevated1 rounded-2xl p-6 shadow-sm border border-dark-border">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Total Weight Lifted</h2>
           
           <div className="flex items-center justify-between mb-4">
@@ -671,7 +671,7 @@ function AnalyticsPage() {
         </div>
 
         {/* Summary Stats */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl p-6 shadow-sm">
+        <div className="bg-dark-elevated1 rounded-2xl p-6 shadow-sm border border-dark-border">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">3-Month Summary</h2>
           
           <div className="grid grid-cols-2 gap-4">
