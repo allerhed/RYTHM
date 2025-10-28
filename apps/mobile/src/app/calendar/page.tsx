@@ -23,10 +23,12 @@ interface CalendarDay {
   isToday: boolean
 }
 
+// Category color mappings updated (2025-10-28)
+// Use inline styles referencing semantic CSS variables instead of tailwind arbitrary colors
 const CATEGORY_COLORS = {
-  strength: 'bg-orange-primary',
-  cardio: 'bg-orange-primary', 
-  hybrid: 'bg-red-500'
+  strength: 'var(--category-strength)',
+  cardio: 'var(--category-cardio)', 
+  hybrid: 'var(--category-hybrid)'
 } as const
 
 const CATEGORY_LABELS = {
@@ -267,7 +269,8 @@ function CalendarPage() {
                       categoryWorkouts.map((_, workoutIndex) => (
                         <div
                           key={`${category}-${workoutIndex}`}
-                          className={`h-2.5 ${CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS]} rounded-md shadow-sm`}
+                          className="h-2.5 rounded-md shadow-sm"
+                          style={{ backgroundColor: CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS] }}
                         />
                       ))
                     ))}
@@ -286,7 +289,7 @@ function CalendarPage() {
           <div className="flex flex-wrap gap-4">
             {Object.entries(CATEGORY_COLORS).map(([category, colorClass]) => (
               <div key={category} className="flex items-center space-x-2">
-                <div className={`w-3 h-3 ${colorClass} rounded-sm`} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: colorClass }} />
                 <span className="text-sm text-gray-700 dark:text-gray-300">
                   {CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS]}
                 </span>
@@ -361,7 +364,7 @@ function CalendarPage() {
                 
                 return (
                   <div key={category} className="text-center">
-                    <div className={`w-4 h-4 ${CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS]} rounded-sm mx-auto mb-1`} />
+                    <div className="w-4 h-4 rounded-sm mx-auto mb-1" style={{ backgroundColor: CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS] }} />
                     <div className="text-lg font-bold text-gray-900 dark:text-white">
                       {categoryWorkouts.length}
                     </div>

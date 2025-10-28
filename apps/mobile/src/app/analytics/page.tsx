@@ -276,7 +276,7 @@ function AnalyticsPage() {
                         />
                         <div
                           className="w-6 rounded-sm transition-all duration-500"
-                          style={{ backgroundColor: '#1F1F1F', height: `${strengthHeight}px` }}
+                          style={{ backgroundColor: '#A6A6A6', height: `${strengthHeight}px` }}
                         />
                         <div
                           className="w-6 rounded-sm transition-all duration-500"
@@ -300,7 +300,7 @@ function AnalyticsPage() {
               <span className="text-sm">Cardio</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 rounded" style={{ backgroundColor: '#1F1F1F' }}></div>
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: '#A6A6A6' }}></div>
               <span className="text-sm">Strength</span>
             </div>
             <div className="flex items-center space-x-2">
@@ -377,7 +377,7 @@ function AnalyticsPage() {
                         <span className="text-sm text-gray-300">Cardio {cardioPercent}%</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#1F1F1F' }}></div>
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#A6A6A6' }}></div>
                         <span className="text-sm text-gray-300">Strength {strengthPercent}%</span>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -466,7 +466,7 @@ function AnalyticsPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#1F1F1F' }}></div>
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#A6A6A6' }}></div>
                   <span className="text-sm font-medium text-white">Strength</span>
                 </div>
                 <div className="text-right">
@@ -484,7 +484,7 @@ function AnalyticsPage() {
                   <div 
                     className="h-full rounded-full transition-all duration-500"
                     style={{ 
-                      backgroundColor: '#1F1F1F',
+                      backgroundColor: '#A6A6A6',
                       width: `${Math.max(categoryData.currentPeriod.total > 0 ? (categoryData.currentPeriod.strength / Math.max(categoryData.currentPeriod.total, categoryData.previousPeriod.total)) * 100 : 0, 5)}%` 
                     }}
                   />

@@ -21,7 +21,7 @@ bg-dark-elevated0    // Form inputs, subtle containers
 
 // Category Colors (Training Types - Use These Consistently)
 #E97400               // Cardio (Burnt Orange - matches brand primary)
-#1F1F1F               // Strength (Iron Grey - dark neutral)
+Strength color token: var(--category-strength) // Updated neutral (2025-10-28)
 #E0E0E0               // Hybrid (Smoke - light grey)
 
 // Text Hierarchy (Always Use These)
@@ -41,7 +41,7 @@ border-dark-border   // Standard borders for cards/inputs
 
 // Category Badges/Indicators (Use inline styles with hex colors)
 <span style={{ backgroundColor: '#E97400' }}>Cardio</span>
-<span style={{ backgroundColor: '#1F1F1F' }}>Strength</span>
+<span style={{ backgroundColor: '#A6A6A6' }}>Strength</span>
 <span style={{ backgroundColor: '#E0E0E0', color: '#000' }}>Hybrid</span>
 
 // Badges/Tags
@@ -81,7 +81,7 @@ className="bg-orange-500"  // Wrong for hybrid
 
 // Category Indicators (Charts, Badges, Stats)
 <div className="w-4 h-4 rounded" style={{ backgroundColor: '#E97400' }}>Cardio</div>
-<div className="w-4 h-4 rounded" style={{ backgroundColor: '#1F1F1F' }}>Strength</div>
+<div className="w-4 h-4 rounded" style={{ backgroundColor: '#A6A6A6' }}>Strength</div>
 <div className="w-4 h-4 rounded" style={{ backgroundColor: '#E0E0E0' }}>Hybrid</div>
 
 // Modals

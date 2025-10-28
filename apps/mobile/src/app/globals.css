@@ -43,10 +43,13 @@
   --text-secondary: #A0A0A0;
   --text-tertiary: #666666;
 
-  /* Category colors */
-  --category-cardio: #E97400;      /* Burnt Orange - matches primary orange */
-  --category-strength: #1F1F1F;    /* Iron Grey - dark neutral */
-  --category-hybrid: #E0E0E0;      /* Smoke - light grey */
+    /* Category colors (Training Types)
+      Cardio: Brand burnt orange
+      Strength: Updated lighter neutral (#A6A6A6) for improved contrast differentiation
+      Hybrid: Light neutral */
+    --category-cardio: #E97400;      /* Burnt Orange - matches brand primary */
+    --category-strength: #A6A6A6;    /* Strength (Updated 2025-10-28) */
+    --category-hybrid: #E0E0E0;      /* Smoke - light grey */
 
   /* Shadows */
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
