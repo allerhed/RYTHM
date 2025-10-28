@@ -17,6 +17,24 @@ module.exports = {
           'border': '#2A2A2A',
           'elevated': '#2D2D2D',
         },
+        // Semantic industrial palette
+        primary: {
+          DEFAULT: '#E97400',
+          hover: '#FF9E32',
+          active: '#B15A00',
+          accent: '#FFBB66',
+        },
+        neutral: {
+          black: '#0D0D0D',
+          dark: '#1F1F1F',
+          mid: '#3C3C3C',
+          smoke: '#E0E0E0',
+          mist: '#F2F2F2',
+          white: '#FFFFFF',
+        },
+        error: {
+          DEFAULT: '#E63B00',
+        },
         // Orange accent (primary action color)
         'orange': {
           'primary': '#FF8C42',

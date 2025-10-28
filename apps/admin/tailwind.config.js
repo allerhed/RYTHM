@@ -14,6 +14,24 @@ module.exports = {
         'dark-card': '#232323',
         'dark-border': '#2A2A2A',
         'dark-elevated': '#2D2D2D',
+        // Industrial cinematic palette (semantic)
+        primary: {
+          DEFAULT: '#E97400', // Burnt Orange
+          hover: '#FF9E32', // Amber Glow
+          active: '#B15A00', // Deep Ember
+          accent: '#FFBB66', // Soft Apricot
+        },
+        neutral: {
+          black: '#0D0D0D',
+          dark: '#1F1F1F',
+          mid: '#3C3C3C',
+          smoke: '#E0E0E0',
+          mist: '#F2F2F2',
+          white: '#FFFFFF',
+        },
+        error: {
+          DEFAULT: '#E63B00',
+        },
         
         // Orange accent
         orange: {
@@ -37,9 +55,8 @@ module.exports = {
         'text-primary': '#FFFFFF',
         'text-secondary': '#A0A0A0',
         'text-tertiary': '#666666',
-        
-        // Legacy colors (keeping for compatibility)
-        primary: {
+        // Legacy blue palette (renamed to legacy-primary to avoid collision)
+        'legacy-primary': {
           50: '#eff6ff',
           100: '#dbeafe',
           200: '#bfdbfe',

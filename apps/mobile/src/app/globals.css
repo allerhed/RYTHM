@@ -2,42 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-/* New Dark Theme - Global styles with orange accent */
+/* New Dark Theme - Global styles with industrial cinematic palette */
 :root {
-  /* Dark theme colors */
-  --dark-primary: #0F0F0F;
-  --dark-secondary: #1A1A1A;
+  /* Primary (Orange Core) */
+  --color-primary: #E97400; /* Burnt Orange */
+  --color-primary-hover: #FF9E32; /* Amber Glow */
+  --color-primary-active: #B15A00; /* Deep Ember */
+  --color-primary-accent: #FFBB66; /* Soft Apricot */
+  --color-error: #E63B00; /* Fire Red */
+
+  /* Dark scale */
+  --color-black: #0D0D0D; /* Carbon Black */
+  --color-dark-grey: #1F1F1F; /* Iron Grey */
+  --color-mid-grey: #3C3C3C; /* Slate */
+
+  /* Light neutrals */
+  --color-smoke: #E0E0E0; /* Smoke */
+  --color-mist: #F2F2F2; /* Mist */
+  --color-white: #FFFFFF; /* Pure White */
+
+  /* Legacy dark theme tokens retained */
+  --dark-primary: var(--color-black);
+  --dark-secondary: var(--color-dark-grey);
   --dark-card: #232323;
   --dark-border: #2A2A2A;
   --dark-elevated: #2D2D2D;
-  
-  /* Orange accent */
-  --orange-primary: #FF8C42;
-  --orange-hover: #FF9D5C;
-  --orange-dark: #E67A30;
-  --orange-light: #FFB47A;
-  
+
+  /* Orange accent mapping */
+  --orange-primary: var(--color-primary);
+  --orange-hover: var(--color-primary-hover);
+  --orange-dark: var(--color-primary-active);
+  --orange-light: var(--color-primary-accent);
+
   /* Gold highlights */
   --gold: #D4AF37;
   --gold-light: #E5C158;
-  
+
   /* Text colors */
-  --text-primary: #FFFFFF;
+  --text-primary: var(--color-white);
   --text-secondary: #A0A0A0;
   --text-tertiary: #666666;
-  
+
   /* Shadows */
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
-  --shadow-card-hover: 0 6px 30px rgba(255, 140, 66, 0.2);
-  
+  --shadow-card-hover: 0 6px 30px rgba(233,116,0,0.25);
+
   /* Border radius */
   --radius-card: 1.25rem;
   --radius-button: 1.5625rem;
-  
+
   /* Spacing */
   --spacing-touch-target: 2.75rem; /* 44px minimum touch target */
   --font-size-body: 1rem; /* 16px for readability */
   --font-size-large: 1.125rem; /* 18px for large text */
+}
+
+/* Optional light theme hook */
+.theme-light, [data-theme='light'] {
+  --dark-primary: var(--color-mist);
+  --dark-secondary: var(--color-smoke);
+  --dark-card: var(--color-white);
+  --dark-border: #E0E0E0;
+  --dark-elevated: var(--color-smoke);
+  --text-primary: #0D0D0D;
+  --text-secondary: var(--color-mid-grey);
+  --text-tertiary: #555555;
 }
 
 /* Respect user motion preferences */

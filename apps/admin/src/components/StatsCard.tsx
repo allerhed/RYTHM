@@ -1,13 +1,27 @@
+/**
+ * StatsCard
+ * Purpose: Display a single analytics metric with unified dark gradient card styling.
+ * Acceptance:
+ *  - Card background: dark gradient from #1a1a1a to #232323
+ *  - Icon container: dark-elevated background with subtle accent ring (orange by default)
+ *  - Bottom bar: unified orange gradient accent (not per-card color anymore)
+ *  - Optional change indicator with color-coded trend (+/-/neutral)
+ *  - Accessible text contrast against dark background
+ */
 interface StatsCardProps {
   title: string
   value: string | number
   change?: string
   changeType?: 'positive' | 'negative' | 'neutral'
   icon: React.ReactNode
-  gradient?: string
+  /**
+   * accent variant controls ring & accent bar color.
+   * Defaults to primary. Future variants could include 'error'|'neutral'.
+   */
+  accent?: 'primary' | 'error' | 'neutral'
 }
 
-export function StatsCard({ title, value, change, changeType = 'neutral', icon, gradient = 'from-blue-500 to-blue-600' }: StatsCardProps) {
+export function StatsCard({ title, value, change, changeType = 'neutral', icon, accent = 'primary' }: StatsCardProps) {
   const changeColorClass = {
     positive: 'text-green-400',
     negative: 'text-red-400',
@@ -28,25 +42,35 @@ export function StatsCard({ title, value, change, changeType = 'neutral', icon, 
     neutral: null,
   }[changeType]
 
+  const accentColorClass = {
+    primary: 'text-orange-primary',
+    error: 'text-error',
+    neutral: 'text-text-secondary'
+  }[accent]
+  const ringShadow = {
+    primary: 'ring-orange-500/40',
+    error: 'ring-error/50',
+    neutral: 'ring-dark-border'
+  }[accent]
+
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-700">
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-card hover:shadow-lg transition-colors duration-300 border border-dark-border">
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
+            <p className="text-xs font-medium text-text-secondary uppercase tracking-wide">
               {title}
             </p>
-            <p className="mt-2 text-3xl font-bold text-white">
+            <p className="mt-2 text-3xl font-bold text-text-primary">
               {typeof value === 'number' ? value.toLocaleString() : value}
             </p>
           </div>
-          <div className={`flex-shrink-0 p-3 rounded-xl bg-gradient-to-r ${gradient} shadow-lg`}>
-            <div className="text-white">
+          <div className={`flex-shrink-0 p-3 rounded-xl bg-dark-elevated shadow-inner ring-1 ${ringShadow}`}> 
+            <div className={accentColorClass}>
               {icon}
             </div>
           </div>
         </div>
-        
         {change && (
           <div className="mt-4 flex items-center">
             {changeIcon && (
@@ -57,15 +81,14 @@ export function StatsCard({ title, value, change, changeType = 'neutral', icon, 
             <span className={`text-sm font-semibold ${changeColorClass}`}>
               {change}
             </span>
-            <span className="text-sm text-gray-500 ml-2">
+            <span className="text-sm text-text-secondary ml-2">
               from last month
             </span>
           </div>
         )}
       </div>
-      
-      {/* Decorative gradient border */}
-      <div className={`absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r ${gradient}`} />
+      {/* Accent bar */}
+      <div className="accent-bar" />
     </div>
   )
 }

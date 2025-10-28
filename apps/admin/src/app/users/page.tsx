@@ -150,7 +150,7 @@ export default function UsersPage() {
             </div>
             <button 
               onClick={handleAddUser}
-              className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg"
+              className="px-4 py-2 btn-primary rounded-lg transition-all duration-200 shadow-lg"
             >
               Add New User
             </button>
@@ -164,7 +164,7 @@ export default function UsersPage() {
                 value={stats.total_users}
                 change="+12%"
                 changeType="positive"
-                gradient="from-blue-500 to-blue-600"
+                accent="primary"
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
@@ -176,7 +176,7 @@ export default function UsersPage() {
                 value={stats.athletes}
                 change="+8%"
                 changeType="positive"
-                gradient="from-green-500 to-emerald-600"
+                accent="primary"
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -188,7 +188,7 @@ export default function UsersPage() {
                 value={stats.new_this_week}
                 change="+23%"
                 changeType="positive"
-                gradient="from-purple-500 to-pink-600"
+                accent="primary"
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -200,7 +200,7 @@ export default function UsersPage() {
                 value={stats.coaches}
                 change="-5%"
                 changeType="negative"
-                gradient="from-orange-500 to-red-600"
+                accent="primary"
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
@@ -211,7 +211,7 @@ export default function UsersPage() {
           )}
 
           {/* Filters */}
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -266,7 +266,7 @@ export default function UsersPage() {
           </div>
 
           {/* Users Table */}
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 overflow-hidden">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-700">
               <h2 className="text-xl font-semibold text-white">
                 Users ({users.length})
@@ -312,7 +312,7 @@ export default function UsersPage() {
                         <tr key={user.id} className="hover:bg-gray-700/30 transition-colors duration-200">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center text-white font-semibold">
+                              <div className="icon-accent h-10 w-10 rounded-full flex items-center justify-center font-semibold">
                                 {`${user.first_name || ''}${user.last_name || ''}`.split(' ').map((n: string) => n[0]).join('')}
                               </div>
                               <div className="ml-4">
