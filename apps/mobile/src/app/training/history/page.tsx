@@ -22,10 +22,11 @@ interface CalendarDay {
   isToday: boolean
 }
 
+// Updated category color mapping (2025-10-28): use semantic CSS variable tokens
 const CATEGORY_COLORS = {
-  strength: 'bg-orange-primary',
-  cardio: 'bg-orange-primary', 
-  hybrid: 'bg-red-500'
+  strength: 'var(--category-strength)',
+  cardio: 'var(--category-cardio)',
+  hybrid: 'var(--category-hybrid)'
 } as const
 
 const CATEGORY_LABELS = {
@@ -259,7 +260,8 @@ function WorkoutHistoryPage() {
                       categoryWorkouts.map((_, workoutIndex) => (
                         <div
                           key={`${category}-${workoutIndex}`}
-                          className={`h-2.5 ${CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS]} rounded-md shadow-sm`}
+                          className="h-2.5 rounded-md shadow-sm"
+                          style={{ backgroundColor: CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS] }}
                         />
                       ))
                     ))}

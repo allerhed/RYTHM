@@ -210,6 +210,41 @@ body {
   border-color: var(--orange-primary);
 }
 
+/* Extended Button Variants (2025-10-28) */
+.btn-large { padding: 1rem 2rem; font-size: 1.125rem; }
+.btn-wide { width: 100%; }
+.btn-danger { background: var(--color-error); color: #fff; box-shadow: 0 4px 12px rgba(230,59,0,0.35); }
+.btn-danger:hover:not(:disabled) { background: #ff5120; }
+.btn-danger:active:not(:disabled) { background: #c52f00; }
+
+/* Error helpers (2025-10-28) */
+.bg-error { background: var(--color-error); }
+.bg-error-soft { background: rgba(230,59,0,0.15); }
+.text-error { color: var(--color-error); }
+
+/* Icon-sized button (circular) */
+.btn-icon { width: 2.75rem; height: 2.75rem; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; }
+.btn-icon.btn-danger { box-shadow: none; }
+
+/* Category Helper Classes (Training Types) */
+.cat-cardio { background: var(--category-cardio); }
+.cat-strength { background: var(--category-strength); }
+.cat-hybrid { background: var(--category-hybrid); color: #000; }
+
+/* Common dot indicators */
+/* Dot indicators */
+.dot-cardio, .dot-strength, .dot-hybrid { width: 0.75rem; height: 0.75rem; border-radius: 9999px; display: inline-block; }
+.dot-cardio { background: var(--category-cardio); }
+.dot-strength { background: var(--category-strength); }
+.dot-hybrid { background: var(--category-hybrid); }
+
+/* Category badge variant */
+/* Category badges */
+.badge-cardio, .badge-strength, .badge-hybrid { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.625rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 9999px; letter-spacing: 0.05em; }
+.badge-cardio { background: var(--category-cardio); color: #fff; }
+.badge-strength { background: var(--category-strength); color: #fff; }
+.badge-hybrid { background: var(--category-hybrid); color: #000; }
+
 .input {
   /* Minimum touch target for form inputs */
   min-height: var(--spacing-touch-target);

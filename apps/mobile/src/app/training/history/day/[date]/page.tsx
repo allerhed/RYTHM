@@ -351,7 +351,7 @@ function DayViewPage() {
                   </button>
                   <button 
                     onClick={() => setShowDeleteConfirm(workout.id)}
-                    className="p-2 text-text-secondary hover:text-red-500 hover:bg-red-500/20 rounded-lg transition-colors"
+                    className="btn-icon text-text-secondary hover:text-white hover:bg-color-error/80 transition-colors"
                     title="Delete workout"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -384,7 +384,7 @@ function DayViewPage() {
               </button>
               <button
                 onClick={() => handleDeleteWorkout(showDeleteConfirm)}
-                className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className="flex-1 btn-danger rounded-lg"
               >
                 Delete
               </button>

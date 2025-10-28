@@ -685,7 +685,7 @@ function DashboardPage() {
                           </button>
                           <button 
                             onClick={() => setShowDeleteConfirm(workout.id)}
-                            className="p-2 text-white/80 hover:text-white hover:bg-red-500/20 rounded-lg transition-colors"
+                            className="btn-icon btn-danger hover:bg-color-error/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-color-error/50 transition-colors"
                             title="Delete workout"
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -741,22 +741,9 @@ function DashboardPage() {
                         }
                       })()}
                     </p>
-                    {(() => {
-                      const currentWeekStart = getCurrentWeekStart()
-                      const isCurrentWeekSelected = selectedWeekStart.getTime() === currentWeekStart.getTime()
-                      const today = new Date()
-                      const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1
-                      const isToday = isCurrentWeekSelected && selectedDayIndex === todayIndex
-                      
-                      return isToday && (
-                        <Button 
-                          onClick={() => router.push('/training/new')}
-                          className="bg-orange-primary hover:bg-teal-600 text-white font-medium px-6 py-2 rounded-lg transition-colors"
-                        >
-                          Create New Workout
-                        </Button>
-                      )
-                    })()}
+                    {/* Placeholder for contextual quick action when today has no workouts.
+                        Previously contained a broken button referencing setSelectedWorkout(workout).
+                        Intentionally left empty to avoid JSX errors until feature implemented. */}
                   </div>
                 )}
               </div>
@@ -787,12 +774,12 @@ function DashboardPage() {
                     <div className="flex items-center space-x-3">
                       {/* Activity Icon */}
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        activity.metadata?.category === 'strength' 
-                          ? 'bg-blue-100 dark:bg-blue-900/20 text-orange-primary'
+                        activity.metadata?.category === 'strength'
+                          ? 'cat-strength'
                           : activity.metadata?.category === 'cardio'
-                          ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-                          : 'bg-dark-elevated text-text-secondary'
-                      }`}>
+                          ? 'cat-cardio'
+                          : 'cat-hybrid'
+                      } bg-opacity-20`}>                      
                         {activity.metadata?.category === 'strength' ? (
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
@@ -815,11 +802,11 @@ function DashboardPage() {
                             {activity.action.split(' (')[0]} {/* Extract just the activity name part */}
                           </span>
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium capitalize ${
-                            activity.metadata?.category === 'strength' 
-                              ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
+                            activity.metadata?.category === 'strength'
+                              ? 'badge-strength'
                               : activity.metadata?.category === 'cardio'
-                              ? 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200'
-                              : 'bg-dark-elevated text-gray-800 dark:text-gray-200'
+                              ? 'badge-cardio'
+                              : 'badge-hybrid'
                           }`}>
                             {activity.metadata?.category || 'workout'}
                           </span>
@@ -965,8 +952,8 @@ function DashboardPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-dark-elevated1 rounded-lg shadow-xl max-w-sm w-full p-6 border border-dark-border">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mr-3">
-                <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 bg-error-soft rounded-full flex items-center justify-center mr-3">
+                <svg className="w-5 h-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
               </div>
@@ -988,7 +975,7 @@ function DashboardPage() {
               <button
                 onClick={() => handleDeleteWorkout(showDeleteConfirm)}
                 disabled={deleting}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+                className="flex-1 btn btn-danger disabled:opacity-50 flex items-center justify-center"
               >
                 {deleting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
