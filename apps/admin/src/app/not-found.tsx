@@ -7,20 +7,20 @@ export default function NotFound() {
       <div className="max-w-lg w-full text-center space-y-8">
         {/* Unicorn Illustration */}
         <div className="relative">
-          <div className="mx-auto w-40 h-40 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full flex items-center justify-center shadow-2xl animate-pulse">
+          <div className="mx-auto w-40 h-40 icon-accent rounded-full flex items-center justify-center shadow-2xl animate-pulse">
             <div className="text-7xl">🦄</div>
           </div>
-          <div className="absolute -top-3 -right-3 w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+          <div className="absolute -top-3 -right-3 w-12 h-12 icon-accent rounded-full flex items-center justify-center shadow-lg animate-bounce">
             <span className="text-2xl">✨</span>
           </div>
-          <div className="absolute -bottom-2 -left-4 w-8 h-8 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg animate-pulse" style={{ animationDelay: '1s' }}>
+          <div className="absolute -bottom-2 -left-4 w-8 h-8 icon-accent rounded-full flex items-center justify-center shadow-lg animate-pulse" style={{ animationDelay: '1s' }}>
             <span className="text-lg">⭐</span>
           </div>
         </div>
 
         {/* Error Code */}
         <div className="space-y-2">
-          <h1 className="text-9xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
+          <h1 className="text-9xl font-bold text-primary">
             404
           </h1>
           <h2 className="text-3xl font-bold text-white">
@@ -44,7 +44,7 @@ export default function NotFound() {
         </div>
 
         {/* Fun Discovery Stats */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl border border-gray-700 p-6 space-y-4">
+        <div className="bg-dark-elevated1 rounded-2xl border border-gray-700 p-6 space-y-4">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <span className="text-2xl">🏆</span>
             <h3 className="text-white font-semibold">Rare Discovery Achievement</h3>
@@ -69,7 +69,7 @@ export default function NotFound() {
         <div className="space-y-4">
           <Link 
             href="/dashboard"
-            className="w-full inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-pink-600 hover:via-purple-600 hover:to-indigo-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="w-full inline-flex items-center justify-center px-8 py-4 btn-primary rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <span className="mr-3 text-xl">🏠</span>
             Return to Dashboard
@@ -78,7 +78,7 @@ export default function NotFound() {
           <div className="grid grid-cols-2 gap-4">
             <button 
               onClick={() => window.history.back()}
-              className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-gray-300 font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200 border border-gray-700"
+              className="inline-flex items-center justify-center px-6 py-3 btn-secondary rounded-lg transition-all duration-200"
             >
               <span className="mr-2">🔙</span>
               Go Back
@@ -86,7 +86,7 @@ export default function NotFound() {
             
             <Link 
               href="/users"
-              className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-gray-300 font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200 border border-gray-700"
+              className="inline-flex items-center justify-center px-6 py-3 btn-secondary rounded-lg transition-all duration-200"
             >
               <span className="mr-2">👥</span>
               Users
