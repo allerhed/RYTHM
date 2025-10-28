@@ -4,12 +4,23 @@ import { Providers } from './providers'
 import { HamburgerMenu } from '@/components/HamburgerMenu'
 
 export const metadata: Metadata = {
-  title: 'RYTHM - Hybrid Training App',
+  title: 'RYTHM - Your Training Companion',
   description: 'Track your strength, cardio, and hybrid workouts with precision',
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/favicon-48x48.png', sizes: '48x48', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'RYTHM',
   },
   other: {
@@ -19,7 +30,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0F0F0F', // Dark theme primary background
+  themeColor: '#FF8C42', // Orange brand color
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5, // Allow zooming for accessibility
@@ -35,8 +46,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full dark">
       <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/icon-192x192.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
