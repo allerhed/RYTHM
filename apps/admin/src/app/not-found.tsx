@@ -44,7 +44,7 @@ export default function NotFound() {
         </div>
 
         {/* Fun Discovery Stats */}
-        <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6 space-y-4">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl border border-gray-700 p-6 space-y-4">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <span className="text-2xl">🏆</span>
             <h3 className="text-white font-semibold">Rare Discovery Achievement</h3>
@@ -78,7 +78,7 @@ export default function NotFound() {
           <div className="grid grid-cols-2 gap-4">
             <button 
               onClick={() => window.history.back()}
-              className="inline-flex items-center justify-center px-6 py-3 bg-gray-800 text-gray-300 font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200 border border-gray-700"
+              className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-gray-300 font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200 border border-gray-700"
             >
               <span className="mr-2">🔙</span>
               Go Back
@@ -86,7 +86,7 @@ export default function NotFound() {
             
             <Link 
               href="/users"
-              className="inline-flex items-center justify-center px-6 py-3 bg-gray-800 text-gray-300 font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200 border border-gray-700"
+              className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-gray-300 font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200 border border-gray-700"
             >
               <span className="mr-2">👥</span>
               Users

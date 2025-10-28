@@ -159,7 +159,7 @@ function AnalyticsPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-dark-card shadow-sm">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -176,7 +176,7 @@ function AnalyticsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-dark-card shadow-sm">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -193,7 +193,7 @@ function AnalyticsPage() {
   if (trainingLoadQuery.error || summaryQuery.error || categoryBreakdownQuery.error) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-dark-card shadow-sm">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -211,7 +211,7 @@ function AnalyticsPage() {
   if (!hasValidData) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-dark-card shadow-sm">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -228,7 +228,7 @@ function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-dark-primary">
       {/* Header */}
-      <div className="bg-dark-card shadow-sm border-b border-dark-border">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border-b border-dark-border">
         <div className="px-4 py-4">
           <div className="flex items-center justify-center mb-4">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -605,7 +605,7 @@ function AnalyticsPage() {
         </div>
 
         {/* Total Distance Widget */}
-        <div className="bg-dark-card rounded-2xl p-6 shadow-sm">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Total Distance</h2>
           
           <div className="flex items-center justify-between mb-4">
@@ -638,7 +638,7 @@ function AnalyticsPage() {
         </div>
 
         {/* Total Weight Widget */}
-        <div className="bg-dark-card rounded-2xl p-6 shadow-sm">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Total Weight Lifted</h2>
           
           <div className="flex items-center justify-between mb-4">
@@ -671,7 +671,7 @@ function AnalyticsPage() {
         </div>
 
         {/* Summary Stats */}
-        <div className="bg-dark-card rounded-2xl p-6 shadow-sm">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">3-Month Summary</h2>
           
           <div className="grid grid-cols-2 gap-4">

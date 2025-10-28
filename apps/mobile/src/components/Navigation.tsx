@@ -70,7 +70,7 @@ export function Header({ title, showBack = false, onBack, actions, showUserAvata
           {showBack && (
             <button
               onClick={onBack}
-              className="nav-item mr-2 -ml-2 text-orange-primary hover:bg-dark-card"
+              className="nav-item mr-2 -ml-2 text-orange-primary hover:bg-gradient-to-b from-[#1a1a1a] to-[#232323]"
               aria-label="Go back"
             >
               <span aria-hidden="true">←</span>

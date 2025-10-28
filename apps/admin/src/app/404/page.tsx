@@ -41,7 +41,7 @@ export default function NotFound404Page() {
         </div>
 
         {/* Fun Stats */}
-        <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6 space-y-4">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl border border-gray-700 p-6 space-y-4">
           <h3 className="text-white font-semibold">🎉 Lost Page Discovery Stats</h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="text-center">
@@ -67,7 +67,7 @@ export default function NotFound404Page() {
           
           <Link 
             href="/"
-            className="w-full inline-flex items-center justify-center px-6 py-3 bg-gray-800 text-gray-300 font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200 border border-gray-700"
+            className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-gray-300 font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200 border border-gray-700"
           >
             <span className="mr-2">🔙</span>
             Go Back

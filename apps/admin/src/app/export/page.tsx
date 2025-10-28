@@ -473,7 +473,7 @@ function ExportPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Export Configuration */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+              <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-gray-700 p-6">
                 <h2 className="text-xl font-semibold text-white mb-6">Export Configuration</h2>
                 
                 {/* Export Type */}
@@ -638,7 +638,7 @@ function ExportPage() {
 
             {/* Export Jobs Status */}
             <div className="space-y-6">
-              <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+              <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-gray-700 p-6">
                 <h2 className="text-xl font-semibold text-white mb-4">Export Jobs</h2>
                 
                 {jobs.length === 0 ? (
@@ -725,7 +725,7 @@ function ExportPage() {
               </div>
 
               {/* Quick Actions */}
-              <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+              <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-gray-700 p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
                 <div className="space-y-3">
                   <button 
@@ -774,7 +774,7 @@ function ExportPage() {
         {/* Import Tab */}
         {activeTab === 'import' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+            <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-white mb-6">Import Data</h2>
               
               {/* File Upload */}
@@ -856,7 +856,7 @@ function ExportPage() {
             </div>
 
             {/* Import Preview/Results */}
-            <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+            <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Import Status</h3>
               
               {importJobs.length === 0 ? (
@@ -973,7 +973,7 @@ function ExportPage() {
         {/* Backup Management Tab */}
         {activeTab === 'backups' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+            <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-white mb-6">System Backups</h2>
               
               {/* Create Backup Actions */}
@@ -1039,7 +1039,7 @@ function ExportPage() {
             </div>
 
             {/* Backup History */}
-            <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+            <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Backup History</h3>
               
               <div className="space-y-3">
@@ -1090,7 +1090,7 @@ function ExportPage() {
         )}
 
         {/* Phase Information */}
-        <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-gray-700 p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Implementation Status</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[

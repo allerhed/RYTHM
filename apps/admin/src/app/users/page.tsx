@@ -211,7 +211,7 @@ export default function UsersPage() {
           )}
 
           {/* Filters */}
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -266,7 +266,7 @@ export default function UsersPage() {
           </div>
 
           {/* Users Table */}
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 overflow-hidden">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-700">
               <h2 className="text-xl font-semibold text-white">
                 Users ({users.length})

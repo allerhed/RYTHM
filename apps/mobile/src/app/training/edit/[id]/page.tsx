@@ -584,7 +584,7 @@ function EditWorkoutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br bg-dark-primary dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-dark-card border-b border-dark-border">
+      <div className="sticky top-0 z-40 bg-gradient-to-b from-[#1a1a1a] to-[#232323] border-b border-dark-border">
         <div className="max-w-md mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <button 
@@ -603,7 +603,7 @@ function EditWorkoutPage() {
 
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">        
         {/* Workout Info */}
-        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
           <div className="space-y-4">
             {/* Workout Name */}
             <div>
@@ -673,7 +673,7 @@ function EditWorkoutPage() {
         </div>
 
         {/* Training Load */}
-        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Training Load
           </label>
@@ -690,7 +690,7 @@ function EditWorkoutPage() {
         </div>
 
         {/* How was your workout - Perceived Exertion */}
-        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="text-gray-600 dark:text-gray-300 text-lg">How was your workout?</span>
@@ -816,7 +816,7 @@ function DatePickerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-card rounded-lg w-full max-w-sm">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg w-full max-w-sm">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-border">
           <h2 className="text-lg font-semibold text-text-primary">Select Date</h2>
@@ -890,7 +890,7 @@ function TimePickerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-card rounded-lg w-full max-w-sm">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg w-full max-w-sm">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-border">
           <h2 className="text-lg font-semibold text-text-primary">Set Duration</h2>
@@ -1341,7 +1341,7 @@ function ExerciseModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-card rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-border">
           <h2 className="text-lg font-semibold text-text-primary">Add Exercise</h2>

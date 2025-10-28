@@ -74,7 +74,7 @@ export default function AnalyticsPage() {
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="rounded-2xl bg-gray-800 h-32"></div>
+                <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] h-32"></div>
               </div>
             ))}
           </div>
@@ -218,7 +218,7 @@ export default function AnalyticsPage() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Usage Trends Chart */}
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-white">
                 Usage Trends
@@ -241,7 +241,7 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Workouts Logged */}
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               Workouts Logged
             </h3>
@@ -273,7 +273,7 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Session Category Breakdown */}
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               Session Categories
             </h3>
@@ -325,7 +325,7 @@ export default function AnalyticsPage() {
         {/* Additional Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Top Organizations */}
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               Top Organizations
             </h3>
@@ -358,7 +358,7 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Popular Exercises */}
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               Popular Exercises
             </h3>
@@ -393,7 +393,7 @@ export default function AnalyticsPage() {
 
         {/* Performance Insights */}
         {performanceMetrics && (
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               System Overview
             </h3>
@@ -469,7 +469,7 @@ export default function AnalyticsPage() {
         {equipmentStats && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Equipment Overview */}
-            <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+            <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-white mb-6">
                 Equipment Overview
               </h3>
@@ -509,7 +509,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Most Used Equipment */}
-            <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+            <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-white mb-6">
                 Most Used Equipment
               </h3>
@@ -549,7 +549,7 @@ export default function AnalyticsPage() {
 
         {/* Exercise Template Analytics */}
         {exerciseTemplateStats && (
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">
               Exercise Template Insights
             </h3>

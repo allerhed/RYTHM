@@ -68,7 +68,7 @@ export function UserModal({ isOpen, onClose, onSubmit, user, mode }: UserModalPr
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-xl w-full max-w-md">
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <h3 className="text-lg font-medium text-white">
             {mode === 'add' ? 'Add New User' : 'Edit User'}

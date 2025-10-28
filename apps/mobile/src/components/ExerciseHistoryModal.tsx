@@ -72,7 +72,7 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-dark-card rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-dark-border">
           <div className="flex items-center justify-between">

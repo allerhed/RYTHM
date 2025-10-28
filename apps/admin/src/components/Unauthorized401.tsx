@@ -46,7 +46,7 @@ export function Unauthorized401({
         </p>
 
         {/* Redirect Notice */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg border border-gray-700 p-4">
           <p className="text-gray-400 text-sm">
             ✨ Redirecting to login in 5 seconds...
           </p>

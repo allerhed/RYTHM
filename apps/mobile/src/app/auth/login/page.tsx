@@ -73,7 +73,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="flex items-center justify-center w-10 h-10 bg-dark-card rounded-xl border border-dark-border hover:bg-dark-elevated hover:border-orange-primary/30 transition-all"
+            className="flex items-center justify-center w-10 h-10 bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-dark-border hover:bg-dark-elevated hover:border-orange-primary/30 transition-all"
           >
             <span className="text-orange-primary">←</span>
           </button>
@@ -108,7 +108,7 @@ export default function LoginPage() {
           </div>
 
           {/* Login form */}
-          <div className="bg-dark-card rounded-2xl p-8 shadow-card border border-dark-border">
+          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl p-8 shadow-card border border-dark-border">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <Input

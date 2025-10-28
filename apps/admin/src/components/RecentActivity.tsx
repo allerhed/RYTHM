@@ -66,7 +66,7 @@ export function RecentActivity() {
   }
 
   return (
-    <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+    <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white">
           Recent Activity

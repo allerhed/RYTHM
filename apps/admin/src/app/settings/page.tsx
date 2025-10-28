@@ -24,7 +24,7 @@ function SettingsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Account Settings */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+            <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
                 <svg className="w-6 h-6 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -70,7 +70,7 @@ function SettingsPage() {
             </div>
 
             {/* Notification Settings */}
-            <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+            <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
                 <svg className="w-6 h-6 mr-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
@@ -121,7 +121,7 @@ function SettingsPage() {
             </div>
 
             {/* Security Settings */}
-            <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+            <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
                 <svg className="w-6 h-6 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -145,7 +145,7 @@ function SettingsPage() {
 
           {/* System Info */}
           <div className="space-y-6">
-            <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+            <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
                 <svg className="w-6 h-6 mr-3 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m14-6h2m-2 6h2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
@@ -173,7 +173,7 @@ function SettingsPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+            <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
                 <svg className="w-6 h-6 mr-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.864-.833-2.634 0L4.232 16.5c-.77.833.192 2.5 1.732 2.5z" />

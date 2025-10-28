@@ -222,7 +222,7 @@ function DashboardPage() {
         </div>
 
         {/* System Health */}
-        <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+        <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
           <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
               <div className="h-4 w-4 rounded-full shadow-lg bg-green-400"></div>
@@ -249,7 +249,7 @@ function DashboardPage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+        <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>

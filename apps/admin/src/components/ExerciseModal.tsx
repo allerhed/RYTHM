@@ -147,7 +147,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto border border-gray-700">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto border border-gray-700">
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center space-x-3">
             <div className="h-10 w-10 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">

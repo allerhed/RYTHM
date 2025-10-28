@@ -29,7 +29,7 @@ export function StatsCard({ title, value, change, changeType = 'neutral', icon, 
   }[changeType]
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-700">
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-700">
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">

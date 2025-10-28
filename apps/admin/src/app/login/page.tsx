@@ -58,7 +58,7 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="rounded-2xl bg-gray-800 shadow-2xl border border-gray-700 py-8 px-6 sm:px-10">
+        <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-2xl border border-gray-700 py-8 px-6 sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="rounded-xl bg-red-900/20 border border-red-500/30 p-4">

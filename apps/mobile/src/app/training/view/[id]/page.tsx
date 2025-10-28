@@ -165,7 +165,7 @@ function ViewWorkoutPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-dark-card shadow-sm">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
           <div className="px-4 py-3 flex items-center">
             <button
               onClick={() => router.back()}
@@ -190,7 +190,7 @@ function ViewWorkoutPage() {
   if (error || !session) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        <div className="bg-dark-card shadow-sm">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm">
           <div className="px-4 py-3 flex items-center">
             <button
               onClick={() => router.back()}
@@ -221,7 +221,7 @@ function ViewWorkoutPage() {
   return (
     <div className="min-h-screen bg-dark-primary">
       {/* Header */}
-      <div className="bg-dark-card shadow-sm border-b border-dark-border">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border-b border-dark-border">
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <button 
@@ -258,7 +258,7 @@ function ViewWorkoutPage() {
 
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
         {/* Workout Info */}
-        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
           <div className="space-y-4">
             {/* Workout Name */}
             <div>
@@ -315,7 +315,7 @@ function ViewWorkoutPage() {
         </div>
 
         {/* Training Load */}
-        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Training Load
           </label>
@@ -329,7 +329,7 @@ function ViewWorkoutPage() {
 
         {/* Perceived Exertion */}
         {session.perceived_exertion !== null && (
-          <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
+          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-gray-600 dark:text-gray-300 text-lg">How was your workout?</span>
@@ -366,7 +366,7 @@ function ViewWorkoutPage() {
 
         {/* Notes */}
         {session.notes && (
-          <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
+          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Workout Notes
             </label>
@@ -379,14 +379,14 @@ function ViewWorkoutPage() {
         {/* Exercises */}
         <div className="space-y-4">
           {session.exercises.length === 0 ? (
-            <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-6 text-center">
+            <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-6 text-center">
               <p className="text-gray-500 dark:text-gray-400">No exercises recorded</p>
             </div>
           ) : (
             session.exercises.map((exercise, index) => (
               <div
                 key={exercise.exercise_id}
-                className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4"
+                className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -467,7 +467,7 @@ function ViewWorkoutPage() {
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-dark-card rounded-lg shadow-xl max-w-sm w-full p-6">
+          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-xl max-w-sm w-full p-6">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mr-3">
                 <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

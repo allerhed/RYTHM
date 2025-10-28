@@ -11,7 +11,7 @@ export default function TestDayView() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-      <div className="bg-dark-card rounded-lg p-6">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-6">
         <div className="flex items-center mb-4">
           <button
             onClick={() => router.back()}

@@ -26,7 +26,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={`input w-full bg-dark-card border-dark-border text-text-primary placeholder-text-tertiary ${error ? 'border-red-500 focus:border-red-500' : 'focus:border-orange-primary'} ${className}`}
+          className={`input w-full bg-gradient-to-b from-[#1a1a1a] to-[#232323] border-dark-border text-text-primary placeholder-text-tertiary ${error ? 'border-red-500 focus:border-red-500' : 'focus:border-orange-primary'} ${className}`}
           aria-invalid={!!error}
           aria-describedby={[errorId, helperId].filter(Boolean).join(' ')}
           {...props}
@@ -117,13 +117,13 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         <select
           ref={ref}
           id={selectId}
-          className={`input w-full bg-dark-card border-dark-border text-text-primary ${error ? 'border-red-500 focus:border-red-500' : 'focus:border-orange-primary'} ${className}`}
+          className={`input w-full bg-gradient-to-b from-[#1a1a1a] to-[#232323] border-dark-border text-text-primary ${error ? 'border-red-500 focus:border-red-500' : 'focus:border-orange-primary'} ${className}`}
           aria-invalid={!!error}
           aria-describedby={errorId}
           {...props}
         >
           {options.map((option) => (
-            <option key={option.value} value={option.value} className="bg-dark-card text-text-primary">
+            <option key={option.value} value={option.value} className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-text-primary">
               {option.label}
             </option>
           ))}

@@ -49,7 +49,7 @@ export default function TestAuthPage() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Avatar Debug Page</h1>
         
-        <div className="bg-dark-card rounded-lg p-6 mb-6">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Current Avatar</h2>
           <div className="flex items-center space-x-4 mb-4">
             <Avatar user={user || undefined} size="xl" />
@@ -60,7 +60,7 @@ export default function TestAuthPage() {
           </div>
         </div>
 
-        <div className="bg-dark-card rounded-lg p-6 mb-6">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Actions</h2>
           <div className="space-y-2">
             <Button onClick={handleFetchProfile} variant="primary" size="sm">

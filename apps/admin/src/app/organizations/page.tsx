@@ -218,7 +218,7 @@ export default function OrganizationsPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6 animate-pulse">
+              <div key={i} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6 animate-pulse">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
                     <div className="h-12 w-12 rounded-xl bg-gray-700"></div>
@@ -242,7 +242,7 @@ export default function OrganizationsPage() {
             {organizations.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {organizations.map((org) => (
-                  <div key={org.tenant_id} className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
+                  <div key={org.tenant_id} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
                         <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
@@ -358,7 +358,7 @@ export default function OrganizationsPage() {
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -376,7 +376,7 @@ export default function OrganizationsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -394,7 +394,7 @@ export default function OrganizationsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -412,7 +412,7 @@ export default function OrganizationsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gray-800 shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">

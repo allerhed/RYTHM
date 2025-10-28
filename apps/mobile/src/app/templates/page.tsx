@@ -382,7 +382,7 @@ function TemplatesPage() {
   return (
     <div className="min-h-screen bg-dark-primary pb-20">
       {/* Header */}
-      <div className="bg-dark-card shadow-sm border-b border-dark-border">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border-b border-dark-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-4 sm:py-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -476,7 +476,7 @@ function TemplatesPage() {
             {templates.map((template: WorkoutTemplate) => (
               <div
                 key={template.template_id}
-                className="bg-dark-card rounded-xl shadow-sm border border-dark-border p-5 sm:p-6 hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200"
+                className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl shadow-sm border border-dark-border p-5 sm:p-6 hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1 min-w-0">
@@ -565,9 +565,9 @@ function TemplatesPage() {
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowCreateModal(false)} />
             
-            <div className="inline-block align-bottom bg-dark-card rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md max-h-[90vh] flex flex-col">
+            <div className="inline-block align-bottom bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md max-h-[90vh] flex flex-col">
               {/* Modal Header */}
-              <div className="bg-dark-card px-6 py-4 border-b border-dark-border flex-shrink-0">
+              <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] px-6 py-4 border-b border-dark-border flex-shrink-0">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-semibold text-text-primary">
                     {editingTemplate ? 'Edit Template' : 'Create New Template'}
@@ -862,7 +862,7 @@ function TemplatesPage() {
               <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 flex-shrink-0">
                 <button
                   onClick={() => setShowCreateModal(false)}
-                  className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary transition-colors"
+                  className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gradient-to-b from-[#1a1a1a] to-[#232323] hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary transition-colors"
                 >
                   Cancel
                 </button>
@@ -895,8 +895,8 @@ function TemplatesPage() {
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowDeleteModal(null)} />
             
-            <div className="inline-block align-bottom bg-dark-card rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="bg-dark-card px-6 pt-6 pb-4">
+            <div className="inline-block align-bottom bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] px-6 pt-6 pb-4">
                 <div className="sm:flex sm:items-start">
                   <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 sm:mx-0 sm:h-10 sm:w-10">
                     <ExclamationTriangleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
@@ -917,7 +917,7 @@ function TemplatesPage() {
               <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3">
                 <button
                   onClick={() => setShowDeleteModal(null)}
-                  className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary transition-colors"
+                  className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gradient-to-b from-[#1a1a1a] to-[#232323] hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary transition-colors"
                 >
                   Cancel
                 </button>
@@ -1002,7 +1002,7 @@ function AddExerciseModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-card rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-border">
           <h2 className="text-lg font-semibold text-text-primary">Add Exercise</h2>

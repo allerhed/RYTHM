@@ -247,7 +247,7 @@ function ExerciseDetailPage() {
         </div>
 
         {/* History */}
-        <div className="bg-dark-card rounded-xl border border-dark-border overflow-hidden">
+        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-xl border border-dark-border overflow-hidden">
           <div className="px-6 py-4 border-b border-dark-border">
             <h2 className="text-xl font-semibold text-text-primary">
               History ({exerciseData.history.length} attempts)

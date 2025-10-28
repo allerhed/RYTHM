@@ -283,7 +283,7 @@ function ProfilePage() {
         <div className="px-4 py-6">
         <div className="max-w-2xl mx-auto">
           {/* Profile Picture Section */}
-          <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-6 mb-6">
+          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-6 mb-6">
             <div className="text-center">
               <div className="relative inline-block">
                 <div 
@@ -332,7 +332,7 @@ function ProfilePage() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border mb-6">
+          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border mb-6">
             <div className="border-b border-dark-border">
               <nav className="flex space-x-8 px-6">
                 <button
@@ -538,7 +538,7 @@ function ProfilePage() {
           </div>
 
           {/* Account Information */}
-          <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-6">
+          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-6">
             <h3 className="text-lg font-semibold text-text-primary mb-4">Account Information</h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
