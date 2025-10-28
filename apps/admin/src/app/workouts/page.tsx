@@ -60,11 +60,10 @@ export default function WorkoutsPage() {
   const getDifficultyBadge = (difficulty: string) => {
     switch (difficulty) {
       case 'Beginner':
-        return 'bg-green-500/20 text-green-400 border-green-500/30'
       case 'Intermediate':
-        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+        return 'badge-primary'
       case 'Advanced':
-        return 'bg-red-500/20 text-red-400 border-red-500/30'
+        return 'badge-danger'
       default:
         return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
     }
@@ -73,9 +72,8 @@ export default function WorkoutsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-500/20 text-green-400 border-green-500/30'
       case 'in-progress':
-        return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
+        return 'badge-primary'
       default:
         return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
     }
@@ -120,7 +118,7 @@ export default function WorkoutsPage() {
             <div className="text-gray-400 mb-4">{error}</div>
             <button 
               onClick={fetchData}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+              className="btn-primary"
             >
               Try Again
             </button>
@@ -150,7 +148,7 @@ export default function WorkoutsPage() {
               value={stats.totalWorkouts.toString()}
               change="+8%"
               changeType="positive"
-              gradient="from-blue-500 to-blue-600"
+              accent="primary"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -162,7 +160,7 @@ export default function WorkoutsPage() {
               value={stats.activeWorkouts.toString()}
               change="+12%"
               changeType="positive"
-              gradient="from-green-500 to-emerald-600"
+              accent="primary"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -174,7 +172,7 @@ export default function WorkoutsPage() {
               value={stats.totalParticipants.toString()}
               change="+15%"
               changeType="positive"
-              gradient="from-purple-500 to-pink-600"
+              accent="primary"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
@@ -186,7 +184,7 @@ export default function WorkoutsPage() {
               value={`${stats.avgDuration} min`}
               change="+2%"
               changeType="positive"
-              gradient="from-orange-500 to-red-600"
+              accent="primary"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -199,7 +197,7 @@ export default function WorkoutsPage() {
         {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             <span className="ml-3 text-gray-400">Loading workouts...</span>
           </div>
         )}
@@ -208,10 +206,11 @@ export default function WorkoutsPage() {
         {!loading && sessions.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sessions.map((workout) => (
-              <div key={workout.id} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
+              <div key={workout.id} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-dark-border p-6 hover:shadow-2xl transition-all duration-300 relative">
+                <div className="accent-bar" />
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg text-white">
+                    <div className="icon-accent h-12 w-12 flex items-center justify-center text-white">
                       {getWorkoutIcon(workout.type)}
                     </div>
                     <div>
@@ -262,7 +261,7 @@ export default function WorkoutsPage() {
                 <div className="mt-6 pt-4 border-t border-gray-700">
                   <button 
                     onClick={() => handleViewDetails(workout)}
-                    className="w-full px-3 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 text-sm shadow-lg"
+                    className="btn-primary w-full text-sm"
                   >
                     View Details
                   </button>

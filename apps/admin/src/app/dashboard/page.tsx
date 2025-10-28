@@ -130,7 +130,7 @@ function DashboardPage() {
             value={formatNumber(dashboard.activeUsers.value)}
             change={dashboard.activeUsers.change?.value}
             changeType={dashboard.activeUsers.change?.type}
-            gradient="from-orange-500 to-orange-600"
+            accent="primary"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
@@ -140,7 +140,7 @@ function DashboardPage() {
           <StatsCard
             title="Organizations"
             value={formatNumber(performanceMetrics.totalTenants)}
-            gradient="from-green-500 to-emerald-600"
+            accent="primary"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-6m-9 0H3m2 0h6M9 7h6m-6 4h6m-6 4h6" />
@@ -152,7 +152,7 @@ function DashboardPage() {
             value={formatNumber(dashboard.totalSessions.value)}
             change={dashboard.totalSessions.change?.value}
             changeType={dashboard.totalSessions.change?.type}
-            gradient="from-orange-500 to-orange-600"
+            accent="primary"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -162,7 +162,7 @@ function DashboardPage() {
           <StatsCard
             title="Active Today"
             value={formatNumber(performanceMetrics.activeUsers24h)}
-            gradient="from-orange-500 to-red-600"
+            accent="primary"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -177,7 +177,7 @@ function DashboardPage() {
             <StatsCard
               title="Active Equipment"
               value={formatNumber(equipmentStats.activeEquipment)}
-              gradient="from-emerald-500 to-green-600"
+              accent="primary"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -189,7 +189,7 @@ function DashboardPage() {
             <StatsCard
               title="Exercise Templates"
               value={formatNumber(exerciseTemplateStats.totalExerciseTemplates)}
-              gradient="from-violet-500 to-purple-600"
+              accent="primary"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -202,7 +202,7 @@ function DashboardPage() {
             value={formatDuration(dashboard.avgSessionDuration.value)}
             change={dashboard.avgSessionDuration.change?.value}
             changeType={dashboard.avgSessionDuration.change?.type}
-            gradient="from-orange-500 to-orange-600"
+            accent="primary"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -212,7 +212,7 @@ function DashboardPage() {
           <StatsCard
             title="User Retention"
             value={`${dashboard.retentionRate.value.toFixed(1)}%`}
-            gradient="from-orange-500 to-orange-600"
+            accent="primary"
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -225,7 +225,7 @@ function DashboardPage() {
         <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
           <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
-              <div className="h-4 w-4 rounded-full shadow-lg bg-green-400"></div>
+              <div className="h-4 w-4 rounded-full shadow-lg bg-primary"></div>
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-white">
@@ -233,14 +233,14 @@ function DashboardPage() {
               </h3>
               <div className="flex items-center space-x-2 mt-1">
                 <span className="text-sm text-gray-400">Status:</span>
-                <span className="text-sm font-medium capitalize text-green-400">
+                <span className="text-sm font-medium capitalize text-primary-accent">
                   Healthy
                 </span>
               </div>
             </div>
             <div className="flex-shrink-0">
-              <div className="p-3 rounded-xl bg-green-500/10">
-                <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="icon-accent" style={{padding:'0.75rem'}}>
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -252,13 +252,13 @@ function DashboardPage() {
         <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
           </div>
           <div className="space-y-4">
             {performanceMetrics && (
               <div className="flex items-start space-x-3 p-3 rounded-lg bg-gray-700/50 border border-gray-600/50">
                 <div className="flex-shrink-0">
-                  <div className="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-200">
@@ -272,7 +272,7 @@ function DashboardPage() {
             {equipmentStats && (
               <div className="flex items-start space-x-3 p-3 rounded-lg bg-gray-700/50 border border-gray-600/50">
                 <div className="flex-shrink-0">
-                  <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-200">
@@ -286,7 +286,7 @@ function DashboardPage() {
             {exerciseTemplateStats && (
               <div className="flex items-start space-x-3 p-3 rounded-lg bg-gray-700/50 border border-gray-600/50">
                 <div className="flex-shrink-0">
-                  <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-200">
@@ -299,7 +299,7 @@ function DashboardPage() {
             
             <div className="flex items-start space-x-3 p-3 rounded-lg bg-gray-700/50 border border-gray-600/50">
               <div className="flex-shrink-0">
-                <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
               </div>
               <div className="flex-1">
                 <p className="text-sm text-gray-200">
