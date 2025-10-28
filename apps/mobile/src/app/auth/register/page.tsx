@@ -152,17 +152,17 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+    <div className="min-h-screen bg-dark-primary">
       {/* Header */}
       <header className="safe-area-top px-6 pt-4">
         <div className="flex items-center justify-between">
           <button
             onClick={() => step === 1 ? router.back() : setStep(1)}
-            className="flex items-center justify-center w-10 h-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 transition-colors"
+            className="flex items-center justify-center w-10 h-10 bg-dark-card rounded-xl border border-dark-border hover:bg-dark-elevated hover:border-orange-primary/30 transition-all"
           >
-            <span className="text-gray-600 dark:text-gray-400">←</span>
+            <span className="text-orange-primary">←</span>
           </button>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Create Account</h1>
+          <h1 className="text-lg font-semibold text-text-primary">Create Account</h1>
           <div className="w-10" /> {/* Spacer for center alignment */}
         </div>
       </header>
@@ -179,13 +179,13 @@ export default function RegisterPage() {
         <div className="max-w-md mx-auto">
           {/* Logo and Welcome */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-6 shadow-lg">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-primary to-orange-hover rounded-2xl mb-6 shadow-glow-orange">
               <span className="text-2xl font-bold text-white">R</span>
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-primary to-orange-hover bg-clip-text text-transparent mb-3">
               {step === 1 ? 'Join RYTHM' : 'Almost There!'}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
+            <p className="text-text-secondary text-lg">
               {step === 1 
                 ? 'Start your fitness journey today'
                 : 'Complete your profile setup'
@@ -196,23 +196,23 @@ export default function RegisterPage() {
           {/* Progress indicator */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+              <span className="text-sm text-text-secondary font-medium">
                 Step {step} of 2
               </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm text-text-secondary">
                 {step === 1 ? 'Account Setup' : 'Personal Details'}
               </span>
             </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div className="w-full bg-dark-border rounded-full h-2">
               <div 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-orange-primary to-orange-hover h-2 rounded-full transition-all duration-500"
                 style={{ width: `${(step / 2) * 100}%` }}
               />
             </div>
           </div>
 
           {/* Form */}
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+          <div className="bg-dark-card rounded-2xl p-8 shadow-card border border-dark-border">
             <form onSubmit={step === 1 ? handleNextStep : handleSubmit} className="space-y-6">
               {step === 1 ? (
                 // Step 1: Account credentials

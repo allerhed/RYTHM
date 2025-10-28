@@ -32,7 +32,7 @@ interface CardProps {
 
 function Card({ children, className = '' }: CardProps) {
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${className}`}>
+    <div className={`bg-dark-card rounded-lg shadow-card border border-dark-border hover:border-orange-primary/20 transition-colors ${className}`}>
       {children}
     </div>
   )
@@ -403,21 +403,21 @@ function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-dark-primary">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 safe-area-top">
+      <div className="bg-dark-secondary border-b border-dark-border safe-area-top">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => router.push('/training/history')}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-2 rounded-full hover:bg-dark-card transition-colors"
               title="Workout History"
             >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </button>
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h1 className="text-lg font-semibold text-text-primary">
               Dashboard
             </h1>
           </div>
@@ -436,10 +436,10 @@ function DashboardPage() {
             <div className="flex items-center space-x-4 mb-4">
               <Avatar user={user || undefined} size="md" />
               <div>
-                <h1 className="text-display font-bold text-gray-900 dark:text-gray-100">
+                <h1 className="text-display font-bold text-text-primary">
                   Welcome back, {user?.firstName || user?.email}!
                 </h1>
-                <p className="text-body text-gray-600 dark:text-gray-400">
+                <p className="text-body text-text-secondary">
                   Ready to continue your training journey?
                 </p>
               </div>
@@ -448,10 +448,10 @@ function DashboardPage() {
 
           {/* Week Navigation */}
           <div className="flex items-center justify-center mb-6">
-            <div className="flex items-center space-x-4 bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center space-x-4 bg-dark-card rounded-lg p-3 shadow-card border border-dark-border">
               <button 
                 onClick={navigateToPreviousWeek}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                className="text-text-secondary hover:text-orange-primary transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -459,21 +459,21 @@ function DashboardPage() {
               </button>
               <div className="flex items-center space-x-2">
                 <div className="flex items-center space-x-1">
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-orange-primary rounded-full"></div>
+                  <div className="w-2 h-2 bg-orange-primary rounded-full"></div>
+                  <div className="w-2 h-2 bg-orange-primary rounded-full"></div>
+                  <div className="w-2 h-2 bg-orange-primary rounded-full"></div>
                 </div>
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 mx-2">
+                <span className="text-sm font-medium text-text-primary mx-2">
                   {getWeekNumber(selectedWeekStart)}
                 </span>
-                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <span className="text-lg font-semibold text-text-primary">
                   {formatWeekRange(selectedWeekStart)}
                 </span>
               </div>
               <button 
                 onClick={navigateToNextWeek}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                className="text-text-secondary hover:text-orange-primary transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
