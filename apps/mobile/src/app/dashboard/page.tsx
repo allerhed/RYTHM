@@ -510,18 +510,20 @@ function DashboardPage() {
                   <div key={index} className="flex flex-col items-center">
                     <button
                       onClick={() => selectDay(item.dayIndex)}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                        isSelected
-                          ? 'bg-orange-primary text-white border-2 border-teal-600' 
-                          : 'bg-dark-elevated text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-600'
+                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                        isCurrentDay
+                          ? 'bg-white text-gray-900 ring-2 ring-orange-primary shadow-md' 
+                          : isSelected
+                          ? 'bg-orange-primary text-white' 
+                          : 'bg-dark-elevated text-text-secondary hover:bg-dark-card'
                       }`}
                       title={item.label}
                     >
                       {item.day}
                     </button>
                     <div className={`w-2 h-2 rounded-full mt-2 ${
-                      isCurrentDay ? 'bg-orange-primary' : 
-                      isSelected ? 'bg-teal-400' : 'bg-gray-300 dark:bg-gray-600'
+                      isCurrentDay ? 'bg-green-500' : 
+                      'bg-transparent'
                     }`}></div>
                   </div>
                 )

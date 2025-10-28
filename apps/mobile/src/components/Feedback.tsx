@@ -63,7 +63,7 @@ export function Toast({ type, message, onClose, autoClose = true }: ToastProps) 
   }, [autoClose, onClose])
 
   const typeStyles = {
-    success: 'bg-green-900/90 border-green-700 text-green-100',
+    success: 'bg-orange-900/90 border-orange-primary text-orange-100',
     error: 'bg-red-900/90 border-red-700 text-red-100',
     warning: 'bg-yellow-900/90 border-yellow-700 text-yellow-100',
     info: 'bg-orange-900/90 border-orange-primary text-orange-100'
