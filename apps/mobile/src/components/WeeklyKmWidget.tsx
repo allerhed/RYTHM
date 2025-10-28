@@ -28,11 +28,12 @@ export function WeeklyKmWidget({ selectedWeekStart }: WeeklyKmWidgetProps) {
 
   if (weeklyKmQuery.isLoading) {
     return (
-      <div className="bg-gradient-to-br from-orange-600 to-orange-700 dark:from-teal-700 dark:to-cyan-800 rounded-xl shadow-lg p-6">
+      /* Migration: removed brand gradient; using semantic surface with accent text */
+      <div className="rounded-xl shadow-lg p-6 bg-dark-elevated1 border border-dark-border">
         <div className="animate-pulse">
-          <div className="h-4 bg-orange-primary rounded w-24 mb-4"></div>
-          <div className="h-10 bg-orange-primary rounded w-32 mb-2"></div>
-          <div className="h-3 bg-orange-primary rounded w-20"></div>
+          <div className="h-4 bg-dark-elevated rounded w-24 mb-4"></div>
+          <div className="h-10 bg-dark-elevated rounded w-32 mb-2"></div>
+          <div className="h-3 bg-dark-elevated rounded w-20"></div>
         </div>
       </div>
     )
@@ -40,7 +41,7 @@ export function WeeklyKmWidget({ selectedWeekStart }: WeeklyKmWidgetProps) {
 
   if (weeklyKmQuery.isError || !weeklyKmQuery.data) {
     return (
-      <div className="bg-gradient-to-br from-orange-600 to-orange-700 dark:from-teal-700 dark:to-cyan-800 rounded-xl shadow-lg p-6">
+      <div className="rounded-xl shadow-lg p-6 bg-dark-elevated1 border border-dark-border">
         <div className="text-center text-teal-100">
           <svg className="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -62,31 +63,31 @@ export function WeeklyKmWidget({ selectedWeekStart }: WeeklyKmWidgetProps) {
   }
 
   return (
-    <div className="bg-gradient-to-br from-orange-600 to-orange-700 dark:from-teal-700 dark:to-cyan-800 rounded-xl shadow-lg p-6 border border-orange-500 dark:border-orange-600">
+    <div className="rounded-xl shadow-lg p-6 bg-dark-elevated1 border border-dark-border">
       {/* Header */}
       <div className="flex items-center space-x-2 mb-4">
-        <svg className="w-5 h-5 text-teal-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
-        <span className="text-sm font-medium text-teal-100">Selected Week</span>
+        <span className="text-sm font-medium text-text-secondary">Selected Week</span>
       </div>
 
       {/* Main Value */}
       <div className="mb-2">
         <div className="flex items-baseline space-x-2">
-          <span className="text-4xl font-bold text-white">
+          <span className="text-4xl font-bold text-text-primary">
             {(data.selectedWeek / 1000).toFixed(1)}
           </span>
-          <span className="text-lg text-teal-100">Km</span>
+          <span className="text-lg text-text-secondary">Km</span>
         </div>
-        <div className="text-xs text-teal-200 mt-1">Selected week</div>
+        <div className="text-xs text-text-tertiary mt-1">Selected week</div>
       </div>
 
       {/* Comparison */}
       <div className="flex items-center justify-between pt-4 border-t border-orange-500">
         <div>
-          <div className="text-sm font-medium text-teal-200">Previous Week</div>
-          <div className="text-lg font-semibold text-white">
+          <div className="text-sm font-medium text-text-secondary">Previous Week</div>
+          <div className="text-lg font-semibold text-text-primary">
             {(data.previousWeek / 1000).toFixed(1)} Km
           </div>
         </div>

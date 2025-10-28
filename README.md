@@ -118,6 +118,20 @@ npm run dev:clean       # Clean everything
 
 - **[Architecture](docs/architecture/)** - System design
 
+### 🎨 Semantic Theme Overview
+The UI across mobile and admin uses a unified cinematic dark + burnt orange semantic palette.
+
+Key points:
+- No raw gradient utilities (`bg-gradient-to-*`) on structural surfaces.
+- Surfaces use elevation classes: `bg-dark-elevated0`, `bg-dark-elevated1` with `border-dark-border`.
+- Text color tiers: `text-text-primary`, `text-text-secondary`, `text-text-tertiary` (avoid ad-hoc grays).
+- Actions: `btn-primary` (burnt orange) and `btn-secondary` for neutral counterparts.
+- Icon containers: `icon-accent` replaces bespoke rounded gradient circles.
+- Badges: `badge-primary` / `badge-secondary` for status and metadata.
+
+Refer to the full guide in `docs/SEMANTIC_THEME.md` for variables, helper class catalog, migration patterns, and anti‑patterns.
+
+
 1. **Ensure Docker is running**
 
 ## 🏗️ Project Structure   ```bash

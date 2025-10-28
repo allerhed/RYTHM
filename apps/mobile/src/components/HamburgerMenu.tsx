@@ -115,7 +115,8 @@ export function HamburgerMenu() {
       {/* Hamburger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed top-4 right-4 z-40 p-2 rounded-lg bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-lg border border-dark-border hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        /* Migration: Removed gradient background in favor of semantic surface. */
+        className="fixed top-4 right-4 z-40 p-2 rounded-lg bg-dark-elevated1 shadow-lg border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-all"
         aria-label="Open navigation menu"
       >
         <Bars3Icon className="w-6 h-6 text-gray-700 dark:text-gray-300" />

@@ -112,7 +112,8 @@ export default function NewPRPage() {
       <div className="pt-16 pb-20">
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
           {/* Exercise Selection */}
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm rounded-lg mb-4 p-6">
+          {/* Migration: gradient containers replaced with semantic surfaces */}
+          <div className="bg-dark-elevated1 border border-dark-border rounded-lg mb-4 p-6">
             <label className="block text-sm font-medium text-text-primary mb-3">
               Exercise *
             </label>
@@ -168,7 +169,7 @@ export default function NewPRPage() {
           </div>
 
           {/* Metric Name */}
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm rounded-lg mb-4 p-6">
+          <div className="bg-dark-elevated1 border border-dark-border rounded-lg mb-4 p-6">
             <label className="block text-sm font-medium text-text-primary mb-3">
               Metric Name *
             </label>
@@ -186,7 +187,7 @@ export default function NewPRPage() {
           </div>
 
           {/* Category */}
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm rounded-lg mb-4 p-6">
+          <div className="bg-dark-elevated1 border border-dark-border rounded-lg mb-4 p-6">
             <label className="block text-sm font-medium text-text-primary mb-3">
               Category *
             </label>
@@ -217,7 +218,7 @@ export default function NewPRPage() {
           </div>
 
           {/* Value */}
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm rounded-lg mb-4 p-6">
+          <div className="bg-dark-elevated1 border border-dark-border rounded-lg mb-4 p-6">
             <label className="block text-sm font-medium text-text-primary mb-3">
               Value *
             </label>
@@ -246,7 +247,7 @@ export default function NewPRPage() {
           </div>
 
           {/* Date Achieved */}
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm rounded-lg mb-4 p-6">
+          <div className="bg-dark-elevated1 border border-dark-border rounded-lg mb-4 p-6">
             <label className="block text-sm font-medium text-text-primary mb-3">
               Date Achieved *
             </label>
@@ -259,8 +260,8 @@ export default function NewPRPage() {
             />
           </div>
 
-          {/* Notes */}
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm rounded-lg mb-4 p-6">
+          {/* Notes (Migration: gradient removed) */}
+          <div className="bg-dark-elevated1 border border-dark-border rounded-lg mb-4 p-6">
             <label className="block text-sm font-medium text-text-primary mb-3">
               Notes (optional)
             </label>
@@ -274,7 +275,7 @@ export default function NewPRPage() {
           </div>
 
           {/* Submit Button */}
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm rounded-lg p-6">
+          <div className="bg-dark-elevated1 border border-dark-border rounded-lg p-6">
             <button
               type="submit"
               disabled={createPR.isPending}

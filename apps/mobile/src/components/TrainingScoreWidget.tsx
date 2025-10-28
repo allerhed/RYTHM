@@ -121,7 +121,8 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
 
   if (trainingScoreQuery.isLoading) {
     return (
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-6">
+      /* Migration: gradient removed */
+      <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-6">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-4"></div>
           <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-4"></div>
@@ -137,7 +138,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
 
   if (trainingScoreQuery.isError) {
     return (
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-6">
+      <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-6">
         <div className="text-center text-red-600 dark:text-red-400">
           <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -177,7 +178,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
 
   return (
     <>
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-6">
+      <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
@@ -368,7 +369,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
       {/* Info Modal */}
       {showInfoModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+          <div className="bg-dark-elevated1 rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto border border-dark-border">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-text-primary">

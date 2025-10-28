@@ -114,7 +114,8 @@ export default function PRDetailPage() {
 
       <div className="pt-16 pb-20 max-w-2xl mx-auto">
         {/* Current PR Card */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border border-dark-border rounded-lg mx-4 mb-4 p-6">
+        {/* Current PR Card (Migration: gradient removed) */}
+        <div className="bg-dark-elevated1 shadow-sm border border-dark-border rounded-lg mx-4 mb-4 p-6">
           <div className="flex items-start justify-between mb-4">
             <div>
               <h2 className="text-xl font-bold text-text-primary">{pr.metricName}</h2>
@@ -174,7 +175,7 @@ export default function PRDetailPage() {
           </div>
 
           {pr.history.length === 0 ? (
-            <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border border-dark-border rounded-lg p-8 text-center">
+            <div className="bg-dark-elevated1 shadow-sm border border-dark-border rounded-lg p-8 text-center">
               <p className="text-gray-500 dark:text-gray-400">No historical records yet</p>
               <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
                 Add records to track your progress over time
@@ -191,7 +192,7 @@ export default function PRDetailPage() {
                 return (
                   <div
                     key={record.historyId}
-                    className={`bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-4 border shadow-sm transition-all ${
+                    className={`bg-dark-elevated1 rounded-lg p-4 border shadow-sm transition-all ${
                       isCurrent 
                         ? 'border-blue-500 dark:border-blue-400' 
                         : 'border-dark-border hover:border-gray-300 dark:hover:border-gray-600'

@@ -1,3 +1,14 @@
+/**
+ * NewWorkoutPage (Mobile)
+ * Purpose: Create a new workout with exercises and sets using semantic color system.
+ * Migration: Removed gradient backgrounds (bg-gradient-to-b ...) in favor of bg-dark-elevated* and semantic text classes.
+ * Acceptance:
+ * - No bg-gradient-to-b classes remain.
+ * - Panels use bg-dark-elevated1 / bg-dark-elevated0.
+ * - Fixed action bar uses bg-dark-elevated1 with border-dark-border.
+ * - Dropdown menus use bg-dark-elevated1.
+ * - Buttons leverage existing semantic styles (.btn-primary/.btn-secondary if available) or simplified solid backgrounds.
+ */
 'use client'
 import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -579,7 +590,7 @@ function NewWorkoutPage() {
   return (
     <div className="min-h-screen bg-dark-primary">
       {/* Header */}
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-sm border-b border-dark-border">
+      <div className="bg-dark-elevated1 shadow-sm border-b border-dark-border">
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="flex items-center justify-center">
             <h1 className="text-lg font-semibold text-text-primary">New Workout</h1>
@@ -589,7 +600,7 @@ function NewWorkoutPage() {
 
       <div className="max-w-md mx-auto px-4 py-6 pb-24 space-y-6">
         {/* Workout Info */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
+        <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-4">
           <div className="space-y-4">
             {/* Workout Name */}
             <div>
@@ -658,7 +669,7 @@ function NewWorkoutPage() {
         </div>
 
         {/* Training Load */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
+        <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Training Load
           </label>
@@ -675,7 +686,7 @@ function NewWorkoutPage() {
         </div>
 
         {/* How was your workout - Perceived Exertion */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
+        <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="text-gray-600 dark:text-gray-300 text-lg">How was your workout?</span>
@@ -753,7 +764,7 @@ function NewWorkoutPage() {
         </div>
 
         {/* Notes */}
-        <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
+        <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Workout Notes
           </label>
@@ -787,7 +798,7 @@ function NewWorkoutPage() {
       {/* Date and time pickers now use native HTML5 inputs - no modals needed */}
 
       {/* Fixed Save Button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-b from-[#1a1a1a] to-[#232323] border-t border-dark-border p-4 safe-area-bottom">
+      <div className="fixed bottom-0 left-0 right-0 bg-dark-elevated1 border-t border-dark-border p-4 safe-area-bottom backdrop-blur-sm/40">
         <div className="max-w-md mx-auto">
           <button
             onClick={handleSaveWorkout}
@@ -833,7 +844,7 @@ function ExerciseCard({
   const [showHistory, setShowHistory] = useState(false)
 
   return (
-    <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-sm border border-dark-border p-4">
+    <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center space-x-2">
@@ -989,7 +1000,7 @@ function SetRow({
         />
         
         {activeDropdown?.exerciseId === exerciseId && activeDropdown?.setId === set.id && activeDropdown?.field === 'value1' && (
-          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-gradient-to-b from-[#1a1a1a] to-[#232323] border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
+          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-dark-elevated1 border border-dark-border rounded-lg shadow-lg z-50">
             {VALUE_TYPES.map((type) => (
               <div
                 key={type.value}
@@ -1030,7 +1041,7 @@ function SetRow({
         />
         
         {activeDropdown?.exerciseId === exerciseId && activeDropdown?.setId === set.id && activeDropdown?.field === 'value2' && (
-          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-gradient-to-b from-[#1a1a1a] to-[#232323] border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
+          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-dark-elevated1 border border-dark-border rounded-lg shadow-lg z-50">
             {VALUE_TYPES.map((type) => (
               <div
                 key={type.value}
@@ -1089,7 +1100,7 @@ function DatePickerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg w-full max-w-sm">
+      <div className="bg-dark-elevated1 rounded-lg w-full max-w-sm border border-dark-border">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-border">
           <h2 className="text-lg font-semibold text-text-primary">Select Date</h2>
@@ -1163,7 +1174,7 @@ function TimePickerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg w-full max-w-sm">
+      <div className="bg-dark-elevated1 rounded-lg w-full max-w-sm border border-dark-border">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-border">
           <h2 className="text-lg font-semibold text-text-primary">Set Duration</h2>
@@ -1300,7 +1311,7 @@ function AddExerciseModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
+      <div className="bg-dark-elevated1 rounded-lg w-full max-w-md max-h-[80vh] flex flex-col border border-dark-border">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-dark-border">
           <h2 className="text-lg font-semibold text-text-primary">Add Exercise</h2>
@@ -1490,7 +1501,7 @@ function TemplateSelectionModal({
       <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
         
-        <div className="inline-block align-bottom bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md max-h-[80vh] flex flex-col">
+        <div className="inline-block align-bottom bg-dark-elevated1 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md max-h-[80vh] flex flex-col border border-dark-border">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-dark-border">
             <h3 className="text-lg font-semibold text-text-primary">
@@ -1574,7 +1585,7 @@ function TemplateSelectionModal({
           <div className="border-t border-dark-border p-4 flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-gradient-to-b from-[#1a1a1a] to-[#232323] hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-text-secondary bg-dark-elevated0 hover:bg-dark-elevated1 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary transition-colors"
             >
               Cancel
             </button>

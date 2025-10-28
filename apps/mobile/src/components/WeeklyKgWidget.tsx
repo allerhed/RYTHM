@@ -28,11 +28,12 @@ export function WeeklyKgWidget({ selectedWeekStart }: WeeklyKgWidgetProps) {
 
   if (weeklyKgQuery.isLoading) {
     return (
-      <div className="bg-gradient-to-br from-slate-700 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-xl shadow-lg p-6">
+      /* Migration: gradient removed, using semantic elevated surface */
+      <div className="rounded-xl shadow-lg p-6 bg-dark-elevated1 border border-dark-border">
         <div className="animate-pulse">
-          <div className="h-4 bg-slate-600 rounded w-24 mb-4"></div>
-          <div className="h-10 bg-slate-600 rounded w-32 mb-2"></div>
-          <div className="h-3 bg-slate-600 rounded w-20"></div>
+          <div className="h-4 bg-dark-elevated rounded w-24 mb-4"></div>
+          <div className="h-10 bg-dark-elevated rounded w-32 mb-2"></div>
+          <div className="h-3 bg-dark-elevated rounded w-20"></div>
         </div>
       </div>
     )
@@ -40,7 +41,7 @@ export function WeeklyKgWidget({ selectedWeekStart }: WeeklyKgWidgetProps) {
 
   if (weeklyKgQuery.isError || !weeklyKgQuery.data) {
     return (
-      <div className="bg-gradient-to-br from-slate-700 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-xl shadow-lg p-6">
+      <div className="rounded-xl shadow-lg p-6 bg-dark-elevated1 border border-dark-border">
         <div className="text-center text-slate-300">
           <svg className="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -62,31 +63,31 @@ export function WeeklyKgWidget({ selectedWeekStart }: WeeklyKgWidgetProps) {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-700 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-xl shadow-lg p-6 border border-slate-600 dark:border-slate-700">
+    <div className="rounded-xl shadow-lg p-6 bg-dark-elevated1 border border-dark-border">
       {/* Header */}
       <div className="flex items-center space-x-2 mb-4">
-        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
         </svg>
-        <span className="text-sm font-medium text-slate-300">Selected Week</span>
+        <span className="text-sm font-medium text-text-secondary">Selected Week</span>
       </div>
 
       {/* Main Value */}
       <div className="mb-2">
         <div className="flex items-baseline space-x-2">
-          <span className="text-4xl font-bold text-white">
+          <span className="text-4xl font-bold text-text-primary">
             {Math.round(data.selectedWeek)}
           </span>
-          <span className="text-lg text-slate-300">Kg</span>
+          <span className="text-lg text-text-secondary">Kg</span>
         </div>
-        <div className="text-xs text-slate-400 mt-1">Selected week</div>
+        <div className="text-xs text-text-tertiary mt-1">Selected week</div>
       </div>
 
       {/* Comparison */}
       <div className="flex items-center justify-between pt-4 border-t border-slate-600">
         <div>
-          <div className="text-sm font-medium text-slate-400">Previous Week</div>
-          <div className="text-lg font-semibold text-slate-200">
+          <div className="text-sm font-medium text-text-secondary">Previous Week</div>
+          <div className="text-lg font-semibold text-text-primary">
             {Math.round(data.previousWeek)} Kg
           </div>
         </div>

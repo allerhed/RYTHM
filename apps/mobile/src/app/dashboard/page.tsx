@@ -1,3 +1,13 @@
+/**
+ * DashboardPage (Mobile)
+ * Purpose: Provide user overview (week navigation, today's workouts, recent activity, profile) with semantic styling.
+ * Migration: Removed gradient backgrounds, replaced with .bg-dark-elevated* and semantic text/util classes.
+ * Acceptance:
+ * - No bg-gradient-to-* classes.
+ * - Cards use .bg-dark-elevated1 + border-dark-border.
+ * - Interactive circles/buttons use .icon-accent or semantic button variants.
+ * - Delete confirmation modal mirrors semantic modal style.
+ */
 'use client'
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -32,7 +42,7 @@ interface CardProps {
 
 function Card({ children, className = '' }: CardProps) {
   return (
-    <div className={`bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-card border border-dark-border hover:border-orange-primary/20 transition-colors ${className}`}>
+    <div className={`bg-dark-elevated1 rounded-lg shadow-card border border-dark-border hover:border-orange-accent/40 transition-colors ${className}`}>
       {children}
     </div>
   )
@@ -410,7 +420,7 @@ function DashboardPage() {
           <div className="flex items-center space-x-3">
             <button
               onClick={() => router.push('/training/history')}
-              className="p-2 rounded-full hover:bg-gradient-to-b from-[#1a1a1a] to-[#232323] transition-colors"
+              className="p-2 rounded-full hover:bg-dark-elevated1 transition-colors"
               title="Workout History"
             >
               <svg className="w-5 h-5 text-orange-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -448,7 +458,7 @@ function DashboardPage() {
 
           {/* Week Navigation */}
           <div className="flex items-center justify-center mb-6">
-            <div className="flex items-center space-x-4 bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg p-3 shadow-card border border-dark-border">
+            <div className="flex items-center space-x-4 bg-dark-elevated1 rounded-lg p-3 shadow-card border border-dark-border">
               <button 
                 onClick={navigateToPreviousWeek}
                 className="text-text-secondary hover:text-orange-primary transition-colors"
@@ -515,7 +525,7 @@ function DashboardPage() {
                           ? 'bg-white text-gray-900 ring-2 ring-orange-primary shadow-md' 
                           : isSelected
                           ? 'bg-orange-primary text-white' 
-                          : 'bg-dark-elevated text-text-secondary hover:bg-gradient-to-b from-[#1a1a1a] to-[#232323]'
+                          : 'bg-dark-elevated text-text-secondary hover:bg-dark-elevated1'
                       }`}
                       title={item.label}
                     >
@@ -562,13 +572,13 @@ function DashboardPage() {
                 </h3>
                 
                 {loading ? (
-                  <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+                  <div className="bg-dark-elevated0 p-6 rounded-lg">
                     <div className="text-center text-gray-500 dark:text-gray-400">Loading workouts...</div>
                   </div>
                 ) : todaysWorkouts.length > 0 ? (
                   <div className="space-y-3">
                     {todaysWorkouts.map((workout: any) => (
-                      <div key={workout.id} className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] border border-dark-border rounded-xl p-4 shadow-lg">
+                      <div key={workout.id} className="bg-dark-elevated1 border border-dark-border rounded-xl p-4 shadow-lg">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center space-x-3">
                             <div className="w-12 h-12 bg-orange-primary/10 rounded-full flex items-center justify-center">
@@ -687,7 +697,7 @@ function DashboardPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] p-8 rounded-xl text-center border-2 border-dashed border-dark-border">
+                  <div className="bg-dark-elevated1 p-8 rounded-xl text-center border-2 border-dashed border-dark-border">
                     <button 
                       onClick={() => router.push('/training/new')}
                       className="w-16 h-16 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors cursor-pointer"
@@ -849,8 +859,8 @@ function DashboardPage() {
                   </div>
                 ))
               ) : (
-                <div className="flex justify-center py-4">
-                  <div className="text-caption text-gray-500 dark:text-gray-400">
+                    <div className="flex justify-center py-4">
+                  <div className="text-caption text-text-secondary">
                     No recent activity. Start your first workout!
                   </div>
                 </div>
@@ -931,7 +941,7 @@ function DashboardPage() {
           </Card>
 
           {/* Development notice */}
-          <Card className="p-6 border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20">
+          <Card className="p-6">
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
                 <span className="text-primary-600 dark:text-primary-400 text-lg">🚧</span>
@@ -953,7 +963,7 @@ function DashboardPage() {
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow-xl max-w-sm w-full p-6">
+          <div className="bg-dark-elevated1 rounded-lg shadow-xl max-w-sm w-full p-6 border border-dark-border">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mr-3">
                 <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
