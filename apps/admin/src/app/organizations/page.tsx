@@ -176,7 +176,7 @@ export default function OrganizationsPage() {
           </div>
           <button 
             onClick={handleCreateOrganization}
-            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg"
+            className="btn-primary px-4 py-2 rounded-lg text-sm font-medium"
           >
             Add Organization
           </button>
@@ -218,7 +218,7 @@ export default function OrganizationsPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6 animate-pulse">
+              <div key={i} className="rounded-2xl bg-dark-elevated1 shadow-xl border border-dark-border p-6 animate-pulse">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
                     <div className="h-12 w-12 rounded-xl bg-gray-700"></div>
@@ -242,10 +242,10 @@ export default function OrganizationsPage() {
             {organizations.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {organizations.map((org) => (
-                  <div key={org.tenant_id} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
+                  <div key={org.tenant_id} className="rounded-2xl bg-dark-elevated1 shadow-xl border border-dark-border p-6 hover:shadow-2xl transition-all duration-300">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
+                        <div className="h-12 w-12 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center shadow-lg icon-accent">
                           <span className="text-lg font-bold text-white">
                             {getOrgIcon(org.name)}
                           </span>
@@ -285,19 +285,19 @@ export default function OrganizationsPage() {
                       <div className="flex space-x-3">
                         <button 
                           onClick={() => router.push(`/organizations/${org.tenant_id}`)}
-                          className="flex-1 px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white transition-colors duration-200 text-sm"
+                          className="flex-1 btn-secondary text-sm"
                         >
                           View Details
                         </button>
                         <button 
                           onClick={() => handleEditOrganization(org)}
-                          className="flex-1 px-3 py-2 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-sm"
+                          className="flex-1 btn-primary text-sm"
                         >
                           Edit
                         </button>
                         <button 
                           onClick={() => handleDeleteOrganization(org)}
-                          className="px-3 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-colors duration-200 text-sm"
+                          className="btn-danger text-sm"
                         >
                           Delete
                         </button>
@@ -319,7 +319,7 @@ export default function OrganizationsPage() {
                 </p>
                 <button 
                   onClick={handleCreateOrganization}
-                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg"
+                  className="btn-primary px-4 py-2 rounded-lg text-sm font-medium"
                 >
                   Create Organization
                 </button>
@@ -358,7 +358,7 @@ export default function OrganizationsPage() {
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-dark-border p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -368,7 +368,7 @@ export default function OrganizationsPage() {
                   {totalCount}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg">
+              <div className="p-3 rounded-xl icon-accent bg-primary/20 border border-primary/30">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-6m-9 0H3m2 0h6M9 7h6m-6 4h6m-6 4h6" />
                 </svg>
@@ -376,7 +376,7 @@ export default function OrganizationsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-dark-border p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -386,7 +386,7 @@ export default function OrganizationsPage() {
                   {activeOrgs}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+              <div className="p-3 rounded-xl icon-accent bg-primary/20 border border-primary/30">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -394,7 +394,7 @@ export default function OrganizationsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-dark-border p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -404,7 +404,7 @@ export default function OrganizationsPage() {
                   {inactiveOrgs}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 shadow-lg">
+              <div className="p-3 rounded-xl icon-accent bg-primary/20 border border-primary/30">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -412,7 +412,7 @@ export default function OrganizationsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-dark-border p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
@@ -422,7 +422,7 @@ export default function OrganizationsPage() {
                   {totalUsers.toLocaleString()}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
+              <div className="p-3 rounded-xl icon-accent bg-primary/20 border border-primary/30">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                 </svg>
