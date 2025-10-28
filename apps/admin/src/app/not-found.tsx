@@ -55,7 +55,7 @@ export default function NotFound() {
               <div className="text-gray-400">Error Code</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-400">∞</div>
+              <div className="text-2xl font-bold text-orange-400">∞</div>
               <div className="text-gray-400">Rarity Level</div>
             </div>
             <div className="text-center">

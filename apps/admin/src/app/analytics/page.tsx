@@ -125,7 +125,7 @@ export default function AnalyticsPage() {
                 onClick={() => setTimeRange(range)}
                 className={`px-3 py-1 text-xs rounded-lg border transition-colors ${
                   timeRange === range
-                    ? 'bg-orange-500/20 text-blue-400 border-blue-500/30'
+                    ? 'bg-orange-500/20 text-orange-400 border-orange-500/30'
                     : 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600'
                 }`}
               >
@@ -257,13 +257,13 @@ export default function AnalyticsPage() {
               <p className="text-gray-400 text-lg mb-4">Total Workouts Completed</p>
               <div className="grid grid-cols-2 gap-4 w-full">
                 <div className="text-center p-3 bg-gray-700/50 rounded-lg">
-                  <p className="text-2xl font-bold text-blue-400">
+                  <p className="text-2xl font-bold text-orange-400">
                     {performanceMetrics ? formatNumber(performanceMetrics.sessions24h) : '0'}
                   </p>
                   <p className="text-gray-500 text-sm">Last 24 Hours</p>
                 </div>
                 <div className="text-center p-3 bg-gray-700/50 rounded-lg">
-                  <p className="text-2xl font-bold text-purple-400">
+                  <p className="text-2xl font-bold text-orange-400">
                     {dashboard ? formatNumber(dashboard.totalSessions.value) : '0'}
                   </p>
                   <p className="text-gray-500 text-sm">This Period</p>
@@ -285,7 +285,7 @@ export default function AnalyticsPage() {
                   strength: { color: 'bg-orange-500', icon: '💪', gradient: 'from-orange-500 to-orange-600' },
                   cardio: { color: 'bg-red-500', icon: '❤️', gradient: 'from-red-500 to-red-600' },
                   hybrid: { color: 'bg-orange-500', icon: '⚡', gradient: 'from-orange-500 to-orange-600' }
-                }[category.category] || { color: 'bg-gray-500', icon: '🏋️', gradient: 'from-gray-500 to-gray-600' };
+                }[category.category] || { color: 'bg-dark-elevated0', icon: '🏋️', gradient: 'from-gray-500 to-gray-600' };
 
                 return (
                   <div key={category.category} className="space-y-2">
@@ -578,7 +578,7 @@ export default function AnalyticsPage() {
                           index === 0 ? 'bg-orange-500' :
                           index === 1 ? 'bg-orange-500' :
                           index === 2 ? 'bg-green-500' :
-                          index === 3 ? 'bg-orange-500' : 'bg-gray-500'
+                          index === 3 ? 'bg-orange-500' : 'bg-dark-elevated0'
                         }`} />
                         <span className="text-gray-300 capitalize">{group.muscle_group}</span>
                       </div>

@@ -272,7 +272,7 @@ function DashboardPage() {
             {equipmentStats && (
               <div className="flex items-start space-x-3 p-3 rounded-lg bg-gray-700/50 border border-gray-600/50">
                 <div className="flex-shrink-0">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-200">
@@ -286,7 +286,7 @@ function DashboardPage() {
             {exerciseTemplateStats && (
               <div className="flex items-start space-x-3 p-3 rounded-lg bg-gray-700/50 border border-gray-600/50">
                 <div className="flex-shrink-0">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-200">

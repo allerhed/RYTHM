@@ -2,12 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dark Theme with Orange Accent */
+:root {
+  /* Dark theme colors */
+  --dark-primary: #0F0F0F;
+  --dark-secondary: #1A1A1A;
+  --dark-card: #232323;
+  --dark-border: #2A2A2A;
+  --dark-elevated: #2D2D2D;
+  
+  /* Orange accent */
+  --orange-primary: #FF8C42;
+  --orange-hover: #FF9D5C;
+  --orange-dark: #E67A30;
+  --orange-light: #FFB47A;
+  
+  /* Text colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --text-tertiary: #666666;
+}
+
 @layer base {
   html {
     @apply h-full;
   }
   body {
-    @apply h-full font-sans antialiased;
+    @apply h-full font-sans antialiased bg-dark-primary text-white;
   }
   
   /* Comprehensive fix for dropdown positioning issues */
@@ -121,11 +142,11 @@
   }
   
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+    @apply bg-orange-600 text-white hover:bg-orange-700 focus:ring-orange-500;
   }
   
   .btn-secondary {
-    @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+    @apply bg-dark-elevated text-white hover:bg-dark-card focus:ring-orange-500;
   }
   
   .btn-danger {
@@ -133,23 +154,23 @@
   }
   
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700;
+    @apply bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg shadow border border-dark-border;
   }
   
   .input {
-    @apply block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm;
+    @apply block w-full rounded-md border-dark-border bg-dark-elevated text-white shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm;
   }
   
   .table {
-    @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
+    @apply min-w-full divide-y divide-dark-border;
   }
   
   .table-header {
-    @apply bg-gray-50 dark:bg-gray-800;
+    @apply bg-dark-card;
   }
   
   .table-cell {
-    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100;
+    @apply px-6 py-4 whitespace-nowrap text-sm text-white;
   }
   
   /* Fix for dropdown positioning issues */

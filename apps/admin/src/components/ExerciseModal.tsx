@@ -184,7 +184,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
               type="text"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 placeholder-gray-400 transition-colors duration-200 ${
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-gray-100 placeholder-gray-400 transition-colors duration-200 ${
                 errors.name ? 'border-red-500' : 'border-gray-600'
               }`}
               placeholder="Enter exercise template name"
@@ -205,7 +205,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
                   onClick={() => setFormData(prev => ({ ...prev, exercise_type: type.value as 'STRENGTH' | 'CARDIO' }))}
                   className={`px-4 py-3 border rounded-lg font-medium transition-all duration-200 ${
                     formData.exercise_type === type.value
-                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-blue-500 shadow-lg'
+                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-orange-500 shadow-lg'
                       : 'border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700 hover:border-gray-500'
                   }`}
                   disabled={isLoading}
@@ -224,7 +224,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
             <select
               value={formData.exercise_category}
               onChange={(e) => setFormData(prev => ({ ...prev, exercise_category: e.target.value }))}
-              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-gray-100 transition-colors duration-200"
             >
               {EXERCISE_CATEGORIES.map(category => (
                 <option key={category} value={category} className="bg-gray-700 text-gray-100">
@@ -246,7 +246,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
                     type="checkbox"
                     checked={formData.muscle_groups.includes(muscleGroup)}
                     onChange={() => handleMuscleGroupToggle(muscleGroup)}
-                    className="rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-2 bg-gray-700"
+                    className="rounded border-gray-500 text-orange-600 focus:ring-orange-500 focus:ring-2 bg-gray-700"
                     disabled={isLoading}
                   />
                   <span className="text-gray-300 capitalize">
@@ -275,7 +275,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
                   equipment: selectedEquipment?.name || ''
                 }))
               }}
-              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-gray-100 transition-colors duration-200"
               disabled={loadingEquipment || isLoading}
             >
               <option value="" className="bg-gray-700 text-gray-100">Select equipment (optional)</option>
@@ -308,7 +308,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
                   ...prev, 
                   default_value_1_type: e.target.value 
                 }))}
-                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-gray-100 transition-colors duration-200"
                 disabled={isLoading}
               >
                 {VALUE_TYPES.map(type => (
@@ -328,7 +328,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
                   ...prev, 
                   default_value_2_type: e.target.value 
                 }))}
-                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 transition-colors duration-200"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-gray-100 transition-colors duration-200"
                 disabled={isLoading}
               >
                 {VALUE_TYPES.map(type => (
@@ -349,7 +349,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={3}
-              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 placeholder-gray-400 resize-none transition-colors duration-200"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-gray-100 placeholder-gray-400 resize-none transition-colors duration-200"
               placeholder="Brief description of the exercise"
               disabled={isLoading}
             />
@@ -364,7 +364,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
               value={formData.instructions}
               onChange={(e) => setFormData(prev => ({ ...prev, instructions: e.target.value }))}
               rows={4}
-              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-100 placeholder-gray-400 resize-none transition-colors duration-200"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-gray-100 placeholder-gray-400 resize-none transition-colors duration-200"
               placeholder="Detailed instructions on how to perform the exercise"
               disabled={isLoading}
             />
@@ -383,7 +383,7 @@ export function ExerciseModal({ exerciseTemplate, onSave, onClose }: ExerciseMod
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg transition-all duration-200 flex items-center space-x-2"
+              className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg transition-all duration-200 flex items-center space-x-2"
             >
               {isLoading ? (
                 <>

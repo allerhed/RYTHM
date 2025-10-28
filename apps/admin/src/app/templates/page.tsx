@@ -137,13 +137,13 @@ interface TemplateFormData {
 
 
 const CATEGORY_COLORS = {
-  strength: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  strength: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
   cardio: 'bg-green-500/20 text-green-400 border-green-500/30',
-  hybrid: 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+  hybrid: 'bg-orange-500/20 text-orange-400 border-orange-500/30'
 }
 
 const SCOPE_COLORS = {
-  user: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+  user: 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30',
   tenant: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
   system: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
 }
@@ -228,7 +228,7 @@ function SortableExerciseItem({
               value={exercise.name}
               onChange={(e) => updateExercise(index, { ...exercise, name: e.target.value })}
               placeholder="e.g., Bench Press"
-              className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-orange-500 focus:ring-orange-500"
             />
           </div>
         </div>
@@ -274,7 +274,7 @@ function SortableExerciseItem({
           <select
             value={exercise.category}
             onChange={(e) => updateExercise(index, { ...exercise, category: e.target.value as any })}
-            className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+            className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-orange-500 focus:ring-orange-500"
           >
             <option value="strength">Strength</option>
             <option value="cardio">Cardio</option>
@@ -293,7 +293,7 @@ function SortableExerciseItem({
             placeholder="3"
             min="1"
             max="20"
-            className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-blue-500 focus:ring-blue-500"
+            className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:border-orange-500 focus:ring-orange-500"
           />
         </div>
       </div>
@@ -315,7 +315,7 @@ function SortableExerciseItem({
                 value_1_type: e.target.value as SetValueType || undefined,
                 value_1_default: e.target.value ? exercise.value_1_default || '' : undefined
               })}
-              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-orange-500 focus:ring-orange-500"
             >
               <option value="">None</option>
               {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
@@ -333,7 +333,7 @@ function SortableExerciseItem({
               onChange={(e) => updateExercise(index, { ...exercise, value_1_default: e.target.value })}
               placeholder={exercise.value_1_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_1_type] : 'Select type first'}
               disabled={!exercise.value_1_type}
-              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
         </div>
@@ -351,7 +351,7 @@ function SortableExerciseItem({
                 value_2_type: e.target.value as SetValueType || undefined,
                 value_2_default: e.target.value ? exercise.value_2_default || '' : undefined
               })}
-              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-orange-500 focus:ring-orange-500"
             >
               <option value="">None</option>
               {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
@@ -369,7 +369,7 @@ function SortableExerciseItem({
               onChange={(e) => updateExercise(index, { ...exercise, value_2_default: e.target.value })}
               placeholder={exercise.value_2_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_2_type] : 'Select type first'}
               disabled={!exercise.value_2_type}
-              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="block w-full h-9 px-2 rounded-lg border-gray-600 bg-gray-700 text-white text-xs focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
         </div>
@@ -391,7 +391,7 @@ function SortableExerciseItem({
                   value_2_type: combo.value_2_type || undefined,
                   value_2_default: combo.value_2_type === 'reps' ? '8-10' : combo.value_2_type === 'distance_m' ? '1000' : undefined,
                 })}
-                className="text-xs px-2 py-1 bg-blue-900 text-blue-200 rounded-md hover:bg-blue-800 transition-colors"
+                className="text-xs px-2 py-1 bg-orange-900 text-blue-200 rounded-md hover:bg-blue-800 transition-colors"
               >
                 {combo.label}
               </button>
@@ -1057,7 +1057,7 @@ function AdminTemplatesPage() {
           {(['org_admin', 'tenant_admin', 'system_admin'].includes(user.role)) && (
             <button
               onClick={handleCreateTemplate}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
+              className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg"
             >
               <PlusIcon className="w-4 h-4 mr-2 inline" />
               Create New Template
@@ -1119,14 +1119,14 @@ function AdminTemplatesPage() {
               placeholder="Search templates..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full rounded-lg border-gray-600 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-lg border-gray-600 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-white placeholder-gray-400 focus:border-orange-500 focus:ring-orange-500"
             />
           </div>
           <div>
             <select
               value={selectedScope}
               onChange={(e) => setSelectedScope(e.target.value as any)}
-              className="block w-full rounded-lg border-gray-600 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-white focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-lg border-gray-600 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-white focus:border-orange-500 focus:ring-orange-500"
             >
               <option value="all">All Scopes</option>
               <option value="user">Personal Templates</option>
@@ -1139,7 +1139,7 @@ function AdminTemplatesPage() {
         {/* Content */}
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
           </div>
         ) : error ? (
           <div className="text-center py-12">
@@ -1172,7 +1172,7 @@ function AdminTemplatesPage() {
               <div className="mt-6">
                 <button
                   onClick={handleCreateTemplate}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700"
                 >
                   <PlusIcon className="w-4 h-4 mr-2" />
                   Create Template
@@ -1186,7 +1186,7 @@ function AdminTemplatesPage() {
               <div key={template.template_id} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg text-white">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg text-white">
                       {getTemplateIcon(template.scope)}
                     </div>
                     <div>
@@ -1236,7 +1236,7 @@ function AdminTemplatesPage() {
                     {(template.scope !== 'user' || ['org_admin', 'system_admin'].includes(user.role)) && (
                       <button
                         onClick={() => handleEditTemplate(template)}
-                        className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors duration-200 text-sm"
+                        className="flex-1 px-3 py-2 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-sm"
                       >
                         Edit
                       </button>
@@ -1261,7 +1261,7 @@ function AdminTemplatesPage() {
         {showCreateModal && (
           <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
-              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowCreateModal(false)} />
+              <div className="fixed inset-0 bg-dark-elevated0 bg-opacity-75 transition-opacity" onClick={() => setShowCreateModal(false)} />
               
               <div className="relative bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-4xl w-full max-h-[90vh] flex flex-col">
                 {/* Modal Header */}
@@ -1293,7 +1293,7 @@ function AdminTemplatesPage() {
                           value={formData.name}
                           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                           placeholder="Enter template name"
-                          className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                          className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:border-orange-500 focus:ring-orange-500"
                         />
                       </div>
 
@@ -1307,7 +1307,7 @@ function AdminTemplatesPage() {
                             console.log('🔄 Scope changed:', e.target.value);
                             setFormData(prev => ({ ...prev, scope: e.target.value as 'user' | 'tenant' | 'system' }));
                           }}
-                          className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white focus:border-blue-500 focus:ring-blue-500"
+                          className="block w-full h-10 px-3 rounded-lg border-gray-600 bg-gray-700 text-white focus:border-orange-500 focus:ring-orange-500"
                         >
                           <option value="user">User</option>
                           <option value="tenant">Organization</option>
@@ -1325,7 +1325,7 @@ function AdminTemplatesPage() {
                         onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                         placeholder="Describe this template"
                         rows={3}
-                        className="block w-full px-3 py-2 rounded-lg border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                        className="block w-full px-3 py-2 rounded-lg border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:border-orange-500 focus:ring-orange-500"
                       />
                     </div>
 
@@ -1337,7 +1337,7 @@ function AdminTemplatesPage() {
                         </h4>
                         <button
                           onClick={() => setShowExerciseModal(true)}
-                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors border border-blue-500/30"
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-orange-400 hover:text-orange-300 hover:bg-orange-900/20 rounded-lg transition-colors border border-orange-500/30"
                         >
                           <PlusIcon className="w-4 h-4 mr-1" />
                           Add Exercise
@@ -1354,7 +1354,7 @@ function AdminTemplatesPage() {
                           <div className="mt-4">
                             <button
                               onClick={() => setShowExerciseModal(true)}
-                              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-lg transition-colors"
                             >
                               <PlusIcon className="w-4 h-4 mr-2" />
                               Add First Exercise
@@ -1387,14 +1387,14 @@ function AdminTemplatesPage() {
                 <div className="bg-gray-700 px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 flex-shrink-0">
                   <button
                     onClick={() => setShowCreateModal(false)}
-                    className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-600 text-sm font-medium text-gray-300 bg-gradient-to-b from-[#1a1a1a] to-[#232323] hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                    className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-600 text-sm font-medium text-gray-300 bg-gradient-to-b from-[#1a1a1a] to-[#232323] hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmitTemplate}
                     disabled={!formData.name.trim()}
-                    className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-transparent text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-transparent text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <CheckIcon className="w-4 h-4 mr-2" />
                     {editingTemplate ? 'Update Template' : 'Create Template'}
@@ -1409,7 +1409,7 @@ function AdminTemplatesPage() {
         {viewingTemplate && (
           <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
-              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setViewingTemplate(null)} />
+              <div className="fixed inset-0 bg-dark-elevated0 bg-opacity-75 transition-opacity" onClick={() => setViewingTemplate(null)} />
               
               <div className="relative bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-2xl w-full">
                 <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -1473,7 +1473,7 @@ function AdminTemplatesPage() {
                 <div className="bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                   <button
                     onClick={() => setViewingTemplate(null)}
-                    className="w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:text-sm"
+                    className="w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 sm:w-auto sm:text-sm"
                   >
                     Close
                   </button>
@@ -1487,7 +1487,7 @@ function AdminTemplatesPage() {
         {showDeleteModal && (
           <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
-              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => !isDeleting && setShowDeleteModal(null)} />
+              <div className="fixed inset-0 bg-dark-elevated0 bg-opacity-75 transition-opacity" onClick={() => !isDeleting && setShowDeleteModal(null)} />
               
               <div className="relative bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
                 <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -1526,7 +1526,7 @@ function AdminTemplatesPage() {
                       setDeleteError(null)
                     }}
                     disabled={isDeleting}
-                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gradient-to-b from-[#1a1a1a] to-[#232323] text-base font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>

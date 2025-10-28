@@ -66,7 +66,7 @@ export default function WorkoutsPage() {
       case 'Advanced':
         return 'bg-red-500/20 text-red-400 border-red-500/30'
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
     }
   }
 
@@ -75,9 +75,9 @@ export default function WorkoutsPage() {
       case 'completed':
         return 'bg-green-500/20 text-green-400 border-green-500/30'
       case 'in-progress':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
     }
   }
 
@@ -120,7 +120,7 @@ export default function WorkoutsPage() {
             <div className="text-gray-400 mb-4">{error}</div>
             <button 
               onClick={fetchData}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
             >
               Try Again
             </button>
@@ -199,7 +199,7 @@ export default function WorkoutsPage() {
         {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
             <span className="ml-3 text-gray-400">Loading workouts...</span>
           </div>
         )}
@@ -211,7 +211,7 @@ export default function WorkoutsPage() {
               <div key={workout.id} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg text-white">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg text-white">
                       {getWorkoutIcon(workout.type)}
                     </div>
                     <div>
@@ -262,7 +262,7 @@ export default function WorkoutsPage() {
                 <div className="mt-6 pt-4 border-t border-gray-700">
                   <button 
                     onClick={() => handleViewDetails(workout)}
-                    className="w-full px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 text-sm shadow-lg"
+                    className="w-full px-3 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 text-sm shadow-lg"
                   >
                     View Details
                   </button>

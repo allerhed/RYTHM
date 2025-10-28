@@ -55,7 +55,7 @@ export function UsageTrendsChart({ timeRange, className }: UsageTrendsChartProps
   if (loading) {
     return (
       <div className={`h-64 flex items-center justify-center bg-gray-700/50 rounded-lg ${className}`}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
       </div>
     )
   }

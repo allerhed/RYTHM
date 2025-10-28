@@ -99,7 +99,7 @@ export default function OrganizationsPage() {
   const getStatusBadge = (org: Organization) => {
     // Determine status based on activity and user count
     if (!org.last_activity) {
-      return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+      return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
     }
     
     const lastActivity = new Date(org.last_activity)
@@ -176,7 +176,7 @@ export default function OrganizationsPage() {
           </div>
           <button 
             onClick={handleCreateOrganization}
-            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
+            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg"
           >
             Add Organization
           </button>
@@ -190,7 +190,7 @@ export default function OrganizationsPage() {
               placeholder="Search organizations..."
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
-              className="dropdown-fix w-full px-4 py-2 rounded-xl bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+              className="dropdown-fix w-full px-4 py-2 rounded-xl bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors duration-200"
             />
           </div>
           {searchTerm && (
@@ -245,7 +245,7 @@ export default function OrganizationsPage() {
                   <div key={org.tenant_id} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                        <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
                           <span className="text-lg font-bold text-white">
                             {getOrgIcon(org.name)}
                           </span>
@@ -291,7 +291,7 @@ export default function OrganizationsPage() {
                         </button>
                         <button 
                           onClick={() => handleEditOrganization(org)}
-                          className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors duration-200 text-sm"
+                          className="flex-1 px-3 py-2 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-sm"
                         >
                           Edit
                         </button>
@@ -319,7 +319,7 @@ export default function OrganizationsPage() {
                 </p>
                 <button 
                   onClick={handleCreateOrganization}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
+                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg"
                 >
                   Create Organization
                 </button>
@@ -418,7 +418,7 @@ export default function OrganizationsPage() {
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
                   Total Users
                 </p>
-                <p className="mt-2 text-3xl font-bold text-purple-400">
+                <p className="mt-2 text-3xl font-bold text-orange-400">
                   {totalUsers.toLocaleString()}
                 </p>
               </div>

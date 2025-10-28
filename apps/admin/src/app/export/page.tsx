@@ -402,14 +402,14 @@ function ExportPage() {
           
           {/* Feature Overview */}
           <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+            <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
               <div className="flex items-center space-x-2">
-                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
-                <span className="text-blue-400 font-medium text-sm">Multi-Format Support</span>
+                <span className="text-orange-400 font-medium text-sm">Multi-Format Support</span>
               </div>
-              <p className="text-blue-300 text-xs mt-1">JSON, SQL, and CSV export formats</p>
+              <p className="text-orange-300 text-xs mt-1">JSON, SQL, and CSV export formats</p>
             </div>
             <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
               <div className="flex items-center space-x-2">
@@ -420,14 +420,14 @@ function ExportPage() {
               </div>
               <p className="text-green-300 text-xs mt-1">Validation, backups, and rollback</p>
             </div>
-            <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+            <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
               <div className="flex items-center space-x-2">
-                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                <span className="text-purple-400 font-medium text-sm">Production Ready</span>
+                <span className="text-orange-400 font-medium text-sm">Production Ready</span>
               </div>
-              <p className="text-purple-300 text-xs mt-1">Enterprise-grade data management</p>
+              <p className="text-orange-300 text-xs mt-1">Enterprise-grade data management</p>
             </div>
           </div>
         </div>
@@ -439,7 +439,7 @@ function ExportPage() {
               onClick={() => setActiveTab('export')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'export'
-                  ? 'border-blue-500 text-blue-500'
+                  ? 'border-orange-500 text-orange-500'
                   : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
               }`}
             >
@@ -449,7 +449,7 @@ function ExportPage() {
               onClick={() => setActiveTab('import')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'import'
-                  ? 'border-blue-500 text-blue-500'
+                  ? 'border-orange-500 text-orange-500'
                   : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
               }`}
             >
@@ -459,7 +459,7 @@ function ExportPage() {
               onClick={() => setActiveTab('backups')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'backups'
-                  ? 'border-blue-500 text-blue-500'
+                  ? 'border-orange-500 text-orange-500'
                   : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
               }`}
             >
@@ -492,7 +492,7 @@ function ExportPage() {
                           key={type.value}
                           className={`p-4 rounded-lg border cursor-pointer transition-all ${
                             exportType === type.value
-                              ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                              ? 'border-orange-500 bg-orange-500/10 text-orange-400'
                               : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-gray-500'
                           }`}
                           onClick={() => setExportType(type.value as any)}
@@ -513,7 +513,7 @@ function ExportPage() {
                       <select
                         value={selectedTenant}
                         onChange={(e) => setSelectedTenant(e.target.value)}
-                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                         disabled={fetchingTenants}
                       >
                         <option value="">
@@ -543,7 +543,7 @@ function ExportPage() {
                           key={format.value}
                           className={`flex-1 p-3 rounded-lg border cursor-pointer transition-all ${
                             exportFormat === format.value
-                              ? 'border-blue-500 bg-blue-500/10'
+                              ? 'border-orange-500 bg-orange-500/10'
                               : 'border-gray-600 bg-gray-700/50 hover:border-gray-500'
                           }`}
                         >
@@ -576,7 +576,7 @@ function ExportPage() {
                             type="checkbox"
                             checked={includeUsers}
                             onChange={(e) => setIncludeUsers(e.target.checked)}
-                            className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+                            className="rounded border-gray-600 bg-gray-700 text-orange-500 focus:ring-orange-500"
                           />
                           <span className="ml-2 text-sm text-gray-300">User accounts and profiles</span>
                         </label>
@@ -585,7 +585,7 @@ function ExportPage() {
                             type="checkbox"
                             checked={includeWorkouts}
                             onChange={(e) => setIncludeWorkouts(e.target.checked)}
-                            className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+                            className="rounded border-gray-600 bg-gray-700 text-orange-500 focus:ring-orange-500"
                           />
                           <span className="ml-2 text-sm text-gray-300">Workout sessions and data</span>
                         </label>
@@ -606,7 +606,7 @@ function ExportPage() {
                             type="date"
                             value={dateRange.start}
                             onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                           />
                         </div>
                         <div>
@@ -615,7 +615,7 @@ function ExportPage() {
                             type="date"
                             value={dateRange.end}
                             onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                           />
                         </div>
                       </div>
@@ -627,7 +627,7 @@ function ExportPage() {
                     <button
                       onClick={() => handleExport()}
                       disabled={loading || (exportType === 'tenant' && !selectedTenant)}
-                      className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 shadow-lg"
+                      className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 shadow-lg"
                     >
                       {loading ? 'Starting Export...' : 'Start Export'}
                     </button>
@@ -659,7 +659,7 @@ function ExportPage() {
                           <div className="flex items-center space-x-2">
                             <div className={`w-2 h-2 rounded-full ${
                               job.status === 'completed' ? 'bg-green-400' :
-                              job.status === 'running' ? 'bg-blue-400 animate-pulse' :
+                              job.status === 'running' ? 'bg-orange-400 animate-pulse' :
                               job.status === 'failed' ? 'bg-red-400' :
                               'bg-gray-400'
                             }`} />
@@ -669,9 +669,9 @@ function ExportPage() {
                           </div>
                           <span className={`text-xs px-2 py-1 rounded-full ${
                             job.status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                            job.status === 'running' ? 'bg-blue-500/20 text-blue-400' :
+                            job.status === 'running' ? 'bg-orange-500/20 text-orange-400' :
                             job.status === 'failed' ? 'bg-red-500/20 text-red-400' :
-                            'bg-gray-500/20 text-gray-400'
+                            'bg-dark-elevated0/20 text-gray-400'
                           }`}>
                             {job.status}
                           </span>
@@ -685,7 +685,7 @@ function ExportPage() {
                             </div>
                             <div className="w-full bg-gray-600 rounded-full h-2">
                               <div 
-                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                className="bg-orange-500 h-2 rounded-full transition-all duration-300"
                                 style={{ width: `${job.progress}%` }}
                               />
                             </div>
@@ -704,7 +704,7 @@ function ExportPage() {
                         {job.downloadUrl && job.exportData && (
                           <button 
                             onClick={() => downloadExport(job, job.exportData)}
-                            className="mt-2 text-xs text-blue-400 hover:text-blue-300 underline flex items-center space-x-1"
+                            className="mt-2 text-xs text-orange-400 hover:text-orange-300 underline flex items-center space-x-1"
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -800,7 +800,7 @@ function ExportPage() {
                 />
                 <label
                   htmlFor="file-upload"
-                  className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                 >
                   Choose File
                 </label>
@@ -815,7 +815,7 @@ function ExportPage() {
                   <select 
                     value={importStrategy}
                     onChange={(e) => setImportStrategy(e.target.value as 'replace' | 'merge' | 'skip-existing')}
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   >
                     <option value="merge">Merge with existing data</option>
                     <option value="replace">Replace existing data</option>
@@ -829,7 +829,7 @@ function ExportPage() {
                       type="checkbox"
                       checked={validateReferences}
                       onChange={(e) => setValidateReferences(e.target.checked)}
-                      className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+                      className="rounded border-gray-600 bg-gray-700 text-orange-500 focus:ring-orange-500"
                     />
                     <span className="ml-2 text-sm text-gray-300">Validate data before import</span>
                   </label>
@@ -838,7 +838,7 @@ function ExportPage() {
                       type="checkbox"
                       checked={createBackup}
                       onChange={(e) => setCreateBackup(e.target.checked)}
-                      className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+                      className="rounded border-gray-600 bg-gray-700 text-orange-500 focus:ring-orange-500"
                     />
                     <span className="ml-2 text-sm text-gray-300">Create backup before import</span>
                   </label>
@@ -847,7 +847,7 @@ function ExportPage() {
                       type="checkbox"
                       checked={dryRun}
                       onChange={(e) => setDryRun(e.target.checked)}
-                      className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+                      className="rounded border-gray-600 bg-gray-700 text-orange-500 focus:ring-orange-500"
                     />
                     <span className="ml-2 text-sm text-gray-300">Dry run (preview only)</span>
                   </label>
@@ -877,7 +877,7 @@ function ExportPage() {
                           <div className={`w-3 h-3 rounded-full ${
                             job.status === 'completed' ? 'bg-green-400' :
                             job.status === 'failed' ? 'bg-red-400' :
-                            'bg-blue-400 animate-pulse'
+                            'bg-orange-400 animate-pulse'
                           }`} />
                           <span className="text-white font-medium text-sm">{job.fileName}</span>
                           <span className="text-xs text-gray-400">({(job.fileSize / 1024).toFixed(1)} KB)</span>
@@ -886,7 +886,7 @@ function ExportPage() {
                           job.status === 'completed' ? 'bg-green-500/20 text-green-400' :
                           job.status === 'failed' ? 'bg-red-500/20 text-red-400' :
                           job.status === 'validating' ? 'bg-yellow-500/20 text-yellow-400' :
-                          'bg-blue-500/20 text-blue-400'
+                          'bg-orange-500/20 text-orange-400'
                         }`}>
                           {job.status}
                         </div>
@@ -900,7 +900,7 @@ function ExportPage() {
                           </div>
                           <div className="w-full bg-gray-600 rounded-full h-2">
                             <div
-                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                              className="bg-orange-500 h-2 rounded-full transition-all duration-300"
                               style={{ width: `${job.progress}%` }}
                             />
                           </div>
@@ -923,7 +923,7 @@ function ExportPage() {
                                   {Object.entries(job.result.imported).map(([table, count]) => (
                                     <div key={table} className="flex justify-between">
                                       <span className="capitalize">{table}:</span>
-                                      <span className="text-blue-400">
+                                      <span className="text-orange-400">
                                         {typeof count === 'object' ? JSON.stringify(count) : count}
                                       </span>
                                     </div>
@@ -934,7 +934,7 @@ function ExportPage() {
                             {job.result.backupId && (
                               <div className="flex items-center justify-between">
                                 <span>Backup ID:</span>
-                                <span className="text-blue-400 font-mono text-xs">{job.result.backupId}</span>
+                                <span className="text-orange-400 font-mono text-xs">{job.result.backupId}</span>
                               </div>
                             )}
                             {job.result.errors.length > 0 && (
@@ -985,11 +985,11 @@ function ExportPage() {
                     setIncludeWorkouts(true)
                     handleExport('full')
                   }}
-                  className="w-full p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-colors"
+                  className="w-full p-4 rounded-lg bg-orange-500/10 border border-orange-500/20 hover:bg-orange-500/20 transition-colors"
                 >
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                      <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
                     </div>
@@ -1069,7 +1069,7 @@ function ExportPage() {
                           {job.status === 'completed' && job.downloadUrl && (
                             <button 
                               onClick={() => downloadExport(job, job.exportData)}
-                              className="text-xs text-blue-400 hover:text-blue-300 underline"
+                              className="text-xs text-orange-400 hover:text-orange-300 underline"
                             >
                               Download
                             </button>
@@ -1100,10 +1100,10 @@ function ExportPage() {
             ].map((phase) => (
               <div key={phase.phase} className="p-4 rounded-lg bg-gray-700/50 border border-gray-600">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium text-blue-400">{phase.phase}</span>
+                  <span className="text-xs font-medium text-orange-400">{phase.phase}</span>
                   <div className={`w-2 h-2 rounded-full ${
                     phase.status === 'completed' ? 'bg-green-400' :
-                    phase.status === 'in-progress' ? 'bg-blue-400 animate-pulse' :
+                    phase.status === 'in-progress' ? 'bg-orange-400 animate-pulse' :
                     'bg-gray-400'
                   }`} />
                 </div>

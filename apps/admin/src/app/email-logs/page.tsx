@@ -143,7 +143,7 @@ function EmailLogsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Email Logs</h1>
+            <h1 className="text-3xl font-bold text-white">Email Logs</h1>
             <p className="text-gray-600 mt-1">
               View all emails sent by the RYTHM platform ({total} total)
             </p>
@@ -157,7 +157,7 @@ function EmailLogsPage() {
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-dark-primary rounded-lg shadow p-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -166,7 +166,7 @@ function EmailLogsPage() {
               <select
                 value={filters.email_type}
                 onChange={(e) => setFilters({ ...filters, email_type: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-dark-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="">All Types</option>
                 <option value="backup_notification">Backup Notification</option>
@@ -184,7 +184,7 @@ function EmailLogsPage() {
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-dark-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="">All Statuses</option>
                 <option value="pending">Pending</option>
@@ -204,7 +204,7 @@ function EmailLogsPage() {
                 placeholder="Search by recipient, subject, or content..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-dark-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
           </div>
@@ -212,18 +212,18 @@ function EmailLogsPage() {
 
         {/* Email List */}
         {loading ? (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="bg-dark-primary rounded-lg shadow p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
             <p className="text-gray-600 mt-4">Loading email logs...</p>
           </div>
         ) : emails.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
+          <div className="bg-dark-primary rounded-lg shadow p-8 text-center">
             <p className="text-gray-600">No email logs found</p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-dark-primary rounded-lg shadow overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-dark-elevated">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Date
@@ -245,10 +245,10 @@ function EmailLogsPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-dark-primary divide-y divide-gray-200">
                 {emails.map((email) => (
-                  <tr key={email.email_log_id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <tr key={email.email_log_id} className="hover:bg-dark-elevated">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                       {formatDate(email.created_at)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -256,10 +256,10 @@ function EmailLogsPage() {
                         {email.email_type.replace(/_/g, ' ')}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm text-white">
                       {email.to_address}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                    <td className="px-6 py-4 text-sm text-white max-w-xs truncate">
                       {email.subject}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -270,7 +270,7 @@ function EmailLogsPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => fetchEmailDetails(email.email_log_id)}
-                        className="text-blue-600 hover:text-blue-900"
+                        className="text-orange-600 hover:text-blue-900"
                       >
                         View
                       </button>
@@ -281,19 +281,19 @@ function EmailLogsPage() {
             </table>
 
             {/* Pagination */}
-            <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
+            <div className="bg-dark-elevated px-6 py-4 flex items-center justify-between border-t border-dark-border">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={() => setPage(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                  className="relative inline-flex items-center px-4 py-2 border border-dark-border text-sm font-medium rounded-md text-gray-700 bg-dark-primary hover:bg-dark-elevated disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => setPage(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-dark-border text-sm font-medium rounded-md text-gray-700 bg-dark-primary hover:bg-dark-elevated disabled:opacity-50"
                 >
                   Next
                 </button>
@@ -310,14 +310,14 @@ function EmailLogsPage() {
                     <button
                       onClick={() => setPage(Math.max(1, page - 1))}
                       disabled={page === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-dark-border bg-dark-primary text-sm font-medium text-gray-500 hover:bg-dark-elevated disabled:opacity-50"
                     >
                       Previous
                     </button>
                     <button
                       onClick={() => setPage(Math.min(totalPages, page + 1))}
                       disabled={page === totalPages}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-dark-border bg-dark-primary text-sm font-medium text-gray-500 hover:bg-dark-elevated disabled:opacity-50"
                     >
                       Next
                     </button>
@@ -331,9 +331,9 @@ function EmailLogsPage() {
         {/* Email Detail Modal */}
         {selectedEmail && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+            <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-dark-primary">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-2xl font-bold text-gray-900">Email Details</h3>
+                <h3 className="text-2xl font-bold text-white">Email Details</h3>
                 <button
                   onClick={() => setSelectedEmail(null)}
                   className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -359,26 +359,26 @@ function EmailLogsPage() {
                   </div>
                   <div>
                     <span className="font-medium text-gray-700">From:</span>
-                    <span className="ml-2 text-gray-900">{selectedEmail.from_address}</span>
+                    <span className="ml-2 text-white">{selectedEmail.from_address}</span>
                   </div>
                   <div>
                     <span className="font-medium text-gray-700">To:</span>
-                    <span className="ml-2 text-gray-900">{selectedEmail.to_address}</span>
+                    <span className="ml-2 text-white">{selectedEmail.to_address}</span>
                   </div>
                   {selectedEmail.reply_to_address && (
                     <div>
                       <span className="font-medium text-gray-700">Reply-To:</span>
-                      <span className="ml-2 text-gray-900">{selectedEmail.reply_to_address}</span>
+                      <span className="ml-2 text-white">{selectedEmail.reply_to_address}</span>
                     </div>
                   )}
                   <div>
                     <span className="font-medium text-gray-700">Created:</span>
-                    <span className="ml-2 text-gray-900">{formatDate(selectedEmail.created_at)}</span>
+                    <span className="ml-2 text-white">{formatDate(selectedEmail.created_at)}</span>
                   </div>
                   {selectedEmail.sent_at && (
                     <div>
                       <span className="font-medium text-gray-700">Sent:</span>
-                      <span className="ml-2 text-gray-900">{formatDate(selectedEmail.sent_at)}</span>
+                      <span className="ml-2 text-white">{formatDate(selectedEmail.sent_at)}</span>
                     </div>
                   )}
                   {selectedEmail.message_id && (
@@ -399,14 +399,14 @@ function EmailLogsPage() {
                 {/* Subject */}
                 <div>
                   <h4 className="font-medium text-gray-700 mb-2">Subject</h4>
-                  <p className="text-gray-900 bg-gray-50 p-3 rounded">{selectedEmail.subject}</p>
+                  <p className="text-white bg-dark-elevated p-3 rounded">{selectedEmail.subject}</p>
                 </div>
 
                 {/* HTML Body (if available) */}
                 {selectedEmail.html_body ? (
                   <div>
                     <h4 className="font-medium text-gray-700 mb-2">HTML Preview</h4>
-                    <div className="border border-gray-300 rounded overflow-hidden">
+                    <div className="border border-dark-border rounded overflow-hidden">
                       <iframe
                         srcDoc={selectedEmail.html_body}
                         className="w-full h-96"
@@ -419,7 +419,7 @@ function EmailLogsPage() {
                 {/* Plain Text Body */}
                 <div>
                   <h4 className="font-medium text-gray-700 mb-2">Plain Text Body</h4>
-                  <pre className="text-sm text-gray-900 bg-gray-50 p-3 rounded whitespace-pre-wrap font-mono">
+                  <pre className="text-sm text-white bg-dark-elevated p-3 rounded whitespace-pre-wrap font-mono">
                     {selectedEmail.plain_text_body}
                   </pre>
                 </div>
@@ -428,7 +428,7 @@ function EmailLogsPage() {
                 {selectedEmail.metadata && Object.keys(selectedEmail.metadata).length > 0 && (
                   <div>
                     <h4 className="font-medium text-gray-700 mb-2">Additional Metadata</h4>
-                    <pre className="text-sm text-gray-900 bg-gray-50 p-3 rounded whitespace-pre-wrap font-mono">
+                    <pre className="text-sm text-white bg-dark-elevated p-3 rounded whitespace-pre-wrap font-mono">
                       {JSON.stringify(selectedEmail.metadata, null, 2)}
                     </pre>
                   </div>

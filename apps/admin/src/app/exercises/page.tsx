@@ -190,7 +190,7 @@ export default function ExercisesPage() {
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg flex items-center gap-2"
+            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg flex items-center gap-2"
           >
             <PlusIcon className="w-4 h-4" />
             Add Exercise Template
@@ -238,7 +238,7 @@ export default function ExercisesPage() {
                   setSearchTerm(e.target.value);
                 }}
                 placeholder="Search exercises..."
-                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder-gray-400"
               />
             </div>
             
@@ -250,7 +250,7 @@ export default function ExercisesPage() {
                   setCurrentPage(1);
                   setCategoryFilter(e.target.value);
                 }}
-                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="">All Categories</option>
                 <option value="strength">Strength</option>
@@ -268,7 +268,7 @@ export default function ExercisesPage() {
                   setCurrentPage(1);
                   setTypeFilter(e.target.value);
                 }}
-                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="">All Types</option>
                 <option value="STRENGTH">Strength</option>
@@ -284,7 +284,7 @@ export default function ExercisesPage() {
                   setTypeFilter('');
                   setCurrentPage(1);
                 }}
-                className="px-3 py-2 bg-gray-600 text-gray-300 rounded-lg hover:bg-gray-500 transition-colors text-sm"
+                className="px-3 py-2 bg-gray-600 text-gray-300 rounded-lg hover:bg-dark-elevated0 transition-colors text-sm"
               >
                 Clear Filters
               </button>
@@ -318,7 +318,7 @@ export default function ExercisesPage() {
         {/* Exercise Templates Grid */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
             <span className="ml-3 text-gray-400">Loading exercise templates...</span>
           </div>
         ) : exerciseTemplates.length === 0 ? (
@@ -350,7 +350,7 @@ export default function ExercisesPage() {
                   </div>
                   <span className={`inline-flex px-2 py-1 rounded-lg text-xs font-medium border ${
                     exerciseTemplate.exercise_type === 'STRENGTH' 
-                      ? 'bg-orange-500/20 text-blue-400 border-blue-500/30' 
+                      ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' 
                       : 'bg-green-500/20 text-green-400 border-green-500/30'
                   }`}>
                     {exerciseTemplate.exercise_type}
@@ -385,13 +385,13 @@ export default function ExercisesPage() {
                       {exerciseTemplate.muscle_groups.slice(0, 3).map((group, index) => (
                         <span
                           key={index}
-                          className="inline-flex px-2 py-1 text-xs bg-orange-500/20 text-purple-400 border border-purple-500/30 rounded"
+                          className="inline-flex px-2 py-1 text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded"
                         >
                           {group}
                         </span>
                       ))}
                       {exerciseTemplate.muscle_groups.length > 3 && (
-                        <span className="inline-flex px-2 py-1 text-xs bg-gray-500/20 text-gray-400 border border-gray-500/30 rounded">
+                        <span className="inline-flex px-2 py-1 text-xs bg-dark-elevated0/20 text-gray-400 border border-gray-500/30 rounded">
                           +{exerciseTemplate.muscle_groups.length - 3} more
                         </span>
                       )}
@@ -417,7 +417,7 @@ export default function ExercisesPage() {
                   <div className="flex space-x-3">
                     <button
                       onClick={() => handleEdit(exerciseTemplate)}
-                      className="flex-1 px-3 py-2 bg-orange-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-sm flex items-center justify-center gap-2"
+                      className="flex-1 px-3 py-2 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-sm flex items-center justify-center gap-2"
                     >
                       <PencilIcon className="w-4 h-4" />
                       Edit

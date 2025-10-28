@@ -77,23 +77,23 @@ export default function AutoLoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+      <div className="max-w-md w-full bg-dark-primary rounded-lg shadow-lg p-8">
+        <h1 className="text-2xl font-bold text-white mb-6 text-center">
           🎯 RYTHM Admin Auto-Login
         </h1>
         
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+        <div className="mb-6 p-4 bg-dark-elevated rounded-lg">
           <p className="font-semibold text-gray-700 mb-3">Available Admin Credentials:</p>
           
           <div className="space-y-2">
-            <div className="p-3 bg-white rounded border">
+            <div className="p-3 bg-dark-primary rounded border">
               <div className="font-mono text-sm">
                 📧 <strong>orchestrator@rythm.app</strong><br />
                 🔑 Password123
               </div>
             </div>
             
-            <div className="p-3 bg-white rounded border">
+            <div className="p-3 bg-dark-primary rounded border">
               <div className="font-mono text-sm">
                 📧 <strong>admin@rythm.app</strong><br />
                 🔑 admin123
@@ -105,7 +105,7 @@ export default function AutoLoginPage() {
         <div className="space-y-3">
           <button
             onClick={() => autoLogin('orchestrator@rythm.app', 'Password123')}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors"
           >
             🚀 Login as Orchestrator
           </button>

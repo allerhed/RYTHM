@@ -151,7 +151,7 @@ export function OrganizationModal({
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className={`dropdown-fix w-full px-4 py-3 rounded-xl bg-gray-700 border text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
+                className={`dropdown-fix w-full px-4 py-3 rounded-xl bg-gray-700 border text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors duration-200 ${
                   errors.name ? 'border-red-500' : 'border-gray-600'
                 }`}
                 placeholder="Enter organization name"
@@ -172,7 +172,7 @@ export function OrganizationModal({
                 value={brandingJson}
                 onChange={(e) => handleBrandingChange(e.target.value)}
                 rows={8}
-                className={`dropdown-fix w-full px-4 py-3 rounded-xl bg-gray-700 border text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 font-mono text-sm ${
+                className={`dropdown-fix w-full px-4 py-3 rounded-xl bg-gray-700 border text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors duration-200 font-mono text-sm ${
                   jsonError ? 'border-red-500' : 'border-gray-600'
                 }`}
                 placeholder='{"primaryColor": "#3B82F6", "logo": "https://..."}'
@@ -231,7 +231,7 @@ export function OrganizationModal({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">

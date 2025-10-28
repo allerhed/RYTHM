@@ -104,7 +104,7 @@ function EquipmentModal({ isOpen, onClose, equipment, onSave }: EquipmentModalPr
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Enter equipment name"
                 required
               />
@@ -117,7 +117,7 @@ function EquipmentModal({ isOpen, onClose, equipment, onSave }: EquipmentModalPr
               <select
                 value={formData.category}
                 onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as any }))}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="free_weights">Free Weights</option>
                 <option value="machines">Machines</option>
@@ -135,7 +135,7 @@ function EquipmentModal({ isOpen, onClose, equipment, onSave }: EquipmentModalPr
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Optional description"
                 rows={3}
               />
@@ -165,7 +165,7 @@ function EquipmentModal({ isOpen, onClose, equipment, onSave }: EquipmentModalPr
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 disabled:opacity-50"
               >
                 {isLoading ? 'Saving...' : equipment ? 'Update' : 'Create'}
               </button>
@@ -315,9 +315,9 @@ export default function EquipmentPage() {
   const getCategoryBadge = (category: string) => {
     switch (category) {
       case 'free_weights':
-        return 'bg-orange-500/20 text-blue-400 border-blue-500/30'
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
       case 'machines':
-        return 'bg-orange-500/20 text-purple-400 border-purple-500/30'
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
       case 'cardio':
         return 'bg-red-500/20 text-red-400 border-red-500/30'
       case 'bodyweight':
@@ -325,7 +325,7 @@ export default function EquipmentPage() {
       case 'resistance':
         return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
     }
   }
 
@@ -338,7 +338,7 @@ export default function EquipmentPage() {
             <div className="text-gray-400 mb-4">{error}</div>
             <button 
               onClick={fetchData}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
             >
               Try Again
             </button>
@@ -362,7 +362,7 @@ export default function EquipmentPage() {
           </div>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
+            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg"
           >
             Add Equipment
           </button>
@@ -423,7 +423,7 @@ export default function EquipmentPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search equipment..."
-              className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+              className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder-gray-400"
             />
           </div>
           
@@ -432,7 +432,7 @@ export default function EquipmentPage() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
             >
               <option value="">All Categories</option>
               <option value="free_weights">Free Weights</option>
@@ -465,7 +465,7 @@ export default function EquipmentPage() {
                 setActiveOnly(false)
                 setPage(1)
               }}
-              className="px-3 py-2 bg-gray-600 text-gray-300 rounded-lg hover:bg-gray-500 transition-colors text-sm"
+              className="px-3 py-2 bg-gray-600 text-gray-300 rounded-lg hover:bg-dark-elevated0 transition-colors text-sm"
             >
               Clear Filters
             </button>
@@ -475,7 +475,7 @@ export default function EquipmentPage() {
         {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
             <span className="ml-3 text-gray-400">Loading equipment...</span>
           </div>
         )}
@@ -512,12 +512,12 @@ export default function EquipmentPage() {
                         <span className="text-gray-400">Used by:</span>
                       </div>
                       {(item.exercise_count || 0) > 0 && (
-                        <span className="text-blue-400">
+                        <span className="text-orange-400">
                           {item.exercise_count} exercise{item.exercise_count !== 1 ? 's' : ''}
                         </span>
                       )}
                       {(item.template_count || 0) > 0 && (
-                        <span className="text-purple-400">
+                        <span className="text-orange-400">
                           {item.template_count} template{item.template_count !== 1 ? 's' : ''}
                         </span>
                       )}
@@ -553,7 +553,7 @@ export default function EquipmentPage() {
                   <div className="flex space-x-3">
                     <button
                       onClick={() => handleEdit(item)}
-                      className="flex-1 px-3 py-2 bg-orange-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-sm"
+                      className="flex-1 px-3 py-2 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-sm"
                     >
                       Edit
                     </button>

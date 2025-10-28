@@ -93,7 +93,7 @@ export function UserModal({ isOpen, onClose, onSubmit, user, mode }: UserModalPr
                 <input
                   type="text"
                   id="first_name"
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   {...register('first_name')}
                 />
                 {errors.first_name && (
@@ -108,7 +108,7 @@ export function UserModal({ isOpen, onClose, onSubmit, user, mode }: UserModalPr
                 <input
                   type="text"
                   id="last_name"
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   {...register('last_name')}
                 />
                 {errors.last_name && (
@@ -123,7 +123,7 @@ export function UserModal({ isOpen, onClose, onSubmit, user, mode }: UserModalPr
                 <input
                   type="email"
                   id="email"
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   {...register('email', { required: 'Email is required' })}
                 />
                 {errors.email && (
@@ -137,7 +137,7 @@ export function UserModal({ isOpen, onClose, onSubmit, user, mode }: UserModalPr
                 </label>
                 <select
                   id="role"
-                  className="dropdown-fix mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="dropdown-fix mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   {...register('role')}
                 >
                   <option value="athlete">Athlete</option>
@@ -154,7 +154,7 @@ export function UserModal({ isOpen, onClose, onSubmit, user, mode }: UserModalPr
                 <input
                   type="password"
                   id="password"
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   {...register('password', { 
                     required: mode === 'add' ? 'Password is required' : false,
                     minLength: { value: 6, message: 'Password must be at least 6 characters' }
@@ -177,7 +177,7 @@ export function UserModal({ isOpen, onClose, onSubmit, user, mode }: UserModalPr
               <button
                 type="submit"
                 disabled={isLoading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50"
               >
                 {isLoading ? 'Saving...' : mode === 'add' ? 'Create User' : 'Update User'}
               </button>

@@ -19,7 +19,7 @@ export function WorkoutDetailsModal({ isOpen, onClose, workout }: WorkoutDetails
       case 'Advanced':
         return 'bg-red-500/20 text-red-400 border-red-500/30'
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
     }
   }
 
@@ -28,9 +28,9 @@ export function WorkoutDetailsModal({ isOpen, onClose, workout }: WorkoutDetails
       case 'completed':
         return 'bg-green-500/20 text-green-400 border-green-500/30'
       case 'in-progress':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
     }
   }
 
@@ -71,7 +71,7 @@ export function WorkoutDetailsModal({ isOpen, onClose, workout }: WorkoutDetails
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
-              <div className="h-16 w-16 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg text-white">
+              <div className="h-16 w-16 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg text-white">
                 {getWorkoutIcon(workout.type)}
               </div>
               <div>
@@ -142,11 +142,11 @@ export function WorkoutDetailsModal({ isOpen, onClose, workout }: WorkoutDetails
                 <h3 className="text-lg font-semibold text-white mb-4">Exercise Summary</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-400">{workout.exerciseCount}</div>
+                    <div className="text-2xl font-bold text-orange-400">{workout.exerciseCount}</div>
                     <div className="text-sm text-gray-400">Exercises</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-400">{workout.totalSets}</div>
+                    <div className="text-2xl font-bold text-orange-400">{workout.totalSets}</div>
                     <div className="text-sm text-gray-400">Total Sets</div>
                   </div>
                 </div>
@@ -215,7 +215,7 @@ export function WorkoutDetailsModal({ isOpen, onClose, workout }: WorkoutDetails
             >
               Close
             </button>
-            <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg">
+            <button className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg">
               Export Data
             </button>
           </div>

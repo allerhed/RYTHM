@@ -100,15 +100,15 @@ export default function UsersPage() {
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'org_admin':
-        return 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
       case 'tenant_admin':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
       case 'coach':
         return 'bg-green-500/20 text-green-400 border-green-500/30'
       case 'athlete':
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
     }
   }
 
@@ -150,7 +150,7 @@ export default function UsersPage() {
             </div>
             <button 
               onClick={handleAddUser}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
+              className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg"
             >
               Add New User
             </button>
@@ -228,7 +228,7 @@ export default function UsersPage() {
                     placeholder="Search by name or email..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="block w-full pl-10 pr-3 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -240,7 +240,7 @@ export default function UsersPage() {
                 <select
                   value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value)}
-                  className="dropdown-fix block w-full px-3 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="dropdown-fix block w-full px-3 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
                   <option value="all">All Roles</option>
                   <option value="athlete">Athlete</option>
@@ -275,7 +275,7 @@ export default function UsersPage() {
             
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
                 <span className="ml-3 text-gray-400">Loading users...</span>
               </div>
             ) : users.length === 0 ? (
@@ -312,7 +312,7 @@ export default function UsersPage() {
                         <tr key={user.id} className="hover:bg-gray-700/30 transition-colors duration-200">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center text-white font-semibold">
                                 {`${user.first_name || ''}${user.last_name || ''}`.split(' ').map((n: string) => n[0]).join('')}
                               </div>
                               <div className="ml-4">
@@ -333,7 +333,7 @@ export default function UsersPage() {
                             <div className="flex space-x-2">
                               <button 
                                 onClick={() => handleEditUser(user)}
-                                className="text-blue-400 hover:text-blue-300 transition-colors duration-200"
+                                className="text-orange-400 hover:text-orange-300 transition-colors duration-200"
                               >
                                 Edit
                               </button>

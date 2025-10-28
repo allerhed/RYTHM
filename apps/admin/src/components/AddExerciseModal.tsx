@@ -76,7 +76,7 @@ export function AddExerciseModal({
             placeholder="Search exercises..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-gray-100 placeholder-gray-400"
+            className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-700 text-gray-100 placeholder-gray-400"
           />
         </div>
 
@@ -90,7 +90,7 @@ export function AddExerciseModal({
                 onClick={() => setSelectedType(type)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedType === type
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-orange-600 text-white'
                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
@@ -112,7 +112,7 @@ export function AddExerciseModal({
                 onClick={() => setSelectedCategory(category)}
                 className={`px-3 py-1 rounded-full text-sm capitalize transition-colors ${
                   selectedCategory === category
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-orange-600 text-white'
                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
@@ -146,7 +146,7 @@ export function AddExerciseModal({
                     <div className="text-white font-medium">{template.name}</div>
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       template.exercise_type === 'STRENGTH' 
-                        ? 'bg-blue-900 text-blue-200' 
+                        ? 'bg-orange-900 text-blue-200' 
                         : 'bg-green-900 text-green-200'
                     }`}>
                       {template.exercise_type === 'STRENGTH' ? '💪 STR' : '🏃 CAR'}

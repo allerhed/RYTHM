@@ -72,13 +72,13 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'tenant_admin':
-        return 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
       case 'coach':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
       case 'athlete':
         return 'bg-green-500/20 text-green-400 border-green-500/30'
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        return 'bg-dark-elevated0/20 text-gray-400 border-gray-500/30'
     }
   }
 
@@ -151,7 +151,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
             </button>
             <button 
               onClick={loadOrganization}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-200"
             >
               Try Again
             </button>
@@ -197,7 +197,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
               <span className="text-lg font-bold text-white">
                 {organization.name.charAt(0).toUpperCase()}
               </span>
@@ -263,7 +263,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
                 <p className="text-sm font-medium text-gray-400 uppercase tracking-wide">
                   Last Activity
                 </p>
-                <p className="mt-2 text-xl font-bold text-purple-400">
+                <p className="mt-2 text-xl font-bold text-orange-400">
                   {formatLastActivity(organization.last_activity || null)}
                 </p>
               </div>
@@ -356,7 +356,7 @@ export default function OrganizationDetailPage({ params }: { params: { id: strin
                       <tr key={user.user_id} className="hover:bg-gray-700/50 transition-colors duration-200">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center">
                               <span className="text-sm font-bold text-white">
                                 {user.first_name ? user.first_name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                               </span>

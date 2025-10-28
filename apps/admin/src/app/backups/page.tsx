@@ -293,7 +293,7 @@ function BackupsPage() {
           <button
             onClick={handleCreateBackup}
             disabled={creating}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+            className="px-6 py-3 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
           >
             {creating ? (
               <>
@@ -312,14 +312,14 @@ function BackupsPage() {
         </div>
 
         {/* Info Card */}
-        <div className="rounded-2xl bg-blue-900/20 border border-blue-500/30 text-blue-400 px-6 py-4">
+        <div className="rounded-2xl bg-orange-900/20 border border-orange-500/30 text-orange-400 px-6 py-4">
           <div className="flex items-start space-x-3">
-            <svg className="w-6 h-6 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
               <p className="font-medium mb-1">Automatic Retention Policy</p>
-              <p className="text-sm text-blue-300">Backups older than {schedule?.retention_days || 30} days are automatically deleted. Manual backups can be downloaded before deletion.</p>
+              <p className="text-sm text-orange-300">Backups older than {schedule?.retention_days || 30} days are automatically deleted. Manual backups can be downloaded before deletion.</p>
             </div>
           </div>
         </div>
@@ -336,11 +336,11 @@ function BackupsPage() {
                 onClick={() => handleToggleSchedule(!schedule.enabled)}
                 disabled={savingSchedule}
                 className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
-                  schedule.enabled ? 'bg-blue-600' : 'bg-gray-600'
+                  schedule.enabled ? 'bg-orange-600' : 'bg-gray-600'
                 } ${savingSchedule ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <span
-                  className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                  className={`inline-block h-6 w-6 transform rounded-full bg-dark-primary transition-transform ${
                     schedule.enabled ? 'translate-x-9' : 'translate-x-1'
                   }`}
                 />
@@ -486,7 +486,7 @@ function BackupsPage() {
                     <tr key={backup.name} className="hover:bg-gradient-to-b from-[#1a1a1a] to-[#232323]/30 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                           </svg>
                           <span className="text-white font-mono text-sm">{backup.name}</span>
@@ -495,9 +495,9 @@ function BackupsPage() {
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           backup.type === 'scheduled' 
-                            ? 'bg-blue-900/50 text-blue-400 border border-blue-500/30'
+                            ? 'bg-orange-900/50 text-orange-400 border border-orange-500/30'
                             : backup.type === 'manual'
-                            ? 'bg-purple-900/50 text-purple-400 border border-purple-500/30'
+                            ? 'bg-orange-900/50 text-orange-400 border border-orange-500/30'
                             : 'bg-gray-700 text-gray-400'
                         }`}>
                           {backup.type === 'scheduled' && (

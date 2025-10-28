@@ -26,7 +26,7 @@ function SettingsPage() {
           <div className="lg:col-span-2 space-y-6">
             <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
-                <svg className="w-6 h-6 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 mr-3 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 Account Settings
@@ -41,7 +41,7 @@ function SettingsPage() {
                     <input
                       type="text"
                       defaultValue="Admin Orchestrator"
-                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -51,7 +51,7 @@ function SettingsPage() {
                     <input
                       type="email"
                       defaultValue="orchestrator@rythm.app"
-                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -60,7 +60,7 @@ function SettingsPage() {
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Role
                   </label>
-                  <select className="dropdown-fix w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <select className="dropdown-fix w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
                     <option>Super Admin</option>
                     <option>Organization Admin</option>
                     <option>Tenant Admin</option>
@@ -72,7 +72,7 @@ function SettingsPage() {
             {/* Notification Settings */}
             <div className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
-                <svg className="w-6 h-6 mr-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 mr-3 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                 </svg>
                 Notification Preferences
@@ -86,9 +86,9 @@ function SettingsPage() {
                   </div>
                   <button
                     onClick={() => setNotifications(!notifications)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${notifications ? 'bg-blue-600' : 'bg-gray-600'}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${notifications ? 'bg-orange-600' : 'bg-gray-600'}`}
                   >
-                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${notifications ? 'translate-x-6' : 'translate-x-1'}`} />
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-dark-primary transition-transform duration-200 ${notifications ? 'translate-x-6' : 'translate-x-1'}`} />
                   </button>
                 </div>
                 
@@ -99,9 +99,9 @@ function SettingsPage() {
                   </div>
                   <button
                     onClick={() => setEmailAlerts(!emailAlerts)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${emailAlerts ? 'bg-blue-600' : 'bg-gray-600'}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${emailAlerts ? 'bg-orange-600' : 'bg-gray-600'}`}
                   >
-                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${emailAlerts ? 'translate-x-6' : 'translate-x-1'}`} />
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-dark-primary transition-transform duration-200 ${emailAlerts ? 'translate-x-6' : 'translate-x-1'}`} />
                   </button>
                 </div>
                 
@@ -112,9 +112,9 @@ function SettingsPage() {
                   </div>
                   <button
                     onClick={() => setAutoSave(!autoSave)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${autoSave ? 'bg-blue-600' : 'bg-gray-600'}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${autoSave ? 'bg-orange-600' : 'bg-gray-600'}`}
                   >
-                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${autoSave ? 'translate-x-6' : 'translate-x-1'}`} />
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-dark-primary transition-transform duration-200 ${autoSave ? 'translate-x-6' : 'translate-x-1'}`} />
                   </button>
                 </div>
               </div>
@@ -130,7 +130,7 @@ function SettingsPage() {
               </h2>
               
               <div className="space-y-4">
-                <button className="w-full px-4 py-3 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors duration-200 text-left">
+                <button className="w-full px-4 py-3 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-left">
                   Change Password
                 </button>
                 <button className="w-full px-4 py-3 bg-green-500/20 text-green-400 border border-green-500/30 rounded-lg hover:bg-green-500/30 transition-colors duration-200 text-left">
@@ -195,7 +195,7 @@ function SettingsPage() {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <button className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg font-semibold">
+          <button className="px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg font-semibold">
             Save Changes
           </button>
         </div>
