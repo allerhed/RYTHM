@@ -35,8 +35,8 @@ const categoryInfo = {
   'Aspiring': {
     range: '0-200 pts',
     description: 'Just starting your training journey. Every session counts!',
-    color: 'text-gray-600 dark:text-gray-400',
-    bgColor: 'bg-gray-100 dark:bg-gray-700',
+    color: 'text-text-secondary',
+    bgColor: 'bg-dark-elevated',
     progressColor: 'bg-gray-400'
   },
   'Active': {
@@ -121,7 +121,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
 
   if (trainingScoreQuery.isLoading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-6">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-4"></div>
           <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-4"></div>
@@ -137,7 +137,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
 
   if (trainingScoreQuery.isError) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-6">
         <div className="text-center text-red-600 dark:text-red-400">
           <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -177,11 +177,11 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
 
   return (
     <>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
-            <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Training Score:</span>
+            <span className="text-lg font-semibold text-text-primary">Training Score:</span>
             <span className={`text-lg font-semibold ${categoryDetails.color}`}>
               {data.selectedWeek.score.category}
             </span>
@@ -211,14 +211,14 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
         {/* Score Display */}
         <div className="mb-6">
           <div className="flex items-baseline space-x-3 mb-2">
-            <span className="text-6xl font-bold text-gray-900 dark:text-gray-100">
+            <span className="text-6xl font-bold text-text-primary">
               {data.selectedWeek.load}
             </span>
             <span className={`text-lg px-3 py-1 rounded-full ${
               data.change.percentage > 0
                 ? 'text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/20' 
                 : data.change.percentage === 0
-                ? 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700'
+                ? 'text-text-secondary bg-dark-elevated'
                 : 'text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/20'
             }`}>
               {formatChange(data.change.percentage)} this week
@@ -244,7 +244,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
               <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Selected Week</span>
             </div>
             <div className="space-y-1">
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div className="text-2xl font-bold text-text-primary">
                 {data.selectedWeek.load} pts
               </div>
               <div className="text-xs text-gray-400 dark:text-gray-500">Selected week load</div>
@@ -259,7 +259,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
               <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Previous Week</span>
             </div>
             <div className="space-y-1">
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div className="text-2xl font-bold text-text-primary">
                 {data.previousWeek.load} pts
               </div>
               <div className="text-xs text-gray-400 dark:text-gray-500">Previous week load</div>
@@ -286,7 +286,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
               <div className="text-sm text-red-600 dark:text-red-400">Error loading</div>
             ) : (
               <>
-                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <div className="text-2xl font-bold text-text-primary">
                   {Math.round(weeklyKgQuery.data?.selectedWeek || 0)} Kg
                 </div>
                 <div className="text-xs text-gray-400 dark:text-gray-500 mb-2">Selected week</div>
@@ -301,7 +301,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
                         <span className={`font-medium ${
                           change > 0 ? 'text-green-600 dark:text-green-400' : 
                           change < 0 ? 'text-red-600 dark:text-red-400' : 
-                          'text-gray-600 dark:text-gray-400'
+                          'text-text-secondary'
                         }`}>
                           {change > 0 ? '+' : ''}{change.toFixed(1)}%
                         </span>
@@ -333,7 +333,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
               <div className="text-sm text-red-600 dark:text-red-400">Error loading</div>
             ) : (
               <>
-                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <div className="text-2xl font-bold text-text-primary">
                   {((weeklyKmQuery.data?.selectedWeek || 0) / 1000).toFixed(1)} Km
                 </div>
                 <div className="text-xs text-gray-400 dark:text-gray-500 mb-2">Selected week</div>
@@ -348,7 +348,7 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
                         <span className={`font-medium ${
                           change > 0 ? 'text-green-600 dark:text-green-400' : 
                           change < 0 ? 'text-red-600 dark:text-red-400' : 
-                          'text-gray-600 dark:text-gray-400'
+                          'text-text-secondary'
                         }`}>
                           {change > 0 ? '+' : ''}{change.toFixed(1)}%
                         </span>
@@ -368,10 +368,10 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
       {/* Info Modal */}
       {showInfoModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+          <div className="bg-dark-card rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                <h3 className="text-xl font-semibold text-text-primary">
                   Training Score Categories
                 </h3>
                 <button
@@ -395,22 +395,22 @@ export function TrainingScoreWidget({ onViewAnalytics, selectedWeekStart }: Trai
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className={`font-semibold ${data.selectedWeek.score.category === category ? info.color : 'text-gray-900 dark:text-gray-100'}`}>
+                      <h4 className={`font-semibold ${data.selectedWeek.score.category === category ? info.color : 'text-text-primary'}`}>
                         {category}
                       </h4>
                       <span className={`text-sm ${data.selectedWeek.score.category === category ? info.color : 'text-gray-500 dark:text-gray-400'}`}>
                         {info.range}
                       </span>
                     </div>
-                    <p className={`text-sm ${data.selectedWeek.score.category === category ? info.color : 'text-gray-600 dark:text-gray-400'}`}>
+                    <p className={`text-sm ${data.selectedWeek.score.category === category ? info.color : 'text-text-secondary'}`}>
                       {info.description}
                     </p>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="mt-6 pt-4 border-t border-dark-border">
+                <p className="text-sm text-text-secondary">
                   Your training score is calculated based on weekly training load, which combines workout duration, 
                   intensity, and frequency to give you a comprehensive view of your training commitment.
                 </p>

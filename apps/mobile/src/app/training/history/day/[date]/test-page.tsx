@@ -11,13 +11,13 @@ export default function TestDayView() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
+      <div className="bg-dark-card rounded-lg p-6">
         <div className="flex items-center mb-4">
           <button
             onClick={() => router.back()}
             className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
           >
-            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
@@ -28,7 +28,7 @@ export default function TestDayView() {
         
         <div className="space-y-4">
           <p className="text-gray-700 dark:text-gray-300">
-            Date Parameter: <span className="font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{dateParam}</span>
+            Date Parameter: <span className="font-mono bg-dark-elevated px-2 py-1 rounded">{dateParam}</span>
           </p>
           <p className="text-gray-700 dark:text-gray-300">
             This is a test page to verify navigation is working.

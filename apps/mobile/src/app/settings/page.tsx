@@ -161,14 +161,14 @@ function SettingsPage() {
     return (
       <div
         key={item.id}
-        className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+        className="flex items-center justify-between p-4 bg-dark-card rounded-lg border border-dark-border"
       >
         <div className="flex items-center space-x-4 flex-1">
-          <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
-            <Icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <div className="p-2 bg-dark-elevated rounded-lg">
+            <Icon className="w-5 h-5 text-text-secondary" />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+            <h3 className="text-sm font-medium text-text-primary">
               {item.title}
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -200,7 +200,7 @@ function SettingsPage() {
                 if (item.id === 'language') setLanguage(e.target.value)
                 if (item.id === 'units') setUnits(e.target.value)
               }}
-              className="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 bg-white dark:bg-gray-700 text-text-primary focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {item.options.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -227,7 +227,7 @@ function SettingsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-2xl font-bold text-text-primary mb-4">
             Please log in to access settings
           </h1>
         </div>
@@ -236,15 +236,15 @@ function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+    <div className="min-h-screen bg-dark-primary pb-20">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-dark-card shadow-sm border-b border-dark-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-3xl font-bold text-text-primary">
               Settings
             </h1>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-2 text-sm text-text-secondary">
               Customize your RYTHM experience
             </p>
           </div>
@@ -256,7 +256,7 @@ function SettingsPage() {
         <div className="space-y-8">
           {settingSections.map((section) => (
             <div key={section.title}>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
                 {section.title}
               </h2>
               <div className="space-y-3">

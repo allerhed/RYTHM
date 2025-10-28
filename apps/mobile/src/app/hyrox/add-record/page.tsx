@@ -118,7 +118,7 @@ function AddRecordPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-2xl font-bold text-text-primary mb-4">
             Please log in to add Hyrox records
           </h1>
         </div>
@@ -141,7 +141,7 @@ function AddRecordPage() {
         </Link>
 
         {/* Page Title */}
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+        <h1 className="text-3xl font-bold text-text-primary mb-6">
           Add Hyrox Record
         </h1>
 
@@ -166,7 +166,7 @@ function AddRecordPage() {
               id="exercise"
               value={exerciseType}
               onChange={(e) => setExerciseType(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select an exercise</option>
@@ -191,7 +191,7 @@ function AddRecordPage() {
                   min="0"
                   value={timeMinutes}
                   onChange={(e) => setTimeMinutes(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">minutes</p>
               </div>
@@ -204,7 +204,7 @@ function AddRecordPage() {
                   max="59"
                   value={timeSeconds}
                   onChange={(e) => setTimeSeconds(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">seconds</p>
               </div>
@@ -225,7 +225,7 @@ function AddRecordPage() {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               max={new Date().toISOString().split('T')[0]}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
           </div>
@@ -247,7 +247,7 @@ function AddRecordPage() {
                 max="300"
                 value={heartRate}
                 onChange={(e) => setHeartRate(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
                 bpm
@@ -272,7 +272,7 @@ function AddRecordPage() {
               placeholder="How did it feel? Any observations..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
           </div>
 
@@ -287,7 +287,7 @@ function AddRecordPage() {
             </button>
             <Link
               href="/hyrox"
-              className="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium py-3 px-6 rounded-lg transition-colors text-center"
+              className="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-text-primary font-medium py-3 px-6 rounded-lg transition-colors text-center"
             >
               Cancel
             </Link>

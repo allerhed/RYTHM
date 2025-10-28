@@ -72,12 +72,12 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+      <div className="bg-dark-card rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-6 border-b border-dark-border">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              <h3 className="text-xl font-semibold text-text-primary">
                 Exercise History
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -123,13 +123,13 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
               {historyQuery.data.map((session, sessionIndex) => (
                 <div 
                   key={session.sessionId}
-                  className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+                  className="border border-dark-border rounded-lg overflow-hidden"
                 >
                   {/* Session Header */}
                   <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100">
+                        <p className="font-medium text-text-primary">
                           {formatDate(session.startedAt)}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
@@ -161,13 +161,13 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
                       <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                         {session.sets.map((set: any, setIndex: number) => (
                           <tr key={set.set_id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
-                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                            <td className="px-4 py-3 text-sm text-text-primary">
                               {setIndex + 1}
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                            <td className="px-4 py-3 text-sm text-text-primary">
                               {formatValue(set.value_1_type, set.value_1_numeric)}
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                            <td className="px-4 py-3 text-sm text-text-primary">
                               {formatValue(set.value_2_type, set.value_2_numeric)}
                             </td>
                           </tr>
@@ -182,10 +182,10 @@ export function ExerciseHistoryModal({ exerciseTemplateId, exerciseName, onClose
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+        <div className="p-4 border-t border-dark-border bg-gray-50 dark:bg-gray-750">
           <button
             onClick={onClose}
-            className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-text-primary rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
           >
             Close
           </button>

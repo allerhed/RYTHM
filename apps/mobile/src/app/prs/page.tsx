@@ -80,7 +80,7 @@ function PersonalRecordsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-2xl font-bold text-text-primary mb-4">
             Please log in to view your personal records
           </h1>
         </div>
@@ -89,16 +89,16 @@ function PersonalRecordsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+    <div className="min-h-screen bg-dark-primary pb-20">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-dark-card shadow-sm border-b border-dark-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              <h1 className="text-3xl font-bold text-text-primary">
                 Personal Records - PR's
               </h1>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-2 text-sm text-text-secondary">
                 Track your personal bests and achievements
               </p>
             </div>
@@ -164,7 +164,7 @@ function PersonalRecordsPage() {
           {!isLoading && !error && prs.length === 0 && (
             <div className="text-center py-12">
               <TrophyIcon className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+              <h3 className="mt-2 text-sm font-medium text-text-primary">
                 No personal records
               </h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -186,12 +186,12 @@ function PersonalRecordsPage() {
             <div className="space-y-4">
               {prs.map((pr) => (
                 <Link key={pr.prId} href={`/prs/${pr.prId}`}>
-                  <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer">
+                  <div className="bg-dark-card shadow-sm rounded-lg border border-dark-border hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer">
                     <div className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-3">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
+                            <h3 className="text-lg font-semibold text-text-primary truncate">
                               {pr.exerciseName}
                             </h3>
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(pr.category)}`}>
@@ -221,7 +221,7 @@ function PersonalRecordsPage() {
                       </div>
 
                       {pr.notes && (
-                        <p className="mt-3 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                        <p className="mt-3 text-sm text-text-secondary line-clamp-2">
                           {pr.notes}
                         </p>
                       )}
@@ -234,19 +234,19 @@ function PersonalRecordsPage() {
 
           {/* Pagination */}
           {!isLoading && !error && prs.length > 0 && (
-            <div className="mt-8 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-6">
+            <div className="mt-8 flex items-center justify-between border-t border-dark-border pt-6">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={goToPrevPage}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
                 <button
                   onClick={goToNextPage}
                   disabled={prs.length < pageSize}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>
@@ -267,7 +267,7 @@ function PersonalRecordsPage() {
                     <button
                       onClick={goToPrevPage}
                       disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-dark-card text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span className="sr-only">Previous</span>
                       <ChevronLeftIcon className="h-5 w-5" />
@@ -275,7 +275,7 @@ function PersonalRecordsPage() {
                     <button
                       onClick={goToNextPage}
                       disabled={prs.length < pageSize}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-dark-card text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span className="sr-only">Next</span>
                       <ChevronRightIcon className="h-5 w-5" />

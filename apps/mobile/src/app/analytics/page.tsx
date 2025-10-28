@@ -158,8 +158,8 @@ function AnalyticsPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="bg-white dark:bg-gray-800 shadow-sm">
+      <div className="min-h-screen bg-dark-primary">
+        <div className="bg-dark-card shadow-sm">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -175,8 +175,8 @@ function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="bg-white dark:bg-gray-800 shadow-sm">
+      <div className="min-h-screen bg-dark-primary">
+        <div className="bg-dark-card shadow-sm">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -192,8 +192,8 @@ function AnalyticsPage() {
 
   if (trainingLoadQuery.error || summaryQuery.error || categoryBreakdownQuery.error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="bg-white dark:bg-gray-800 shadow-sm">
+      <div className="min-h-screen bg-dark-primary">
+        <div className="bg-dark-card shadow-sm">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -210,8 +210,8 @@ function AnalyticsPage() {
 
   if (!hasValidData) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="bg-white dark:bg-gray-800 shadow-sm">
+      <div className="min-h-screen bg-dark-primary">
+        <div className="bg-dark-card shadow-sm">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Analytics
@@ -226,9 +226,9 @@ function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-dark-primary">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-dark-card shadow-sm border-b border-dark-border">
         <div className="px-4 py-4">
           <div className="flex items-center justify-center mb-4">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -605,7 +605,7 @@ function AnalyticsPage() {
         </div>
 
         {/* Total Distance Widget */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
+        <div className="bg-dark-card rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Total Distance</h2>
           
           <div className="flex items-center justify-between mb-4">
@@ -627,7 +627,7 @@ function AnalyticsPage() {
             </div>
           </div>
 
-          <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+          <div className="bg-dark-elevated rounded-lg p-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-300">Previous Period</span>
               <span className="text-lg font-medium text-gray-900 dark:text-white">
@@ -638,7 +638,7 @@ function AnalyticsPage() {
         </div>
 
         {/* Total Weight Widget */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
+        <div className="bg-dark-card rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Total Weight Lifted</h2>
           
           <div className="flex items-center justify-between mb-4">
@@ -660,7 +660,7 @@ function AnalyticsPage() {
             </div>
           </div>
 
-          <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+          <div className="bg-dark-elevated rounded-lg p-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-300">Previous Period</span>
               <span className="text-lg font-medium text-gray-900 dark:text-white">
@@ -671,7 +671,7 @@ function AnalyticsPage() {
         </div>
 
         {/* Summary Stats */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
+        <div className="bg-dark-card rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">3-Month Summary</h2>
           
           <div className="grid grid-cols-2 gap-4">

@@ -132,7 +132,7 @@ export function PullToRefresh({
             />
             
             {/* Text feedback */}
-            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+            <span className="text-xs font-medium text-text-secondary">
               {isRefreshing 
                 ? 'Refreshing...' 
                 : pullDistance >= threshold 

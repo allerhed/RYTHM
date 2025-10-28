@@ -252,7 +252,7 @@ function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-dark-primary">
       {/* Header */}
       <Header 
         title="Profile"
@@ -283,7 +283,7 @@ function ProfilePage() {
         <div className="px-4 py-6">
         <div className="max-w-2xl mx-auto">
           {/* Profile Picture Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+          <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-6 mb-6">
             <div className="text-center">
               <div className="relative inline-block">
                 <div 
@@ -315,7 +315,7 @@ function ProfilePage() {
                   📷
                 </button>
               </div>
-              <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-3 text-sm text-text-secondary">
                 Click to upload a new profile picture
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-500">
@@ -332,8 +332,8 @@ function ProfilePage() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-            <div className="border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border mb-6">
+            <div className="border-b border-dark-border">
               <nav className="flex space-x-8 px-6">
                 <button
                   onClick={() => setActiveTab('profile')}
@@ -538,20 +538,20 @@ function ProfilePage() {
           </div>
 
           {/* Account Information */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Account Information</h3>
+          <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-6">
+            <h3 className="text-lg font-semibold text-text-primary mb-4">Account Information</h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">User ID:</span>
-                <span className="text-gray-900 dark:text-gray-100 font-mono">{user?.id}</span>
+                <span className="text-text-secondary">User ID:</span>
+                <span className="text-text-primary font-mono">{user?.id}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Role:</span>
-                <span className="text-gray-900 dark:text-gray-100 capitalize">{user?.role}</span>
+                <span className="text-text-secondary">Role:</span>
+                <span className="text-text-primary capitalize">{user?.role}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Tenant ID:</span>
-                <span className="text-gray-900 dark:text-gray-100 font-mono">{user?.tenantId}</span>
+                <span className="text-text-secondary">Tenant ID:</span>
+                <span className="text-text-primary font-mono">{user?.tenantId}</span>
               </div>
             </div>
           </div>

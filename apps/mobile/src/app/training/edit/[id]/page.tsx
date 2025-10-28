@@ -584,18 +584,18 @@ function EditWorkoutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="sticky top-0 z-40 bg-dark-card border-b border-dark-border">
         <div className="max-w-md mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <button 
               onClick={() => router.back()}
-              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              className="text-text-secondary hover:text-gray-900 dark:hover:text-gray-100"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Workout</h1>
+            <h1 className="text-lg font-semibold text-text-primary">Edit Workout</h1>
             <div className="w-6"></div>
           </div>
         </div>
@@ -603,7 +603,7 @@ function EditWorkoutPage() {
 
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">        
         {/* Workout Info */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
           <div className="space-y-4">
             {/* Workout Name */}
             <div>
@@ -614,7 +614,7 @@ function EditWorkoutPage() {
                 type="text"
                 value={workoutName}
                 onChange={(e) => setWorkoutName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
                 placeholder="Enter workout name"
               />
             </div>
@@ -632,7 +632,7 @@ function EditWorkoutPage() {
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                       activityType === type.toLowerCase()
                         ? 'bg-lime-400 text-black'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {type}
@@ -651,7 +651,7 @@ function EditWorkoutPage() {
                   type="date"
                   value={workoutDate.toISOString().split('T')[0]}
                   onChange={(e) => setWorkoutDate(new Date(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-lime-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-lime-500 focus:border-transparent"
                 />
               </div>
               <div>
@@ -665,7 +665,7 @@ function EditWorkoutPage() {
                   min="01:00"
                   max="10:00"
                   step="60"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-lime-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-lime-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -673,7 +673,7 @@ function EditWorkoutPage() {
         </div>
 
         {/* Training Load */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Training Load
           </label>
@@ -682,7 +682,7 @@ function EditWorkoutPage() {
             value={trainingLoad || ''}
             onChange={(e) => setTrainingLoad(e.target.value ? parseInt(e.target.value) : null)}
             placeholder="Enter training load (optional)"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Subjective measure of workout intensity (e.g., 1-100)
@@ -690,7 +690,7 @@ function EditWorkoutPage() {
         </div>
 
         {/* How was your workout - Perceived Exertion */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="text-gray-600 dark:text-gray-300 text-lg">How was your workout?</span>
@@ -816,10 +816,10 @@ function DatePickerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm">
+      <div className="bg-dark-card rounded-lg w-full max-w-sm">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Select Date</h2>
+        <div className="flex items-center justify-between p-4 border-b border-dark-border">
+          <h2 className="text-lg font-semibold text-text-primary">Select Date</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -836,12 +836,12 @@ function DatePickerModal({
             type="date"
             value={formatDateForInput(currentDate)}
             onChange={(e) => handleDateChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
           />
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex gap-3 p-4 border-t border-dark-border">
           <button
             onClick={onClose}
             className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -890,10 +890,10 @@ function TimePickerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm">
+      <div className="bg-dark-card rounded-lg w-full max-w-sm">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Set Duration</h2>
+        <div className="flex items-center justify-between p-4 border-b border-dark-border">
+          <h2 className="text-lg font-semibold text-text-primary">Set Duration</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -917,7 +917,7 @@ function TimePickerModal({
                 max="23"
                 value={hours}
                 onChange={(e) => setHours(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
             <div className="text-center">
@@ -930,7 +930,7 @@ function TimePickerModal({
                 max="59"
                 value={minutes}
                 onChange={(e) => setMinutes(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
             <div className="text-center">
@@ -943,19 +943,19 @@ function TimePickerModal({
                 max="59"
                 value={seconds}
                 onChange={(e) => setSeconds(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
           </div>
           <div className="mt-4 text-center">
-            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <div className="text-2xl font-bold text-text-primary">
               {hours.padStart(2, '0')}:{minutes.padStart(2, '0')}:{seconds.padStart(2, '0')}
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex gap-3 p-4 border-t border-dark-border">
           <button
             onClick={onClose}
             className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -1341,10 +1341,10 @@ function ExerciseModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
+      <div className="bg-dark-card rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Exercise</h2>
+        <div className="flex items-center justify-between p-4 border-b border-dark-border">
+          <h2 className="text-lg font-semibold text-text-primary">Add Exercise</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowCustomModal(true)}
@@ -1364,18 +1364,18 @@ function ExerciseModal({
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-dark-border">
           <input
             type="text"
             placeholder="Search exercises..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
           />
         </div>
 
         {/* Exercise Type Filter */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-dark-border">
           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Exercise Type</h4>
           <div className="flex gap-2">
             {types.map(type => (
@@ -1385,7 +1385,7 @@ function ExerciseModal({
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedType === type
                     ? 'bg-primary-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {type === 'all' ? `All (${templates.length})` : 
@@ -1397,7 +1397,7 @@ function ExerciseModal({
         </div>
 
         {/* Category Filter */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-dark-border">
           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</h4>
           <div className="flex gap-2 flex-wrap">
             {categories.map(category => (
@@ -1407,7 +1407,7 @@ function ExerciseModal({
                 className={`px-3 py-1 rounded-full text-sm capitalize transition-colors ${
                   selectedCategory === category
                     ? 'bg-primary-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {category}
@@ -1436,7 +1436,7 @@ function ExerciseModal({
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="text-gray-900 dark:text-gray-100">{template.name}</div>
+                    <div className="text-text-primary">{template.name}</div>
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       template.exercise_type === 'STRENGTH' 
                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 

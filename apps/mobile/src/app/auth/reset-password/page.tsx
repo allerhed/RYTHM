@@ -87,7 +87,7 @@ function ResetPasswordContent() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Verifying reset link...</p>
+          <p className="text-text-secondary">Verifying reset link...</p>
         </div>
       </div>
     )
@@ -102,9 +102,9 @@ function ResetPasswordContent() {
               onClick={() => router.push('/auth/login')}
               className="flex items-center justify-center w-10 h-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 transition-colors"
             >
-              <span className="text-gray-600 dark:text-gray-400">←</span>
+              <span className="text-text-secondary">←</span>
             </button>
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Reset Password</h1>
+            <h1 className="text-lg font-semibold text-text-primary">Reset Password</h1>
             <div className="w-10" />
           </div>
         </header>
@@ -123,16 +123,16 @@ function ResetPasswordContent() {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900 rounded-2xl mb-6">
                 <span className="text-3xl">❌</span>
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+              <h2 className="text-3xl font-bold text-text-primary mb-3">
                 Invalid Reset Link
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
+              <p className="text-text-secondary text-lg">
                 This password reset link is invalid or has expired.
               </p>
             </div>
 
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
-              <p className="text-gray-600 dark:text-gray-400 mb-6 text-center">
+              <p className="text-text-secondary mb-6 text-center">
                 Reset links expire after 1 hour for security reasons.
               </p>
               <Link href="/auth/forgot-password">
@@ -166,10 +166,10 @@ function ResetPasswordContent() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 dark:bg-green-900 rounded-2xl mb-6">
             <span className="text-4xl">✓</span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+          <h2 className="text-3xl font-bold text-text-primary mb-3">
             Password Reset Complete!
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-text-secondary text-lg">
             Redirecting you to login...
           </p>
         </div>
@@ -185,9 +185,9 @@ function ResetPasswordContent() {
             onClick={() => router.push('/auth/login')}
             className="flex items-center justify-center w-10 h-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 transition-colors"
           >
-            <span className="text-gray-600 dark:text-gray-400">←</span>
+            <span className="text-text-secondary">←</span>
           </button>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Reset Password</h1>
+          <h1 className="text-lg font-semibold text-text-primary">Reset Password</h1>
           <div className="w-10" />
         </div>
       </header>
@@ -209,7 +209,7 @@ function ResetPasswordContent() {
             <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
               Create New Password
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
+            <p className="text-text-secondary text-lg">
               for <strong>{verifyToken.data?.email || 'your account'}</strong>
             </p>
           </div>
@@ -267,7 +267,7 @@ function ResetPasswordContent() {
           </div>
 
           <div className="mt-8 text-center">
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-text-secondary">
               Remember your password?{' '}
               <Link 
                 href="/auth/login" 
@@ -289,7 +289,7 @@ export default function ResetPasswordPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+          <p className="mt-4 text-text-secondary">Loading...</p>
         </div>
       </div>
     }>

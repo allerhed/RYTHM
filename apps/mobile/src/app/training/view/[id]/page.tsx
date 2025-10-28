@@ -164,14 +164,14 @@ function ViewWorkoutPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="bg-white dark:bg-gray-800 shadow-sm">
+      <div className="min-h-screen bg-dark-primary">
+        <div className="bg-dark-card shadow-sm">
           <div className="px-4 py-3 flex items-center">
             <button
               onClick={() => router.back()}
               className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
@@ -189,14 +189,14 @@ function ViewWorkoutPage() {
 
   if (error || !session) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="bg-white dark:bg-gray-800 shadow-sm">
+      <div className="min-h-screen bg-dark-primary">
+        <div className="bg-dark-card shadow-sm">
           <div className="px-4 py-3 flex items-center">
             <button
               onClick={() => router.back()}
               className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
@@ -219,20 +219,20 @@ function ViewWorkoutPage() {
   const { date, time } = formatDateTime(session.started_at)
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-dark-primary">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-dark-card shadow-sm border-b border-dark-border">
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <button 
               onClick={() => router.back()}
-              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              className="text-text-secondary hover:text-gray-900 dark:hover:text-gray-100"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h1 className="text-lg font-semibold text-text-primary">
               {session.name || `${session.category.charAt(0).toUpperCase() + session.category.slice(1)} Workout`}
             </h1>
             <div className="flex items-center space-x-2">
@@ -258,14 +258,14 @@ function ViewWorkoutPage() {
 
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
         {/* Workout Info */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
           <div className="space-y-4">
             {/* Workout Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Workout Name
               </label>
-              <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+              <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary">
                 {session.name || `${session.category.charAt(0).toUpperCase() + session.category.slice(1)} Workout`}
               </div>
             </div>
@@ -283,7 +283,7 @@ function ViewWorkoutPage() {
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium ${
                       session.category.toLowerCase() === type.toLowerCase()
                         ? 'bg-lime-400 text-black'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                        : 'bg-dark-elevated text-gray-700 dark:text-gray-300'
                     }`}
                   >
                     {type}
@@ -298,7 +298,7 @@ function ViewWorkoutPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Date
                 </label>
-                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary">
                   {new Date(session.started_at).toLocaleDateString('sv-SE')}
                 </div>
               </div>
@@ -306,7 +306,7 @@ function ViewWorkoutPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Duration
                 </label>
-                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary">
                   {formatDuration(session.duration_seconds)}
                 </div>
               </div>
@@ -315,11 +315,11 @@ function ViewWorkoutPage() {
         </div>
 
         {/* Training Load */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Training Load
           </label>
-          <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+          <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary">
             {session.training_load || 'Not recorded'}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -329,7 +329,7 @@ function ViewWorkoutPage() {
 
         {/* Perceived Exertion */}
         {session.perceived_exertion !== null && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-gray-600 dark:text-gray-300 text-lg">How was your workout?</span>
@@ -366,11 +366,11 @@ function ViewWorkoutPage() {
 
         {/* Notes */}
         {session.notes && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Workout Notes
             </label>
-            <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+            <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary">
               {session.notes}
             </div>
           </div>
@@ -379,14 +379,14 @@ function ViewWorkoutPage() {
         {/* Exercises */}
         <div className="space-y-4">
           {session.exercises.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 text-center">
+            <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-6 text-center">
               <p className="text-gray-500 dark:text-gray-400">No exercises recorded</p>
             </div>
           ) : (
             session.exercises.map((exercise, index) => (
               <div
                 key={exercise.exercise_id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4"
+                className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -418,7 +418,7 @@ function ViewWorkoutPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-gray-200 dark:border-gray-700">
+                        <tr className="border-b border-dark-border">
                           <th className="text-left py-2 text-xs font-medium text-gray-500 dark:text-gray-400">Set</th>
                           {exercise.sets.some(set => set.value_1_numeric !== null) && (
                             <th className="text-left py-2 text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -467,18 +467,18 @@ function ViewWorkoutPage() {
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full p-6">
+          <div className="bg-dark-card rounded-lg shadow-xl max-w-sm w-full p-6">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mr-3">
                 <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h3 className="text-lg font-semibold text-text-primary">
                 Delete Workout
               </h3>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-text-secondary mb-6">
               Are you sure you want to delete "{session.name || 'this workout'}"? This action cannot be undone.
             </p>
             <div className="flex space-x-3">

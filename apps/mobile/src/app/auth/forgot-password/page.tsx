@@ -62,9 +62,9 @@ export default function ForgotPasswordPage() {
               onClick={() => router.push('/auth/login')}
               className="flex items-center justify-center w-10 h-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 transition-colors"
             >
-              <span className="text-gray-600 dark:text-gray-400">←</span>
+              <span className="text-text-secondary">←</span>
             </button>
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Password Reset</h1>
+            <h1 className="text-lg font-semibold text-text-primary">Password Reset</h1>
             <div className="w-10" />
           </div>
         </header>
@@ -83,10 +83,10 @@ export default function ForgotPasswordPage() {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900 rounded-2xl mb-6">
                 <span className="text-3xl">✉️</span>
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+              <h2 className="text-3xl font-bold text-text-primary mb-3">
                 Check Your Email
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
+              <p className="text-text-secondary text-lg mb-4">
                 We've sent a password reset link to:
               </p>
               <p className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-6">
@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
             </div>
 
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
-              <div className="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+              <div className="space-y-4 text-sm text-text-secondary">
                 <div className="flex items-start space-x-3">
                   <span className="text-blue-600 dark:text-blue-400 text-lg">1.</span>
                   <p>Check your inbox (and spam folder) for an email from <strong>info@rythm.training</strong></p>
@@ -110,8 +110,8 @@ export default function ForgotPasswordPage() {
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
+              <div className="mt-8 pt-6 border-t border-dark-border">
+                <p className="text-sm text-text-secondary text-center mb-4">
                   Didn't receive the email?
                 </p>
                 <Button
@@ -146,9 +146,9 @@ export default function ForgotPasswordPage() {
             onClick={() => router.back()}
             className="flex items-center justify-center w-10 h-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 transition-colors"
           >
-            <span className="text-gray-600 dark:text-gray-400">←</span>
+            <span className="text-text-secondary">←</span>
           </button>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Reset Password</h1>
+          <h1 className="text-lg font-semibold text-text-primary">Reset Password</h1>
           <div className="w-10" />
         </div>
       </header>
@@ -170,7 +170,7 @@ export default function ForgotPasswordPage() {
             <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
               Forgot Password?
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
+            <p className="text-text-secondary text-lg">
               No worries! Enter your email and we'll send you a reset link.
             </p>
           </div>
@@ -211,7 +211,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           <div className="mt-8 text-center">
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-text-secondary">
               Remember your password?{' '}
               <Link 
                 href="/auth/login" 

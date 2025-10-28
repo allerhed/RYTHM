@@ -102,7 +102,7 @@ export default function NewPRPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-dark-primary">
       <Header
         title="Add Personal Record"
         showBack
@@ -112,8 +112,8 @@ export default function NewPRPage() {
       <div className="pt-16 pb-20">
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
           {/* Exercise Selection */}
-          <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg mb-4 p-6">
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+          <div className="bg-dark-card shadow-sm rounded-lg mb-4 p-6">
+            <label className="block text-sm font-medium text-text-primary mb-3">
               Exercise *
             </label>
             {!showExercisePicker ? (
@@ -123,7 +123,7 @@ export default function NewPRPage() {
                 className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-left hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               >
                 {selectedExercise ? (
-                  <span className="text-gray-900 dark:text-gray-100 font-medium">{selectedExercise.name}</span>
+                  <span className="text-text-primary font-medium">{selectedExercise.name}</span>
                 ) : (
                   <span className="text-gray-500 dark:text-gray-400">Select an exercise</span>
                 )}
@@ -135,7 +135,7 @@ export default function NewPRPage() {
                   placeholder="Search exercises..."
                   value={exerciseSearch}
                   onChange={(e) => setExerciseSearch(e.target.value)}
-                  className="w-full px-4 py-3 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   autoFocus
                 />
                 <div className="max-h-60 overflow-y-auto">
@@ -151,7 +151,7 @@ export default function NewPRPage() {
                         onClick={() => handleExerciseSelect(ex.template_id)}
                         className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-600 border-b border-gray-100 dark:border-gray-600 last:border-b-0 transition-colors"
                       >
-                        <div className="font-medium text-gray-900 dark:text-gray-100">{ex.name}</div>
+                        <div className="font-medium text-text-primary">{ex.name}</div>
                         <div className="text-sm text-gray-500 dark:text-gray-400 capitalize">
                           {ex.exercise_category}
                         </div>
@@ -168,8 +168,8 @@ export default function NewPRPage() {
           </div>
 
           {/* Metric Name */}
-          <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg mb-4 p-6">
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+          <div className="bg-dark-card shadow-sm rounded-lg mb-4 p-6">
+            <label className="block text-sm font-medium text-text-primary mb-3">
               Metric Name *
             </label>
             <input
@@ -177,7 +177,7 @@ export default function NewPRPage() {
               value={metricName}
               onChange={(e) => setMetricName(e.target.value)}
               placeholder="e.g., 1RM, 3RM, 5k time"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               maxLength={100}
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
@@ -186,8 +186,8 @@ export default function NewPRPage() {
           </div>
 
           {/* Category */}
-          <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg mb-4 p-6">
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+          <div className="bg-dark-card shadow-sm rounded-lg mb-4 p-6">
+            <label className="block text-sm font-medium text-text-primary mb-3">
               Category *
             </label>
             <div className="flex gap-3">
@@ -197,7 +197,7 @@ export default function NewPRPage() {
                 className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
                   category === 'strength'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 Strength
@@ -208,7 +208,7 @@ export default function NewPRPage() {
                 className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
                   category === 'cardio'
                     ? 'bg-green-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 Cardio
@@ -217,8 +217,8 @@ export default function NewPRPage() {
           </div>
 
           {/* Value */}
-          <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg mb-4 p-6">
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+          <div className="bg-dark-card shadow-sm rounded-lg mb-4 p-6">
+            <label className="block text-sm font-medium text-text-primary mb-3">
               Value *
             </label>
             <div className="flex gap-3">
@@ -229,14 +229,14 @@ export default function NewPRPage() {
                 placeholder="150"
                 step="0.01"
                 min="0"
-                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <input
                 type="text"
                 value={valueUnit}
                 onChange={(e) => setValueUnit(e.target.value)}
                 placeholder="kg"
-                className="w-24 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-24 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 maxLength={20}
               />
             </div>
@@ -246,8 +246,8 @@ export default function NewPRPage() {
           </div>
 
           {/* Date Achieved */}
-          <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg mb-4 p-6">
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+          <div className="bg-dark-card shadow-sm rounded-lg mb-4 p-6">
+            <label className="block text-sm font-medium text-text-primary mb-3">
               Date Achieved *
             </label>
             <input
@@ -255,13 +255,13 @@ export default function NewPRPage() {
               value={achievedDate}
               onChange={(e) => setAchievedDate(e.target.value)}
               max={new Date().toISOString().split('T')[0]}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Notes */}
-          <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg mb-4 p-6">
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+          <div className="bg-dark-card shadow-sm rounded-lg mb-4 p-6">
+            <label className="block text-sm font-medium text-text-primary mb-3">
               Notes (optional)
             </label>
             <textarea
@@ -269,12 +269,12 @@ export default function NewPRPage() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any notes about this PR..."
               rows={3}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
           </div>
 
           {/* Submit Button */}
-          <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+          <div className="bg-dark-card shadow-sm rounded-lg p-6">
             <button
               type="submit"
               disabled={createPR.isPending}

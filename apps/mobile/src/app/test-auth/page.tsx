@@ -35,7 +35,7 @@ export default function TestAuthPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-dark-primary flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Not Authenticated</h1>
           <p>Please log in to test avatar functionality</p>
@@ -45,22 +45,22 @@ export default function TestAuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="min-h-screen bg-dark-primary p-4">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Avatar Debug Page</h1>
         
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
+        <div className="bg-dark-card rounded-lg p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Current Avatar</h2>
           <div className="flex items-center space-x-4 mb-4">
             <Avatar user={user || undefined} size="xl" />
             <div>
               <p className="font-medium">{user?.firstName} {user?.lastName}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{user?.email}</p>
+              <p className="text-sm text-text-secondary">{user?.email}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
+        <div className="bg-dark-card rounded-lg p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Actions</h2>
           <div className="space-y-2">
             <Button onClick={handleFetchProfile} variant="primary" size="sm">
@@ -73,7 +73,7 @@ export default function TestAuthPage() {
         </div>
 
         {debugInfo && (
-          <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+          <div className="bg-dark-elevated rounded-lg p-4">
             <h3 className="font-semibold mb-2">Debug Info:</h3>
             <pre className="text-sm whitespace-pre-wrap">{debugInfo}</pre>
           </div>

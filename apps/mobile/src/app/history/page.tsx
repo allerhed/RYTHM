@@ -102,7 +102,7 @@ function HistoryPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-2xl font-bold text-text-primary mb-4">
             Please log in to view your workout history
           </h1>
       </div>
@@ -111,17 +111,17 @@ function HistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+    <div className="min-h-screen bg-dark-primary pb-20">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-dark-card shadow-sm border-b border-dark-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                <h1 className="text-3xl font-bold text-text-primary">
                   Workout History
                 </h1>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p className="mt-2 text-sm text-text-secondary">
                   Track your fitness journey and progress over time
                 </p>
               </div>
@@ -169,7 +169,7 @@ function HistoryPage() {
         ) : !recentSessions || recentSessions.length === 0 ? (
           <div className="text-center py-12">
             <ClockIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <h3 className="mt-2 text-sm font-medium text-text-primary">
               No workouts yet
             </h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -183,12 +183,12 @@ function HistoryPage() {
                 <div
                   key={session.session_id}
                   onClick={() => router.push(`/training/view/${session.session_id}`)}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-all cursor-pointer"
+                  className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-6 hover:shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-all cursor-pointer"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       {/* Workout Name */}
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                      <h3 className="text-lg font-semibold text-text-primary mb-2">
                         {session.name || `${session.category.charAt(0).toUpperCase() + session.category.slice(1)} Workout`}
                       </h3>
                       
@@ -209,7 +209,7 @@ function HistoryPage() {
                       </div>
 
                       {session.notes && (
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        <p className="mt-2 text-sm text-text-secondary">
                           {session.notes}
                         </p>
                       )}
@@ -242,7 +242,7 @@ function HistoryPage() {
                   <button
                     onClick={goToPrevPage}
                     disabled={currentPage === 1}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ChevronLeftIcon className="h-4 w-4 mr-1" />
                     Previous
@@ -269,7 +269,7 @@ function HistoryPage() {
                             className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                               i === currentPage
                                 ? 'bg-blue-600 text-white border border-blue-600'
-                                : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                : 'text-gray-700 dark:text-gray-300 bg-dark-card border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                             }`}
                           >
                             {i}
@@ -283,7 +283,7 @@ function HistoryPage() {
                   <button
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next
                     <ChevronRightIcon className="h-4 w-4 ml-1" />

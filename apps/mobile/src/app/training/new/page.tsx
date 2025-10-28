@@ -577,19 +577,19 @@ function NewWorkoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-dark-primary">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-dark-card shadow-sm border-b border-dark-border">
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="flex items-center justify-center">
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">New Workout</h1>
+            <h1 className="text-lg font-semibold text-text-primary">New Workout</h1>
           </div>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-4 py-6 pb-24 space-y-6">
         {/* Workout Info */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
           <div className="space-y-4">
             {/* Workout Name */}
             <div>
@@ -600,7 +600,7 @@ function NewWorkoutPage() {
                 type="text"
                 value={workoutName}
                 onChange={(e) => setWorkoutName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
 
@@ -617,7 +617,7 @@ function NewWorkoutPage() {
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                       activityType === type.toLowerCase()
                         ? 'bg-lime-400 text-black'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {type}
@@ -636,7 +636,7 @@ function NewWorkoutPage() {
                   type="date"
                   value={workoutDate.toISOString().split('T')[0]}
                   onChange={(e) => setWorkoutDate(new Date(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-lime-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-lime-500 focus:border-transparent"
                 />
               </div>
               <div>
@@ -650,7 +650,7 @@ function NewWorkoutPage() {
                   min="01:00"
                   max="10:00"
                   step="60"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-lime-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-lime-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -658,7 +658,7 @@ function NewWorkoutPage() {
         </div>
 
         {/* Training Load */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Training Load
           </label>
@@ -667,7 +667,7 @@ function NewWorkoutPage() {
             value={trainingLoad || ''}
             onChange={(e) => setTrainingLoad(e.target.value ? parseInt(e.target.value) : null)}
             placeholder="Enter training load (optional)"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Subjective measure of workout intensity (e.g., 1-100)
@@ -675,7 +675,7 @@ function NewWorkoutPage() {
         </div>
 
         {/* How was your workout - Perceived Exertion */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="text-gray-600 dark:text-gray-300 text-lg">How was your workout?</span>
@@ -753,7 +753,7 @@ function NewWorkoutPage() {
         </div>
 
         {/* Notes */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Workout Notes
           </label>
@@ -761,7 +761,7 @@ function NewWorkoutPage() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add any notes about your workout..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary resize-none"
             rows={3}
           />
         </div>
@@ -787,7 +787,7 @@ function NewWorkoutPage() {
       {/* Date and time pickers now use native HTML5 inputs - no modals needed */}
 
       {/* Fixed Save Button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 safe-area-bottom">
+      <div className="fixed bottom-0 left-0 right-0 bg-dark-card border-t border-dark-border p-4 safe-area-bottom">
         <div className="max-w-md mx-auto">
           <button
             onClick={handleSaveWorkout}
@@ -833,11 +833,11 @@ function ExerciseCard({
   const [showHistory, setShowHistory] = useState(false)
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+    <div className="bg-dark-card rounded-lg shadow-sm border border-dark-border p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center space-x-2">
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{exercise.name}</h3>
+            <h3 className="font-semibold text-text-primary">{exercise.name}</h3>
             <button
               onClick={() => {
                 console.log('History button clicked:', { name: exercise.name, template_id: exercise.template_id })
@@ -963,7 +963,7 @@ function SetRow({
     <div className="grid grid-cols-4 gap-4 items-center relative px-2">
       <div className="text-center min-w-[40px]">
         <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">SET</div>
-        <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+        <div className="text-lg font-bold text-text-primary">
           {set.setNumber}
         </div>
       </div>
@@ -989,7 +989,7 @@ function SetRow({
         />
         
         {activeDropdown?.exerciseId === exerciseId && activeDropdown?.setId === set.id && activeDropdown?.field === 'value1' && (
-          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
+          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-dark-card border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
             {VALUE_TYPES.map((type) => (
               <div
                 key={type.value}
@@ -999,7 +999,7 @@ function SetRow({
                   onValueTypeChange(exerciseId, set.id, 'value1Type', type.value)
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
-                  set.value1Type === type.value ? 'bg-gray-100 dark:bg-gray-700 text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
+                  set.value1Type === type.value ? 'bg-dark-elevated text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 {type.label}
@@ -1030,7 +1030,7 @@ function SetRow({
         />
         
         {activeDropdown?.exerciseId === exerciseId && activeDropdown?.setId === set.id && activeDropdown?.field === 'value2' && (
-          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
+          <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-dark-card border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
             {VALUE_TYPES.map((type) => (
               <div
                 key={type.value}
@@ -1040,7 +1040,7 @@ function SetRow({
                   onValueTypeChange(exerciseId, set.id, 'value2Type', type.value)
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
-                  set.value2Type === type.value ? 'bg-gray-100 dark:bg-gray-700 text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
+                  set.value2Type === type.value ? 'bg-dark-elevated text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 {type.label}
@@ -1089,10 +1089,10 @@ function DatePickerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm">
+      <div className="bg-dark-card rounded-lg w-full max-w-sm">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Select Date</h2>
+        <div className="flex items-center justify-between p-4 border-b border-dark-border">
+          <h2 className="text-lg font-semibold text-text-primary">Select Date</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -1109,12 +1109,12 @@ function DatePickerModal({
             type="date"
             value={formatDateForInput(currentDate)}
             onChange={(e) => handleDateChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
           />
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex gap-3 p-4 border-t border-dark-border">
           <button
             onClick={onClose}
             className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -1163,10 +1163,10 @@ function TimePickerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm">
+      <div className="bg-dark-card rounded-lg w-full max-w-sm">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Set Duration</h2>
+        <div className="flex items-center justify-between p-4 border-b border-dark-border">
+          <h2 className="text-lg font-semibold text-text-primary">Set Duration</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -1190,7 +1190,7 @@ function TimePickerModal({
                 max="23"
                 value={hours}
                 onChange={(e) => setHours(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
             <div className="text-center">
@@ -1203,7 +1203,7 @@ function TimePickerModal({
                 max="59"
                 value={minutes}
                 onChange={(e) => setMinutes(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
             <div className="text-center">
@@ -1216,19 +1216,19 @@ function TimePickerModal({
                 max="59"
                 value={seconds}
                 onChange={(e) => setSeconds(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
               />
             </div>
           </div>
           <div className="mt-4 text-center">
-            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <div className="text-2xl font-bold text-text-primary">
               {hours.padStart(2, '0')}:{minutes.padStart(2, '0')}:{seconds.padStart(2, '0')}
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex gap-3 p-4 border-t border-dark-border">
           <button
             onClick={onClose}
             className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -1300,10 +1300,10 @@ function AddExerciseModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
+      <div className="bg-dark-card rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Exercise</h2>
+        <div className="flex items-center justify-between p-4 border-b border-dark-border">
+          <h2 className="text-lg font-semibold text-text-primary">Add Exercise</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowCustomModal(true)}
@@ -1323,18 +1323,18 @@ function AddExerciseModal({
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-dark-border">
           <input
             type="text"
             placeholder="Search exercises..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
           />
         </div>
 
         {/* Exercise Type Filter */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-dark-border">
           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Exercise Type</h4>
           <div className="flex gap-2">
             {types.map(type => (
@@ -1344,7 +1344,7 @@ function AddExerciseModal({
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedType === type
                     ? 'bg-primary-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {type === 'all' ? `All (${templates.length})` : 
@@ -1356,7 +1356,7 @@ function AddExerciseModal({
         </div>
 
         {/* Category Filter */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-dark-border">
           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</h4>
           <div className="flex gap-2 flex-wrap">
             {categories.map(category => (
@@ -1366,7 +1366,7 @@ function AddExerciseModal({
                 className={`px-3 py-1 rounded-full text-sm capitalize transition-colors ${
                   selectedCategory === category
                     ? 'bg-primary-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {category}
@@ -1395,7 +1395,7 @@ function AddExerciseModal({
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="text-gray-900 dark:text-gray-100">{template.name}</div>
+                    <div className="text-text-primary">{template.name}</div>
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       template.exercise_type === 'STRENGTH' 
                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
@@ -1490,10 +1490,10 @@ function TemplateSelectionModal({
       <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
         
-        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md max-h-[80vh] flex flex-col">
+        <div className="inline-block align-bottom bg-dark-card rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md max-h-[80vh] flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <div className="flex items-center justify-between p-4 border-b border-dark-border">
+            <h3 className="text-lg font-semibold text-text-primary">
               Select Workout Template
             </h3>
             <button
@@ -1508,13 +1508,13 @@ function TemplateSelectionModal({
           </div>
 
           {/* Search */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-4 border-b border-dark-border">
             <input
               type="text"
               placeholder="Search templates..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
             />
           </div>
 
@@ -1537,7 +1537,7 @@ function TemplateSelectionModal({
                     }`}
                   >
                       <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                        <h4 className="font-medium text-text-primary">
                           {template.name}
                         </h4>
                         <div className="flex items-center space-x-2">
@@ -1556,7 +1556,7 @@ function TemplateSelectionModal({
                         </div>
                       </div>
                       {template.description && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="text-sm text-text-secondary mt-1">
                           {template.description}
                         </p>
                       )}
@@ -1571,10 +1571,10 @@ function TemplateSelectionModal({
           </div>
 
           {/* Footer */}
-          <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex gap-3">
+          <div className="border-t border-dark-border p-4 flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               Cancel
             </button>

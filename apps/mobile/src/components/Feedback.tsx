@@ -11,7 +11,7 @@ export function LoadingSkeleton({ className = '', lines = 1 }: LoadingSkeletonPr
       {Array.from({ length: lines }).map((_, index) => (
         <div
           key={index}
-          className="bg-gray-200 dark:bg-gray-700 rounded h-4 mb-2 last:mb-0"
+          className="bg-dark-elevated rounded h-4 mb-2 last:mb-0"
           style={{ width: `${Math.random() * 40 + 60}%` }}
         />
       ))}
@@ -32,10 +32,10 @@ export function EmptyState({ icon = '📝', title, description, action }: EmptyS
       <div className="text-6xl mb-4" aria-hidden="true">
         {icon}
       </div>
-      <h3 className="text-heading font-semibold text-gray-900 dark:text-gray-100 mb-2">
+      <h3 className="text-heading font-semibold text-text-primary mb-2">
         {title}
       </h3>
-      <p className="text-body text-gray-600 dark:text-gray-400 mb-6 max-w-sm mx-auto">
+      <p className="text-body text-text-secondary mb-6 max-w-sm mx-auto">
         {description}
       </p>
       {action && (
@@ -63,10 +63,10 @@ export function Toast({ type, message, onClose, autoClose = true }: ToastProps) 
   }, [autoClose, onClose])
 
   const typeStyles = {
-    success: 'bg-green-50 dark:bg-green-900/50 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200',
-    error: 'bg-red-50 dark:bg-red-900/50 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200',
-    warning: 'bg-yellow-50 dark:bg-yellow-900/50 border-yellow-200 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200',
-    info: 'bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200'
+    success: 'bg-green-900/90 border-green-700 text-green-100',
+    error: 'bg-red-900/90 border-red-700 text-red-100',
+    warning: 'bg-yellow-900/90 border-yellow-700 text-yellow-100',
+    info: 'bg-orange-900/90 border-orange-primary text-orange-100'
   }
 
   const icons = {

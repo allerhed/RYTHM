@@ -93,7 +93,7 @@ function ExerciseDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-2xl font-bold text-text-primary mb-4">
             Please log in to view exercise details
           </h1>
         </div>
@@ -119,7 +119,7 @@ function ExerciseDetailPage() {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading exercise data...</p>
+            <p className="mt-4 text-text-secondary">Loading exercise data...</p>
           </div>
         </div>
       </div>
@@ -152,10 +152,10 @@ function ExerciseDetailPage() {
 
           <div className="text-center py-12">
             <TrophyIcon className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <h2 className="text-xl font-semibold text-text-primary mb-2">
               No records yet
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-text-secondary mb-6">
               Add your first record for this exercise
             </p>
             <Link
@@ -188,7 +188,7 @@ function ExerciseDetailPage() {
         {/* Exercise Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-3xl font-bold text-text-primary">
               {exerciseData.exerciseName}
             </h1>
             <Link
@@ -199,7 +199,7 @@ function ExerciseDetailPage() {
               Add Record
             </Link>
           </div>
-          <p className="text-gray-600 dark:text-gray-400">{exerciseData.distance}</p>
+          <p className="text-text-secondary">{exerciseData.distance}</p>
         </div>
 
         {/* Current Best */}
@@ -224,14 +224,14 @@ function ExerciseDetailPage() {
         {/* Statistics */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
-            <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">Total Attempts</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <p className="text-text-secondary text-sm mb-1">Total Attempts</p>
+            <p className="text-2xl font-bold text-text-primary">
               {exerciseData.history.length}
             </p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
-            <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">Avg Time</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <p className="text-text-secondary text-sm mb-1">Avg Time</p>
+            <p className="text-2xl font-bold text-text-primary">
               {formatTime(
                 exerciseData.history.reduce((sum, h) => sum + h.timeSeconds, 0) / 
                 exerciseData.history.length
@@ -239,24 +239,24 @@ function ExerciseDetailPage() {
             </p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
-            <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">Multiplier</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <p className="text-text-secondary text-sm mb-1">Multiplier</p>
+            <p className="text-2xl font-bold text-text-primary">
               {exerciseData.multiplier}x
             </p>
           </div>
         </div>
 
         {/* History */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <div className="bg-dark-card rounded-xl border border-dark-border overflow-hidden">
+          <div className="px-6 py-4 border-b border-dark-border">
+            <h2 className="text-xl font-semibold text-text-primary">
               History ({exerciseData.history.length} attempts)
             </h2>
           </div>
           
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-900">
+              <thead className="bg-dark-primary">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Date
@@ -281,14 +281,14 @@ function ExerciseDetailPage() {
                     key={record.historyId}
                     className={index === 0 ? 'bg-blue-50 dark:bg-blue-900/20' : ''}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
                       {formatDate(record.achievedDate)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`text-lg font-semibold ${
                         index === 0 
                           ? 'text-blue-600 dark:text-blue-400' 
-                          : 'text-gray-900 dark:text-gray-100'
+                          : 'text-text-primary'
                       }`}>
                         {formatTime(record.timeSeconds)}
                       </span>
@@ -298,10 +298,10 @@ function ExerciseDetailPage() {
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
                       {record.heartRate ? `${record.heartRate} bpm` : '-'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 max-w-xs truncate">
+                    <td className="px-6 py-4 text-sm text-text-secondary max-w-xs truncate">
                       {record.notes || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">

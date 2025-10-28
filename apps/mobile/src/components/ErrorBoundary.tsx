@@ -56,10 +56,10 @@ class ErrorBoundary extends Component<Props, State> {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <h1 className="text-xl font-semibold text-text-primary mb-2">
               Something went wrong
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-text-secondary mb-4">
               We encountered an unexpected error. Please try refreshing the page.
             </p>
             <div className="space-y-2">

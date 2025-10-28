@@ -343,7 +343,7 @@ export default function RegisterPage() {
           {/* Terms and login link */}
           <div className="mt-8 space-y-4">
             {step === 2 && (
-              <p className="text-sm text-center text-gray-600 dark:text-gray-400 leading-relaxed">
+              <p className="text-sm text-center text-text-secondary leading-relaxed">
                 By creating an account, you agree to our{' '}
                 <Link href="/terms" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors">
                   Terms of Service
@@ -356,7 +356,7 @@ export default function RegisterPage() {
             )}
             
             <div className="text-center">
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-text-secondary">
                 Already training with RYTHM?{' '}
                 <Link 
                   href="/auth/login" 
@@ -375,19 +375,19 @@ export default function RegisterPage() {
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center mb-2">
                   <span className="text-blue-600 dark:text-blue-400">📊</span>
                 </div>
-                <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Smart Analytics</span>
+                <span className="text-xs text-text-secondary font-medium">Smart Analytics</span>
               </div>
               <div className="flex flex-col items-center">
                 <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center mb-2">
                   <span className="text-green-600 dark:text-green-400">💪</span>
                 </div>
-                <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">All Training</span>
+                <span className="text-xs text-text-secondary font-medium">All Training</span>
               </div>
               <div className="flex flex-col items-center">
                 <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-xl flex items-center justify-center mb-2">
                   <span className="text-purple-600 dark:text-purple-400">📈</span>
                 </div>
-                <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Progress Tracking</span>
+                <span className="text-xs text-text-secondary font-medium">Progress Tracking</span>
               </div>
             </div>
           )}

@@ -83,7 +83,7 @@ export default function PRDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-dark-primary">
         <Header title="Loading..." showBack onBack={() => router.back()} />
         <div className="pt-16 flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -94,7 +94,7 @@ export default function PRDetailPage() {
 
   if (error || !pr) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-dark-primary">
         <Header title="Error" showBack onBack={() => router.back()} />
         <div className="pt-16 px-4 py-4">
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -109,16 +109,16 @@ export default function PRDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-dark-primary">
       <Header title={pr.exerciseName} showBack onBack={() => router.back()} />
 
       <div className="pt-16 pb-20 max-w-2xl mx-auto">
         {/* Current PR Card */}
-        <div className="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg mx-4 mb-4 p-6">
+        <div className="bg-dark-card shadow-sm border border-dark-border rounded-lg mx-4 mb-4 p-6">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{pr.metricName}</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{pr.exerciseName}</p>
+              <h2 className="text-xl font-bold text-text-primary">{pr.metricName}</h2>
+              <p className="text-sm text-text-secondary mt-1">{pr.exerciseName}</p>
             </div>
             <span
               className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryBadgeClass(
@@ -130,19 +130,19 @@ export default function PRDetailPage() {
           </div>
 
           <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-4 border border-blue-100 dark:border-blue-800">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Current Record</p>
+            <p className="text-sm text-text-secondary mb-1">Current Record</p>
             <p className="text-4xl font-bold text-blue-600 dark:text-blue-400">
               {pr.currentValue} {pr.currentUnit}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-sm text-text-secondary mt-2">
               Achieved on {formatDate(pr.currentDate)}
             </p>
           </div>
 
           {pr.notes && (
             <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
-              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Notes</p>
-              <p className="text-sm text-gray-900 dark:text-gray-100">{pr.notes}</p>
+              <p className="text-xs font-medium text-text-secondary mb-1">Notes</p>
+              <p className="text-sm text-text-primary">{pr.notes}</p>
             </div>
           )}
 
@@ -155,7 +155,7 @@ export default function PRDetailPage() {
             </button>
             <button
               onClick={() => router.push(`/prs/${prId}/edit`)}
-              className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="flex-1 bg-dark-elevated text-gray-700 dark:text-gray-300 py-3 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
               Edit PR
             </button>
@@ -165,16 +165,16 @@ export default function PRDetailPage() {
         {/* History Section */}
         <div className="mx-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            <h3 className="text-lg font-bold text-text-primary">
               History
             </h3>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-text-secondary">
               {pr.history.length} {pr.history.length === 1 ? 'record' : 'records'}
             </span>
           </div>
 
           {pr.history.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg p-8 text-center">
+            <div className="bg-dark-card shadow-sm border border-dark-border rounded-lg p-8 text-center">
               <p className="text-gray-500 dark:text-gray-400">No historical records yet</p>
               <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
                 Add records to track your progress over time
@@ -191,16 +191,16 @@ export default function PRDetailPage() {
                 return (
                   <div
                     key={record.historyId}
-                    className={`bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm transition-all ${
+                    className={`bg-dark-card rounded-lg p-4 border shadow-sm transition-all ${
                       isCurrent 
                         ? 'border-blue-500 dark:border-blue-400' 
-                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                        : 'border-dark-border hover:border-gray-300 dark:hover:border-gray-600'
                     }`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                          <p className="text-2xl font-bold text-text-primary">
                             {record.value} {record.unit}
                           </p>
                           {isCurrent && (
@@ -209,7 +209,7 @@ export default function PRDetailPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-text-secondary">
                           {formatDate(record.achievedDate)}
                         </p>
                         {record.notes && (

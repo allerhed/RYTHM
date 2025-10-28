@@ -371,7 +371,7 @@ function TemplatesPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-2xl font-bold text-text-primary mb-4">
             Please log in to view your workout templates
           </h1>
         </div>
@@ -380,17 +380,17 @@ function TemplatesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+    <div className="min-h-screen bg-dark-primary pb-20">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-dark-card shadow-sm border-b border-dark-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-4 sm:py-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
+                <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">
                   Workout Templates
                 </h1>
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                <p className="mt-1 text-sm text-text-secondary">
                   Create and manage reusable workout templates
                 </p>
               </div>
@@ -413,7 +413,7 @@ function TemplatesPage() {
                   placeholder="Search templates..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="block w-full h-12 px-4 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                  className="block w-full h-12 px-4 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary shadow-sm focus:border-blue-500 focus:ring-blue-500 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                 />
               </div>
               <div>
@@ -422,7 +422,7 @@ function TemplatesPage() {
                   id="scope-filter"
                   value={selectedScope}
                   onChange={(e) => setSelectedScope(e.target.value as any)}
-                  className="block w-full h-12 px-4 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="block w-full h-12 px-4 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option value="all">All Templates</option>
                   <option value="user">My Templates</option>
@@ -452,7 +452,7 @@ function TemplatesPage() {
           <div className="text-center py-12 px-4">
             <div className="max-w-md mx-auto">
               <ClipboardDocumentIcon className="mx-auto h-16 w-16 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">
+              <h3 className="mt-4 text-lg font-medium text-text-primary">
                 No templates found
               </h3>
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
@@ -476,15 +476,15 @@ function TemplatesPage() {
             {templates.map((template: WorkoutTemplate) => (
               <div
                 key={template.template_id}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 sm:p-6 hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200"
+                className="bg-dark-card rounded-xl shadow-sm border border-dark-border p-5 sm:p-6 hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 truncate">
+                    <h3 className="text-lg font-semibold text-text-primary mb-2 truncate">
                       {template.name}
                     </h3>
                     {template.description && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                      <p className="text-sm text-text-secondary mb-3 line-clamp-2">
                         {template.description}
                       </p>
                     )}
@@ -525,7 +525,7 @@ function TemplatesPage() {
                   {template.exercises?.sort((a, b) => a.order - b.order).slice(0, 3).map((exercise, index) => (
                     <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block">
+                        <span className="text-sm font-medium text-text-primary truncate block">
                           {exercise.name}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -565,11 +565,11 @@ function TemplatesPage() {
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowCreateModal(false)} />
             
-            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md max-h-[90vh] flex flex-col">
+            <div className="inline-block align-bottom bg-dark-card rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md max-h-[90vh] flex flex-col">
               {/* Modal Header */}
-              <div className="bg-white dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+              <div className="bg-dark-card px-6 py-4 border-b border-dark-border flex-shrink-0">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                  <h3 className="text-xl font-semibold text-text-primary">
                     {editingTemplate ? 'Edit Template' : 'Create New Template'}
                   </h3>
                   <button
@@ -597,7 +597,7 @@ function TemplatesPage() {
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         placeholder="Enter template name"
-                        className="block w-full h-12 px-4 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
+                        className="block w-full h-12 px-4 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary focus:border-blue-500 focus:ring-blue-500"
                         required
                       />
                     </div>
@@ -612,7 +612,7 @@ function TemplatesPage() {
                         onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                         placeholder="Describe this template (optional)"
                         rows={3}
-                        className="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500 resize-none"
+                        className="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary focus:border-blue-500 focus:ring-blue-500 resize-none"
                       />
                     </div>
                   </div>
@@ -620,7 +620,7 @@ function TemplatesPage() {
                   {/* Exercises Section */}
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                      <h4 className="text-lg font-medium text-text-primary">
                         Exercises ({formData.exercises.length})
                       </h4>
                       <button
@@ -635,7 +635,7 @@ function TemplatesPage() {
                     {formData.exercises.length === 0 ? (
                       <div className="text-center py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
                         <ClipboardDocumentIcon className="mx-auto h-12 w-12 text-gray-400" />
-                        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No exercises</h3>
+                        <h3 className="mt-2 text-sm font-medium text-text-primary">No exercises</h3>
                         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                           Add exercises to create your template
                         </p>
@@ -664,7 +664,7 @@ function TemplatesPage() {
                                   value={exercise.name}
                                   onChange={(e) => updateExercise(index, { ...exercise, name: e.target.value })}
                                   placeholder="e.g., Bench Press"
-                                  className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:border-blue-500 focus:ring-blue-500"
+                                  className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm focus:border-blue-500 focus:ring-blue-500"
                                 />
                               </div>
                               <div className="flex items-center gap-2 ml-3">
@@ -720,7 +720,7 @@ function TemplatesPage() {
                                   id={`exercise-category-${index}`}
                                   value={exercise.category}
                                   onChange={(e) => updateExercise(index, { ...exercise, category: e.target.value as any })}
-                                  className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:border-blue-500 focus:ring-blue-500"
+                                  className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm focus:border-blue-500 focus:ring-blue-500"
                                 >
                                   <option value="strength">Strength</option>
                                   <option value="cardio">Cardio</option>
@@ -740,7 +740,7 @@ function TemplatesPage() {
                                   placeholder="3"
                                   min="1"
                                   max="20"
-                                  className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:border-blue-500 focus:ring-blue-500"
+                                  className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm focus:border-blue-500 focus:ring-blue-500"
                                 />
                               </div>
                             </div>
@@ -752,7 +752,7 @@ function TemplatesPage() {
                               {/* Value 1 */}
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                  <label htmlFor={`value-1-type-${index}`} className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  <label htmlFor={`value-1-type-${index}`} className="block text-xs font-medium text-text-secondary mb-1">
                                     Value 1 Type
                                   </label>
                                   <select
@@ -763,7 +763,7 @@ function TemplatesPage() {
                                       value_1_type: e.target.value as SetValueType || undefined,
                                       value_1_default: e.target.value ? exercise.value_1_default || '' : undefined
                                     })}
-                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs focus:border-blue-500 focus:ring-blue-500"
                                   >
                                     <option value="">None</option>
                                     {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
@@ -772,7 +772,7 @@ function TemplatesPage() {
                                   </select>
                                 </div>
                                 <div>
-                                  <label htmlFor={`value-1-default-${index}`} className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  <label htmlFor={`value-1-default-${index}`} className="block text-xs font-medium text-text-secondary mb-1">
                                     Default Value
                                   </label>
                                   <input
@@ -782,7 +782,7 @@ function TemplatesPage() {
                                     onChange={(e) => updateExercise(index, { ...exercise, value_1_default: e.target.value })}
                                     placeholder={exercise.value_1_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_1_type] : 'Select type first'}
                                     disabled={!exercise.value_1_type}
-                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                   />
                                 </div>
                               </div>
@@ -790,7 +790,7 @@ function TemplatesPage() {
                               {/* Value 2 */}
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                  <label htmlFor={`value-2-type-${index}`} className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  <label htmlFor={`value-2-type-${index}`} className="block text-xs font-medium text-text-secondary mb-1">
                                     Value 2 Type
                                   </label>
                                   <select
@@ -801,7 +801,7 @@ function TemplatesPage() {
                                       value_2_type: e.target.value as SetValueType || undefined,
                                       value_2_default: e.target.value ? exercise.value_2_default || '' : undefined
                                     })}
-                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs focus:border-blue-500 focus:ring-blue-500"
                                   >
                                     <option value="">None</option>
                                     {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
@@ -810,7 +810,7 @@ function TemplatesPage() {
                                   </select>
                                 </div>
                                 <div>
-                                  <label htmlFor={`value-2-default-${index}`} className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  <label htmlFor={`value-2-default-${index}`} className="block text-xs font-medium text-text-secondary mb-1">
                                     Default Value
                                   </label>
                                   <input
@@ -820,14 +820,14 @@ function TemplatesPage() {
                                     onChange={(e) => updateExercise(index, { ...exercise, value_2_default: e.target.value })}
                                     placeholder={exercise.value_2_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_2_type] : 'Select type first'}
                                     disabled={!exercise.value_2_type}
-                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                   />
                                 </div>
                               </div>
 
                               {/* Quick preset buttons for common combinations */}
                               <div className="mt-2">
-                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                <label className="block text-xs font-medium text-text-secondary mb-1">
                                   Quick Presets
                                 </label>
                                 <div className="flex flex-wrap gap-1">
@@ -862,7 +862,7 @@ function TemplatesPage() {
               <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3 flex-shrink-0">
                 <button
                   onClick={() => setShowCreateModal(false)}
-                  className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                  className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
                   Cancel
                 </button>
@@ -895,19 +895,19 @@ function TemplatesPage() {
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowDeleteModal(null)} />
             
-            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="bg-white dark:bg-gray-800 px-6 pt-6 pb-4">
+            <div className="inline-block align-bottom bg-dark-card rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-dark-card px-6 pt-6 pb-4">
                 <div className="sm:flex sm:items-start">
                   <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 sm:mx-0 sm:h-10 sm:w-10">
                     <ExclamationTriangleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-semibold text-gray-900 dark:text-gray-100">
+                    <h3 className="text-lg leading-6 font-semibold text-text-primary">
                       Delete Template
                     </h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Are you sure you want to delete <span className="font-medium text-gray-900 dark:text-gray-100">"{showDeleteModal.name}"</span>? 
+                        Are you sure you want to delete <span className="font-medium text-text-primary">"{showDeleteModal.name}"</span>? 
                         This action cannot be undone and will permanently remove this template.
                       </p>
                     </div>
@@ -917,7 +917,7 @@ function TemplatesPage() {
               <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex flex-col sm:flex-row sm:justify-end gap-3">
                 <button
                   onClick={() => setShowDeleteModal(null)}
-                  className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                  className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-3 min-h-[48px] border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
                   Cancel
                 </button>
@@ -1002,10 +1002,10 @@ function AddExerciseModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
+      <div className="bg-dark-card rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Exercise</h2>
+        <div className="flex items-center justify-between p-4 border-b border-dark-border">
+          <h2 className="text-lg font-semibold text-text-primary">Add Exercise</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={onShowCustomModal}
@@ -1023,18 +1023,18 @@ function AddExerciseModal({
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-dark-border">
           <input
             type="text"
             placeholder="Search exercises..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
           />
         </div>
 
         {/* Exercise Type Filter */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-dark-border">
           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Exercise Type</h4>
           <div className="flex gap-2">
             {types.map(type => (
@@ -1044,7 +1044,7 @@ function AddExerciseModal({
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedType === type
                     ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {type === 'all' ? `All (${templates.length})` : 
@@ -1056,7 +1056,7 @@ function AddExerciseModal({
         </div>
 
         {/* Category Filter */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-b border-dark-border">
           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</h4>
           <div className="flex gap-2 flex-wrap">
             {categories.map(category => (
@@ -1066,7 +1066,7 @@ function AddExerciseModal({
                 className={`px-3 py-1 rounded-full text-sm capitalize transition-colors ${
                   selectedCategory === category
                     ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {category}
@@ -1091,7 +1091,7 @@ function AddExerciseModal({
                   className="w-full text-left px-3 py-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="text-gray-900 dark:text-gray-100">{template.name}</div>
+                    <div className="text-text-primary">{template.name}</div>
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       template.exercise_type === 'STRENGTH' 
                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 

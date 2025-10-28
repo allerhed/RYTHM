@@ -166,8 +166,8 @@ function WorkoutHistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="bg-white dark:bg-gray-800 shadow-sm">
+      <div className="min-h-screen bg-dark-primary">
+        <div className="bg-dark-card shadow-sm">
           <div className="px-4 py-3">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               Workout History
@@ -182,9 +182,9 @@ function WorkoutHistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-dark-primary">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-dark-card shadow-sm border-b border-dark-border">
         <div className="px-4 py-4">
           <div className="flex items-center justify-center mb-4">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -198,7 +198,7 @@ function WorkoutHistoryPage() {
               onClick={() => navigateMonth('prev')}
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
@@ -209,7 +209,7 @@ function WorkoutHistoryPage() {
               onClick={() => navigateMonth('next')}
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -273,7 +273,7 @@ function WorkoutHistoryPage() {
 
       {/* Legend */}
       <div className="px-4 pb-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+        <div className="bg-dark-card rounded-lg p-4 shadow-sm">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Legend</h3>
           <div className="flex flex-wrap gap-4">
             {Object.entries(CATEGORY_COLORS).map(([category, colorClass]) => (
@@ -290,7 +290,7 @@ function WorkoutHistoryPage() {
 
       {/* Summary Stats */}
       <div className="px-4 pb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+        <div className="bg-dark-card rounded-lg p-4 shadow-sm">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
             {formatMonthYear(currentDate)} Summary
           </h3>
