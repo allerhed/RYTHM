@@ -73,7 +73,7 @@ function EquipmentModal({ isOpen, onClose, equipment, onSave }: EquipmentModalPr
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-2xl shadow-2xl border border-gray-700 max-w-md w-full">
+      <div className="bg-dark-elevated1 rounded-2xl shadow-2xl border border-gray-700 max-w-md w-full">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-white">
@@ -165,7 +165,7 @@ function EquipmentModal({ isOpen, onClose, equipment, onSave }: EquipmentModalPr
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 disabled:opacity-50"
+                className="flex-1 px-4 py-2 btn-primary rounded-lg transition-all duration-200 disabled:opacity-50"
               >
                 {isLoading ? 'Saving...' : equipment ? 'Update' : 'Create'}
               </button>
@@ -362,7 +362,7 @@ export default function EquipmentPage() {
           </div>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg"
+            className="px-4 py-2 btn-primary rounded-lg transition-all duration-200 shadow-lg"
           >
             Add Equipment
           </button>
@@ -484,10 +484,10 @@ export default function EquipmentPage() {
         {!loading && equipment.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {equipment.map((item) => (
-              <div key={item.equipment_id} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
+              <div key={item.equipment_id} className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg text-white">
+                    <div className="icon-accent h-12 w-12">
                       {getCategoryIcon(item.category)}
                     </div>
                     <div>

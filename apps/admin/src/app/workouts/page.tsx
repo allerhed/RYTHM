@@ -206,7 +206,7 @@ export default function WorkoutsPage() {
         {!loading && sessions.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sessions.map((workout) => (
-              <div key={workout.id} className="rounded-2xl bg-gradient-to-b from-[#1a1a1a] to-[#232323] shadow-xl border border-dark-border p-6 hover:shadow-2xl transition-all duration-300 relative">
+              <div key={workout.id} className="rounded-2xl bg-dark-elevated1 shadow-xl border border-dark-border p-6 hover:shadow-2xl transition-all duration-300 relative">
                 <div className="accent-bar" />
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
