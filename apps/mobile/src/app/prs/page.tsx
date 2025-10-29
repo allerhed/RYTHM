@@ -174,7 +174,7 @@ function PersonalRecordsPage() {
               </p>
               <div className="mt-6">
                 <Link href="/prs/new">
-                  <button className="btn-primary inline-flex items-center">
+                  <button className="btn btn-primary inline-flex items-center">
                     <PlusIcon className="h-5 w-5 mr-2" />
                     Add Personal Record
                   </button>
@@ -291,7 +291,7 @@ function PersonalRecordsPage() {
           {/* Add PR Button - Fixed at bottom */}
           <div className="mt-8">
             <Link href="/prs/new">
-              <button className="btn-primary w-full inline-flex items-center justify-center">
+              <button className="btn btn-primary w-full inline-flex items-center justify-center">
                 <PlusIcon className="h-5 w-5 mr-2" />
                 Add Personal Record
               </button>
