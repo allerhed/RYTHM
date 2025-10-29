@@ -94,16 +94,16 @@ className="bg-orange-500"  // Wrong for hybrid
 
 // Form Inputs (Updated 2025-10-29: Standardized across all pages)
 <input 
-  className="w-full px-3 py-2 border border-dark-border bg-dark-card 
+  className="w-full px-3 py-2 border border-dark-border bg-dark-input 
              text-text-primary placeholder:text-text-tertiary 
              focus:border-orange-primary focus:ring-orange-primary"
 />
 <select
-  className="w-full px-3 py-2 border border-dark-border bg-dark-card 
+  className="w-full px-3 py-2 border border-dark-border bg-dark-input 
              text-text-primary focus:border-orange-primary focus:ring-orange-primary"
 />
 <textarea
-  className="w-full px-3 py-2 border border-dark-border bg-dark-card 
+  className="w-full px-3 py-2 border border-dark-border bg-dark-input 
              text-text-primary placeholder:text-text-tertiary 
              focus:border-orange-primary focus:ring-orange-primary resize-none"
 />
@@ -135,6 +135,11 @@ className="bg-orange-500"  // Wrong for hybrid
   - [ ] Input fields use semantic tokens (bg-dark-card, border-dark-border, focus:border-orange-primary)
 
 ### Recent Migrations
+- **2025-10-29:** Input field contrast improvement
+  - Added new CSS variable `--dark-input: #8C8C8C` for lighter input backgrounds
+  - Replaced all input/select/textarea `bg-dark-card` → `bg-dark-input`
+  - Centralized input styling in globals.css with new `.bg-dark-input` helper class
+  - Improved visual contrast between input fields and surrounding UI
 - **2025-10-29:** Standardized all input/select/textarea fields across mobile app
   - Replaced `bg-white dark:bg-gray-700` → `bg-dark-card`
   - Replaced `border-gray-300 dark:border-gray-600` → `border-dark-border`

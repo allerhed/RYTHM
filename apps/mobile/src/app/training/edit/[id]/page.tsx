@@ -651,7 +651,7 @@ function EditWorkoutPage() {
                   type="date"
                   value={workoutDate.toISOString().split('T')[0]}
                   onChange={(e) => setWorkoutDate(new Date(e.target.value))}
-                  className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+                  className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -665,7 +665,7 @@ function EditWorkoutPage() {
                   min="01:00"
                   max="10:00"
                   step="60"
-                  className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+                  className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
                 />
               </div>
             </div>

@@ -265,7 +265,7 @@ function ViewWorkoutPage() {
               <label className="block text-sm font-medium text-text-primary mb-1">
                 Workout Name
               </label>
-              <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary">
+              <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary">
                 {session.name || `${session.category.charAt(0).toUpperCase() + session.category.slice(1)} Workout`}
               </div>
             </div>
@@ -298,7 +298,7 @@ function ViewWorkoutPage() {
                 <label className="block text-sm font-medium text-text-primary mb-1">
                   Date
                 </label>
-                <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary">
+                <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary">
                   {new Date(session.started_at).toLocaleDateString('sv-SE')}
                 </div>
               </div>
@@ -306,7 +306,7 @@ function ViewWorkoutPage() {
                 <label className="block text-sm font-medium text-text-primary mb-1">
                   Duration
                 </label>
-                <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary">
+                <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary">
                   {formatDuration(session.duration_seconds)}
                 </div>
               </div>
@@ -319,7 +319,7 @@ function ViewWorkoutPage() {
           <label className="block text-sm font-medium text-text-primary mb-2">
             Training Load
           </label>
-          <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary">
+          <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary">
             {session.training_load || 'Not recorded'}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -370,7 +370,7 @@ function ViewWorkoutPage() {
             <label className="block text-sm font-medium text-text-primary mb-2">
               Workout Notes
             </label>
-            <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary">
+            <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary">
               {session.notes}
             </div>
           </div>

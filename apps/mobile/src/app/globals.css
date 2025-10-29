@@ -25,6 +25,7 @@
   --dark-primary: var(--color-black);
   --dark-secondary: var(--color-dark-grey);
   --dark-card: #232323;
+  --dark-input: #8C8C8C; /* Input field background (Updated 2025-10-29) */
   --dark-border: #2A2A2A;
   --dark-elevated: #2D2D2D;
 
@@ -81,6 +82,7 @@
 .bg-dark-elevated0 { background: var(--dark-secondary); }
 .bg-dark-elevated1 { background: var(--dark-card); }
 .bg-dark-elevated { background: var(--dark-elevated); }
+.bg-dark-input { background: var(--dark-input); }
 .bg-primary { background: var(--orange-primary); }
 .bg-primary-hover { background: var(--orange-hover); }
 .text-primary { color: var(--orange-primary); }
@@ -251,7 +253,7 @@ body {
   padding: 0.75rem 1rem;
   border: 1px solid var(--dark-border);
   border-radius: var(--radius-card);
-  background: var(--dark-card);
+  background: var(--dark-input);
   color: var(--text-primary);
   font-size: var(--font-size-body);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
