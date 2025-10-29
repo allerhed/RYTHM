@@ -135,6 +135,13 @@ className="bg-orange-500"  // Wrong for hybrid
   - [ ] Input fields use semantic tokens (bg-dark-card, border-dark-border, focus:border-orange-primary)
 
 ### Recent Migrations
+- **2025-10-29:** Navigation menu orange accent consistency
+  - Updated HamburgerMenu component to use orange for all interactive elements
+  - Changed dividers from `border-dark-border` → `border-orange-primary/30` (header, user profile, footer)
+  - Changed close button X icon from grey → `text-orange-primary`
+  - Changed hamburger menu icon from grey → `text-orange-primary`
+  - Changed all navigation item icons from grey → `text-orange-primary` (no longer grey by default, orange on hover)
+  - Maintains sign-out as error color for distinction
 - **2025-10-29:** Input field contrast improvement
   - Added new CSS variable `--dark-input: #8C8C8C` for lighter input backgrounds
   - Replaced all input/select/textarea `bg-dark-card` → `bg-dark-input`

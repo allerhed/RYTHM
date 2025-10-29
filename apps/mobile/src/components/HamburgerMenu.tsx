@@ -119,7 +119,7 @@ export function HamburgerMenu() {
         className="fixed top-4 right-4 z-40 p-2 rounded-lg bg-dark-elevated1 shadow-lg border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-all"
         aria-label="Open navigation menu"
       >
-        <Bars3Icon className="w-6 h-6 text-text-secondary" />
+        <Bars3Icon className="w-6 h-6 text-orange-primary" />
       </button>
 
       {/* Full-screen Overlay */}
@@ -131,7 +131,7 @@ export function HamburgerMenu() {
           <div className="absolute top-0 right-0 h-full w-full max-w-sm bg-dark-primary shadow-2xl transform transition-transform duration-300 ease-in-out">
             <div className="flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-dark-border">
+              <div className="flex items-center justify-between p-6 border-b border-orange-primary/30">
                 <h2 className="text-xl font-semibold text-text-primary">
                   Navigation
                 </h2>
@@ -140,13 +140,13 @@ export function HamburgerMenu() {
                   className="p-2 rounded-lg hover:bg-dark-elevated1 transition-colors"
                   aria-label="Close navigation menu"
                 >
-                  <XMarkIcon className="w-6 h-6 text-text-secondary" />
+                  <XMarkIcon className="w-6 h-6 text-orange-primary" />
                 </button>
               </div>
 
               {/* User Profile Section */}
               {user && (
-                <div className="p-6 border-b border-dark-border">
+                <div className="p-6 border-b border-orange-primary/30">
                   <div className="flex items-center space-x-4">
                     <Avatar user={user} size="lg" />
                     <div className="flex-1 min-w-0">
@@ -176,7 +176,7 @@ export function HamburgerMenu() {
                       onClick={() => handleNavigation(item.href)}
                       className="w-full flex items-center px-4 py-3 text-left rounded-lg hover:bg-dark-elevated1 transition-colors group"
                     >
-                      <Icon className="w-6 h-6 text-text-secondary group-hover:text-orange-primary transition-colors" />
+                      <Icon className="w-6 h-6 text-orange-primary transition-colors" />
                       <div className="ml-4 flex-1">
                         <div className="text-sm font-medium text-text-primary group-hover:text-orange-primary transition-colors">
                           {item.name}
@@ -193,7 +193,7 @@ export function HamburgerMenu() {
               </nav>
 
               {/* Footer Actions */}
-              <div className="p-4 border-t border-dark-border">
+              <div className="p-4 border-t border-orange-primary/30">
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center px-4 py-3 text-left rounded-lg hover:bg-error-soft transition-colors group"
