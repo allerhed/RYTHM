@@ -135,6 +135,12 @@ className="bg-orange-500"  // Wrong for hybrid
   - [ ] Input fields use semantic tokens (bg-dark-card, border-dark-border, focus:border-orange-primary)
 
 ### Recent Migrations
+- **2025-10-29:** Training Score widget card backgrounds updated
+  - Changed 4 stat cards from blue-grey (`bg-gray-50 dark:bg-gray-700`) → contrasting dark grey (`bg-dark-elevated`)
+  - Added borders (`border border-dark-border`) for better visual separation
+  - Cards affected: Selected Week load, Previous Week load, Weekly KG, Weekly KM
+  - Location: TrainingScoreWidget component used on dashboard
+  - **Rationale:** Blue-grey backgrounds inconsistent with semantic theme; dark grey provides better contrast while maintaining visual hierarchy
 - **2025-10-29:** Comprehensive input field and text color standardization
   - Updated CSS variables in `globals.css`:
     - `--dark-input: #8C8C8C` → `#666666` (medium grey for better visual balance)
