@@ -413,7 +413,7 @@ function TemplatesPage() {
                   placeholder="Search templates..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="block w-full h-12 px-4 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary shadow-sm focus:border-blue-500 focus:ring-orange-primary placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                  className="block w-full h-12 px-4 rounded-lg border-dark-border bg-dark-card text-text-primary shadow-sm focus:border-orange-primary focus:ring-orange-primary placeholder:text-text-tertiary"
                 />
               </div>
               <div>
@@ -422,7 +422,7 @@ function TemplatesPage() {
                   id="scope-filter"
                   value={selectedScope}
                   onChange={(e) => setSelectedScope(e.target.value as any)}
-                  className="block w-full h-12 px-4 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary shadow-sm focus:border-blue-500 focus:ring-orange-primary"
+                  className="block w-full h-12 px-4 rounded-lg border-dark-border bg-dark-card text-text-primary shadow-sm focus:border-orange-primary focus:ring-orange-primary"
                 >
                   <option value="all">All Templates</option>
                   <option value="user">My Templates</option>
@@ -597,7 +597,7 @@ function TemplatesPage() {
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         placeholder="Enter template name"
-                        className="block w-full h-12 px-4 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary focus:border-blue-500 focus:ring-orange-primary"
+                        className="block w-full h-12 px-4 rounded-lg border-dark-border bg-dark-card text-text-primary focus:border-orange-primary focus:ring-orange-primary"
                         required
                       />
                     </div>
@@ -612,7 +612,7 @@ function TemplatesPage() {
                         onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                         placeholder="Describe this template (optional)"
                         rows={3}
-                        className="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary focus:border-blue-500 focus:ring-orange-primary resize-none"
+                        className="block w-full px-4 py-3 rounded-lg border-dark-border bg-dark-card text-text-primary focus:border-orange-primary focus:ring-orange-primary resize-none"
                       />
                     </div>
                   </div>
@@ -633,7 +633,7 @@ function TemplatesPage() {
                     </div>
                     
                     {formData.exercises.length === 0 ? (
-                      <div className="text-center py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+                      <div className="text-center py-8 border-2 border-dashed border-dark-border rounded-lg">
                         <ClipboardDocumentIcon className="mx-auto h-12 w-12 text-gray-400" />
                         <h3 className="mt-2 text-sm font-medium text-text-primary">No exercises</h3>
                         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -664,7 +664,7 @@ function TemplatesPage() {
                                   value={exercise.name}
                                   onChange={(e) => updateExercise(index, { ...exercise, name: e.target.value })}
                                   placeholder="e.g., Bench Press"
-                                  className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm focus:border-blue-500 focus:ring-orange-primary"
+                                  className="block w-full h-10 px-3 rounded-lg border-dark-border bg-dark-card text-text-primary text-sm focus:border-orange-primary focus:ring-orange-primary"
                                 />
                               </div>
                               <div className="flex items-center gap-2 ml-3">
@@ -720,7 +720,7 @@ function TemplatesPage() {
                                   id={`exercise-category-${index}`}
                                   value={exercise.category}
                                   onChange={(e) => updateExercise(index, { ...exercise, category: e.target.value as any })}
-                                  className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm focus:border-blue-500 focus:ring-orange-primary"
+                                  className="block w-full h-10 px-3 rounded-lg border-dark-border bg-dark-card text-text-primary text-sm focus:border-orange-primary focus:ring-orange-primary"
                                 >
                                   <option value="strength">Strength</option>
                                   <option value="cardio">Cardio</option>
@@ -740,7 +740,7 @@ function TemplatesPage() {
                                   placeholder="3"
                                   min="1"
                                   max="20"
-                                  className="block w-full h-10 px-3 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm focus:border-blue-500 focus:ring-orange-primary"
+                                  className="block w-full h-10 px-3 rounded-lg border-dark-border bg-dark-card text-text-primary text-sm focus:border-orange-primary focus:ring-orange-primary"
                                 />
                               </div>
                             </div>
@@ -763,7 +763,7 @@ function TemplatesPage() {
                                       value_1_type: e.target.value as SetValueType || undefined,
                                       value_1_default: e.target.value ? exercise.value_1_default || '' : undefined
                                     })}
-                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs focus:border-blue-500 focus:ring-orange-primary"
+                                    className="block w-full h-9 px-2 rounded-lg border-dark-border bg-dark-card text-text-primary text-xs focus:border-orange-primary focus:ring-orange-primary"
                                   >
                                     <option value="">None</option>
                                     {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
@@ -782,7 +782,7 @@ function TemplatesPage() {
                                     onChange={(e) => updateExercise(index, { ...exercise, value_1_default: e.target.value })}
                                     placeholder={exercise.value_1_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_1_type] : 'Select type first'}
                                     disabled={!exercise.value_1_type}
-                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs focus:border-blue-500 focus:ring-orange-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="block w-full h-9 px-2 rounded-lg border-dark-border bg-dark-card text-text-primary text-xs focus:border-orange-primary focus:ring-orange-primary disabled:opacity-50 disabled:cursor-not-allowed"
                                   />
                                 </div>
                               </div>
@@ -801,7 +801,7 @@ function TemplatesPage() {
                                       value_2_type: e.target.value as SetValueType || undefined,
                                       value_2_default: e.target.value ? exercise.value_2_default || '' : undefined
                                     })}
-                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs focus:border-blue-500 focus:ring-orange-primary"
+                                    className="block w-full h-9 px-2 rounded-lg border-dark-border bg-dark-card text-text-primary text-xs focus:border-orange-primary focus:ring-orange-primary"
                                   >
                                     <option value="">None</option>
                                     {Object.entries(VALUE_TYPE_LABELS).map(([value, label]) => (
@@ -820,7 +820,7 @@ function TemplatesPage() {
                                     onChange={(e) => updateExercise(index, { ...exercise, value_2_default: e.target.value })}
                                     placeholder={exercise.value_2_type ? VALUE_TYPE_PLACEHOLDERS[exercise.value_2_type] : 'Select type first'}
                                     disabled={!exercise.value_2_type}
-                                    className="block w-full h-9 px-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs focus:border-blue-500 focus:ring-orange-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="block w-full h-9 px-2 rounded-lg border-dark-border bg-dark-card text-text-primary text-xs focus:border-orange-primary focus:ring-orange-primary disabled:opacity-50 disabled:cursor-not-allowed"
                                   />
                                 </div>
                               </div>
@@ -1029,7 +1029,7 @@ function AddExerciseModal({
             placeholder="Search exercises..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
           />
         </div>
 

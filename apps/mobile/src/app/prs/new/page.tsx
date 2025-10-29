@@ -121,7 +121,7 @@ export default function NewPRPage() {
               <button
                 type="button"
                 onClick={() => setShowExercisePicker(true)}
-                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-left hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                className="w-full px-4 py-3 bg-dark-card border border-dark-border rounded-lg text-left hover:bg-dark-elevated1 transition-colors"
               >
                 {selectedExercise ? (
                   <span className="text-text-primary font-medium">{selectedExercise.name}</span>
@@ -130,13 +130,13 @@ export default function NewPRPage() {
                 )}
               </button>
             ) : (
-              <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
+              <div className="border border-dark-border rounded-lg overflow-hidden bg-dark-card">
                 <input
                   type="text"
                   placeholder="Search exercises..."
                   value={exerciseSearch}
                   onChange={(e) => setExerciseSearch(e.target.value)}
-                  className="w-full px-4 py-3 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-primary"
+                  className="w-full px-4 py-3 border-b border-dark-border bg-dark-card text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-orange-primary"
                   autoFocus
                 />
                 <div className="max-h-60 overflow-y-auto">
@@ -178,7 +178,7 @@ export default function NewPRPage() {
               value={metricName}
               onChange={(e) => setMetricName(e.target.value)}
               placeholder="e.g., 1RM, 3RM, 5k time"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+              className="w-full px-4 py-3 border border-dark-border rounded-lg bg-dark-card text-text-primary placeholder:text-text-tertiary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
               maxLength={100}
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
@@ -230,14 +230,14 @@ export default function NewPRPage() {
                 placeholder="150"
                 step="0.01"
                 min="0"
-                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+                className="flex-1 px-4 py-3 border border-dark-border rounded-lg bg-dark-card text-text-primary placeholder:text-text-tertiary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
               />
               <input
                 type="text"
                 value={valueUnit}
                 onChange={(e) => setValueUnit(e.target.value)}
                 placeholder="kg"
-                className="w-24 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+                className="w-24 px-4 py-3 border border-dark-border rounded-lg bg-dark-card text-text-primary placeholder:text-text-tertiary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
                 maxLength={20}
               />
             </div>
@@ -256,7 +256,7 @@ export default function NewPRPage() {
               value={achievedDate}
               onChange={(e) => setAchievedDate(e.target.value)}
               max={new Date().toISOString().split('T')[0]}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+              className="w-full px-4 py-3 border border-dark-border rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
             />
           </div>
 
@@ -270,7 +270,7 @@ export default function NewPRPage() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any notes about this PR..."
               rows={3}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-primary focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-dark-border rounded-lg bg-dark-card text-text-primary placeholder:text-text-tertiary focus:ring-2 focus:ring-orange-primary focus:border-transparent resize-none"
             />
           </div>
 

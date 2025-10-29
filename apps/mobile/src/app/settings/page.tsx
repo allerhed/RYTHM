@@ -200,7 +200,7 @@ function SettingsPage() {
                 if (item.id === 'language') setLanguage(e.target.value)
                 if (item.id === 'units') setUnits(e.target.value)
               }}
-              className="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 bg-white dark:bg-gray-700 text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-primary"
+              className="text-sm border border-dark-border rounded-md px-3 py-1 bg-dark-card text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-primary"
             >
               {item.options.map((option) => (
                 <option key={option.value} value={option.value}>

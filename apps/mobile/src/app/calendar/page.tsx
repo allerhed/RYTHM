@@ -238,7 +238,7 @@ function CalendarPage() {
       <PullToRefresh onRefresh={handleRefresh}>
         {/* Calendar Grid */}
         <div className="p-4">
-        <div className="bg-gray-800 rounded-lg p-1">
+        <div className="bg-dark-elevated rounded-lg p-1">
           <div className="grid grid-cols-7 gap-px">
             {calendarDays.map((day, index) => {
               const workoutsByCategory = getWorkoutsByCategory(day.workouts)
@@ -248,9 +248,9 @@ function CalendarPage() {
                 <div
                   key={index}
                   className={`
-                    relative aspect-square bg-gray-700 p-2 cursor-pointer transition-all duration-200
-                    ${day.isCurrentMonth ? 'hover:bg-gray-600 hover:scale-105 active:scale-95' : 'opacity-50 hover:bg-gray-650'}
-                    ${day.isToday ? 'ring-2 ring-blue-500' : ''}
+                    relative aspect-square bg-dark-elevated1 p-2 cursor-pointer transition-all duration-200
+                    ${day.isCurrentMonth ? 'hover:bg-dark-elevated hover:scale-105 active:scale-95' : 'opacity-50 hover:bg-dark-elevated'}
+                    ${day.isToday ? 'ring-2 ring-orange-primary' : ''}
                   `}
                   onClick={(e) => {
                     e.preventDefault()

@@ -604,20 +604,20 @@ function NewWorkoutPage() {
           <div className="space-y-4">
             {/* Workout Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-1">
                 Workout Name
               </label>
               <input
                 type="text"
                 value={workoutName}
                 onChange={(e) => setWorkoutName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
               />
             </div>
 
             {/* Activity Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Activity Type
               </label>
               <div className="flex gap-2">
@@ -628,7 +628,7 @@ function NewWorkoutPage() {
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                       activityType === type.toLowerCase()
                         ? 'bg-orange-primary text-white'
-                        : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        : 'bg-dark-elevated text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {type}
@@ -640,18 +640,18 @@ function NewWorkoutPage() {
             {/* Date and Duration */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Date
                 </label>
                 <input
                   type="date"
                   value={workoutDate.toISOString().split('T')[0]}
                   onChange={(e) => setWorkoutDate(new Date(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+                  className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Duration (Hours:Minutes)
                 </label>
                 <input
@@ -661,7 +661,7 @@ function NewWorkoutPage() {
                   min="01:00"
                   max="10:00"
                   step="60"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+                  className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
                 />
               </div>
             </div>
@@ -670,7 +670,7 @@ function NewWorkoutPage() {
 
         {/* Training Load */}
         <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-text-primary mb-2">
             Training Load
           </label>
           <input
@@ -678,9 +678,9 @@ function NewWorkoutPage() {
             value={trainingLoad || ''}
             onChange={(e) => setTrainingLoad(e.target.value ? parseInt(e.target.value) : null)}
             placeholder="Enter training load (optional)"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
           />
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-text-secondary mt-1">
             Subjective measure of workout intensity (e.g., 1-100)
           </p>
         </div>
@@ -715,7 +715,7 @@ function NewWorkoutPage() {
                 backgroundImage: `linear-gradient(to right, #FF8C42 0%, #FF8C42 ${(perceivedExertion - 1) * 11.11}%, #d1d5db ${(perceivedExertion - 1) * 11.11}%, #d1d5db 100%)`
               }}
             />
-            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+            <div className="flex justify-between text-xs text-text-secondary mt-2">
               <span>Resting</span>
               <span>Max Effort</span>
             </div>
@@ -747,14 +747,14 @@ function NewWorkoutPage() {
           <div className="space-y-2">
             <button
               onClick={() => setShowExerciseModal(true)}
-              className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-orange-primary hover:text-orange-primary dark:hover:text-orange-primary transition-colors"
+              className="w-full py-4 border-2 border-dashed border-dark-border rounded-lg text-text-secondary hover:border-orange-primary hover:text-orange-primary transition-colors"
             >
               + Add Exercise
             </button>
             
             <button
               onClick={() => setShowTemplateModal(true)}
-              className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-orange-primary hover:text-orange-primary dark:hover:text-orange-primary transition-colors"
+              className="w-full py-4 border-2 border-dashed border-dark-border rounded-lg text-text-secondary hover:border-orange-primary hover:text-orange-primary transition-colors"
             >
               + Add from Template
             </button>
@@ -765,14 +765,14 @@ function NewWorkoutPage() {
 
         {/* Notes */}
         <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-text-primary mb-2">
             Workout Notes
           </label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add any notes about your workout..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary resize-none"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary resize-none"
             rows={3}
           />
         </div>
@@ -867,7 +867,7 @@ function ExerciseCard({
             </button>
           </div>
           {exercise.muscle_groups && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-text-secondary">
               {exercise.muscle_groups.join(', ')}
               {exercise.equipment && ` • ${exercise.equipment}`}
             </p>
@@ -973,7 +973,7 @@ function SetRow({
   return (
     <div className="grid grid-cols-4 gap-4 items-center relative px-2">
       <div className="text-center min-w-[40px]">
-        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">SET</div>
+        <div className="text-xs text-text-secondary mb-1 font-medium">SET</div>
         <div className="text-lg font-bold text-text-primary">
           {set.setNumber}
         </div>
@@ -986,7 +986,7 @@ function SetRow({
             console.log('🔽 Value1 dropdown clicked:', { exerciseId, setId: set.id, currentType: set.value1Type })
             setActiveDropdown({exerciseId, setId: set.id, field: 'value1'})
           }}
-          className="dropdown-trigger w-full text-xs text-gray-500 dark:text-gray-400 mb-1 text-center hover:text-gray-700 dark:hover:text-gray-300 font-medium"
+          className="dropdown-trigger w-full text-xs text-text-secondary mb-1 text-center hover:text-gray-700 dark:hover:text-gray-300 font-medium"
         >
           {VALUE_TYPES.find(t => t.value === set.value1Type)?.unit || 'KGS'} ▼
         </button>
@@ -995,7 +995,7 @@ function SetRow({
           value={set.value1 || ''}
           onChange={(e) => onValueChange(set.id, 'value1', Number(e.target.value))}
           onBlur={(e) => onValueBlur(set.id, 'value1', Number(e.target.value))}
-          className="w-full text-center py-2 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-medium focus:ring-1 focus:ring-orange-primary focus:border-orange-primary"
+          className="w-full text-center py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
           placeholder="0"
         />
         
@@ -1010,7 +1010,7 @@ function SetRow({
                   onValueTypeChange(exerciseId, set.id, 'value1Type', type.value)
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
-                  set.value1Type === type.value ? 'bg-dark-elevated text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
+                  set.value1Type === type.value ? 'bg-dark-elevated text-primary-600 dark:text-primary-400' : 'text-text-primary'
                 }`}
               >
                 {type.label}
@@ -1027,7 +1027,7 @@ function SetRow({
             console.log('🔽 Value2 dropdown clicked:', { exerciseId, setId: set.id, currentType: set.value2Type })
             setActiveDropdown({exerciseId, setId: set.id, field: 'value2'})
           }}
-          className="dropdown-trigger w-full text-xs text-gray-500 dark:text-gray-400 mb-1 text-center hover:text-gray-700 dark:hover:text-gray-300 font-medium"
+          className="dropdown-trigger w-full text-xs text-text-secondary mb-1 text-center hover:text-gray-700 dark:hover:text-gray-300 font-medium"
         >
           {VALUE_TYPES.find(t => t.value === set.value2Type)?.unit || 'REPS'} ▼
         </button>
@@ -1036,7 +1036,7 @@ function SetRow({
           value={set.value2 || ''}
           onChange={(e) => onValueChange(set.id, 'value2', Number(e.target.value))}
           onBlur={(e) => onValueBlur(set.id, 'value2', Number(e.target.value))}
-          className="w-full text-center py-2 border border-gray-600 rounded-lg bg-gray-700 text-white text-lg font-medium focus:ring-1 focus:ring-orange-primary focus:border-orange-primary"
+          className="w-full text-center py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
           placeholder="0"
         />
         
@@ -1051,7 +1051,7 @@ function SetRow({
                   onValueTypeChange(exerciseId, set.id, 'value2Type', type.value)
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
-                  set.value2Type === type.value ? 'bg-dark-elevated text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
+                  set.value2Type === type.value ? 'bg-dark-elevated text-primary-600 dark:text-primary-400' : 'text-text-primary'
                 }`}
               >
                 {type.label}
@@ -1120,7 +1120,7 @@ function DatePickerModal({
             type="date"
             value={formatDateForInput(currentDate)}
             onChange={(e) => handleDateChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
           />
         </div>
 
@@ -1128,7 +1128,7 @@ function DatePickerModal({
         <div className="flex gap-3 p-4 border-t border-dark-border">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="flex-1 px-4 py-2 border border-dark-border rounded-lg text-text-primary hover:bg-dark-elevated1"
           >
             Cancel
           </button>
@@ -1192,7 +1192,7 @@ function TimePickerModal({
         <div className="p-4">
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Hours
               </label>
               <input
@@ -1201,11 +1201,11 @@ function TimePickerModal({
                 max="23"
                 value={hours}
                 onChange={(e) => setHours(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
               />
             </div>
             <div className="text-center">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Minutes
               </label>
               <input
@@ -1214,11 +1214,11 @@ function TimePickerModal({
                 max="59"
                 value={minutes}
                 onChange={(e) => setMinutes(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
               />
             </div>
             <div className="text-center">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Seconds
               </label>
               <input
@@ -1227,7 +1227,7 @@ function TimePickerModal({
                 max="59"
                 value={seconds}
                 onChange={(e) => setSeconds(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
               />
             </div>
           </div>
@@ -1242,7 +1242,7 @@ function TimePickerModal({
         <div className="flex gap-3 p-4 border-t border-dark-border">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="flex-1 px-4 py-2 border border-dark-border rounded-lg text-text-primary hover:bg-dark-elevated1"
           >
             Cancel
           </button>
@@ -1340,13 +1340,13 @@ function AddExerciseModal({
             placeholder="Search exercises..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
           />
         </div>
 
         {/* Exercise Type Filter */}
         <div className="p-4 border-b border-dark-border">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Exercise Type</h4>
+          <h4 className="text-sm font-medium text-text-primary mb-2">Exercise Type</h4>
           <div className="flex gap-2">
             {types.map(type => (
               <button
@@ -1355,7 +1355,7 @@ function AddExerciseModal({
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedType === type
                     ? 'bg-primary-500 text-white'
-                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {type === 'all' ? `All (${templates.length})` : 
@@ -1368,7 +1368,7 @@ function AddExerciseModal({
 
         {/* Category Filter */}
         <div className="p-4 border-b border-dark-border">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</h4>
+          <h4 className="text-sm font-medium text-text-primary mb-2">Category</h4>
           <div className="flex gap-2 flex-wrap">
             {categories.map(category => (
               <button
@@ -1377,7 +1377,7 @@ function AddExerciseModal({
                 className={`px-3 py-1 rounded-full text-sm capitalize transition-colors ${
                   selectedCategory === category
                     ? 'bg-primary-500 text-white'
-                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {category}
@@ -1389,7 +1389,7 @@ function AddExerciseModal({
         {/* Exercise List */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+            <h3 className="text-sm font-medium text-text-secondary mb-2">
               {searchQuery ? 'SEARCH RESULTS' : 
                selectedType !== 'all' ? `${selectedType} EXERCISES` : 
                'EXERCISE LIBRARY'} ({filteredTemplates.length})
@@ -1415,7 +1415,7 @@ function AddExerciseModal({
                       {template.exercise_type === 'STRENGTH' ? '💪 STR' : '🏃 CAR'}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <div className="text-xs text-text-secondary mt-1">
                     {template.muscle_groups.join(', ')} • {template.exercise_category}
                     {template.equipment && ` • ${template.equipment}`}
                   </div>
@@ -1429,7 +1429,7 @@ function AddExerciseModal({
 
           {/* No Results */}
           {searchQuery && filteredTemplates.length === 0 && (
-            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-4 text-center text-text-secondary">
               <p>No exercises found for "{searchQuery}"</p>
               <button
                 onClick={() => onAddExercise(searchQuery)}
@@ -1525,7 +1525,7 @@ function TemplateSelectionModal({
               placeholder="Search templates..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
             />
           </div>
 
@@ -1561,7 +1561,7 @@ function TemplateSelectionModal({
                           }`}>
                             {template.scope === 'user' ? 'Personal' : template.scope === 'tenant' ? 'Organization' : 'System'}
                           </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                          <span className="text-xs text-text-secondary">
                             {template.exercise_count} exercises
                           </span>
                         </div>
@@ -1575,7 +1575,7 @@ function TemplateSelectionModal({
                   ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <div className="text-center py-8 text-text-secondary">
                 No templates found
               </div>
             )}
@@ -1585,7 +1585,7 @@ function TemplateSelectionModal({
           <div className="border-t border-dark-border p-4 flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-text-secondary bg-dark-elevated0 hover:bg-dark-elevated1 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary transition-colors"
+              className="flex-1 px-4 py-2 border border-dark-border rounded-lg text-text-primary hover:bg-dark-elevated1"
             >
               Cancel
             </button>

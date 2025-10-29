@@ -262,17 +262,17 @@ function ViewWorkoutPage() {
           <div className="space-y-4">
             {/* Workout Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-1">
                 Workout Name
               </label>
-              <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary">
+              <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary">
                 {session.name || `${session.category.charAt(0).toUpperCase() + session.category.slice(1)} Workout`}
               </div>
             </div>
 
             {/* Activity Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Activity Type
               </label>
               <div className="flex gap-2">
@@ -283,7 +283,7 @@ function ViewWorkoutPage() {
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium ${
                       session.category.toLowerCase() === type.toLowerCase()
                         ? 'bg-orange-primary text-white'
-                        : 'bg-dark-elevated text-gray-700 dark:text-gray-300'
+                        : 'bg-dark-elevated text-text-primary'
                     }`}
                   >
                     {type}
@@ -295,18 +295,18 @@ function ViewWorkoutPage() {
             {/* Date and Duration */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Date
                 </label>
-                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary">
+                <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary">
                   {new Date(session.started_at).toLocaleDateString('sv-SE')}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Duration
                 </label>
-                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary">
+                <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary">
                   {formatDuration(session.duration_seconds)}
                 </div>
               </div>
@@ -316,10 +316,10 @@ function ViewWorkoutPage() {
 
         {/* Training Load */}
         <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-text-primary mb-2">
             Training Load
           </label>
-          <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary">
+          <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary">
             {session.training_load || 'Not recorded'}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -367,10 +367,10 @@ function ViewWorkoutPage() {
         {/* Notes */}
         {session.notes && (
           <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Workout Notes
             </label>
-            <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary">
+            <div className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary">
               {session.notes}
             </div>
           </div>
@@ -440,12 +440,12 @@ function ViewWorkoutPage() {
                               {set.set_index}
                             </td>
                             {exercise.sets.some(s => s.value_1_numeric !== null) && (
-                              <td className="py-2 text-gray-700 dark:text-gray-300">
+                              <td className="py-2 text-text-primary">
                                 {formatSetValue(set.value_1_type, set.value_1_numeric, exercise.exercise_type, true)}
                               </td>
                             )}
                             {exercise.sets.some(s => s.value_2_numeric !== null) && (
-                              <td className="py-2 text-gray-700 dark:text-gray-300">
+                              <td className="py-2 text-text-primary">
                                 {formatSetValue(set.value_2_type, set.value_2_numeric, exercise.exercise_type, false)}
                               </td>
                             )}
@@ -485,7 +485,7 @@ function ViewWorkoutPage() {
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={deleting}
-                className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 text-text-primary border border-dark-border rounded-lg hover:bg-dark-elevated1 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>

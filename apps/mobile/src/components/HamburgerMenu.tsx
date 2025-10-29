@@ -119,7 +119,7 @@ export function HamburgerMenu() {
         className="fixed top-4 right-4 z-40 p-2 rounded-lg bg-dark-elevated1 shadow-lg border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-all"
         aria-label="Open navigation menu"
       >
-        <Bars3Icon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+        <Bars3Icon className="w-6 h-6 text-text-secondary" />
       </button>
 
       {/* Full-screen Overlay */}
@@ -128,7 +128,7 @@ export function HamburgerMenu() {
           <div className="absolute inset-0" onClick={() => setIsOpen(false)} />
           
           {/* Navigation Panel */}
-          <div className="absolute top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out">
+          <div className="absolute top-0 right-0 h-full w-full max-w-sm bg-dark-primary shadow-2xl transform transition-transform duration-300 ease-in-out">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-dark-border">
@@ -137,10 +137,10 @@ export function HamburgerMenu() {
                 </h2>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="p-2 rounded-lg hover:bg-dark-elevated1 transition-colors"
                   aria-label="Close navigation menu"
                 >
-                  <XMarkIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+                  <XMarkIcon className="w-6 h-6 text-text-secondary" />
                 </button>
               </div>
 
@@ -153,11 +153,11 @@ export function HamburgerMenu() {
                       <h3 className="text-lg font-semibold text-text-primary truncate">
                         {user.firstName} {user.lastName}
                       </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                      <p className="text-sm text-text-secondary truncate">
                         {user.email}
                       </p>
                       {user.about && (
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 line-clamp-2">
+                        <p className="text-xs text-text-tertiary mt-1 line-clamp-2">
                           {user.about}
                         </p>
                       )}
@@ -174,15 +174,15 @@ export function HamburgerMenu() {
                     <button
                       key={item.name}
                       onClick={() => handleNavigation(item.href)}
-                      className="w-full flex items-center px-4 py-3 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                      className="w-full flex items-center px-4 py-3 text-left rounded-lg hover:bg-dark-elevated1 transition-colors group"
                     >
-                      <Icon className="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-orange-primary dark:group-hover:text-blue-400 transition-colors" />
+                      <Icon className="w-6 h-6 text-text-secondary group-hover:text-orange-primary transition-colors" />
                       <div className="ml-4 flex-1">
-                        <div className="text-sm font-medium text-text-primary group-hover:text-orange-primary dark:group-hover:text-blue-400 transition-colors">
+                        <div className="text-sm font-medium text-text-primary group-hover:text-orange-primary transition-colors">
                           {item.name}
                         </div>
                         {item.description && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          <div className="text-xs text-text-tertiary mt-1">
                             {item.description}
                           </div>
                         )}
@@ -196,10 +196,10 @@ export function HamburgerMenu() {
               <div className="p-4 border-t border-dark-border">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center px-4 py-3 text-left rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group"
+                  className="w-full flex items-center px-4 py-3 text-left rounded-lg hover:bg-error-soft transition-colors group"
                 >
-                  <ArrowRightOnRectangleIcon className="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" />
-                  <span className="ml-4 text-sm font-medium text-text-primary group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                  <ArrowRightOnRectangleIcon className="w-6 h-6 text-text-secondary group-hover:text-error transition-colors" />
+                  <span className="ml-4 text-sm font-medium text-text-primary group-hover:text-error transition-colors">
                     Sign Out
                   </span>
                 </button>

@@ -809,7 +809,7 @@ function DashboardPage() {
                 recentActivity.map((activity) => (
                   <div 
                     key={activity.id} 
-                    className="flex items-center justify-between py-3 border-b border-dark-border last:border-b-0 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg px-2 -mx-2 transition-colors"
+                    className="flex items-center justify-between py-3 border-b border-dark-border last:border-b-0 cursor-pointer hover:bg-dark-elevated1/50 rounded-lg px-2 -mx-2 transition-colors"
                     onClick={() => router.push(`/training/view/${activity.id}`)}
                     title="Click to view workout details"
                   >
@@ -1010,7 +1010,7 @@ function DashboardPage() {
               <button
                 onClick={() => setShowDeleteConfirm(null)}
                 disabled={deleting}
-                className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 text-text-primary border border-dark-border rounded-lg hover:bg-dark-elevated1 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>

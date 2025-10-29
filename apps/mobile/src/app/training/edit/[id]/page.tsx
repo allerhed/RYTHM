@@ -607,21 +607,21 @@ function EditWorkoutPage() {
           <div className="space-y-4">
             {/* Workout Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-1">
                 Workout Name
               </label>
               <input
                 type="text"
                 value={workoutName}
                 onChange={(e) => setWorkoutName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
                 placeholder="Enter workout name"
               />
             </div>
 
             {/* Activity Type Toggle */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Activity Type
               </label>
               <div className="flex gap-2">
@@ -632,7 +632,7 @@ function EditWorkoutPage() {
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                       activityType === type.toLowerCase()
                         ? 'bg-orange-primary text-white'
-                        : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        : 'bg-dark-elevated text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {type}
@@ -644,18 +644,18 @@ function EditWorkoutPage() {
             {/* Date and Duration */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Date
                 </label>
                 <input
                   type="date"
                   value={workoutDate.toISOString().split('T')[0]}
                   onChange={(e) => setWorkoutDate(new Date(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-lime-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Duration (Hours:Minutes)
                 </label>
                 <input
@@ -665,7 +665,7 @@ function EditWorkoutPage() {
                   min="01:00"
                   max="10:00"
                   step="60"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary focus:ring-2 focus:ring-lime-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-card text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -674,7 +674,7 @@ function EditWorkoutPage() {
 
         {/* Training Load */}
         <div className="bg-dark-elevated1 rounded-lg shadow-sm border border-dark-border p-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-text-primary mb-2">
             Training Load
           </label>
           <input
@@ -682,7 +682,7 @@ function EditWorkoutPage() {
             value={trainingLoad || ''}
             onChange={(e) => setTrainingLoad(e.target.value ? parseInt(e.target.value) : null)}
             placeholder="Enter training load (optional)"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Subjective measure of workout intensity (e.g., 1-100)
@@ -836,7 +836,7 @@ function DatePickerModal({
             type="date"
             value={formatDateForInput(currentDate)}
             onChange={(e) => handleDateChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
           />
         </div>
 
@@ -844,7 +844,7 @@ function DatePickerModal({
         <div className="flex gap-3 p-4 border-t border-dark-border">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="flex-1 px-4 py-2 border border-dark-border rounded-lg text-text-primary hover:bg-dark-elevated1"
           >
             Cancel
           </button>
@@ -908,7 +908,7 @@ function TimePickerModal({
         <div className="p-4">
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Hours
               </label>
               <input
@@ -917,11 +917,11 @@ function TimePickerModal({
                 max="23"
                 value={hours}
                 onChange={(e) => setHours(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
               />
             </div>
             <div className="text-center">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Minutes
               </label>
               <input
@@ -930,11 +930,11 @@ function TimePickerModal({
                 max="59"
                 value={minutes}
                 onChange={(e) => setMinutes(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
               />
             </div>
             <div className="text-center">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Seconds
               </label>
               <input
@@ -943,7 +943,7 @@ function TimePickerModal({
                 max="59"
                 value={seconds}
                 onChange={(e) => setSeconds(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
               />
             </div>
           </div>
@@ -958,7 +958,7 @@ function TimePickerModal({
         <div className="flex gap-3 p-4 border-t border-dark-border">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="flex-1 px-4 py-2 border border-dark-border rounded-lg text-text-primary hover:bg-dark-elevated1"
           >
             Cancel
           </button>
@@ -1370,13 +1370,13 @@ function ExerciseModal({
             placeholder="Search exercises..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-text-primary"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
           />
         </div>
 
         {/* Exercise Type Filter */}
         <div className="p-4 border-b border-dark-border">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Exercise Type</h4>
+          <h4 className="text-sm font-medium text-text-primary mb-2">Exercise Type</h4>
           <div className="flex gap-2">
             {types.map(type => (
               <button
@@ -1385,7 +1385,7 @@ function ExerciseModal({
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedType === type
                     ? 'bg-primary-500 text-white'
-                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {type === 'all' ? `All (${templates.length})` : 
@@ -1398,7 +1398,7 @@ function ExerciseModal({
 
         {/* Category Filter */}
         <div className="p-4 border-b border-dark-border">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</h4>
+          <h4 className="text-sm font-medium text-text-primary mb-2">Category</h4>
           <div className="flex gap-2 flex-wrap">
             {categories.map(category => (
               <button
@@ -1407,7 +1407,7 @@ function ExerciseModal({
                 className={`px-3 py-1 rounded-full text-sm capitalize transition-colors ${
                   selectedCategory === category
                     ? 'bg-primary-500 text-white'
-                    : 'bg-dark-elevated text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-dark-elevated text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {category}

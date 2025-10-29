@@ -92,10 +92,20 @@ className="bg-orange-500"  // Wrong for hybrid
   </div>
 </div>
 
-// Form Inputs
+// Form Inputs (Updated 2025-10-29: Standardized across all pages)
 <input 
-  className="w-full px-3 py-2 border border-dark-border bg-dark-elevated0 
-             text-text-primary focus:ring-2 focus:ring-orange-accent"
+  className="w-full px-3 py-2 border border-dark-border bg-dark-card 
+             text-text-primary placeholder:text-text-tertiary 
+             focus:border-orange-primary focus:ring-orange-primary"
+/>
+<select
+  className="w-full px-3 py-2 border border-dark-border bg-dark-card 
+             text-text-primary focus:border-orange-primary focus:ring-orange-primary"
+/>
+<textarea
+  className="w-full px-3 py-2 border border-dark-border bg-dark-card 
+             text-text-primary placeholder:text-text-tertiary 
+             focus:border-orange-primary focus:ring-orange-primary resize-none"
 />
 
 // Interactive Lists
@@ -122,6 +132,16 @@ className="bg-orange-500"  // Wrong for hybrid
   - [ ] Buttons use helper classes (btn-primary/btn-secondary)
   - [ ] Focus styles present on interactive elements
   - [ ] Dark surfaces use elevation scale
+  - [ ] Input fields use semantic tokens (bg-dark-card, border-dark-border, focus:border-orange-primary)
+
+### Recent Migrations
+- **2025-10-29:** Standardized all input/select/textarea fields across mobile app
+  - Replaced `bg-white dark:bg-gray-700` → `bg-dark-card`
+  - Replaced `border-gray-300 dark:border-gray-600` → `border-dark-border`
+  - Replaced `focus:border-blue-500` → `focus:border-orange-primary`
+  - Replaced `placeholder-gray-*` → `placeholder:text-text-tertiary`
+  - Updated 9 files: templates, training/new, training/edit, training/view, prs/new, settings, auth/register, dashboard
+- **2025-10-28:** Updated strength category color to `#A6A6A6` for improved contrast differentiation
 
 ### Reference Documentation
 - Full guide: `docs/SEMANTIC_THEME.md`
