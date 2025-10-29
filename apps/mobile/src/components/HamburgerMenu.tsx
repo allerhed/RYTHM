@@ -116,7 +116,7 @@ export function HamburgerMenu() {
       <button
         onClick={() => setIsOpen(true)}
         /* Migration: Removed gradient background in favor of semantic surface. */
-        className="fixed top-4 right-4 z-40 p-2 rounded-lg bg-dark-elevated1 shadow-lg border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-all"
+        className="fixed top-4 right-4 z-[60] p-2 rounded-lg bg-dark-elevated1 shadow-lg border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-all"
         aria-label="Open navigation menu"
       >
         <Bars3Icon className="w-6 h-6 text-orange-primary" />
@@ -124,7 +124,7 @@ export function HamburgerMenu() {
 
       {/* Full-screen Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[70] bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setIsOpen(false)} />
           
           {/* Navigation Panel */}
