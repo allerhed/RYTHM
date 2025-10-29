@@ -87,6 +87,8 @@ function NewWorkoutPage() {
   const [activityType, setActivityType] = useState<'strength' | 'cardio' | 'hybrid'>('strength')
   const [workoutDate, setWorkoutDate] = useState(new Date())
   const [duration, setDuration] = useState('01:00:00')
+  // Saving flag prevents duplicate POSTs if user taps quickly or component re-renders
+  const [saving, setSaving] = useState(false)
   const [notes, setNotes] = useState('')
   const [trainingLoad, setTrainingLoad] = useState<number | null>(1)
   const [perceivedExertion, setPerceivedExertion] = useState<number>(1)
@@ -524,9 +526,15 @@ function NewWorkoutPage() {
 
   const handleSaveWorkout = async () => {
     try {
+      if (saving) {
+        console.warn('Duplicate save prevented')
+        return
+      }
+      setSaving(true)
       if (!user || !token) {
         console.error('User not authenticated')
         alert('Please log in again to save workouts')
+        setSaving(false)
         return
       }
 
@@ -584,6 +592,8 @@ function NewWorkoutPage() {
     } catch (error) {
       console.error('Error saving workout:', error)
       alert('Error saving workout. Please try again.')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -802,9 +812,10 @@ function NewWorkoutPage() {
         <div className="max-w-md mx-auto">
           <button
             onClick={handleSaveWorkout}
-            className="w-full bg-orange-primary text-white px-6 py-4 rounded-lg hover:bg-orange-hover transition-colors font-semibold text-lg shadow-lg"
+            disabled={saving}
+            className={`w-full px-6 py-4 rounded-lg font-semibold text-lg shadow-lg transition-colors ${saving ? 'bg-orange-primary/60 cursor-not-allowed text-white' : 'bg-orange-primary hover:bg-orange-hover text-white'}`}
           >
-            Save Workout
+            {saving ? 'Saving…' : 'Save Workout'}
           </button>
         </div>
       </div>
