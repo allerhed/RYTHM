@@ -552,6 +552,7 @@ function NewWorkoutPage() {
         duration: duration,
         started_at: workoutDate.toISOString(), // Include selected workout date
         exercises: exercises.map(exercise => ({
+          exercise_id: exercise.exercise_id, // Include exercise_id for template exercises
           name: exercise.name,
           muscle_groups: exercise.muscle_groups || [],
           equipment: exercise.equipment || '',
