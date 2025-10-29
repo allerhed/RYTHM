@@ -241,8 +241,8 @@ function AnalyticsPage() {
       <PullToRefresh onRefresh={handleRefresh}>
         <div className="p-4 space-y-6">
         {/* Training Load Widget */}
-        <div className="bg-gray-800 rounded-2xl p-6 text-white">
-          <h2 className="text-xl font-bold mb-2">Training Load</h2>
+        <div className="bg-dark-elevated1 rounded-2xl p-6 shadow-sm border border-dark-border">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Training Load</h2>
           <p className="text-sm text-gray-400 mb-6">Weekly training load for the past 3 months</p>
           
           {/* Y-axis labels */}
@@ -393,8 +393,8 @@ function AnalyticsPage() {
         </div>
 
         {/* Activity Time Widget */}
-        <div className="bg-gray-800 rounded-2xl p-6 text-white">
-          <h2 className="text-xl font-bold mb-2">Activity Time</h2>
+        <div className="bg-dark-elevated1 rounded-2xl p-6 shadow-sm border border-dark-border">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Activity Time</h2>
           <p className="text-sm text-gray-400 mb-6">Weekly activity time for the past 3 months</p>
           
           {/* Y-axis labels */}
@@ -456,8 +456,8 @@ function AnalyticsPage() {
         </div>
 
         {/* Category Breakdown Widget */}
-        <div className="bg-gray-800 rounded-2xl p-6 text-white">
-          <h2 className="text-xl font-bold mb-2">Training by Category</h2>
+        <div className="bg-dark-elevated1 rounded-2xl p-6 shadow-sm border border-dark-border">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Training by Category</h2>
           <p className="text-sm text-gray-400 mb-6">Training load breakdown by category (3-month comparison)</p>
           
           {/* Category bars */}

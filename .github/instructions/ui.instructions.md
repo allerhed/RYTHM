@@ -135,6 +135,11 @@ className="bg-orange-500"  // Wrong for hybrid
   - [ ] Input fields use semantic tokens (bg-dark-card, border-dark-border, focus:border-orange-primary)
 
 ### Recent Migrations
+- **2025-10-29:** Analytics page card background standardization
+  - Updated Training Load, Activity Time, and Training by Category cards
+  - Changed from `bg-gray-800` (blue-grey) → `bg-dark-elevated1` with `border border-dark-border`
+  - Updated titles from `text-white` → `text-gray-900 dark:text-white` for consistency
+  - All analytics cards now match Total Distance card styling
 - **2025-10-29:** Navigation menu orange accent consistency
   - Updated HamburgerMenu component to use orange for all interactive elements
   - Changed dividers from `border-dark-border` → `border-orange-primary/30` (header, user profile, footer)
