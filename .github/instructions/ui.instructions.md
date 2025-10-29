@@ -275,6 +275,32 @@ className="bg-orange-500"  // Wrong for hybrid
 
 ## Recent Migrations & Fixes
 
+### 2025-10-29: PRs Pages UI Consistency Update
+**Issue:** PRs pages had inconsistent button styles and colors not matching design system
+
+**Changes:**
+- **PRs List Page (`/prs`):** Updated pagination buttons to use semantic `btn-secondary` class instead of raw Tailwind utilities
+- **New PR Page (`/prs/new`):**
+  - All input fields now use `bg-dark-elevated0` (form inputs surface) instead of `bg-dark-input`
+  - Exercise picker and search dropdown use semantic text classes (`text-text-secondary`, `text-text-tertiary`)
+  - Category buttons: Strength uses correct `#A6A6A6` color (not blue), unselected state uses `btn-secondary`
+  - Submit button uses semantic `btn-primary btn-wide` classes
+  - Help text uses `text-text-tertiary` instead of raw gray utilities
+  - All hover states use semantic `hover:bg-dark-elevated1` instead of raw colors
+
+**Design System Compliance:**
+- ✅ No raw hex colors outside category indicators
+- ✅ Semantic button classes (`btn-primary`, `btn-secondary`)
+- ✅ Semantic surface elevation (`bg-dark-elevated0/1`)
+- ✅ Semantic text hierarchy (`text-text-primary/secondary/tertiary`)
+- ✅ Strength category uses `#A6A6A6` (neutral grey), Cardio uses `#E97400` (burnt orange)
+
+**Files Changed:**
+- `apps/mobile/src/app/prs/page.tsx` - Button styling consistency
+- `apps/mobile/src/app/prs/new/page.tsx` - Complete design system migration
+
+---
+
 ### 2025-10-29: Exercise History Modal Fix (Training Edit Page)
 **Issue:** Exercise history modal (clock icon) not working in `/training/edit/<id>` - `template_id` was `undefined`
 

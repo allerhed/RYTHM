@@ -269,7 +269,7 @@ function PersonalRecordsPage() {
                     <button
                       onClick={goToPrevPage}
                       disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-dark-border bg-dark-elevated1 text-sm font-medium text-text-secondary hover:border-orange-primary/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="btn btn-secondary rounded-r-none text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span className="sr-only">Previous</span>
                       <ChevronLeftIcon className="h-5 w-5" />
@@ -277,7 +277,7 @@ function PersonalRecordsPage() {
                     <button
                       onClick={goToNextPage}
                       disabled={prs.length < pageSize}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-dark-border bg-dark-elevated1 text-sm font-medium text-text-secondary hover:border-orange-primary/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="btn btn-secondary rounded-l-none text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span className="sr-only">Next</span>
                       <ChevronRightIcon className="h-5 w-5" />
