@@ -338,6 +338,41 @@ const handleUpdateWorkout = async () => {
 
 ---
 
+### 2025-10-29: Exercise Lookup Determinism Fix
+**Issue:** Workouts saved with identical exercises from templates would show duplicate exercise entries (e.g., "Bench Press" appearing twice in the same workout) despite client payload containing no duplicates.
+
+**Root Cause:** The API's exercise lookup query was non-deterministic:
+```sql
+SELECT exercise_id FROM exercises WHERE name = $1 LIMIT 1
+```
+Without `ORDER BY`, PostgreSQL could return different `exercise_id` values for the same exercise name on consecutive queries. Since the `exercises` table has a UNIQUE constraint on `name`, multiple calls during a single workout save would randomly retrieve different IDs for the same exercise, creating apparent duplicates in the `sets` table.
+
+**Solution:** Made the query deterministic by adding `ORDER BY created_at ASC`:
+```sql
+SELECT exercise_id FROM exercises WHERE name = $1 ORDER BY created_at ASC LIMIT 1
+```
+Now the query consistently returns the oldest exercise with that name, ensuring the same exercise_id is used across all sets in a workout.
+
+**Technical Details:**
+- The `exercises` table is global (no tenant isolation) with a UNIQUE index on `name`
+- Each exercise name should have exactly one entry in the exercises table
+- Non-deterministic LIMIT queries can return different rows on each execution
+- Ordering by `created_at ASC` ensures consistent results (oldest exercise wins)
+
+**Files Changed:**
+- `apps/api/src/routes/sessions-rest.ts` – Added `ORDER BY created_at ASC` to exercise lookup query (line ~458)
+
+**Related Issues Fixed:**
+- Template_id vs exercise_id confusion: Removed incorrect assignment of `templateEx.exercise_id` in client code (templates have template_id, not exercise_id)
+- Foreign key constraint violations: Prevented by ensuring exercise_id is only sent for exercises loaded from existing sessions
+
+**Prevention Guidelines:**
+- Always use `ORDER BY` with `LIMIT` queries to ensure deterministic results
+- When querying shared/global tables, consider adding explicit ordering by primary key or timestamp
+- Test exercise lookup consistency across multiple workout saves with the same exercise names
+
+---
+
 ### 2025-10-29: PRs Pages UI Consistency Update
 **Issue:** PRs pages had inconsistent button styles and colors not matching design system
 
