@@ -164,7 +164,19 @@ function NewWorkoutPage() {
   }
 
   const addExercisesFromTemplate = (templateExercises: any[]) => {
-    const newExercises = templateExercises.map((templateEx, index) => {
+    // Prevent adding duplicates - filter out exercises with names that already exist
+    const existingNames = new Set(exercises.map(ex => ex.name.toLowerCase()))
+    const uniqueTemplateExercises = templateExercises.filter(
+      templateEx => !existingNames.has(templateEx.name.toLowerCase())
+    )
+    
+    if (uniqueTemplateExercises.length === 0) {
+      console.log('All exercises from template already exist in workout')
+      setShowTemplateModal(false)
+      return
+    }
+    
+    const newExercises = uniqueTemplateExercises.map((templateEx, index) => {
       const exerciseId = Date.now().toString() + index
       
       // Parse template exercise values and determine types
