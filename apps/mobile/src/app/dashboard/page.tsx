@@ -55,6 +55,7 @@ function DashboardPage() {
   const [loading, setLoading] = React.useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState<string | null>(null)
   const [deleting, setDeleting] = React.useState(false)
+  const [weekWorkoutDays, setWeekWorkoutDays] = React.useState<Set<number>>(new Set())
 
   const [selectedWeekStart, setSelectedWeekStart] = React.useState(() => {
     // Get Monday of current week
@@ -334,6 +335,44 @@ function DashboardPage() {
     }
   }, [])
 
+  // Fetch workouts for entire week to show indicators
+  React.useEffect(() => {
+    if (!user) return
+    
+    const fetchWeekWorkouts = async () => {
+      try {
+        const daysWithWorkouts = new Set<number>()
+        
+        // Fetch workouts for each day of the week
+        for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+          const dateToCheck = new Date(selectedWeekStart)
+          dateToCheck.setDate(dateToCheck.getDate() + dayIndex)
+          
+          const localDate = `${dateToCheck.getFullYear()}-${String(dateToCheck.getMonth() + 1).padStart(2, '0')}-${String(dateToCheck.getDate()).padStart(2, '0')}`
+          
+          const response = await fetch(`/api/sessions?date=${localDate}`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+            }
+          })
+          
+          if (response.ok) {
+            const data = await response.json()
+            if (data.sessions && data.sessions.length > 0) {
+              daysWithWorkouts.add(dayIndex)
+            }
+          }
+        }
+        
+        setWeekWorkoutDays(daysWithWorkouts)
+      } catch (error) {
+        console.error('Error fetching week workouts:', error)
+      }
+    }
+    
+    fetchWeekWorkouts()
+  }, [user, selectedWeekStart])
+
   // Fetch workouts for selected date
   React.useEffect(() => {
     if (!user) return
@@ -505,6 +544,7 @@ function DashboardPage() {
                 { day: 'S', label: 'Sunday', dayIndex: 6 }
               ].map((item, index) => {
                 const isSelected = selectedDayIndex === item.dayIndex
+                const hasWorkout = weekWorkoutDays.has(item.dayIndex)
                 
                 // Check if this is the current day (only for current week)
                 const currentWeekStart = getCurrentWeekStart()
@@ -525,6 +565,8 @@ function DashboardPage() {
                           ? 'bg-white text-gray-900 ring-2 ring-orange-primary shadow-md' 
                           : isSelected
                           ? 'bg-orange-primary text-white' 
+                          : hasWorkout
+                          ? 'bg-dark-elevated text-text-secondary hover:bg-dark-elevated1 ring-2 ring-orange-primary'
                           : 'bg-dark-elevated text-text-secondary hover:bg-dark-elevated1'
                       }`}
                       title={item.label}
