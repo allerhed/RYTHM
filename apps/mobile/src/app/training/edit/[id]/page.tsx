@@ -714,9 +714,9 @@ function EditWorkoutPage() {
               max="10"
               value={perceivedExertion}
               onChange={(e) => setPerceivedExertion(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider-lime"
+              className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider-orange"
               style={{
-                backgroundImage: `linear-gradient(to right, #84cc16 0%, #84cc16 ${(perceivedExertion - 1) * 11.11}%, #d1d5db ${(perceivedExertion - 1) * 11.11}%, #d1d5db 100%)`
+                backgroundImage: `linear-gradient(to right, #E97400 0%, #E97400 ${(perceivedExertion - 1) * 11.11}%, #d1d5db ${(perceivedExertion - 1) * 11.11}%, #d1d5db 100%)`
               }}
             />
             <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">

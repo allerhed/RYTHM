@@ -135,6 +135,14 @@ className="bg-orange-500"  // Wrong for hybrid
   - [ ] Input fields use semantic tokens (bg-dark-card, border-dark-border, focus:border-orange-primary)
 
 ### Recent Migrations
+- **2025-10-29:** Training Load perceived exertion slider updated to orange theme
+  - Updated training/edit and training/new pages
+  - Progress bar: lime green (`#84cc16`) → orange primary (`#E97400`)
+  - Slider thumb border: lime green → orange primary with 3px border
+  - Created new `.slider-orange` CSS class with proper vertical centering
+  - Fixed thumb positioning: changed `top: -8px` → `top: 50%; transform: translateY(-50%)` for perfect centering
+  - Consistent orange color across all training load UI elements
+  - **Rationale:** Lime green inconsistent with orange primary theme; vertical centering improves visual alignment
 - **2025-10-29:** Personal Records (PRs) page semantic theme update
   - Replaced all blue buttons → `btn-primary` (orange)
   - Updated category badges: `bg-blue-100/bg-orange-100` → `badge-strength/badge-cardio/badge-hybrid`
