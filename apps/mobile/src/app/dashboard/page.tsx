@@ -454,7 +454,7 @@ function DashboardPage() {
   return (
     <div className="min-h-screen bg-dark-primary">
       {/* Header */}
-      <div className="bg-dark-secondary border-b border-dark-border safe-area-top">
+      <div className="bg-dark-secondary border-b border-dark-border pt-[env(safe-area-inset-top)]">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-3">
             <button

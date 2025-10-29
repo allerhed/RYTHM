@@ -275,6 +275,43 @@ className="bg-orange-500"  // Wrong for hybrid
 
 ## Recent Migrations & Fixes
 
+### 2025-10-29: iOS Header Safe Area Fix
+**Issue:** Menu icon unreachable on iOS devices with notch/Dynamic Island; visible gap between screen top and header background
+
+**Root Cause:** 
+- Header used `safe-area-top` CSS class which applies padding-top
+- Padding pushes content down but doesn't extend background behind status bar
+- Creates visual gap and makes menu icon hard to reach on iOS devices
+
+**Solution:**
+- Replaced `safe-area-top` class with `pt-[env(safe-area-inset-top)]` directly on header elements
+- This extends background color all the way to screen edge (behind notch/Dynamic Island)
+- Content properly respects safe area insets and remains clickable
+- Follows iOS best practice: background extends to edge, content positioned safely
+
+**iOS Best Practice:**
+- Use `padding-top: env(safe-area-inset-top)` on element with background color
+- This creates seamless appearance on devices with notches
+- Content starts below safe area automatically
+- Menu icons and interactive elements remain fully accessible
+
+**Technical Details:**
+```tsx
+// Before (creates gap):
+<header className="bg-dark-secondary border-b border-dark-border safe-area-top">
+
+// After (extends background):
+<header className="bg-dark-secondary border-b border-dark-border pt-[env(safe-area-inset-top)]">
+```
+
+**Files Changed:**
+- `apps/mobile/src/components/Navigation.tsx` - Shared Header component
+- `apps/mobile/src/app/dashboard/page.tsx` - Dashboard custom header
+
+**Note:** Auth pages (login, register, forgot-password, reset-password) and landing page still use `safe-area-top` class without backgrounds - these don't need the fix as they have no header background to extend.
+
+---
+
 ### 2025-10-29: PRs Pages UI Consistency Update
 **Issue:** PRs pages had inconsistent button styles and colors not matching design system
 

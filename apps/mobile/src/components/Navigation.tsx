@@ -64,7 +64,7 @@ interface HeaderProps {
 
 export function Header({ title, showBack = false, onBack, actions, showUserAvatar = false, user }: HeaderProps) {
   return (
-    <header className="bg-dark-secondary border-b border-dark-border safe-area-top">
+    <header className="bg-dark-secondary border-b border-dark-border pt-[env(safe-area-inset-top)]">
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center">
           {showBack && (
