@@ -1318,7 +1318,7 @@ function AddExerciseModal({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowCustomModal(true)}
-              className="text-teal-500 hover:text-teal-600 dark:text-teal-400 dark:hover:text-teal-300 font-medium text-sm"
+              className="text-orange-primary hover:text-orange-hover font-medium text-sm"
             >
               Custom Exercise
             </button>

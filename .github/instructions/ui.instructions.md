@@ -135,6 +135,18 @@ className="bg-orange-500"  // Wrong for hybrid
   - [ ] Input fields use semantic tokens (bg-dark-card, border-dark-border, focus:border-orange-primary)
 
 ### Recent Migrations
+- **2025-10-29:** Custom exercise modal and link standardization
+  - Updated "Custom Exercise" link from teal (`text-teal-500`) → orange (`text-orange-primary`)
+  - Applied to training/new and training/edit pages for consistency
+  - Updated CustomExerciseModal component:
+    - Background: removed gradient → `bg-dark-elevated1` with `border border-dark-border`
+    - Primary button: `bg-blue-600` → `bg-orange-primary` with `hover:bg-orange-hover`
+    - All form inputs: updated to use `bg-dark-input`, `border-dark-border`, `text-text-primary`
+    - All labels: `text-gray-700 dark:text-gray-300` → `text-text-primary`
+    - Error messages: `text-red-500` → `text-error`
+    - Checkbox borders: `border-gray-300` → `border-dark-border`
+    - Loading text: `text-gray-500 dark:text-gray-400` → `text-text-secondary`
+    - Cancel button: updated to semantic text colors
 - **2025-10-29:** Analytics page card background standardization
   - Updated Training Load, Activity Time, and Training by Category cards
   - Changed from `bg-gray-800` (blue-grey) → `bg-dark-elevated1` with `border border-dark-border`

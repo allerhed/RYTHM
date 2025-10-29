@@ -136,7 +136,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#232323] rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-dark-elevated1 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-dark-border shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-dark-border">
           <h2 className="text-xl font-semibold text-text-primary">New exercise</h2>
@@ -144,14 +144,14 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
             <button
               onClick={onClose}
               disabled={loading}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-text-secondary hover:text-text-primary"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
+              className="bg-orange-primary text-white px-4 py-2 rounded-lg hover:bg-orange-hover disabled:opacity-50 font-medium"
             >
               {loading ? 'Adding...' : 'Add'}
             </button>
@@ -161,25 +161,25 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Exercise Template Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Exercise Template Name *
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-lg bg-dark-input text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-orange-primary ${
+                errors.name ? 'border-error' : 'border-dark-border'
               }`}
               placeholder="Enter exercise name"
               disabled={loading}
             />
-            {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
+            {errors.name && <p className="text-sm text-error mt-1">{errors.name}</p>}
           </div>
 
           {/* Exercise Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Exercise Type
             </label>
             <select
@@ -188,7 +188,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                 ...prev, 
                 exercise_type: e.target.value as 'STRENGTH' | 'CARDIO' 
               }))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-orange-primary"
               disabled={loading}
             >
               {EXERCISE_TYPES.map(type => (
@@ -201,13 +201,13 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Category
             </label>
             <select
               value={formData.exercise_category}
               onChange={(e) => setFormData(prev => ({ ...prev, exercise_category: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-orange-primary"
               disabled={loading}
             >
               {EXERCISE_CATEGORIES.map(category => (
@@ -220,31 +220,31 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
 
           {/* Muscle Groups */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Muscle Groups *
             </label>
-            <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-md p-3">
+            <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto border border-dark-border rounded-lg bg-dark-elevated p-3">
               {MUSCLE_GROUPS.map(muscleGroup => (
                 <label key={muscleGroup} className="flex items-center space-x-2 text-sm">
                   <input
                     type="checkbox"
                     checked={formData.muscle_groups.includes(muscleGroup)}
                     onChange={() => handleMuscleGroupToggle(muscleGroup)}
-                    className="rounded border-gray-300 text-orange-primary focus:ring-orange-primary"
+                    className="rounded border-dark-border text-orange-primary focus:ring-orange-primary"
                     disabled={loading}
                   />
-                  <span className="text-gray-700 dark:text-gray-300 capitalize">
+                  <span className="text-text-primary capitalize">
                     {muscleGroup}
                   </span>
                 </label>
               ))}
             </div>
-            {errors.muscle_groups && <p className="text-sm text-red-500 mt-1">{errors.muscle_groups}</p>}
+            {errors.muscle_groups && <p className="text-sm text-error mt-1">{errors.muscle_groups}</p>}
           </div>
 
           {/* Equipment */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Equipment
             </label>
             <select
@@ -257,7 +257,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                   equipment: selectedEquipment?.name || ''
                 }))
               }}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-orange-primary"
               disabled={loading || loadingEquipment}
             >
               <option value="">Select equipment</option>
@@ -268,14 +268,14 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
               ))}
             </select>
             {loadingEquipment && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Loading equipment options...</p>
+              <p className="text-sm text-text-secondary mt-1">Loading equipment options...</p>
             )}
           </div>
 
           {/* Value Types */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Primary Value Type
               </label>
               <select
@@ -284,7 +284,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                   ...prev, 
                   default_value_1_type: e.target.value 
                 }))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-orange-primary"
                 disabled={loading}
               >
                 {VALUE_TYPES.map(type => (
@@ -295,7 +295,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Secondary Value Type
               </label>
               <select
@@ -304,7 +304,7 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
                   ...prev, 
                   default_value_2_type: e.target.value 
                 }))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-orange-primary"
                 disabled={loading}
               >
                 {VALUE_TYPES.map(type => (
@@ -318,14 +318,14 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Description
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-orange-primary"
               placeholder="Brief description of the exercise"
               disabled={loading}
             />
@@ -333,14 +333,14 @@ export function CustomExerciseModal({ onSave, onClose, loading = false }: Custom
 
           {/* Instructions */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Instructions
             </label>
             <textarea
               value={formData.instructions}
               onChange={(e) => setFormData(prev => ({ ...prev, instructions: e.target.value }))}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-primary dark:bg-gray-700 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-orange-primary focus:border-orange-primary"
               placeholder="Detailed instructions on how to perform the exercise"
               disabled={loading}
             />
