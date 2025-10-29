@@ -453,9 +453,9 @@ router.post('/', authenticateToken, async (req, res) => {
           let exerciseId = exercise.exercise_id
           
           if (!exerciseId) {
-            // First, try to find existing exercise by name
+            // First, try to find existing exercise by name (deterministic ordering)
             const existingExerciseResult = await client.query(
-              `SELECT exercise_id FROM exercises WHERE name = $1 LIMIT 1`,
+              `SELECT exercise_id FROM exercises WHERE name = $1 ORDER BY created_at ASC LIMIT 1`,
               [exercise.name || 'Custom Exercise']
             )
             
