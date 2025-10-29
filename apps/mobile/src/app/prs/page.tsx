@@ -68,11 +68,13 @@ function PersonalRecordsPage() {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'strength':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+        return 'badge-strength'
       case 'cardio':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+        return 'badge-cardio'
+      case 'hybrid':
+        return 'badge-hybrid'
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        return 'badge-secondary'
     }
   }
 
@@ -116,8 +118,8 @@ function PersonalRecordsPage() {
                     onClick={() => handleFilterChange(tab.key as any)}
                     className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                       selectedFilter === tab.key
-                        ? 'border-blue-500 text-orange-primary'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                        ? 'border-orange-primary text-orange-primary'
+                        : 'border-transparent text-text-secondary hover:text-text-primary'
                     }`}
                   >
                     {tab.label}
@@ -135,24 +137,24 @@ function PersonalRecordsPage() {
           {/* Loading State */}
           {isLoading && (
             <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-primary"></div>
             </div>
           )}
 
           {/* Error State */}
           {error && (
-            <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+            <div className="rounded-md bg-error-soft p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="h-5 w-5 text-error" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+                  <h3 className="text-sm font-medium text-error">
                     Error loading personal records
                   </h3>
-                  <p className="mt-2 text-sm text-red-700 dark:text-red-300">
+                  <p className="mt-2 text-sm text-error">
                     {error.message}
                   </p>
                 </div>
@@ -167,12 +169,12 @@ function PersonalRecordsPage() {
               <h3 className="mt-2 text-sm font-medium text-text-primary">
                 No personal records
               </h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-text-secondary">
                 Get started by adding your first PR
               </p>
               <div className="mt-6">
                 <Link href="/prs/new">
-                  <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary">
+                  <button className="btn-primary inline-flex items-center">
                     <PlusIcon className="h-5 w-5 mr-2" />
                     Add Personal Record
                   </button>
@@ -198,7 +200,7 @@ function PersonalRecordsPage() {
                               {pr.category}
                             </span>
                           </div>
-                          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                          <p className="mt-1 text-sm text-text-secondary">
                             {pr.metricName}
                           </p>
                         </div>
@@ -209,7 +211,7 @@ function PersonalRecordsPage() {
                           <div className="text-3xl font-bold text-orange-primary">
                             {pr.currentValue} {pr.currentUnit}
                           </div>
-                          <div className="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                          <div className="mt-1 flex items-center text-sm text-text-secondary">
                             <span>{formatDate(pr.currentDate)}</span>
                             {pr.recordCount > 1 && (
                               <span className="ml-4">
@@ -253,7 +255,7 @@ function PersonalRecordsPage() {
               </div>
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                  <p className="text-sm text-text-primary">
                     Page <span className="font-medium">{currentPage}</span>
                     {totalPages > 0 && (
                       <>
@@ -289,7 +291,7 @@ function PersonalRecordsPage() {
           {/* Add PR Button - Fixed at bottom */}
           <div className="mt-8">
             <Link href="/prs/new">
-              <button className="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary transition-colors">
+              <button className="btn-primary w-full inline-flex items-center justify-center">
                 <PlusIcon className="h-5 w-5 mr-2" />
                 Add Personal Record
               </button>

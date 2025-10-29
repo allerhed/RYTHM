@@ -135,6 +135,15 @@ className="bg-orange-500"  // Wrong for hybrid
   - [ ] Input fields use semantic tokens (bg-dark-card, border-dark-border, focus:border-orange-primary)
 
 ### Recent Migrations
+- **2025-10-29:** Personal Records (PRs) page semantic theme update
+  - Replaced all blue buttons → `btn-primary` (orange)
+  - Updated category badges: `bg-blue-100/bg-orange-100` → `badge-strength/badge-cardio/badge-hybrid`
+  - Loading spinner: `border-blue-600` → `border-orange-primary`
+  - Error states: `bg-red-50 dark:bg-red-900/20 text-red-*` → `bg-error-soft text-error`
+  - Text colors: `text-gray-500/700 dark:text-gray-300/400` → `text-text-primary/secondary`
+  - Filter tabs: `border-blue-500` → `border-orange-primary`
+  - All interactive elements now use semantic orange primary accent
+  - **Rationale:** Complete semantic theme compliance for consistency across entire mobile app
 - **2025-10-29:** Training Score widget card backgrounds updated
   - Changed 4 stat cards from blue-grey (`bg-gray-50 dark:bg-gray-700`) → contrasting dark grey (`bg-dark-elevated`)
   - Added borders (`border border-dark-border`) for better visual separation
