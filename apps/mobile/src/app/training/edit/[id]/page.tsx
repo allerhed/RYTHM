@@ -464,7 +464,8 @@ function EditWorkoutPage() {
 
   const handleUpdateWorkout = async () => {
     if (!user || !token) return
-
+    // Duplicate invocation guard: if already saving, abort to prevent double PUT
+    if (saving) return
     setSaving(true)
     try {
       const workoutData = {

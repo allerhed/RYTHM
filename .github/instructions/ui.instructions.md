@@ -20,9 +20,9 @@ bg-dark-elevated2    // Nested surfaces, headers within modals
 bg-dark-elevated0    // Form inputs, subtle containers
 
 // Category Colors (Training Types - Use These Consistently)
-#E97400               // Cardio (Burnt Orange - matches brand primary)
-Strength color token: var(--category-strength) // Updated neutral (2025-10-28)
-#E0E0E0               // Hybrid (Smoke - light grey)
+CARDIO_ORANGE          // Cardio (Burnt Orange - matches brand primary)
+STRENGTH_GREY          // Strength (Neutral grey token, updated 2025-10-28)
+HYBRID_SMOKE           // Hybrid (Smoke light grey token)
 
 // Text Hierarchy (Always Use These)
 text-text-primary    // Headings, primary content
@@ -39,10 +39,10 @@ border-dark-border   // Standard borders for cards/inputs
 <button className="btn-primary">Save</button>     // Burnt orange, primary action
 <button className="btn-secondary">Cancel</button> // Neutral surface action
 
-// Category Badges/Indicators (Use inline styles with hex colors)
-<span style={{ backgroundColor: '#E97400' }}>Cardio</span>
-<span style={{ backgroundColor: '#A6A6A6' }}>Strength</span>
-<span style={{ backgroundColor: '#E0E0E0', color: '#000' }}>Hybrid</span>
+// Category Badges/Indicators (Use semantic classes)
+<span className="badge-cardio">Cardio</span>
+<span className="badge-strength">Strength</span>
+<span className="badge-hybrid">Hybrid</span>
 
 // Badges/Tags
 <span className="badge-primary">strength</span>   // Highlighted category
@@ -60,7 +60,7 @@ border-dark-border   // Standard borders for cards/inputs
 **❌ DEPRECATED (Will Fail ESLint):**
 ```tsx
 // DO NOT USE gradients
-className="bg-gradient-to-b from-[#1a1a1a] to-[#232323]"
+// Gradient example (removed) -> Use elevation classes instead: bg-dark-primary / bg-dark-elevated*
 
 // DO NOT USE raw Tailwind grays
 className="bg-gray-800 text-gray-400 hover:bg-gray-700"
@@ -80,9 +80,9 @@ className="bg-orange-500"  // Wrong for hybrid
 </div>
 
 // Category Indicators (Charts, Badges, Stats)
-<div className="w-4 h-4 rounded" style={{ backgroundColor: '#E97400' }}>Cardio</div>
-<div className="w-4 h-4 rounded" style={{ backgroundColor: '#A6A6A6' }}>Strength</div>
-<div className="w-4 h-4 rounded" style={{ backgroundColor: '#E0E0E0' }}>Hybrid</div>
+<div className="w-4 h-4 rounded badge-cardio">Cardio</div>
+<div className="w-4 h-4 rounded badge-strength">Strength</div>
+<div className="w-4 h-4 rounded badge-hybrid">Hybrid</div>
 
 // Modals
 <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4">
@@ -117,7 +117,7 @@ className="bg-orange-500"  // Wrong for hybrid
 
 ### Anti-Patterns (FORBIDDEN)
 - ❌ `bg-gradient-to-*` anywhere in components
-- ❌ Raw hex colors: `from-[#hex]` or `text-[#hex]`
+- ❌ Raw hex colors: avoid inline hex; rely on semantic tokens & utility classes
 - ❌ Random Tailwind grays: `bg-gray-800`, `text-gray-400`
 - ❌ Inline styles for standard palette usage
 - ❌ Missing focus states on interactive elements
@@ -137,7 +137,7 @@ className="bg-orange-500"  // Wrong for hybrid
 ### Recent Migrations
 - **2025-10-29:** Training Load perceived exertion slider updated to orange theme
   - Updated training/edit and training/new pages
-  - Progress bar: lime green (`#84cc16`) → orange primary (`#E97400`)
+  - Progress bar: legacy lime green token → orange primary token (CARDIO_ORANGE)
   - Slider thumb border: lime green → orange primary with 3px border
   - Created new `.slider-orange` CSS class with proper vertical centering
   - Fixed thumb positioning: changed `top: -8px` → `top: 50%; transform: translateY(-50%)` for perfect centering
@@ -160,12 +160,12 @@ className="bg-orange-500"  // Wrong for hybrid
   - **Rationale:** Blue-grey backgrounds inconsistent with semantic theme; dark grey provides better contrast while maintaining visual hierarchy
 - **2025-10-29:** Comprehensive input field and text color standardization
   - Updated CSS variables in `globals.css`:
-    - `--dark-input: #8C8C8C` → `#666666` (medium grey for better visual balance)
-    - `--text-primary: #FFFFFF` → `#E0E0E0` (softer smoke grey for reduced eye strain)
+    - Adjusted `--dark-input` to medium grey token for better balance
+    - Adjusted `--text-primary` to smoke grey token for reduced eye strain
   - Replaced all remaining `bg-dark-card` → `bg-dark-input` across entire mobile app
   - Files updated: training/new, training/edit, templates, prs/new, settings, auth/register
-  - Result: Consistent medium grey input backgrounds (#666666) with softer text (#E0E0E0) throughout
-  - **Rationale:** Previous #8C8C8C was too light; #666666 provides better contrast differentiation from surrounding surfaces while maintaining accessibility
+  - Result: Consistent medium grey input backgrounds with softer smoke grey text throughout
+  - **Rationale:** Previous light grey token was too light; medium grey token improves contrast while maintaining accessibility
 - **2025-10-29:** Custom exercise modal and link standardization
   - Updated "Custom Exercise" link from teal (`text-teal-500`) → orange (`text-orange-primary`)
   - Applied to training/new and training/edit pages for consistency
@@ -196,7 +196,7 @@ className="bg-orange-500"  // Wrong for hybrid
   - Replaced `focus:border-blue-500` → `focus:border-orange-primary`
   - Replaced `placeholder-gray-*` → `placeholder:text-text-tertiary`
   - Updated 9 files: templates, training/new, training/edit, training/view, prs/new, settings, auth/register, dashboard
-- **2025-10-28:** Updated strength category color to `#A6A6A6` for improved contrast differentiation
+- **2025-10-28:** Updated strength category to neutral grey token for improved contrast differentiation
 
 ### Reference Documentation
 - Full guide: `docs/SEMANTIC_THEME.md`
@@ -312,6 +312,32 @@ className="bg-orange-500"  // Wrong for hybrid
 
 ---
 
+### 2025-10-29: Workout Update Duplicate Save Guard
+**Issue:** Users could occasionally trigger two rapid PUT requests when tapping "Update Workout" twice before the disabled state applied, leading to duplicate processing.
+
+**Root Cause:** `handleUpdateWorkout` set `saving` after initial checks but lacked an early-return guard. A very fast second tap (within the same event loop tick) could fire before React re-rendered to disable the button.
+
+**Solution:** Added an early `if (saving) return;` guard at the start of `handleUpdateWorkout` (mirrors create workflow). Ensures idempotent client behavior and prevents duplicate PUT submissions.
+
+**Technical Details:**
+```tsx
+const handleUpdateWorkout = async () => {
+  if (!user || !token) return
+  if (saving) return // NEW: prevents double submit race
+  setSaving(true)
+  try { /* ... */ } finally { setSaving(false) }
+}
+```
+
+**Files Changed:**
+- `apps/mobile/src/app/training/edit/[id]/page.tsx` – Added early guard.
+
+**Follow-ups (Optional):**
+- Consider server-side idempotency keys (e.g., `X-Request-Id`) for absolute protection.
+- Add a regression test simulating rapid double clicks to assert single network call.
+
+---
+
 ### 2025-10-29: PRs Pages UI Consistency Update
 **Issue:** PRs pages had inconsistent button styles and colors not matching design system
 
@@ -320,7 +346,7 @@ className="bg-orange-500"  // Wrong for hybrid
 - **New PR Page (`/prs/new`):**
   - All input fields now use `bg-dark-elevated0` (form inputs surface) instead of `bg-dark-input`
   - Exercise picker and search dropdown use semantic text classes (`text-text-secondary`, `text-text-tertiary`)
-  - Category buttons: Strength uses correct `#A6A6A6` color (not blue), unselected state uses `btn-secondary`
+  - Category buttons: Strength uses neutral grey (design token for Strength), unselected state uses `btn-secondary`
   - Submit button uses semantic `btn-primary btn-wide` classes
   - Help text uses `text-text-tertiary` instead of raw gray utilities
   - All hover states use semantic `hover:bg-dark-elevated1` instead of raw colors
@@ -330,7 +356,7 @@ className="bg-orange-500"  // Wrong for hybrid
 - ✅ Semantic button classes (`btn-primary`, `btn-secondary`)
 - ✅ Semantic surface elevation (`bg-dark-elevated0/1`)
 - ✅ Semantic text hierarchy (`text-text-primary/secondary/tertiary`)
-- ✅ Strength category uses `#A6A6A6` (neutral grey), Cardio uses `#E97400` (burnt orange)
+- ✅ Strength category uses neutral grey token, Cardio uses burnt orange token
 
 **Files Changed:**
 - `apps/mobile/src/app/prs/page.tsx` - Button styling consistency
