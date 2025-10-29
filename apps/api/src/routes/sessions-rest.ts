@@ -159,6 +159,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
     const session = sessionResult.rows[0]
 
     // Get exercises with sets for this session, ordered by when first set was created
+    // Join with exercise_templates to get template_id for exercise history modal
     const exercisesResult = await pool.query(
       `SELECT DISTINCT
         e.exercise_id,
@@ -167,11 +168,13 @@ router.get('/:id', authenticateToken, async (req, res) => {
         e.equipment,
         e.exercise_category,
         e.exercise_type,
+        et.template_id,
         MIN(st.created_at) as first_set_created
       FROM exercises e
       JOIN sets st ON st.exercise_id = e.exercise_id
+      LEFT JOIN exercise_templates et ON LOWER(TRIM(et.name)) = LOWER(TRIM(e.name))
       WHERE st.session_id = $1
-      GROUP BY e.exercise_id, e.name, e.muscle_groups, e.equipment, e.exercise_category, e.exercise_type
+      GROUP BY e.exercise_id, e.name, e.muscle_groups, e.equipment, e.exercise_category, e.exercise_type, et.template_id
       ORDER BY MIN(st.created_at)`,
       [id]
     )

@@ -184,8 +184,9 @@ function EditWorkoutPage() {
           name: dbEx.name,
           notes: '',
           exercise_id: dbEx.exercise_id,
-          // Try to find template_id by matching exercise name with templates
-          template_id: templates.find((t: any) => t.name === dbEx.name)?.template_id,
+          // Use template_id from backend API (now includes LEFT JOIN with exercise_templates)
+          // Fallback to local match if not provided by API
+          template_id: dbEx.template_id || templates.find((t: any) => t.name === dbEx.name)?.template_id,
           muscle_groups: dbEx.muscle_groups,
           equipment: dbEx.equipment,
           exercise_category: dbEx.exercise_category,
@@ -233,16 +234,21 @@ function EditWorkoutPage() {
   }, [exerciseTemplatesData])
 
   // Update template_id on exercises when templates load
+  // Note: template_id is now provided by the backend API via LEFT JOIN with exercise_templates
+  // This fallback is kept for exercises that might not match any template
   useEffect(() => {
     if (templates.length > 0 && exercises.length > 0) {
-      setExercises(prevExercises => 
-        prevExercises.map(exercise => ({
-          ...exercise,
-          template_id: exercise.template_id || templates.find((t: any) => t.name === exercise.name)?.template_id
-        }))
-      )
+      const needsUpdate = exercises.some(ex => !ex.template_id)
+      if (needsUpdate) {
+        setExercises(prevExercises => 
+          prevExercises.map(exercise => ({
+            ...exercise,
+            template_id: exercise.template_id || templates.find((t: any) => t.name === exercise.name)?.template_id
+          }))
+        )
+      }
     }
-  }, [templates])
+  }, [templates, exercises.length])
 
   // Click outside handler for dropdowns
   useEffect(() => {

@@ -273,6 +273,26 @@ className="bg-orange-500"  // Wrong for hybrid
 - **Privacy‑by‑design:** Ask only for necessary permissions; explain why at point of need.
 * * *
 
+## Recent Migrations & Fixes
+
+### 2025-10-29: Exercise History Modal Fix (Training Edit Page)
+**Issue:** Exercise history modal (clock icon) not working in `/training/edit/<id>` - `template_id` was `undefined`
+
+**Root Cause:** Backend REST API (`/api/sessions/:id`) didn't return `template_id` when fetching workout sessions
+
+**Solution:**
+- **Backend:** Updated `sessions-rest.ts` GET `/:id` endpoint to include `LEFT JOIN exercise_templates` matching by exercise name
+- **Frontend:** Updated edit page to use `template_id` from API response (with fallback to local matching)
+- **Frontend:** Improved useEffect dependency array to include `exercises.length` to avoid stale closures
+
+**Files Changed:**
+- `apps/api/src/routes/sessions-rest.ts` - Added `template_id` to exercises query via LEFT JOIN
+- `apps/mobile/src/app/training/edit/[id]/page.tsx` - Updated to use API-provided template_id with fallback
+
+**Testing:** Verify exercise history modal opens when clicking clock icon on exercise cards in edit page
+
+---
+
 ## Quick implementation checklist (copy for your PR template)
 
 ### RYTHM Theme Compliance (Required First)
