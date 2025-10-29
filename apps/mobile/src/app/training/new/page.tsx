@@ -273,7 +273,7 @@ function NewWorkoutPage() {
         name: templateEx.name,
         notes: templateEx.notes || '',
         sets: sets,
-        exercise_id: templateEx.exercise_id,
+        // Don't include exercise_id when creating from template - let API find/create by name
         muscle_groups: templateEx.muscle_groups || [],
         exercise_category: templateEx.category,
         exercise_type: exerciseType as 'STRENGTH' | 'CARDIO'
@@ -552,7 +552,7 @@ function NewWorkoutPage() {
         duration: duration,
         started_at: workoutDate.toISOString(), // Include selected workout date
         exercises: exercises.map(exercise => ({
-          exercise_id: exercise.exercise_id, // Include exercise_id for template exercises
+          exercise_id: exercise.exercise_id, // Only include if exercise was loaded from existing session
           name: exercise.name,
           muscle_groups: exercise.muscle_groups || [],
           equipment: exercise.equipment || '',
