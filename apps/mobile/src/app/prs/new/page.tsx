@@ -121,7 +121,7 @@ export default function NewPRPage() {
               <button
                 type="button"
                 onClick={() => setShowExercisePicker(true)}
-                className="w-full px-4 py-3 bg-dark-card border border-dark-border rounded-lg text-left hover:bg-dark-elevated1 transition-colors"
+                className="w-full px-4 py-3 bg-dark-input border border-dark-border rounded-lg text-left hover:bg-dark-elevated1 transition-colors"
               >
                 {selectedExercise ? (
                   <span className="text-text-primary font-medium">{selectedExercise.name}</span>

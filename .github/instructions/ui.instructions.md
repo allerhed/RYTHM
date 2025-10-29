@@ -135,6 +135,14 @@ className="bg-orange-500"  // Wrong for hybrid
   - [ ] Input fields use semantic tokens (bg-dark-card, border-dark-border, focus:border-orange-primary)
 
 ### Recent Migrations
+- **2025-10-29:** Comprehensive input field and text color standardization
+  - Updated CSS variables in `globals.css`:
+    - `--dark-input: #8C8C8C` → `#666666` (medium grey for better visual balance)
+    - `--text-primary: #FFFFFF` → `#E0E0E0` (softer smoke grey for reduced eye strain)
+  - Replaced all remaining `bg-dark-card` → `bg-dark-input` across entire mobile app
+  - Files updated: training/new, training/edit, templates, prs/new, settings, auth/register
+  - Result: Consistent medium grey input backgrounds (#666666) with softer text (#E0E0E0) throughout
+  - **Rationale:** Previous #8C8C8C was too light; #666666 provides better contrast differentiation from surrounding surfaces while maintaining accessibility
 - **2025-10-29:** Custom exercise modal and link standardization
   - Updated "Custom Exercise" link from teal (`text-teal-500`) → orange (`text-orange-primary`)
   - Applied to training/new and training/edit pages for consistency
@@ -159,11 +167,6 @@ className="bg-orange-500"  // Wrong for hybrid
   - Changed hamburger menu icon from grey → `text-orange-primary`
   - Changed all navigation item icons from grey → `text-orange-primary` (no longer grey by default, orange on hover)
   - Maintains sign-out as error color for distinction
-- **2025-10-29:** Input field contrast improvement
-  - Added new CSS variable `--dark-input: #8C8C8C` for lighter input backgrounds
-  - Replaced all input/select/textarea `bg-dark-card` → `bg-dark-input`
-  - Centralized input styling in globals.css with new `.bg-dark-input` helper class
-  - Improved visual contrast between input fields and surrounding UI
 - **2025-10-29:** Standardized all input/select/textarea fields across mobile app
   - Replaced `bg-white dark:bg-gray-700` → `bg-dark-card`
   - Replaced `border-gray-300 dark:border-gray-600` → `border-dark-border`

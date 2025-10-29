@@ -611,7 +611,7 @@ function NewWorkoutPage() {
                 type="text"
                 value={workoutName}
                 onChange={(e) => setWorkoutName(e.target.value)}
-                className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+                className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
               />
             </div>
 
@@ -661,7 +661,7 @@ function NewWorkoutPage() {
                   min="01:00"
                   max="10:00"
                   step="60"
-                  className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+                  className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
                 />
               </div>
             </div>
@@ -678,7 +678,7 @@ function NewWorkoutPage() {
             value={trainingLoad || ''}
             onChange={(e) => setTrainingLoad(e.target.value ? parseInt(e.target.value) : null)}
             placeholder="Enter training load (optional)"
-            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
           />
           <p className="text-xs text-text-secondary mt-1">
             Subjective measure of workout intensity (e.g., 1-100)
@@ -772,7 +772,7 @@ function NewWorkoutPage() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add any notes about your workout..."
-            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary resize-none"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary resize-none"
             rows={3}
           />
         </div>
@@ -995,7 +995,7 @@ function SetRow({
           value={set.value1 || ''}
           onChange={(e) => onValueChange(set.id, 'value1', Number(e.target.value))}
           onBlur={(e) => onValueBlur(set.id, 'value1', Number(e.target.value))}
-          className="w-full text-center py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+          className="w-full text-center py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
           placeholder="0"
         />
         
@@ -1036,7 +1036,7 @@ function SetRow({
           value={set.value2 || ''}
           onChange={(e) => onValueChange(set.id, 'value2', Number(e.target.value))}
           onBlur={(e) => onValueBlur(set.id, 'value2', Number(e.target.value))}
-          className="w-full text-center py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+          className="w-full text-center py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
           placeholder="0"
         />
         
@@ -1120,7 +1120,7 @@ function DatePickerModal({
             type="date"
             value={formatDateForInput(currentDate)}
             onChange={(e) => handleDateChange(e.target.value)}
-            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
           />
         </div>
 
@@ -1201,7 +1201,7 @@ function TimePickerModal({
                 max="23"
                 value={hours}
                 onChange={(e) => setHours(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
               />
             </div>
             <div className="text-center">
@@ -1214,7 +1214,7 @@ function TimePickerModal({
                 max="59"
                 value={minutes}
                 onChange={(e) => setMinutes(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
               />
             </div>
             <div className="text-center">
@@ -1227,7 +1227,7 @@ function TimePickerModal({
                 max="59"
                 value={seconds}
                 onChange={(e) => setSeconds(e.target.value)}
-                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+                className="w-full text-center px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
               />
             </div>
           </div>
@@ -1340,7 +1340,7 @@ function AddExerciseModal({
             placeholder="Search exercises..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+            className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
           />
         </div>
 
@@ -1525,7 +1525,7 @@ function TemplateSelectionModal({
               placeholder="Search templates..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-card text-text-primary"
+              className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
             />
           </div>
 

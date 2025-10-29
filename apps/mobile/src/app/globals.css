@@ -25,7 +25,7 @@
   --dark-primary: var(--color-black);
   --dark-secondary: var(--color-dark-grey);
   --dark-card: #232323;
-  --dark-input: #8C8C8C; /* Input field background (Updated 2025-10-29) */
+  --dark-input: #666666; /* Input field background (Updated 2025-10-29) */
   --dark-border: #2A2A2A;
   --dark-elevated: #2D2D2D;
 
@@ -40,7 +40,7 @@
   --gold-light: #E5C158;
 
   /* Text colors */
-  --text-primary: var(--color-white);
+  --text-primary: #E0E0E0; /* Updated 2025-10-29 */
   --text-secondary: #A0A0A0;
   --text-tertiary: #666666;
 

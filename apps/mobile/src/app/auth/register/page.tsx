@@ -329,7 +329,7 @@ export default function RegisterPage() {
                       type="button"
                       variant="outline"
                       size="lg"
-                      className="w-full bg-dark-card/50 border-dark-border text-text-primary hover:bg-dark-card"
+                      className="w-full bg-dark-input/50 border-dark-border text-text-primary hover:bg-dark-input"
                       onClick={() => setStep(1)}
                     >
                       Back
