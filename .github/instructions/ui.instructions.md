@@ -292,6 +292,44 @@ Interactive List Item: w-full p-3 hover:bg-dark-elevated1 transition-colors; chi
 ---
 
 ### 2025-10-29: Workout Update Duplicate Save Guard
+### 2025-10-30: Date and Duration Fields Width Fix
+**Issue:** Date and duration input fields were appearing too wide on iOS screens in new and edit workout pages.
+
+**Solution:** Added missing `bg-dark-input text-text-primary` classes to duration field on edit page to match styling of other input fields. Both date and duration fields already had `w-full` which makes them match the Workout Name field width.
+
+**Files Changed:**
+- `apps/mobile/src/app/training/edit/[id]/page.tsx` - Added semantic input classes to duration field
+
+---
+
+### 2025-10-30: PR Detail Page Design System Migration
+**Issue:** Personal Records detail page (`/prs/[id]`) still used old design with raw Tailwind colors (blues, grays) instead of semantic design tokens.
+
+**Changes:**
+- **Category badges**: Replaced blue/orange raw colors → `badge-strength`, `badge-cardio`, `badge-hybrid` helper classes
+- **Loading spinner**: `border-blue-600` → `border-orange-primary`
+- **Error states**: `bg-red-50 dark:bg-red-900/20 text-red-*` → `bg-error-soft text-error`
+- **Current record card**: `bg-blue-50 dark:bg-blue-900/20` → `bg-dark-elevated2`
+- **Notes section**: `bg-gray-50 dark:bg-gray-700` → `bg-dark-elevated0 border border-dark-border`
+- **Buttons**: Raw blue button → `btn-primary`, gray button → `btn-secondary`
+- **History cards**: 
+  - Current record border: `border-blue-500` → `border-orange-primary`
+  - Hover state: raw gray borders → `hover:border-orange-primary/40`
+  - Current badge: `bg-blue-600` → `bg-orange-primary`
+  - Notes background: `bg-gray-50 dark:bg-gray-700` → `bg-dark-elevated0 border border-dark-border`
+  - Delete button: `text-red-600 dark:text-red-400` → `text-error`
+  - Progression indicator: `text-orange-600/red-600` → `text-orange-primary/text-error`
+  - Divider: `border-gray-100 dark:border-gray-700` → `border-dark-border`
+- **Delete PR button**: Raw red colors → `bg-error-soft text-error border-error`
+- **Empty state**: Raw gray text → `text-text-secondary`, `text-text-tertiary`
+
+**Files Changed:**
+- `apps/mobile/src/app/prs/[id]/page.tsx` - Complete semantic theme migration
+
+**Rationale:** Ensures complete design system compliance across all PR-related pages. Orange primary accent now consistently used for all interactive elements and highlights.
+
+---
+
 ### 2025-10-30: Hamburger Menu Attached to Header
 ### 2025-10-30: Workout Template Selection Modal Redesign
 **Issue:** Legacy template selector modal used mixed raw Tailwind colors, inconsistent spacing, and lacked semantic elevation surfaces. Accessibility (focus states, backdrop clarity) and sticky header/footer structure were missing.

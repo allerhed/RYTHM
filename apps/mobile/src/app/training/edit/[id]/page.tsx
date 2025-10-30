@@ -662,7 +662,7 @@ function EditWorkoutPage() {
                 min="01:00"
                 max="10:00"
                 step="60"
-                className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent"
+                className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
               />
             </div>
           </div>

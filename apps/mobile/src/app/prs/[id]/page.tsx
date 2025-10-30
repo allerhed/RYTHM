@@ -61,11 +61,13 @@ export default function PRDetailPage() {
   const getCategoryBadgeClass = (category: string) => {
     switch (category) {
       case 'strength':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        return 'badge-strength';
       case 'cardio':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+        return 'badge-cardio';
+      case 'hybrid':
+        return 'badge-hybrid';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+        return 'badge-secondary';
     }
   };
 
@@ -86,7 +88,7 @@ export default function PRDetailPage() {
       <div className="min-h-screen bg-dark-primary">
         <Header title="Loading..." showBack onBack={() => router.back()} />
         <div className="pt-16 flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-primary"></div>
         </div>
       </div>
     );
@@ -97,9 +99,9 @@ export default function PRDetailPage() {
       <div className="min-h-screen bg-dark-primary">
         <Header title="Error" showBack onBack={() => router.back()} />
         <div className="pt-16 px-4 py-4">
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-            <p className="text-red-800 dark:text-red-200 font-medium">Failed to load personal record</p>
-            <p className="text-red-600 dark:text-red-300 text-sm mt-1">
+          <div className="bg-error-soft border border-error rounded-lg p-4">
+            <p className="text-error font-medium">Failed to load personal record</p>
+            <p className="text-error text-sm mt-1">
               {error?.message || 'Unknown error'}
             </p>
           </div>
@@ -114,7 +116,6 @@ export default function PRDetailPage() {
 
       <div className="pt-16 pb-20 max-w-2xl mx-auto">
         {/* Current PR Card */}
-        {/* Current PR Card (Migration: gradient removed) */}
         <div className="bg-dark-elevated1 shadow-sm border border-dark-border rounded-lg mx-4 mb-4 p-6">
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -130,7 +131,7 @@ export default function PRDetailPage() {
             </span>
           </div>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-4 border border-blue-100 dark:border-blue-800">
+          <div className="bg-dark-elevated2 rounded-lg p-4 mb-4 border border-dark-border">
             <p className="text-sm text-text-secondary mb-1">Current Record</p>
             <p className="text-4xl font-bold text-orange-primary">
               {pr.currentValue} {pr.currentUnit}
@@ -141,7 +142,7 @@ export default function PRDetailPage() {
           </div>
 
           {pr.notes && (
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+            <div className="bg-dark-elevated0 rounded-lg p-4 mb-4 border border-dark-border">
               <p className="text-xs font-medium text-text-secondary mb-1">Notes</p>
               <p className="text-sm text-text-primary">{pr.notes}</p>
             </div>
@@ -150,13 +151,13 @@ export default function PRDetailPage() {
           <div className="flex gap-3">
             <button
               onClick={() => router.push(`/prs/${prId}/add-record`)}
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm"
+              className="btn-primary flex-1"
             >
               + Add Record
             </button>
             <button
               onClick={() => router.push(`/prs/${prId}/edit`)}
-              className="flex-1 bg-dark-elevated text-gray-700 dark:text-gray-300 py-3 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="btn-secondary flex-1"
             >
               Edit PR
             </button>
@@ -176,8 +177,8 @@ export default function PRDetailPage() {
 
           {pr.history.length === 0 ? (
             <div className="bg-dark-elevated1 shadow-sm border border-dark-border rounded-lg p-8 text-center">
-              <p className="text-gray-500 dark:text-gray-400">No historical records yet</p>
-              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+              <p className="text-text-secondary">No historical records yet</p>
+              <p className="text-sm text-text-tertiary mt-1">
                 Add records to track your progress over time
               </p>
             </div>
@@ -194,8 +195,8 @@ export default function PRDetailPage() {
                     key={record.historyId}
                     className={`bg-dark-elevated1 rounded-lg p-4 border shadow-sm transition-all ${
                       isCurrent 
-                        ? 'border-blue-500 dark:border-blue-400' 
-                        : 'border-dark-border hover:border-gray-300 dark:hover:border-gray-600'
+                        ? 'border-orange-primary' 
+                        : 'border-dark-border hover:border-orange-primary/40'
                     }`}
                   >
                     <div className="flex items-start justify-between">
@@ -205,7 +206,7 @@ export default function PRDetailPage() {
                             {record.value} {record.unit}
                           </p>
                           {isCurrent && (
-                            <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                            <span className="bg-orange-primary text-white text-xs px-2 py-1 rounded-full font-medium">
                               Current
                             </span>
                           )}
@@ -214,7 +215,7 @@ export default function PRDetailPage() {
                           {formatDate(record.achievedDate)}
                         </p>
                         {record.notes && (
-                          <p className="text-sm text-gray-700 dark:text-gray-300 mt-2 bg-gray-50 dark:bg-gray-700 p-2 rounded">
+                          <p className="text-sm text-text-primary mt-2 bg-dark-elevated0 p-2 rounded border border-dark-border">
                             {record.notes}
                           </p>
                         )}
@@ -224,7 +225,7 @@ export default function PRDetailPage() {
                         <button
                           onClick={() => handleDeleteRecord(record.historyId)}
                           disabled={deleteRecord.isPending}
-                          className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 p-2 transition-colors"
+                          className="text-error hover:text-error/80 p-2 transition-colors"
                           title="Delete record"
                         >
                           <svg
@@ -246,7 +247,7 @@ export default function PRDetailPage() {
 
                     {/* Show progression from previous */}
                     {index < pr.history.length - 1 && (
-                      <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                      <div className="mt-3 pt-3 border-t border-dark-border">
                         {(() => {
                           const prev = pr.history[index + 1];
                           const diff = record.value - prev.value;
@@ -256,8 +257,8 @@ export default function PRDetailPage() {
                             <p
                               className={`text-xs font-medium ${
                                 isImprovement 
-                                  ? 'text-orange-600 dark:text-orange-400' 
-                                  : 'text-red-600 dark:text-red-400'
+                                  ? 'text-orange-primary' 
+                                  : 'text-error'
                               }`}
                             >
                               {isImprovement ? '↑' : '↓'} {Math.abs(diff).toFixed(2)}{' '}
@@ -279,11 +280,11 @@ export default function PRDetailPage() {
           <button
             onClick={handleDeletePR}
             disabled={deletePR.isPending}
-            className="w-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 py-3 rounded-lg font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50 border border-red-200 dark:border-red-800"
+            className="w-full bg-error-soft text-error py-3 rounded-lg font-medium hover:bg-error/10 transition-colors disabled:opacity-50 border border-error"
           >
             {deletePR.isPending ? 'Deleting...' : 'Delete Personal Record'}
           </button>
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
+          <p className="text-xs text-text-tertiary text-center mt-2">
             This will delete the PR and all historical records
           </p>
         </div>
