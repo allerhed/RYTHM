@@ -590,8 +590,8 @@ function EditWorkoutPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-dark-elevated2 border-b border-dark-border">
+      {/* Header (safe-area compliant) */}
+      <div className="sticky top-0 z-40 bg-dark-elevated2 border-b border-dark-border safe-area-top pt-[env(safe-area-inset-top)]">
         <div className="max-w-md mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <button 

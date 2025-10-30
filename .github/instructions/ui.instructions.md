@@ -1,3 +1,8 @@
+description: RYTHM UI guidelines with safe-area compliance (updated 2025-10-30)
+name: ui-guidelines
+applyTo: **/*
+---
+SafeAreaUpdate: training edit header and navigation flyout now use safe-area-top and pt-[env(safe-area-inset-top)] to avoid notch/status bar overlap. Commit: fix(ui): apply safe-area notch compliance to headers & flyout. FollowUps: add shared safe-area utility, bottom inset handling, visual regression tests, focus trap & ESC.
 # RYTHM UI Generation Guidelines
 
 > **Critical:** All UI code MUST follow the semantic theme system. Gradient utilities are deprecated and will fail ESLint validation.
@@ -12,7 +17,7 @@
 - **Burnt orange accents:** Highlight actions and interactive elements
 
 ### Core Surface Classes (Required)
-```tsx
+ExampleSurfaces:
 // Background Surfaces (Elevation Scale)
 bg-dark-primary      // Page background
 bg-dark-elevated1    // Primary cards, panels, modals
@@ -31,10 +36,10 @@ text-text-tertiary   // Subtle metadata, placeholders
 
 // Borders & Dividers
 border-dark-border   // Standard borders for cards/inputs
-```
+EndExampleSurfaces:
 
 ### Component Helper Classes (Required)
-```tsx
+DeprecatedExamples:
 // Buttons (DO NOT compose manually)
 <button className="btn-primary">Save</button>     // Burnt orange, primary action
 <button className="btn-secondary">Cancel</button> // Neutral surface action
@@ -53,12 +58,12 @@ border-dark-border   // Standard borders for cards/inputs
 
 // Accent Elements
 <div className="accent-bar" />                    // Thin orange separator/emphasis
-```
+EndDeprecatedExamples:
 
 ### Migration Patterns (Required)
 
 **❌ DEPRECATED (Will Fail ESLint):**
-```tsx
+CorrectUsageExamples:
 // DO NOT USE gradients
 // Gradient example (removed) -> Use elevation classes instead: bg-dark-primary / bg-dark-elevated*
 
@@ -69,50 +74,19 @@ className="bg-gray-800 text-gray-400 hover:bg-gray-700"
 className="bg-purple-500"  // Wrong for strength
 className="bg-teal-300"    // Wrong for cardio
 className="bg-orange-500"  // Wrong for hybrid
-```
+EndCorrectUsageExamples:
 
 **✅ CORRECT (Use Semantic Classes):**
-```tsx
-// Cards & Panels
-<div className="bg-dark-elevated1 border border-dark-border rounded-lg p-4">
-  <h3 className="text-text-primary">Title</h3>
-  <p className="text-text-secondary">Supporting text</p>
-</div>
-
-// Category Indicators (Charts, Badges, Stats)
-<div className="w-4 h-4 rounded badge-cardio">Cardio</div>
-<div className="w-4 h-4 rounded badge-strength">Strength</div>
-<div className="w-4 h-4 rounded badge-hybrid">Hybrid</div>
-
-// Modals
-<div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4">
-  <div className="bg-dark-elevated1 border border-dark-border rounded-lg shadow-xl p-6">
-    <h2 className="text-text-primary mb-4">Modal Title</h2>
-    <button className="btn-primary w-full">Confirm</button>
-  </div>
-</div>
+Cards & Panels: bg-dark-elevated1 + border-dark-border + rounded-lg + p-4; text uses text-text-primary / text-text-secondary.
+Category Indicators: small rounded elements with badge-cardio / badge-strength / badge-hybrid.
+Modals: backdrop (black/70) + centered panel (bg-dark-elevated1 border border-dark-border shadow-xl p-6).
+  Modal heading: text-text-primary mb-4; primary action: btn-primary w-full.
 
 // Form Inputs (Updated 2025-10-29: Standardized across all pages)
-<input 
-  className="w-full px-3 py-2 border border-dark-border bg-dark-input 
-             text-text-primary placeholder:text-text-tertiary 
-             focus:border-orange-primary focus:ring-orange-primary"
-/>
-<select
-  className="w-full px-3 py-2 border border-dark-border bg-dark-input 
-             text-text-primary focus:border-orange-primary focus:ring-orange-primary"
-/>
-<textarea
-  className="w-full px-3 py-2 border border-dark-border bg-dark-input 
-             text-text-primary placeholder:text-text-tertiary 
-             focus:border-orange-primary focus:ring-orange-primary resize-none"
-/>
+Form Inputs: base classes w-full px-3 py-2 border-dark-border bg-dark-input text-text-primary placeholder:text-text-tertiary focus:border-orange-primary focus:ring-orange-primary.
 
 // Interactive Lists
-<button className="w-full p-3 hover:bg-dark-elevated1 transition-colors">
-  <span className="text-text-primary">Item Title</span>
-  <span className="text-text-tertiary">Metadata</span>
-</button>
+Interactive List Item: w-full p-3 hover:bg-dark-elevated1 transition-colors; child spans use text-text-primary and text-text-tertiary.
 ```
 
 ### Anti-Patterns (FORBIDDEN)

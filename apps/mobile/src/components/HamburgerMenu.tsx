@@ -127,7 +127,7 @@ export function HamburgerMenu() {
           <div className="absolute inset-0" onClick={() => setIsOpen(false)} />
           
           {/* Navigation Panel */}
-          <div className="absolute top-0 right-0 h-full w-full max-w-sm bg-dark-primary shadow-2xl transform transition-transform duration-300 ease-in-out">
+          <div className="absolute top-0 right-0 h-full w-full max-w-sm bg-dark-primary shadow-2xl transform transition-transform duration-300 ease-in-out pt-[env(safe-area-inset-top)] safe-area-top">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-orange-primary/30">
