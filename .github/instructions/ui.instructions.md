@@ -4,6 +4,7 @@ applyTo: **/*
 ---
 SafeAreaUpdate: training edit header and navigation flyout now use safe-area-top and pt-[env(safe-area-inset-top)] to avoid notch/status bar overlap. Commit: fix(ui): apply safe-area notch compliance to headers & flyout. FollowUps: add shared safe-area utility, bottom inset handling, visual regression tests, focus trap & ESC.
 NotchBackground: Device notch/status bar region must always render as solid black (inherit from bg-dark-primary or explicit #000) with no gradients or overlays; do not place interactive elements or non-black backgrounds beneath env(safe-area-inset-top).
+NotchOverlayImplementation: Added fixed overlay div in layout.tsx (height env(safe-area-inset-top), bg-black, pointer-events-none) to guarantee black notch across all pages.
 # RYTHM UI Generation Guidelines
 
 > **Critical:** All UI code MUST follow the semantic theme system. Gradient utilities are deprecated and will fail ESLint validation.

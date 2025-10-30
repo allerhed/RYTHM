@@ -395,6 +395,7 @@ body {
 
 /* Safe area utilities */
 .safe-area-top {
+  /* Maintain spacing below the black notch overlay; use env inset for dynamic devices */
   padding-top: max(1rem, env(safe-area-inset-top));
 }
 

@@ -55,6 +55,8 @@ export default function RootLayout({
         <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
       <body className="h-full bg-dark-primary text-text-primary">
+        {/* Black notch overlay (ensures notch/status bar area always black) */}
+        <div className="fixed top-0 left-0 right-0 h-[env(safe-area-inset-top)] bg-black pointer-events-none z-[100]"></div>
         <Providers>
           {/* Global Header with attached hamburger (no floating positioning) */}
           <header className="sticky top-0 z-50 flex items-center gap-4 px-4 py-3 bg-dark-elevated2 border-b border-dark-border safe-area-top">
