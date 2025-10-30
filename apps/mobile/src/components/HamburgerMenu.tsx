@@ -113,10 +113,11 @@ export function HamburgerMenu() {
   return (
     <>
       {/* Hamburger Button */}
+
       <button
         onClick={() => setIsOpen(true)}
-        /* Migration: Removed gradient background in favor of semantic surface. */
-        className="fixed top-4 right-4 z-[60] p-2 rounded-lg bg-dark-elevated1 shadow-lg border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-all"
+        /* Improved: Add safe-area-inset and more spacing for iOS notch */
+        className="fixed top-6 right-6 pt-[env(safe-area-inset-top)] z-[60] p-2 rounded-lg bg-dark-elevated1 shadow-lg border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-all"
         aria-label="Open navigation menu"
       >
         <Bars3Icon className="w-6 h-6 text-orange-primary" />
