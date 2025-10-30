@@ -358,6 +358,13 @@ export const analyticsRouter = router({
               ELSE 0
             END
           ) as sets_duration_m
+          ,SUM(
+            CASE 
+              WHEN sets.value_1_type = 'distance_m' THEN sets.value_1_numeric
+              WHEN sets.value_2_type = 'distance_m' THEN sets.value_2_numeric
+              ELSE 0
+            END
+          ) as sets_distance_m
         FROM sessions s
         LEFT JOIN sets ON sets.session_id = s.session_id
         WHERE s.user_id = $1 AND s.started_at >= $2
@@ -439,6 +446,12 @@ export const analyticsRouter = router({
           return sum + trainingLoad
         }, 0)
 
+        // Weekly distance (convert meters to km)
+        const weekDistanceKm = weekSessions.reduce((sum: number, s: any) => {
+          const setsDistanceM = parseFloat(s.sets_distance_m) || 0
+          return sum + (setsDistanceM / 1000)
+        }, 0)
+
 
 
         weeklyData.push({
@@ -447,7 +460,8 @@ export const analyticsRouter = router({
           activityTime: actualTime,
           cardioLoad: cardioLoad,
           strengthLoad: strengthLoad,
-          hybridLoad: hybridLoad
+          hybridLoad: hybridLoad,
+          distanceKm: parseFloat(weekDistanceKm.toFixed(2))
         })
 
 

@@ -24,7 +24,7 @@ File: `apps/mobile/src/app/analytics/page.tsx`
 - Added derived metrics grid and footer.
 
 ## Follow Ups
-- Consider adding a small sparkline or weekly distance trend when weekly data becomes available.
+- Added weekly distance bar chart (12 weeks) with dynamic scaling and km labels.
 - Potential localization for units (km → miles) if user preference system is introduced.
 
 ## Commit Message (planned)
@@ -49,3 +49,32 @@ Edge cases:
 
 ---
 Document generated October 30, 2025.
+
+## Weekly Distance Chart (Added)
+
+### Purpose
+Visualize weekly running distance (km) over the last 12 weeks to show consistency and peak mileage.
+
+### Implementation Details
+- API: Extended `getTrainingLoadChart` to include `sets_distance_m` aggregation -> converted to `distanceKm` per week.
+- UI: Added bar chart above totals in `Running Distance` card with dynamic Y-axis scaling.
+- Bars: Minimum visible height (8px) when distance > 0 to avoid invisible weeks.
+- Y-axis: Auto-scales to nearest 5 km bucket above max weekly distance (baseline 10 km).
+- Labels: Rotated dates (e.g., `Oct 30`) + per-week km value (one decimal) below each bar where data exists.
+- Legend: Single orange square labeled `Weekly Distance` consistent with theme.
+- Summary Row: Shows average per week and peak week distance.
+
+### Edge Cases
+- No distance weeks → chart shows baseline scale; bars omitted (height 0) with no km labels.
+- Very high weekly distance (e.g., > 55 km) → scale increases in 5 km increments.
+- Missing previous period data does not affect chart rendering (current-period only visualization).
+
+### Performance & Azure
+- No new query roundtrip: piggybacks on existing training load endpoint.
+- Added one SUM to SQL; negligible overhead (<1ms typical).
+- Stateless; no environment variable changes required.
+
+### Next Possible Enhancements
+- Toggle between distance / pace sparkline.
+- Tap a bar to drill into that week's sessions.
+- Unit conversion (miles) by user preference.

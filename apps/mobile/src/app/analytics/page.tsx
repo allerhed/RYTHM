@@ -53,6 +53,8 @@ interface AnalyticsData {
     activityTime: number
     cardioLoad: number
     strengthLoad: number
+    hybridLoad: number
+    distanceKm?: number
   }>
 }
 
@@ -609,6 +611,71 @@ function AnalyticsPage() {
         {/* Running Distance Totals (Enhanced) */}
         <div className="bg-dark-elevated1 rounded-2xl p-6 shadow-sm border border-dark-border">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Running Distance</h2>
+          {/* Weekly Distance Chart */}
+          <div className="mb-6">
+            <p className="text-sm text-gray-400 mb-4">Weekly running distance (last 3 months)</p>
+            <div className="flex">
+              {/* Y-axis labels (dynamic scale up to nearest bucket) */}
+              <div className="w-12 flex flex-col justify-between text-xs text-gray-400 h-48">
+                {(() => {
+                  const weeks = trainingLoadData.weeklyData.slice(-12)
+                  const distances = weeks.map((w: any) => w.distanceKm || 0)
+                  const maxDistance = Math.max(10, Math.max(...distances))
+                  // Determine scale buckets (0, 2, 4, 6, 8, 10+ or dynamic)
+                  const top = maxDistance <= 10 ? 10 : Math.ceil(maxDistance / 5) * 5
+                  const labels = []
+                  for (let v = top; v >= 0; v -= top / 5) {
+                    labels.push(<span key={v}>{v.toFixed(0)} km</span>)
+                  }
+                  return labels
+                })()}
+              </div>
+              {/* Chart Area */}
+              <div className="flex-1">
+                <div className="flex items-end justify-between h-48 mb-4 border-l border-gray-700">
+                  {trainingLoadData.weeklyData.slice(-12).map((week: any, index: number) => {
+                    const weeks = trainingLoadData.weeklyData.slice(-12)
+                    const distances = weeks.map((w: any) => w.distanceKm || 0)
+                    const maxDistance = Math.max(10, Math.max(...distances) * 1.1)
+                    const barHeight = Math.max(((week.distanceKm || 0) / maxDistance) * 180, (week.distanceKm || 0) > 0 ? 8 : 0)
+                    return (
+                      <div key={index} className="flex flex-col items-center space-y-2 ml-1">
+                        <div className="flex flex-col-reverse items-center">
+                          <div
+                            className="w-6 bg-orange-primary rounded-sm transition-all duration-500"
+                            style={{ height: `${barHeight}px` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-300 transform rotate-45 origin-bottom-left mt-2">
+                          {formatDate(week.date)}
+                        </span>
+                        {week.distanceKm ? (
+                          <span className="text-[10px] text-gray-400">{week.distanceKm.toFixed(1)} km</span>
+                        ) : null}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+            {/* Legend */}
+            <div className="flex space-x-4 mb-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-orange-primary rounded"></div>
+                <span className="text-sm">Weekly Distance</span>
+              </div>
+            </div>
+            <div className="border-t border-gray-700 pt-4 mb-2">
+              <div className="flex justify-between text-xs text-gray-400">
+                <span>Avg / Week: {(summaryData.currentPeriod.totalDistance / 12).toFixed(2)} km</span>
+                <span>Peak Week: {(() => {
+                  const weeks = trainingLoadData.weeklyData.slice(-12)
+                  const distances = weeks.map((w: any) => w.distanceKm || 0)
+                  return (Math.max(...distances) || 0).toFixed(1)
+                })()} km</span>
+              </div>
+            </div>
+          </div>
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white">
