@@ -606,36 +606,41 @@ function AnalyticsPage() {
           </div>
         </div>
 
-        {/* Total Distance Widget */}
+        {/* Running Distance Totals (Enhanced) */}
         <div className="bg-dark-elevated1 rounded-2xl p-6 shadow-sm border border-dark-border">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Total Distance</h2>
-          
-          <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Running Distance</h2>
+          <div className="flex items-center justify-between mb-6">
             <div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white">
                 {summaryData.currentPeriod.totalDistance.toFixed(1)} km
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Last 3 months
-              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Last 3 months</div>
             </div>
             <div className="text-right">
               <div className="text-lg font-semibold text-orange-600 dark:text-orange-400">
                 {formatChange(summaryData.currentPeriod.totalDistance, summaryData.previousPeriod.totalDistance)}
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                vs. previous 3 months
-              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">vs previous</div>
             </div>
           </div>
-
-          <div className="bg-dark-elevated rounded-lg p-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600 dark:text-gray-300">Previous Period</span>
-              <span className="text-lg font-medium text-gray-900 dark:text-white">
-                {summaryData.previousPeriod.totalDistance.toFixed(1)} km
-              </span>
+          {/* Derived averages */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="text-center p-3 bg-dark-elevated rounded-lg">
+              <div className="text-xl font-bold text-white">{(summaryData.currentPeriod.totalDistance / Math.max(summaryData.currentPeriod.workoutCount,1)).toFixed(2)}</div>
+              <div className="text-xs text-gray-400 mt-1">Avg / Workout</div>
             </div>
+            <div className="text-center p-3 bg-dark-elevated rounded-lg">
+              <div className="text-xl font-bold text-white">{(summaryData.currentPeriod.totalDistance / 90).toFixed(2)}</div>
+              <div className="text-xs text-gray-400 mt-1">Avg / Day</div>
+            </div>
+            <div className="text-center p-3 bg-dark-elevated rounded-lg">
+              <div className="text-xl font-bold text-white">{(summaryData.currentPeriod.totalDistance / 12).toFixed(2)}</div>
+              <div className="text-xs text-gray-400 mt-1">Avg / Week</div>
+            </div>
+          </div>
+          <div className="flex justify-between text-xs text-gray-400 border-t border-gray-700 pt-4">
+            <span>Prev: {summaryData.previousPeriod.totalDistance.toFixed(1)} km</span>
+            <span>Workouts: {summaryData.currentPeriod.workoutCount}</span>
           </div>
         </div>
 
