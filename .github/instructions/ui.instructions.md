@@ -470,6 +470,76 @@ Now the query consistently returns the oldest exercise with that name, ensuring 
 
 ---
 
+### 2025-11-01: Personal Records List Bug Fix (Critical Database Issue)
+**Issue:** Personal Records (PRs) page not listing any records despite successful PR creation. Users could create PRs but the list view remained empty.
+
+**Root Cause:** Database naming conflict between:
+1. **VIEW `personal_records`** (created in `000_consolidated_schema.sql` line 355)
+   - Auto-calculated analytics view that computes PRs from historical sets data
+   - Schema: `tenant_id`, `user_id`, `exercise_id`, `exercise_name`, `pr_type`, `value`, `achieved_at`
+2. **TABLE `personal_records`** (attempted creation in `010_personal_records.sql`)
+   - User-managed table for explicit PR tracking
+   - Schema: `pr_id`, `template_id`, `metric_name`, `category`, `current_value_numeric`, etc.
+
+PostgreSQL prevents a table and view from having the same name in the same schema. Migration order:
+1. `000_consolidated_schema.sql` creates VIEW first
+2. `010_personal_records.sql` tries `CREATE TABLE IF NOT EXISTS personal_records` → **silently fails** because view exists
+
+Result: Backend queries `personal_records` expecting table columns (`pr_id`, `template_id`, etc.) but gets view columns (`exercise_id`, `pr_type`, etc.). Complete column mismatch caused silent query failures → empty results.
+
+**Solution:** Created migration `012_fix_personal_records_conflict.sql` that:
+1. Drops conflicting VIEW `personal_records`
+2. Ensures TABLE `personal_records` exists with correct structure
+3. Recreates all indexes for performance
+4. Fixes RLS policies - combines tenant + user checks in single policy (was split before)
+5. Uses `current_setting('app.current_tenant_id', true)::uuid` (added `true` flag for safer config access)
+
+**Key RLS Policy Improvement:**
+```sql
+-- Before (split policies with OR logic by default):
+CREATE POLICY personal_records_isolation ON personal_records
+    USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
+CREATE POLICY personal_records_user_isolation ON personal_records
+    USING (user_id = current_setting('app.current_user_id')::uuid);
+
+-- After (combined policy with explicit AND logic):
+CREATE POLICY personal_records_isolation ON personal_records
+    USING (
+        tenant_id = current_setting('app.current_tenant_id', true)::uuid 
+        AND user_id = current_setting('app.current_user_id', true)::uuid
+    );
+```
+
+**Files Changed:**
+- `packages/db/migrations/012_fix_personal_records_conflict.sql` (new migration)
+- `PR_LIST_BUG_FIX.md` (detailed technical documentation)
+
+**How to Apply Fix:**
+Option 1 (Fresh DB): `./scripts/stop.sh` (remove volumes) + `./scripts/start.sh`
+Option 2 (Existing DB): `docker exec rythm-db-1 psql -U rythm_api -d rythm -f /docker-entrypoint-initdb.d/012_fix_personal_records_conflict.sql`
+
+**Verification:**
+```bash
+# Check table exists (not view)
+docker exec rythm-db-1 psql -U rythm_api -d rythm -c "\d personal_records"
+# Should show TABLE with pr_id, template_id, metric_name columns
+
+# Check view is gone
+docker exec rythm-db-1 psql -U rythm_api -d rythm -c "\dv personal_records"
+# Should return "Did not find any relation"
+```
+
+**Testing:** Create a PR via `/prs/new` and verify it appears immediately in `/prs` list view
+
+**Production Impact:** No data loss (VIEW had no persistent data). The new TABLE-based PR system is the intended design.
+
+**Follow-ups:**
+- If analytics on historical PRs from sets data is needed, create new view with different name (e.g., `exercise_pr_analytics`)
+- Consider adding integration tests for PR CRUD operations
+- Add database migration validation tests to catch naming conflicts before deployment
+
+---
+
 ## Quick implementation checklist (copy for your PR template)
 
 ### RYTHM Theme Compliance (Required First)
