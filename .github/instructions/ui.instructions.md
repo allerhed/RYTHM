@@ -6,6 +6,7 @@ SafeAreaUpdate: training edit header and navigation flyout now use safe-area-top
 NotchBackground: Device notch/status bar region must always render as solid black (inherit from bg-dark-primary or explicit #000) with no gradients or overlays; do not place interactive elements or non-black backgrounds beneath env(safe-area-inset-top).
 NotchOverlayImplementation: Added fixed overlay div in layout.tsx (height env(safe-area-inset-top), bg-black, pointer-events-none) to guarantee black notch across all pages.
 DateDurationFieldStandardization: Replaced two-column grid with constrained flex layout (max-width 160px date, 140px duration) on new and edit workout pages to prevent overly wide inputs and improve visual balance.
+BottomSheetModalRestore: Reverted template selection modal (training/new) from centered modal back to bottom-anchored sheet layout with semantic colors. Container changed from items-center justify-center to items-end; modal now full-width with rounded-t-2xl top corners and max-h-[85vh] from bottom. Updated header styling (text-lg, improved spacing), moved search input to dedicated row below header, increased button padding (py-3) and font weights. All semantic tokens retained (bg-dark-elevated1/2, orange-primary, border-dark-border, text-text-*). Better mobile UX with thumb-friendly bottom positioning.
 # RYTHM UI Generation Guidelines
 
 > **Critical:** All UI code MUST follow the semantic theme system. Gradient utilities are deprecated and will fail ESLint validation.
