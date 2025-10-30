@@ -60,6 +60,7 @@ interface WorkoutSession {
   created_at: string
   training_load: number | null
   perceived_exertion: number | null
+  duration_seconds?: number | string | null
   exercises: DbExercise[]
 }
 
@@ -173,10 +174,21 @@ function EditWorkoutPage() {
         setNotes(session.notes || '')
         setTrainingLoad(session.training_load || 1)
         setPerceivedExertion(session.perceived_exertion || 1)
-        
+
         // Set workout date from session
         if (session.started_at) {
           setWorkoutDate(new Date(session.started_at))
+        }
+
+        // Set duration if available (prefer duration_seconds, fallback to 1:00:00)
+        if (session.duration_seconds != null && !isNaN(Number(session.duration_seconds))) {
+          const totalSeconds = Number(session.duration_seconds)
+          const hours = Math.floor(totalSeconds / 3600)
+          const minutes = Math.floor((totalSeconds % 3600) / 60)
+          const seconds = totalSeconds % 60
+          setDuration(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`)
+        } else {
+          setDuration('1:00:00')
         }
 
         // Convert exercises and sets
