@@ -648,9 +648,9 @@ function EditWorkoutPage() {
               </div>
             </div>
 
-            {/* Date and Duration */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            {/* Date and Duration (width constrained) */}
+            <div className="flex gap-4">
+              <div className="flex-1 max-w-[160px]">
                 <label className="block text-sm font-medium text-text-primary mb-1">
                   Date
                 </label>
@@ -661,7 +661,7 @@ function EditWorkoutPage() {
                   className="w-full px-3 py-2 border border-dark-border rounded-lg bg-dark-input text-text-primary focus:ring-2 focus:ring-orange-primary focus:border-transparent"
                 />
               </div>
-              <div>
+              <div className="flex-1 max-w-[140px]">
                 <label className="block text-sm font-medium text-text-primary mb-1">
                   Duration (Hours:Minutes)
                 </label>
