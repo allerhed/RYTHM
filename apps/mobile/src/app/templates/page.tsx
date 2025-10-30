@@ -5,6 +5,7 @@ import { useAuth, withAuth } from '@/contexts/AuthContext'
 import { trpc } from '../../lib/trpc'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
 import { PullToRefresh } from '../../components/PullToRefresh'
+import { HamburgerMenu } from '../../components/HamburgerMenu'
 import { 
   VALUE_TYPE_LABELS, 
   VALUE_TYPE_UNITS, 
@@ -381,30 +382,24 @@ function TemplatesPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary pb-20">
-      {/* Header: semantic surface (was gradient) */}
-      <div className="bg-dark-elevated1 shadow-sm border-b border-dark-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-4 sm:py-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">
-                  Workout Templates
-                </h1>
-                <p className="mt-1 text-sm text-text-secondary">
-                  Create and manage reusable workout templates
-                </p>
-              </div>
-              <button
-                onClick={handleCreateTemplate}
-                className="inline-flex items-center justify-center px-4 py-3 min-h-[48px] border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary transition-colors"
-              >
-                <PlusIcon className="w-5 h-5 mr-2" />
-                New Template
-              </button>
-            </div>
+      {/* Compact Header */}
+      <div className="pt-[env(safe-area-inset-top)] px-4 py-2 flex items-center justify-between">
+        <h1 className="text-base font-semibold text-text-primary">Templates</h1>
+        <HamburgerMenu />
+      </div>
+
+      <div className="px-4 py-4">
+        {/* Create Template Button */}
+        <button
+          onClick={handleCreateTemplate}
+          className="w-full mb-4 inline-flex items-center justify-center px-4 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-primary hover:bg-orange-hover focus:outline-none focus:ring-2 focus:ring-orange-primary transition-colors"
+        >
+          <PlusIcon className="w-5 h-5 mr-2" />
+          New Template
+        </button>
 
             {/* Filters */}
-            <div className="mt-6 space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4">
+            <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4">
               <div>
                 <label htmlFor="search" className="sr-only">Search templates</label>
                 <input
@@ -431,8 +426,6 @@ function TemplatesPage() {
                 </select>
               </div>
             </div>
-          </div>
-        </div>
       </div>
 
       <PullToRefresh onRefresh={handleRefresh}>

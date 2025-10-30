@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth, withAuth } from '@/contexts/AuthContext'
+import { HamburgerMenu } from '../../components/HamburgerMenu'
 import { trpc } from '../../lib/trpc'
 import { TrophyIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { PullToRefresh } from '../../components/PullToRefresh'
@@ -92,43 +93,33 @@ function PersonalRecordsPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary pb-20">
-      {/* Header (Migration: gradient removed) */}
-      <div className="bg-dark-elevated1 shadow-sm border-b border-dark-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-text-primary">
-                Personal Records - PR's
-              </h1>
-              <p className="mt-2 text-sm text-text-secondary">
-                Track your personal bests and achievements
-              </p>
-            </div>
+      {/* Compact Header */}
+      <div className="pt-[env(safe-area-inset-top)] px-4 py-2 flex items-center justify-between">
+        <h1 className="text-base font-semibold text-text-primary">Personal Records</h1>
+        <HamburgerMenu />
+      </div>
 
-            {/* Filter Tabs */}
-            <div className="mt-6">
-              <nav className="flex space-x-8">
-                {[
-                  { key: 'all', label: 'All Records' },
-                  { key: 'strength', label: 'Strength' },
-                  { key: 'cardio', label: 'Cardio' }
-                ].map((tab) => (
-                  <button
-                    key={tab.key}
-                    onClick={() => handleFilterChange(tab.key as any)}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                      selectedFilter === tab.key
-                        ? 'border-orange-primary text-orange-primary'
-                        : 'border-transparent text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </div>
-        </div>
+      {/* Filter Tabs */}
+      <div className="px-4 mt-4 mb-4">
+        <nav className="flex space-x-8">
+          {[
+            { key: 'all', label: 'All Records' },
+            { key: 'strength', label: 'Strength' },
+            { key: 'cardio', label: 'Cardio' }
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => handleFilterChange(tab.key as any)}
+              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                selectedFilter === tab.key
+                  ? 'border-orange-primary text-orange-primary'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
       </div>
 
       {/* Main Content */}

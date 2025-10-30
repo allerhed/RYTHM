@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import { useAuth, withAuth } from '@/contexts/AuthContext'
+import { HamburgerMenu } from '../../components/HamburgerMenu'
 import { 
   MoonIcon, 
   SunIcon, 
@@ -237,18 +238,10 @@ function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary pb-20">
-      {/* Header */}
-      <div className="bg-dark-elevated2 shadow-sm border-b border-dark-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <h1 className="text-3xl font-bold text-text-primary">
-              Settings
-            </h1>
-            <p className="mt-2 text-sm text-text-secondary">
-              Customize your RYTHM experience
-            </p>
-          </div>
-        </div>
+      {/* Compact Header */}
+      <div className="pt-[env(safe-area-inset-top)] px-4 py-2 flex items-center justify-between">
+        <h1 className="text-base font-semibold text-text-primary">Settings</h1>
+        <HamburgerMenu />
       </div>
 
       {/* Content */}

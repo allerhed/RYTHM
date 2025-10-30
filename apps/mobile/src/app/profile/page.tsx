@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Header } from '../../components/Navigation'
+import { HamburgerMenu } from '../../components/HamburgerMenu'
 import { Button } from '../../components/Form'
 import { useAuth, withAuth } from '../../contexts/AuthContext'
 import { PullToRefresh } from '../../components/PullToRefresh'
@@ -253,11 +253,11 @@ function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-dark-primary">
-      {/* Header */}
-      <Header 
-        title="Profile"
-        showBack={false}
-      />
+      {/* Compact Header */}
+      <div className="pt-[env(safe-area-inset-top)] px-4 py-2 flex items-center justify-between">
+        <h1 className="text-base font-semibold text-text-primary">Profile</h1>
+        <HamburgerMenu />
+      </div>
 
       {/* Toast Notification */}
       {toast && (

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../contexts/AuthContext'
 import { trpc } from '../../lib/trpc'
 import { PullToRefresh } from '../../components/PullToRefresh'
+import { HamburgerMenu } from '../../components/HamburgerMenu'
 
 interface WorkoutSession {
   id: string
@@ -227,15 +228,10 @@ function AnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary">
-      {/* Header */}
-      <div className="bg-dark-elevated2 shadow-sm border-b border-dark-border">
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-center mb-4">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              Analytics
-            </h1>
-          </div>
-        </div>
+      {/* Compact Header */}
+      <div className="pt-[env(safe-area-inset-top)] px-4 py-2 flex items-center justify-between">
+        <h1 className="text-base font-semibold text-text-primary">Analytics</h1>
+        <HamburgerMenu />
       </div>
 
       <PullToRefresh onRefresh={handleRefresh}>

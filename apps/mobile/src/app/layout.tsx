@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Providers } from './providers'
-import { HamburgerMenu } from '@/components/HamburgerMenu'
 
 export const metadata: Metadata = {
   title: 'RYTHM - Your Training Companion',
@@ -58,11 +57,6 @@ export default function RootLayout({
         {/* Black notch overlay (ensures notch/status bar area always black) */}
         <div className="fixed top-0 left-0 right-0 h-[env(safe-area-inset-top)] bg-black pointer-events-none z-[100]"></div>
         <Providers>
-          {/* Global Header with attached hamburger (no floating positioning) */}
-          <header className="sticky top-0 z-50 flex items-center gap-4 px-4 py-3 bg-dark-elevated2 border-b border-dark-border safe-area-top">
-            <h1 className="text-lg font-semibold text-text-primary tracking-tight">RYTHM</h1>
-            <HamburgerMenu />
-          </header>
           <main className="h-full min-h-screen">
             {children}
           </main>

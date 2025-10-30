@@ -112,13 +112,13 @@ export function HamburgerMenu() {
 
   return (
     <>
-      {/* Inline Hamburger Button (attached to header via layout) */}
+      {/* Simple inline button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="ml-auto p-2 rounded-lg bg-dark-elevated1 border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-colors"
+        className="p-2 rounded-lg hover:bg-dark-elevated1 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-colors"
         aria-label="Open navigation menu"
       >
-        <Bars3Icon className="w-6 h-6 text-orange-primary" />
+        <Bars3Icon className="w-5 h-5 text-orange-primary" />
       </button>
 
       {/* Full-screen Overlay */}

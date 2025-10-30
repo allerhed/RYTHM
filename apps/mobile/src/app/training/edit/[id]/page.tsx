@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useAuth, withAuth } from '@/contexts/AuthContext'
+import { HamburgerMenu } from '@/components/HamburgerMenu'
 import { Button } from '@/components/Form'
 import { CustomExerciseModal } from '@/components/CustomExerciseModal'
 import { ExerciseHistoryModal } from '@/components/ExerciseHistoryModal'
@@ -590,22 +591,10 @@ function EditWorkoutPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary">
-      {/* Header (safe-area compliant) */}
-      <div className="sticky top-0 z-40 bg-dark-elevated2 border-b border-dark-border safe-area-top pt-[env(safe-area-inset-top)]">
-        <div className="max-w-md mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <button 
-              onClick={() => router.back()}
-              className="text-text-secondary hover:text-gray-900 dark:hover:text-gray-100"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <h1 className="text-lg font-semibold text-text-primary">Edit Workout</h1>
-            <div className="w-6"></div>
-          </div>
-        </div>
+      {/* Compact Header */}
+      <div className="pt-[env(safe-area-inset-top)] px-4 py-2 flex items-center justify-between">
+        <h1 className="text-base font-semibold text-text-primary">Edit Workout</h1>
+        <HamburgerMenu />
       </div>
 
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">        

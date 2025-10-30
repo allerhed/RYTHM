@@ -19,6 +19,7 @@ import { TrainingScoreWidget } from '../../components/TrainingScoreWidget'
 import { PencilIcon, EyeIcon } from '@heroicons/react/24/outline'
 import { trpc } from '../../lib/trpc'
 import { PullToRefresh } from '../../components/PullToRefresh'
+import { HamburgerMenu } from '../../components/HamburgerMenu'
 
 // Utility function to format relative time
 const formatRelativeTime = (timestamp: string | Date) => {
@@ -453,27 +454,10 @@ function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary">
-      {/* Header */}
-      <div className="bg-dark-secondary border-b border-dark-border pt-[env(safe-area-inset-top)]">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => router.push('/training/history')}
-              className="p-2 rounded-full hover:bg-dark-elevated1 transition-colors"
-              title="Workout History"
-            >
-              <svg className="w-5 h-5 text-orange-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </button>
-            <h1 className="text-lg font-semibold text-text-primary">
-              Dashboard
-            </h1>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-          </div>
-        </div>
+      {/* Compact Header */}
+      <div className="pt-[env(safe-area-inset-top)] px-4 py-2 flex items-center justify-between">
+        <h1 className="text-base font-semibold text-text-primary">Dashboard</h1>
+        <HamburgerMenu />
       </div>
 
       {/* Main content */}

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { HamburgerMenu } from '../../components/HamburgerMenu'
 import { PullToRefresh } from '../../components/PullToRefresh'
 
 interface WorkoutSession {
@@ -175,13 +176,10 @@ function CalendarPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-dark-primary">
-        {/* Loading Header (Migration: gradient removed) */}
-        <div className="bg-dark-elevated1 shadow-sm border-b border-dark-border">
-          <div className="px-4 py-3">
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Calendar
-            </h1>
-          </div>
+        {/* Compact Header */}
+        <div className="pt-[env(safe-area-inset-top)] px-4 py-2 flex items-center justify-between">
+          <h1 className="text-base font-semibold text-text-primary">Calendar</h1>
+          <HamburgerMenu />
         </div>
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-primary"></div>
@@ -192,46 +190,43 @@ function CalendarPage() {
 
   return (
     <div className="min-h-screen bg-dark-primary">
-      {/* Header (Migration: gradient removed) */}
-      <div className="bg-dark-elevated1 shadow-sm border-b border-dark-border">
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-center mb-4">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              Calendar
-            </h1>
-          </div>
+      {/* Compact Header */}
+      <div className="pt-[env(safe-area-inset-top)] px-4 py-2 flex items-center justify-between">
+        <h1 className="text-base font-semibold text-text-primary">Calendar</h1>
+        <HamburgerMenu />
+      </div>
 
-          {/* Month Navigation */}
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => navigateMonth('prev')}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 capitalize">
-              {formatMonthYear(currentDate)}
-            </h2>
-            <button
-              onClick={() => navigateMonth('next')}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
+      {/* Month Navigation */}
+      <div className="px-4 py-4">
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => navigateMonth('prev')}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 capitalize">
+            {formatMonthYear(currentDate)}
+          </h2>
+          <button
+            onClick={() => navigateMonth('next')}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
 
-          {/* Weekday Headers */}
-          <div className="grid grid-cols-7 gap-px mb-2">
-            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
-              <div key={index} className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 p-2">
-                {day}
-              </div>
-            ))}
-          </div>
+        {/* Weekday Headers */}
+        <div className="grid grid-cols-7 gap-px mb-2">
+          {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
+            <div key={index} className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 p-2">
+              {day}
+            </div>
+          ))}
         </div>
       </div>
 
