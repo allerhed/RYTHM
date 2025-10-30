@@ -1486,6 +1486,13 @@ function TemplateSelectionModal({
   onClose: () => void
   onSelectTemplate: (exercises: any[]) => void 
 }) {
+  /* Purpose: Select a workout template and inject its exercises into the new workout form.
+     Acceptance:
+     - Uses semantic surfaces (bg-dark-elevated1/2) and borders (border-dark-border)
+     - Accessible: focus states, ESC closes, backdrop click closes
+     - Scrollable list with stable sticky header and footer actions
+     - Badges use semantic color tokens instead of raw tailwind palette
+  */
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null)
 
@@ -1521,106 +1528,94 @@ function TemplateSelectionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
-        
-        <div className="inline-block align-bottom bg-dark-elevated1 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md max-h-[80vh] flex flex-col border border-dark-border">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-dark-border">
-            <h3 className="text-lg font-semibold text-text-primary">
-              Select Workout Template
-            </h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      {/* Dialog */}
+      <div className="relative w-full max-w-lg max-h-[85vh] flex flex-col bg-dark-elevated1 border border-dark-border rounded-xl shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center gap-4 px-5 py-4 border-b border-dark-border bg-dark-elevated2 sticky top-0">
+          <h3 className="text-base font-semibold text-text-primary tracking-tight">Select Template</h3>
+          <div className="ml-auto flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="px-3 py-2 w-40 sm:w-56 rounded-md bg-dark-input border border-dark-border focus:outline-none focus:ring-2 focus:ring-orange-primary text-sm text-text-primary placeholder-text-tertiary"
+            />
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="p-2 rounded-md hover:bg-dark-elevated1 focus:outline-none focus:ring-2 focus:ring-orange-primary"
+              aria-label="Close template selection"
             >
-              <span className="sr-only">Close</span>
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-5 w-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-
-          {/* Search */}
-          <div className="p-4 border-b border-dark-border">
-            <input
-              type="text"
-              placeholder="Search templates..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-dark-border rounded-lg focus:ring-2 focus:ring-orange-primary focus:border-transparent bg-dark-input text-text-primary"
-            />
-          </div>
-
-          {/* Template List */}
-          <div className="flex-1 overflow-y-auto p-4">
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-              </div>
-            ) : templates && templates.length > 0 ? (
-              <div className="space-y-2">
-                {templates.map((template: any) => (
-                  <div
-                    key={template.template_id}
-                    onClick={() => handleSelectTemplate(template)}
-                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                      selectedTemplate?.template_id === template.template_id
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                    }`}
-                  >
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-text-primary">
-                          {template.name}
-                        </h4>
-                        <div className="flex items-center space-x-2">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            template.scope === 'user' 
-                              ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-                              : template.scope === 'tenant'
-                              ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
-                              : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
-                          }`}>
-                            {template.scope === 'user' ? 'Personal' : template.scope === 'tenant' ? 'Organization' : 'System'}
-                          </span>
-                          <span className="text-xs text-text-secondary">
-                            {template.exercise_count} exercises
-                          </span>
-                        </div>
-                      </div>
+        </div>
+        {/* List */}
+        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-primary"></div>
+            </div>
+          ) : templates && templates.length > 0 ? (
+            templates.map((template: any) => {
+              const active = selectedTemplate?.template_id === template.template_id
+              return (
+                <button
+                  key={template.template_id}
+                  onClick={() => handleSelectTemplate(template)}
+                  className={`w-full text-left rounded-lg border px-4 py-3 transition-colors group ${
+                    active
+                      ? 'border-orange-primary/70 bg-dark-elevated2'
+                      : 'border-dark-border hover:border-orange-primary/40 hover:bg-dark-elevated2'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-text-primary group-hover:text-orange-primary transition-colors text-sm">{template.name}</h4>
                       {template.description && (
-                        <p className="text-sm text-text-secondary mt-1">
-                          {template.description}
-                        </p>
+                        <p className="text-xs text-text-secondary mt-1 line-clamp-2">{template.description}</p>
                       )}
                     </div>
-                  ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-text-secondary">
-                No templates found
-              </div>
-            )}
-          </div>
-
-          {/* Footer */}
-          <div className="border-t border-dark-border p-4 flex gap-3">
-            <button
-              onClick={onClose}
-              className="flex-1 px-4 py-2 border border-dark-border rounded-lg text-text-primary hover:bg-dark-elevated1"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleConfirmSelection}
-              disabled={!selectedTemplate}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Add Exercises
-            </button>
-          </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide ${
+                        template.scope === 'user'
+                          ? 'bg-dark-elevated2 text-text-secondary'
+                          : template.scope === 'tenant'
+                          ? 'bg-orange-soft text-orange-primary'
+                          : 'bg-indigo-900/40 text-indigo-200'
+                      }`}>
+                        {template.scope === 'user' ? 'Personal' : template.scope === 'tenant' ? 'Org' : 'System'}
+                      </span>
+                      <span className="text-[10px] text-text-tertiary">{template.exercise_count} ex.</span>
+                    </div>
+                  </div>
+                </button>
+              )
+            })
+          ) : (
+            <div className="text-center py-8 text-text-secondary text-sm">No templates found</div>
+          )}
+        </div>
+        {/* Footer */}
+        <div className="border-t border-dark-border p-4 flex gap-3 bg-dark-elevated2 sticky bottom-0">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 rounded-md border border-dark-border text-sm font-medium text-text-primary hover:bg-dark-elevated1 focus:outline-none focus:ring-2 focus:ring-orange-primary"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirmSelection}
+            disabled={!selectedTemplate}
+            className="flex-1 px-4 py-2 rounded-md bg-orange-primary text-white text-sm font-semibold hover:bg-orange-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-primary disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Add Exercises
+          </button>
         </div>
       </div>
     </div>

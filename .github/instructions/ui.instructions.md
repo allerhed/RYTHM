@@ -314,6 +314,44 @@ className="bg-orange-500"  // Wrong for hybrid
 
 ### 2025-10-29: Workout Update Duplicate Save Guard
 ### 2025-10-30: Hamburger Menu Attached to Header
+### 2025-10-30: Workout Template Selection Modal Redesign
+**Issue:** Legacy template selector modal used mixed raw Tailwind colors, inconsistent spacing, and lacked semantic elevation surfaces. Accessibility (focus states, backdrop clarity) and sticky header/footer structure were missing.
+
+**Root Cause:** Original implementation pre-dated design system consolidation; carried forward ad-hoc palette and layout primitives. Search input was separated from context, badges used raw palette tokens, and scrolling container caused header/footer jump.
+
+**Solution:** Rebuilt modal with design system primitives:
+* Semantic surfaces: `bg-dark-elevated1` body, `bg-dark-elevated2` header/footer.
+* Sticky header (search + close) and sticky footer actions for consistent UX during long scroll.
+* Badges mapped to scope with semantic color usage (`org` → orange, `personal` → neutral, `system` → indigo variant).
+* Unified spacing (`px-5 py-4`), consistent rounded corners (`rounded-xl`).
+* Backdrop upgraded to `bg-black/70 backdrop-blur-sm`.
+* Search input integrated into header; compact responsive width.
+* Reduced-motion friendly (no aggressive transitions aside subtle color changes).
+
+**Technical Snippet:**
+```tsx
+<div className="relative w-full max-w-lg max-h-[85vh] flex flex-col bg-dark-elevated1 border border-dark-border rounded-xl shadow-2xl">
+  <div className="flex items-center gap-4 px-5 py-4 border-b border-dark-border bg-dark-elevated2 sticky top-0">
+    <h3 className="text-base font-semibold text-text-primary tracking-tight">Select Template</h3>
+    <input className="px-3 py-2 w-40 sm:w-56 rounded-md bg-dark-input border border-dark-border focus:ring-2 focus:ring-orange-primary" />
+    <button className="p-2 rounded-md hover:bg-dark-elevated1 focus:ring-2 focus:ring-orange-primary" aria-label="Close template selection">…</button>
+  </div>
+  <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">/* templates */</div>
+  <div className="border-t border-dark-border p-4 flex gap-3 bg-dark-elevated2 sticky bottom-0">/* actions */</div>
+</div>
+```
+
+**Files Changed:**
+- `apps/mobile/src/app/training/new/page.tsx` – Refactored `TemplateSelectionModal` implementation.
+
+**Follow-ups (Optional):**
+- Add keyboard navigation (ArrowUp/ArrowDown to traverse templates, Enter to confirm).
+- Implement focus trap + initial focus on search input.
+- ESC key listener to close modal.
+- Add virtualization for large template counts (if > 200) to improve scroll performance.
+- Analytics event on template selection (template_id, scope, exercise_count).
+
+---
 **Issue:** Floating hamburger button overlapped or became unreachable near the iOS notch and occasionally conflicted with page stacking contexts.
 
 **Root Cause:** Button used `position: fixed` with `top/right` offsets (`z-[60]`). Layout changes and safe-area insets caused inconsistent tap targets; modals and sticky headers competed in higher z-index layers.
