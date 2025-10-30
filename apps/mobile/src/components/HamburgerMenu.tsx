@@ -112,12 +112,10 @@ export function HamburgerMenu() {
 
   return (
     <>
-      {/* Hamburger Button */}
-
+      {/* Inline Hamburger Button (attached to header via layout) */}
       <button
         onClick={() => setIsOpen(true)}
-        /* Improved: Add safe-area-inset and more spacing for iOS notch */
-        className="fixed top-6 right-6 pt-[env(safe-area-inset-top)] z-[60] p-2 rounded-lg bg-dark-elevated1 shadow-lg border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-all"
+        className="ml-auto p-2 rounded-lg bg-dark-elevated1 border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-colors"
         aria-label="Open navigation menu"
       >
         <Bars3Icon className="w-6 h-6 text-orange-primary" />

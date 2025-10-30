@@ -313,6 +313,42 @@ className="bg-orange-500"  // Wrong for hybrid
 ---
 
 ### 2025-10-29: Workout Update Duplicate Save Guard
+### 2025-10-30: Hamburger Menu Attached to Header
+**Issue:** Floating hamburger button overlapped or became unreachable near the iOS notch and occasionally conflicted with page stacking contexts.
+
+**Root Cause:** Button used `position: fixed` with `top/right` offsets (`z-[60]`). Layout changes and safe-area insets caused inconsistent tap targets; modals and sticky headers competed in higher z-index layers.
+
+**Solution:** Removed floating positioning. Embedded `HamburgerMenu` inside a global sticky `<header>` (`layout.tsx`). Converted button to inline element with `ml-auto`. Overlay retained (`z-[70]`) for menu panel. Eliminates overlap and ensures consistent accessibility.
+
+**Technical Details:**
+```tsx
+// layout.tsx header
+<header className="sticky top-0 z-50 flex items-center gap-4 px-4 py-3 bg-dark-elevated2 border-b border-dark-border safe-area-top">
+  <h1 className="text-lg font-semibold text-text-primary tracking-tight">RYTHM</h1>
+  <HamburgerMenu />
+</header>
+
+// HamburgerMenu.tsx button (inline)
+<button
+  onClick={() => setIsOpen(true)}
+  className="ml-auto p-2 rounded-lg bg-dark-elevated1 border border-dark-border hover:border-orange-primary/40 focus:outline-none focus:ring-2 focus:ring-orange-primary transition-colors"
+  aria-label="Open navigation menu"
+>
+  <Bars3Icon className="w-6 h-6 text-orange-primary" />
+</button>
+```
+
+**Files Changed:**
+- `apps/mobile/src/components/HamburgerMenu.tsx` – Removed fixed positioning; inline button styling.
+- `apps/mobile/src/app/layout.tsx` – Added sticky header wrapper and embedded menu.
+
+**Follow-ups (Optional):**
+- Consider moving header into a shared `Header` component for reuse.
+- Add focus trap to navigation panel for accessibility.
+- Add ESC key listener to close menu.
+- Provide reduced-motion variant (skip backdrop blur).
+
+---
 **Issue:** Users could occasionally trigger two rapid PUT requests when tapping "Update Workout" twice before the disabled state applied, leading to duplicate processing.
 
 **Root Cause:** `handleUpdateWorkout` set `saving` after initial checks but lacked an early-return guard. A very fast second tap (within the same event loop tick) could fire before React re-rendered to disable the button.

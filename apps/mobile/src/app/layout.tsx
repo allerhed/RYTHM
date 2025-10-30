@@ -56,7 +56,11 @@ export default function RootLayout({
       </head>
       <body className="h-full bg-dark-primary text-text-primary">
         <Providers>
-          <HamburgerMenu />
+          {/* Global Header with attached hamburger (no floating positioning) */}
+          <header className="sticky top-0 z-50 flex items-center gap-4 px-4 py-3 bg-dark-elevated2 border-b border-dark-border safe-area-top">
+            <h1 className="text-lg font-semibold text-text-primary tracking-tight">RYTHM</h1>
+            <HamburgerMenu />
+          </header>
           <main className="h-full min-h-screen">
             {children}
           </main>
