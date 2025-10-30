@@ -649,9 +649,6 @@ function AnalyticsPage() {
                         <span className="text-xs text-gray-300 transform rotate-45 origin-bottom-left mt-2">
                           {formatDate(week.date)}
                         </span>
-                        {week.distanceKm ? (
-                          <span className="text-[10px] text-gray-400">{week.distanceKm.toFixed(1)} km</span>
-                        ) : null}
                       </div>
                     )
                   })}
