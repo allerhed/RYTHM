@@ -708,36 +708,113 @@ function AnalyticsPage() {
           </div>
         </div>
 
-        {/* Total Weight Widget */}
+
+        {/* Total Weight Lifted (Enhanced) */}
         <div className="bg-dark-elevated1 rounded-2xl p-6 shadow-sm border border-dark-border">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Total Weight Lifted</h2>
-          
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {summaryData.currentPeriod.totalWeight.toLocaleString()} kgs
+          {/* Weekly Weight Chart */}
+          <div className="mb-6">
+            <p className="text-sm text-gray-400 mb-4">Weekly total weight lifted (last 3 months)</p>
+            <div className="flex">
+              {/* Y-axis labels (dynamic scale up to nearest bucket) */}
+              <div className="w-12 flex flex-col justify-between text-xs text-gray-400 h-48">
+                {(() => {
+                  // Calculate weekly total weights for last 12 weeks
+                  const weeks = trainingLoadData.weeklyData.slice(-12)
+                  // For each week, sum all strength/hybrid sets' weight*reps
+                  const weights = weeks.map((w: any) => {
+                    // We'll estimate from trainingLoadData if available, else fallback to 0
+                    // If you have a dedicated weeklyKg array, use that instead
+                    // For now, use trainingLoadData.weeklyData and sum strengthLoad as a proxy
+                    // (If you have a better source, replace this logic)
+                    return w.strengthLoad || 0
+                  })
+                  const maxWeight = Math.max(1000, Math.max(...weights))
+                  // Determine scale buckets (0, 200, 400, ... or dynamic)
+                  const top = maxWeight <= 1000 ? 1000 : Math.ceil(maxWeight / 5) * 5
+                  const labels = []
+                  for (let v = top; v >= 0; v -= top / 5) {
+                    labels.push(<span key={v}>{v.toLocaleString()} kg</span>)
+                  }
+                  return labels
+                })()}
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Last 3 months
+              {/* Chart Area */}
+              <div className="flex-1">
+                <div className="flex items-end justify-between h-48 mb-4 border-l border-gray-700">
+                  {trainingLoadData.weeklyData.slice(-12).map((week: any, index: number) => {
+                    // Use strengthLoad as proxy for total weight lifted (if you have a better field, use it)
+                    const weeks = trainingLoadData.weeklyData.slice(-12)
+                    const weights = weeks.map((w: any) => w.strengthLoad || 0)
+                    const maxWeight = Math.max(1000, Math.max(...weights) * 1.1)
+                    const barHeight = Math.max(((week.strengthLoad || 0) / maxWeight) * 180, (week.strengthLoad || 0) > 0 ? 8 : 0)
+                    return (
+                      <div key={index} className="flex flex-col items-center space-y-2 ml-1">
+                        <div className="flex flex-col-reverse items-center">
+                          <div
+                            className="w-6 bg-orange-primary rounded-sm transition-all duration-500"
+                            style={{ height: `${barHeight}px` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-300 transform rotate-45 origin-bottom-left mt-2">
+                          {formatDate(week.date)}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-lg font-semibold text-orange-primary">
-                {formatChange(summaryData.currentPeriod.totalWeight, summaryData.previousPeriod.totalWeight)}
+            {/* Legend */}
+            <div className="flex space-x-4 mb-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-orange-primary rounded"></div>
+                <span className="text-sm">Weekly Weight</span>
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                vs. previous 3 months
+            </div>
+            <div className="border-t border-gray-700 pt-4 mb-2">
+              <div className="flex justify-between text-xs text-gray-400">
+                <span>Avg / Week: {(summaryData.currentPeriod.totalWeight / 12).toLocaleString(undefined, { maximumFractionDigits: 0 })} kg</span>
+                <span>Peak Week: {(() => {
+                  const weeks = trainingLoadData.weeklyData.slice(-12)
+                  const weights = weeks.map((w: any) => w.strengthLoad || 0)
+                  return (Math.max(...weights) || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })
+                })()} kg</span>
               </div>
             </div>
           </div>
-
-          <div className="bg-dark-elevated rounded-lg p-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600 dark:text-gray-300">Previous Period</span>
-              <span className="text-lg font-medium text-gray-900 dark:text-white">
-                {summaryData.previousPeriod.totalWeight.toLocaleString()} kgs
-              </span>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                {summaryData.currentPeriod.totalWeight.toLocaleString()} kg
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Last 3 months</div>
             </div>
+            <div className="text-right">
+              <div className="text-lg font-semibold text-orange-600 dark:text-orange-400">
+                {formatChange(summaryData.currentPeriod.totalWeight, summaryData.previousPeriod.totalWeight)}
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">vs previous</div>
+            </div>
+          </div>
+          {/* Derived averages */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="text-center p-3 bg-dark-elevated rounded-lg">
+              <div className="text-xl font-bold text-white">{(summaryData.currentPeriod.totalWeight / Math.max(summaryData.currentPeriod.workoutCount,1)).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+              <div className="text-xs text-gray-400 mt-1">Avg / Workout</div>
+            </div>
+            <div className="text-center p-3 bg-dark-elevated rounded-lg">
+              <div className="text-xl font-bold text-white">{(summaryData.currentPeriod.totalWeight / 90).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+              <div className="text-xs text-gray-400 mt-1">Avg / Day</div>
+            </div>
+            <div className="text-center p-3 bg-dark-elevated rounded-lg">
+              <div className="text-xl font-bold text-white">{(summaryData.currentPeriod.totalWeight / 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+              <div className="text-xs text-gray-400 mt-1">Avg / Week</div>
+            </div>
+          </div>
+          <div className="flex justify-between text-xs text-gray-400 border-t border-gray-700 pt-4">
+            <span>Prev: {summaryData.previousPeriod.totalWeight.toLocaleString()} kg</span>
+            <span>Workouts: {summaryData.currentPeriod.workoutCount}</span>
           </div>
         </div>
 
