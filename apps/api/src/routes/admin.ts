@@ -486,18 +486,36 @@ export const adminRouter = router({
     }),
 
   createExerciseTemplate: adminProcedure
-    .input(z.object({
-      name: z.string().min(1),
-      muscle_groups: z.array(z.string()).default([]),
-      equipment: z.string().optional(),
-      equipment_id: z.string().optional(),
-      exercise_category: z.string().default('strength'),
-      exercise_type: z.enum(['STRENGTH', 'CARDIO']).default('STRENGTH'),
-      default_value_1_type: z.string().default('weight_kg'),
-      default_value_2_type: z.string().default('reps'),
-      description: z.string().optional(),
-      instructions: z.string().optional(),
-    }))
+    .input(
+      z.union([
+        z.object({
+          json: z.object({
+            name: z.string().min(1),
+            muscle_groups: z.array(z.string()).default([]),
+            equipment: z.string().optional(),
+            equipment_id: z.string().optional(),
+            exercise_category: z.string().default('strength'),
+            exercise_type: z.enum(['STRENGTH', 'CARDIO']).default('STRENGTH'),
+            default_value_1_type: z.string().default('weight_kg'),
+            default_value_2_type: z.string().default('reps'),
+            description: z.string().optional(),
+            instructions: z.string().optional(),
+          })
+        }).transform(({ json }) => json),
+        z.object({
+          name: z.string().min(1),
+          muscle_groups: z.array(z.string()).default([]),
+          equipment: z.string().optional(),
+          equipment_id: z.string().optional(),
+          exercise_category: z.string().default('strength'),
+          exercise_type: z.enum(['STRENGTH', 'CARDIO']).default('STRENGTH'),
+          default_value_1_type: z.string().default('weight_kg'),
+          default_value_2_type: z.string().default('reps'),
+          description: z.string().optional(),
+          instructions: z.string().optional(),
+        })
+      ])
+    )
     .mutation(async ({ input }) => {
       // Check if exercise template already exists
       const existingResult = await db.query(
@@ -1330,12 +1348,24 @@ export const adminRouter = router({
     }),
 
   createEquipment: adminProcedure
-    .input(z.object({
-      name: z.string().min(1).max(255),
-      category: z.enum(['free_weights', 'machines', 'cardio', 'bodyweight', 'resistance', 'other']).default('other'),
-      description: z.string().optional(),
-      is_active: z.boolean().default(true),
-    }))
+    .input(
+      z.union([
+        z.object({
+          json: z.object({
+            name: z.string().min(1).max(255),
+            category: z.enum(['free_weights', 'machines', 'cardio', 'bodyweight', 'resistance', 'other']).default('other'),
+            description: z.string().optional(),
+            is_active: z.boolean().default(true),
+          })
+        }).transform(({ json }) => json),
+        z.object({
+          name: z.string().min(1).max(255),
+          category: z.enum(['free_weights', 'machines', 'cardio', 'bodyweight', 'resistance', 'other']).default('other'),
+          description: z.string().optional(),
+          is_active: z.boolean().default(true),
+        })
+      ])
+    )
     .mutation(async ({ input }) => {
       // Check if equipment with same name already exists
       const existingResult = await db.query(
@@ -1357,13 +1387,26 @@ export const adminRouter = router({
     }),
 
   updateEquipment: adminProcedure
-    .input(z.object({
-      equipment_id: z.string().uuid(),
-      name: z.string().min(1).max(255).optional(),
-      category: z.enum(['free_weights', 'machines', 'cardio', 'bodyweight', 'resistance', 'other']).optional(),
-      description: z.string().optional(),
-      is_active: z.boolean().optional(),
-    }))
+    .input(
+      z.union([
+        z.object({
+          json: z.object({
+            equipment_id: z.string().uuid(),
+            name: z.string().min(1).max(255).optional(),
+            category: z.enum(['free_weights', 'machines', 'cardio', 'bodyweight', 'resistance', 'other']).optional(),
+            description: z.string().optional(),
+            is_active: z.boolean().optional(),
+          })
+        }).transform(({ json }) => json),
+        z.object({
+          equipment_id: z.string().uuid(),
+          name: z.string().min(1).max(255).optional(),
+          category: z.enum(['free_weights', 'machines', 'cardio', 'bodyweight', 'resistance', 'other']).optional(),
+          description: z.string().optional(),
+          is_active: z.boolean().optional(),
+        })
+      ])
+    )
     .mutation(async ({ input }) => {
       const { equipment_id, ...updateData } = input;
 

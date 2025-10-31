@@ -216,7 +216,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Usage Trends Chart */}
           <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
             <div className="flex items-center justify-between mb-6">
@@ -269,55 +269,6 @@ export default function AnalyticsPage() {
                   <p className="text-gray-500 text-sm">This Period</p>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Session Category Breakdown */}
-          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-white mb-6">
-              Session Categories
-            </h3>
-            <div className="space-y-6">
-              {exerciseAnalytics?.categoryBreakdown?.map((category) => {
-                const total = exerciseAnalytics.categoryBreakdown.reduce((sum, cat) => sum + cat.session_count, 0);
-                const percentage = total > 0 ? (category.session_count / total) * 100 : 0;
-                const categoryInfo = {
-                  strength: { color: 'bg-orange-500', icon: '💪', gradient: 'from-orange-500 to-orange-600' },
-                  cardio: { color: 'bg-red-500', icon: '❤️', gradient: 'from-red-500 to-red-600' },
-                  hybrid: { color: 'bg-orange-500', icon: '⚡', gradient: 'from-orange-500 to-orange-600' }
-                }[category.category] || { color: 'bg-dark-elevated0', icon: '🏋️', gradient: 'from-gray-500 to-gray-600' };
-
-                return (
-                  <div key={category.category} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="icon-accent w-8 h-8 text-sm">
-                          {categoryInfo.icon}
-                        </div>
-                        <span className="text-gray-300 font-medium capitalize">{category.category}</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-white font-bold">{category.session_count.toLocaleString()}</span>
-                        <p className="text-xs text-gray-500">{percentage.toFixed(1)}%</p>
-                      </div>
-                    </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2">
-                      <div 
-                        className="h-2 rounded-full bg-primary"
-                        style={{ width: `${percentage}%` }}
-                      ></div>
-                    </div>
-                    <div className="flex justify-between text-xs text-gray-500">
-                      <span>{category.unique_users} users</span>
-                      <span>Avg: {Math.round(category.avg_duration)}min</span>
-                    </div>
-                  </div>
-                );
-              }) || (
-                <div className="flex items-center justify-center h-48">
-                  <p className="text-gray-400">No session data available</p>
-                </div>
-              )}
             </div>
           </div>
 

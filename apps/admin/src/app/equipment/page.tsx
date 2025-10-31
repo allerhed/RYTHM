@@ -72,8 +72,11 @@ function EquipmentModal({ isOpen, onClose, equipment, onSave }: EquipmentModalPr
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-elevated1 rounded-2xl shadow-2xl border border-gray-700 max-w-md w-full">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose} />
+        
+        <div className="relative bg-dark-card rounded-xl shadow-2xl border border-dark-border max-w-md w-full" onClick={(e) => e.stopPropagation()}>
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-white">
@@ -172,6 +175,7 @@ function EquipmentModal({ isOpen, onClose, equipment, onSave }: EquipmentModalPr
             </div>
           </form>
         </div>
+        </div>
       </div>
     </div>
   )
@@ -182,13 +186,14 @@ export default function EquipmentPage() {
   const [stats, setStats] = useState<EquipmentStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [activeOnly, setActiveOnly] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState<Equipment | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const fetchData = async () => {
     try {
@@ -196,8 +201,8 @@ export default function EquipmentPage() {
       setError(null)
       
       const filters: any = { 
-        page, 
-        limit: 12, 
+        page: 1, 
+        limit: 1000,
         active_only: activeOnly 
       }
       
@@ -210,7 +215,6 @@ export default function EquipmentPage() {
       ])
       
       setEquipment(equipmentData.equipment)
-      setTotalPages(equipmentData.totalPages)
       setStats(statsData)
     } catch (err) {
       console.error('Error fetching equipment data:', err)
@@ -220,57 +224,60 @@ export default function EquipmentPage() {
     }
   }
 
+  // Filter and sort equipment client-side
+  const filteredEquipment = equipment.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+
   useEffect(() => {
     fetchData()
-  }, [page, searchTerm, categoryFilter, activeOnly])
+  }, [searchTerm, categoryFilter, activeOnly])
 
   const handleEdit = (equipment: Equipment) => {
     setEditingEquipment(equipment)
     setIsModalOpen(true)
   }
 
-  const handleDelete = async (equipment: Equipment) => {
-    // First check if equipment is in use
+  const handleDelete = (equipment: Equipment) => {
+    setShowDeleteModal(equipment)
+    setDeleteError(null)
+  }
+
+  const confirmDelete = async () => {
+    if (!showDeleteModal) return
+
     try {
-      const usageResponse = await apiClient.admin.getEquipment({ 
-        page: 1, 
-        limit: 1,
-        search: equipment.name 
-      })
-      
-      const equipmentData = usageResponse.equipment.find(e => e.equipment_id === equipment.equipment_id)
-      const exerciseCount = equipmentData?.exercise_count || 0
-      const templateCount = equipmentData?.template_count || 0
+      setIsDeleting(true)
+      setDeleteError(null)
+
+      const exerciseCount = showDeleteModal.exercise_count || 0
+      const templateCount = showDeleteModal.template_count || 0
       
       if (exerciseCount > 0 || templateCount > 0) {
-        const message = `Cannot delete "${equipment.name}" because it's being used by ${exerciseCount} exercises and ${templateCount} templates.\n\nWould you like to deactivate it instead? This will hide it from new selections while preserving existing data.`
-        
-        if (confirm(message)) {
-          // Deactivate instead of delete
-          await apiClient.admin.updateEquipment({
-            equipment_id: equipment.equipment_id,
-            name: equipment.name,
-            category: equipment.category,
-            description: equipment.description,
-            is_active: false
-          })
-          fetchData()
-        }
+        // Deactivate instead of delete
+        await apiClient.admin.updateEquipment({
+          equipment_id: showDeleteModal.equipment_id,
+          name: showDeleteModal.name,
+          category: showDeleteModal.category,
+          description: showDeleteModal.description,
+          is_active: false
+        })
+        setEquipment(prev => prev.map(e => 
+          e.equipment_id === showDeleteModal.equipment_id 
+            ? { ...e, is_active: false } 
+            : e
+        ))
+        setShowDeleteModal(null)
         return
       }
-    } catch (error) {
-      // If we can't check usage, proceed with original confirmation
-    }
-
-    // If not in use, allow deletion
-    if (!confirm(`Are you sure you want to permanently delete "${equipment.name}"?`)) return
-
-    try {
-      await apiClient.admin.deleteEquipment(equipment.equipment_id)
-      fetchData()
+      
+      // Safe to delete
+      await apiClient.admin.deleteEquipment(showDeleteModal.equipment_id)
+      setEquipment(prev => prev.filter(e => e.equipment_id !== showDeleteModal.equipment_id))
+      setShowDeleteModal(null)
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete equipment'
-      alert(`Error: ${errorMessage}`)
+      console.error('Error handling equipment deletion:', err)
+      setDeleteError(err instanceof Error ? err.message : 'Failed to delete/deactivate equipment')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -463,7 +470,6 @@ export default function EquipmentPage() {
                 setSearchTerm('')
                 setCategoryFilter('')
                 setActiveOnly(false)
-                setPage(1)
               }}
               className="px-3 py-2 bg-gray-600 text-gray-300 rounded-lg hover:bg-dark-elevated0 transition-colors text-sm"
             >
@@ -480,133 +486,127 @@ export default function EquipmentPage() {
           </div>
         )}
 
-        {/* Equipment Grid */}
-        {!loading && equipment.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {equipment.map((item) => (
-              <div key={item.equipment_id} className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-6 hover:shadow-2xl transition-all duration-300">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="icon-accent h-12 w-12">
-                      {getCategoryIcon(item.category)}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">
-                        {item.name}
-                      </h3>
-                      <span className={`inline-flex px-2 py-1 rounded-lg text-xs font-medium border ${getCategoryBadge(item.category)}`}>
-                        {item.category.replace('_', ' ')}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
-                    <span className={`w-3 h-3 rounded-full ${item.is_active ? 'bg-green-400' : 'bg-gray-400'}`}></span>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  {/* Usage Statistics */}
-                  {((item.exercise_count || 0) > 0 || (item.template_count || 0) > 0) && (
-                    <div className="flex items-center space-x-4 text-sm">
-                      <div className="flex items-center space-x-1">
-                        <span className="text-gray-400">Used by:</span>
-                      </div>
-                      {(item.exercise_count || 0) > 0 && (
-                        <span className="text-orange-400">
-                          {item.exercise_count} exercise{item.exercise_count !== 1 ? 's' : ''}
+        {/* Equipment Table */}
+        {!loading && filteredEquipment.length > 0 && (
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-700">
+              <h2 className="text-xl font-semibold text-white">
+                Equipment ({filteredEquipment.length})
+              </h2>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-700/50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Equipment
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Category
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Exercises
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Templates
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Created
+                    </th>
+                    <th className="px-6 py-4 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-700">
+                  {filteredEquipment.map((item) => (
+                    <tr key={item.equipment_id} className="hover:bg-gray-700/30 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center">
+                          <div className="icon-accent h-10 w-10 rounded-lg flex items-center justify-center shadow-lg text-white mr-3">
+                            {getCategoryIcon(item.category)}
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-white">
+                              {item.name}
+                            </div>
+                            {item.description && (
+                              <div className="text-xs text-gray-400 line-clamp-1 max-w-xs">
+                                {item.description}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`badge-primary ${getCategoryBadge(item.category)}`}>
+                          {item.category.replace('_', ' ')}
                         </span>
-                      )}
-                      {(item.template_count || 0) > 0 && (
-                        <span className="text-orange-400">
-                          {item.template_count} template{item.template_count !== 1 ? 's' : ''}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {item.description && (
-                    <div>
-                      <span className="text-gray-400 text-sm">Description</span>
-                      <p className="text-gray-300 text-sm mt-1">
-                        {item.description}
-                      </p>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Exercises</span>
-                    <span className="text-white font-semibold">{item.exercise_count || 0}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Templates</span>
-                    <span className="text-white font-semibold">{item.template_count || 0}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Created</span>
-                    <span className="text-gray-300">{new Date(item.created_at).toLocaleDateString()}</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-gray-700">
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="flex-1 px-3 py-2 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-colors duration-200 text-sm"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item)}
-                      className={`flex-1 px-3 py-2 border rounded-lg transition-colors duration-200 text-sm ${
-                        ((item.exercise_count || 0) > 0 || (item.template_count || 0) > 0)
-                          ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30'
-                          : 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30'
-                      }`}
-                      title={
-                        ((item.exercise_count || 0) > 0 || (item.template_count || 0) > 0)
-                          ? 'Equipment is in use - will offer to deactivate instead'
-                          : 'Delete equipment permanently'
-                      }
-                    >
-                      {((item.exercise_count || 0) > 0 || (item.template_count || 0) > 0) ? 'Deactivate' : 'Delete'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <span className={`w-2 h-2 rounded-full mr-2 ${item.is_active ? 'bg-green-400' : 'bg-gray-400'}`}></span>
+                          <span className="text-sm text-gray-300">{item.is_active ? 'Active' : 'Inactive'}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-300">{item.exercise_count || 0}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-300">{item.template_count || 0}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-300">
+                          {new Date(item.created_at).toLocaleDateString()}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex items-center justify-end space-x-2">
+                          <button
+                            onClick={() => handleEdit(item)}
+                            className="text-primary hover:text-primary/80 transition-colors"
+                            title="Edit equipment"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item)}
+                            className={`transition-colors ${
+                              ((item.exercise_count || 0) > 0 || (item.template_count || 0) > 0)
+                                ? 'text-yellow-400 hover:text-yellow-400/80'
+                                : 'text-error hover:text-error/80'
+                            }`}
+                            title={
+                              ((item.exercise_count || 0) > 0 || (item.template_count || 0) > 0)
+                                ? 'Equipment is in use - will deactivate'
+                                : 'Delete equipment'
+                            }
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         {/* Empty State */}
-        {!loading && equipment.length === 0 && (
-          <div className="text-center py-12">
+        {!loading && filteredEquipment.length === 0 && (
+          <div className="rounded-2xl bg-dark-elevated1 shadow-xl border border-gray-700 p-12 text-center">
             <div className="text-gray-400 text-lg mb-4">No equipment found</div>
             <div className="text-gray-500">Add your first equipment to get started</div>
-          </div>
-        )}
-
-        {/* Pagination */}
-        {!loading && totalPages > 1 && (
-          <div className="flex items-center justify-center space-x-2">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            <span className="text-gray-400">
-              Page {page} of {totalPages}
-            </span>
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
           </div>
         )}
       </div>
@@ -618,6 +618,73 @@ export default function EquipmentPage() {
         equipment={editingEquipment}
         onSave={handleModalSave}
       />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-4">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={() => !isDeleting && setShowDeleteModal(null)} />
+            
+            <div className="relative bg-dark-card rounded-xl text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full border border-dark-border">
+              <div className="bg-dark-card px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className={`mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full ${((showDeleteModal.exercise_count || 0) > 0 || (showDeleteModal.template_count || 0) > 0) ? 'bg-yellow-500/20' : 'bg-error/20'} sm:mx-0 sm:h-10 sm:w-10`}>
+                    <svg className={`h-6 w-6 ${((showDeleteModal.exercise_count || 0) > 0 || (showDeleteModal.template_count || 0) > 0) ? 'text-yellow-400' : 'text-error'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-primary">
+                      {((showDeleteModal.exercise_count || 0) > 0 || (showDeleteModal.template_count || 0) > 0) ? 'Deactivate Equipment' : 'Delete Equipment'}
+                    </h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-secondary">
+                        {((showDeleteModal.exercise_count || 0) > 0 || (showDeleteModal.template_count || 0) > 0) ? (
+                          <>
+                            "{showDeleteModal.name}" is being used by {showDeleteModal.exercise_count || 0} exercise(s) and {showDeleteModal.template_count || 0} template(s).
+                            <br /><br />
+                            This equipment will be <strong>deactivated</strong> (hidden from new selections) while preserving existing data.
+                          </>
+                        ) : (
+                          `Are you sure you want to delete "${showDeleteModal.name}"? This action cannot be undone.`
+                        )}
+                      </p>
+                      {deleteError && (
+                        <p className="mt-2 text-sm text-error">
+                          {deleteError}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-dark-elevated px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-dark-border">
+                <button
+                  onClick={confirmDelete}
+                  disabled={isDeleting}
+                  className={`w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
+                    ((showDeleteModal.exercise_count || 0) > 0 || (showDeleteModal.template_count || 0) > 0)
+                      ? 'bg-yellow-500 hover:bg-yellow-600 focus:ring-yellow-500'
+                      : 'bg-error hover:bg-error/90 focus:ring-error/50'
+                  }`}
+                >
+                  {isDeleting ? 'Processing...' : ((showDeleteModal.exercise_count || 0) > 0 || (showDeleteModal.template_count || 0) > 0) ? 'Deactivate' : 'Delete'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(null)
+                    setDeleteError(null)
+                  }}
+                  disabled={isDeleting}
+                  className="mt-3 w-full inline-flex justify-center rounded-xl border border-dark-border shadow-sm px-4 py-2 bg-dark-elevated text-base font-medium text-secondary hover:text-primary hover:bg-dark-card focus:outline-none focus:ring-2 focus:ring-primary/30 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   )
 }
